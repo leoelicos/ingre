@@ -1,0 +1,22 @@
+{
+  "name": "ingre",
+  "version": "1.0.0",
+  "description": "Shopping app for the home cook",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leoelicos/ingre.git"
+  },
+  "keywords": [
+    "create-react-app-v4"
+  ],
+  "author": "Leo Wong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leoelicos/ingre/issues"
+  },
+  "homepage": "https://github.com/leoelicos/ingre#readme"
+}
