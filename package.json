@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/leoelicos/ingre/issues"
   },
-  "homepage": "https://github.com/leoelicos/ingre#readme"
+  "homepage": "https://github.com/leoelicos/ingre#readme",
+  "devDependencies": {
+    "concurrently": "^7.3.0"
+  }
 }
