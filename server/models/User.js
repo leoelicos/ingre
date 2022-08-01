@@ -46,13 +46,7 @@ const userSchema = new Schema({
       required: true
     }
   ],
-  savedIngredients: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Ingredient',
-      required: true
-    }
-  ],
+
   orders: [Order.schema]
 });
 
@@ -61,6 +55,7 @@ userSchema.pre('save', async function (next) {
   if (this.isNew || this.isModified('password')) {
     const saltRounds = 10;
     this.password = await bcrypt.hash(this.password, saltRounds);
+    console.log('hashed password = ', this.password);
   }
 
   next();
