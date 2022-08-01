@@ -10,7 +10,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Success from './pages/Success';
 import OrderHistory from './pages/OrderHistory';
-import Detail from './pages/Detail';
+import Custom from './pages/Custom';
 import NoMatch from './pages/NoMatch';
 
 const httpLink = createHttpLink({
@@ -45,7 +45,7 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/success" element={<Success />} />
               <Route path="/orderHistory" element={<OrderHistory />} />
-              <Route path="/products/:id" element={<Detail />} />
+              <Route path="/products/:id" element={<Custom />} />
               <Route path="*" element={<NoMatch />} />
             </Routes>
           </StoreProvider>
