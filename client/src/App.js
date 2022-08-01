@@ -41,11 +41,11 @@ function App() {
             <Nav />
             <Routes>
               <Route exact path="/" element={<Recipes />} />
+              <Route path="/recipes/:id" element={<Custom />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/success" element={<Success />} />
               <Route path="/orderHistory" element={<OrderHistory />} />
-              <Route path="/products/:id" element={<Custom />} />
               <Route path="*" element={<NoMatch />} />
             </Routes>
           </StoreProvider>
