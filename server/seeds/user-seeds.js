@@ -12,18 +12,12 @@ const getRecipeId = async (word) => {
   return recipeID._id;
 };
 
-const getProductId = async () => {
-  const product = await Product.findOne({});
-  return product._id;
-};
-
 const seedUsers = async () => {
-  const productID = await getProductId();
-  const order = new Order({ productID });
-
   const recipeID = await getRecipeId('Wings');
+  const products = await Product.find();
+  const order = await new Order({ products: [products[0]._id] }).populate('products');
 
-  const userData = [
+  const users = await User.insertMany([
     {
       firstName: 'professional',
       lastName: 'professional',
@@ -42,10 +36,8 @@ const seedUsers = async () => {
       libraryRecipes: [recipeID],
       orders: []
     }
-  ];
-
-  const user = User.insertMany(userData);
-  return user;
+  ]);
+  return users;
 };
 
 module.exports = seedUsers;
