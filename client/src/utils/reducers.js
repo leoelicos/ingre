@@ -15,7 +15,7 @@ import {
 // The reducer is a function that accepts the current state and an action. It returns a new state based on that action.
 export const reducer = (state, action) => {
   switch (action.type) {
-    // Returns a copy of state with an update products array. We use the action.products property and spread it's contents into the new array.
+    // Returns a copy of state with an updated products array. We use the action.products property and spread it's contents into the new array.
     case UPDATE_PRODUCTS:
       return {
         ...state,
