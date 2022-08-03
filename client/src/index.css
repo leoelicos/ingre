@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wdth,wght@95,800;100,400&family=Poppins&display=swap');
 
 :root {
   --ingre-blue: #0074ba;
@@ -13,6 +13,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
+  font-weight: 400;
 }
 /**************
  * Page *
@@ -20,6 +21,56 @@
 .content {
   background-color: var(--ingre-light-red);
   padding: 1rem;
+}
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 100vh;
+}
+
+/**************
+ * Header *
+ **************/
+.navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0rem 1.5rem;
+  list-style-type: none;
+  border-bottom: 1px solid var(--ingre-grey);
+}
+.navbar-left,
+.navbar-right {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+.hamburger {
+  margin-right: 1rem;
+  color: var(--ingre-dark-brown);
+  font-size: 30px;
+}
+.ingre-logo {
+  color: var(--ingre-eggshell);
+  font-size: 30px;
+}
+.ingre-logo-text {
+  font-size: 30px;
+}
+.ingre-text {
+  color: var(--ingre-dark-brown);
+  font-weight: 800;
+  font-size: 20px;
+}
+
+a,
+a:visited,
+a:focus,
+a.active {
+  text-decoration: none;
+  color: var(--ingre-dark-brown);
 }
 
 /**************
