@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Poppins&display=swap');
 
 :root {
   --ingre-blue: #0074ba;
@@ -8,6 +8,43 @@
   --ingre-eggshell: #f3ad61;
   --ingre-grey: #a5a5a5;
 }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+/**************
+ * Page *
+ **************/
+.content {
+  background-color: var(--ingre-light-red);
+  padding: 1rem;
+}
+
+/**************
+ * Titles *
+ **************/
+
+.content-title {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 3rem;
+  color: var(--ingre-dark-brown);
+  font-family: 'Open Sans', sans-serif;
+}
+.content-subtitle {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 3rem;
+  color: var(--ingre-dark-brown);
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+}
+
 /**************
  * RecipeList *
  **************/
@@ -31,7 +68,7 @@
   justify-content: space-between;
   box-shadow: 0px 0px 4px 0px var(--ingre-blue);
   border-radius: 1rem;
-  margin-bottom: 1rem;
+  margin: 0 0.3rem 1rem 0.3rem;
 }
 .recipe-card .card-header {
   height: 94px;
@@ -59,7 +96,7 @@
   border: none;
   background-color: #fff;
 
-  margin: 0.1rem;
+  margin: 0 0.4rem;
   font-size: 1.5rem;
   color: var(--ingre-dark-brown);
 }
