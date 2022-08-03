@@ -14,6 +14,7 @@ const typeDefs = gql`
     lastName: String
     email: String
     #  password: String
+    homeRecipes: [Recipe]
     savedRecipes: [Recipe]
     libraryRecipes: [Recipe]
     orders: [Order]
@@ -24,6 +25,7 @@ const typeDefs = gql`
     lastName: String
     email: String
     password: String
+    homeRecipes: [String]
     savedRecipes: [String]
     libraryRecipes: [String]
     orders: [String]
@@ -103,7 +105,7 @@ const typeDefs = gql`
   type Mutation {
     #
     addUser(input: UserInput!): Auth
-    addRecipe(input: RecipeInput!): [Recipe]
+    addRecipe(input: RecipeInput!): Recipe
     addIngredient(input: IngredientInput!): Ingredient
     addOrder(products: [ID]!): Order
     #
