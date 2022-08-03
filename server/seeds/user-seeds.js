@@ -17,27 +17,24 @@ const seedUsers = async () => {
   const products = await Product.find();
   const order = await new Order({ products: [products[0]._id] }).populate('products');
 
-  const users = await User.insertMany([
-    {
-      firstName: 'professional',
-      lastName: 'professional',
-      email: 'pro@ingre.com',
-      password: 'professional',
-      savedRecipes: [recipeID],
-      libraryRecipes: [recipeID],
-      orders: [order]
-    },
-    {
-      firstName: 'regular',
-      lastName: 'regular',
-      email: 'regular@ingre.com',
-      password: 'regular',
-      savedRecipes: [recipeID],
-      libraryRecipes: [recipeID],
-      orders: []
-    }
-  ]);
-  return users;
+  await User.create({
+    firstName: 'professional',
+    lastName: 'professional',
+    email: 'pro@ingre.com',
+    password: 'professional',
+    savedRecipes: [recipeID],
+    libraryRecipes: [recipeID],
+    orders: [order]
+  });
+  await User.create({
+    firstName: 'regular',
+    lastName: 'regular',
+    email: 'regular@ingre.com',
+    password: 'regular',
+    savedRecipes: [recipeID],
+    libraryRecipes: [recipeID],
+    orders: []
+  });
 };
 
 module.exports = seedUsers;
