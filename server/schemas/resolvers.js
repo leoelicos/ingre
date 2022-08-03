@@ -16,13 +16,19 @@ const authThrow = (text) => {
 
 const resolvers = {
   Query: {
-    //
     getUser: async (_, __, context) => {
       if (!context.user) authThrow('Not logged in!');
       // console.log('context.user = ', context.user);
       return await User.findById(context.user._id)
         // populate each list
         .populate([
+          {
+            path: 'homeRecipes',
+            populate: {
+              path: 'ingredients',
+              populate: 'category'
+            }
+          },
           {
             path: 'savedRecipes',
             populate: {
@@ -125,6 +131,7 @@ const resolvers = {
 
       return { session: session.id };
     }
+    //
   },
   Mutation: {
     // user
@@ -139,7 +146,7 @@ const resolvers = {
       if (!context.user) authThrow('Not logged in!');
       const recipe = await Recipe.create({ ...input });
 
-      return await Recipe.find().populate({
+      return await recipe.populate({
         path: 'ingredients',
         populate: 'category'
       });
@@ -189,6 +196,13 @@ const resolvers = {
 
       const user = await User.findByIdAndUpdate(query, update, options);
       return user.populate([
+        {
+          path: 'homeRecipes',
+          populate: {
+            path: 'ingredients',
+            populate: 'category'
+          }
+        },
         {
           path: 'savedRecipes',
           populate: {
