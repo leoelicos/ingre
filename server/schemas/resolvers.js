@@ -16,13 +16,19 @@ const authThrow = (text) => {
 
 const resolvers = {
   Query: {
-    //
     getUser: async (_, __, context) => {
       if (!context.user) authThrow('Not logged in!');
       // console.log('context.user = ', context.user);
       return await User.findById(context.user._id)
         // populate each list
         .populate([
+          {
+            path: 'homeRecipes',
+            populate: {
+              path: 'ingredients',
+              populate: 'category'
+            }
+          },
           {
             path: 'savedRecipes',
             populate: {
@@ -125,6 +131,7 @@ const resolvers = {
 
       return { session: session.id };
     }
+    //
   },
   Mutation: {
     // user
@@ -139,7 +146,7 @@ const resolvers = {
       if (!context.user) authThrow('Not logged in!');
       const recipe = await Recipe.create({ ...input });
 
-      return await Recipe.find().populate({
+      return await recipe.populate({
         path: 'ingredients',
         populate: 'category'
       });
@@ -167,6 +174,8 @@ const resolvers = {
 
       const order = await new Order({ products }).populate('products');
 
+      // console.log('order = ', order);
+
       await User.findByIdAndUpdate(
         // find user with id and push the order to its order history
         context.user._id,
@@ -183,8 +192,17 @@ const resolvers = {
 
       const query = context.user._id;
       const update = { ...input };
-      const user = await User.findByIdAndUpdate(query, update);
+      const options = { new: true, runValidators: true };
+
+      const user = await User.findByIdAndUpdate(query, update, options);
       return user.populate([
+        {
+          path: 'homeRecipes',
+          populate: {
+            path: 'ingredients',
+            populate: 'category'
+          }
+        },
         {
           path: 'savedRecipes',
           populate: {
@@ -200,8 +218,8 @@ const resolvers = {
           }
         },
         {
-          path: 'savedIngredients',
-          populate: 'category'
+          path: 'orders',
+          populate: 'products'
         }
       ]);
     },
@@ -230,10 +248,19 @@ const resolvers = {
         populate: 'category'
       });
     },
+    removeIngredient: async (_, { ingredientID }, context) => {
+      if (!context.user) authThrow('Not logged in!');
+
+      const ingredientExists = await Ingredient.findById(ingredientID);
+      if (!ingredientExists) throw new Error('Ingredient does not exist');
+
+      await Ingredient.findByIdAndDelete(ingredientID);
+      return await Ingredient.find();
+    },
     login: async (_, { email, password }) => {
       const user = await User.findOne({ email });
       if (!user) authThrow('Incorrect credentials!1');
-
+      console.log('user = ', user);
       const correctPw = await user.isCorrectPassword(password);
       if (!correctPw) authThrow('Incorrect credentials!2');
 

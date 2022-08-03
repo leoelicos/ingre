@@ -1,6 +1,7 @@
 import { reducer } from '../utils/reducers';
 import {
-  UPDATE_PRODUCTS,
+  //
+  UPDATE_RECIPES,
   ADD_TO_CART,
   UPDATE_CART_QUANTITY,
   REMOVE_FROM_CART,
@@ -12,7 +13,7 @@ import {
 } from '../utils/actions';
 
 const initialState = {
-  products: [],
+  recipes: [],
   cart: [
     {
       _id: '1',
@@ -27,17 +28,17 @@ const initialState = {
   ],
   cartOpen: false,
   categories: [{ name: 'Food' }],
-  currentCategory: '1',
+  currentCategory: '1'
 };
 
-test('UPDATE_PRODUCTS', () => {
+test('UPDATE_RECIPES', () => {
   let newState = reducer(initialState, {
-    type: UPDATE_PRODUCTS,
-    products: [{}, {}]
+    type: UPDATE_RECIPES,
+    recipes: [{}, {}]
   });
 
-  expect(newState.products.length).toBe(2);
-  expect(initialState.products.length).toBe(0);
+  expect(newState.recipes.length).toBe(2);
+  expect(initialState.recipes.length).toBe(0);
 });
 
 test('ADD_TO_CART', () => {
@@ -87,7 +88,7 @@ test('REMOVE_FROM_CART', () => {
 test('ADD_MULTIPLE_TO_CART', () => {
   let newState = reducer(initialState, {
     type: ADD_MULTIPLE_TO_CART,
-    products: [{}, {}]
+    recipes: [{}, {}]
   });
 
   expect(newState.cart.length).toBe(4);
@@ -131,7 +132,7 @@ test('TOGGLE_CART', () => {
 
   expect(newState.cartOpen).toBe(true);
   expect(initialState.cartOpen).toBe(false);
-  
+
   let newState2 = reducer(newState, {
     type: TOGGLE_CART
   });
