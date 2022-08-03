@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import RecipeCardContainer from './RecipeCardContainer';
+import RecipeCardContainer from '../components/RecipeCardContainer';
 import search from '../utils/API';
-import Content from './Content';
-import ContentTitle from './ContentTitle';
-import ContentSubtitle from './ContentSubtitle';
+import Content from '../components/Content';
+import ContentTitle from '../components/ContentTitle';
+import ContentSubtitle from '../components/ContentSubtitle';
 
 const Home = () => {
   const [results, setResults] = useState([]);
