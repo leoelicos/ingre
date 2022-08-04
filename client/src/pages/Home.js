@@ -13,6 +13,7 @@ const Home = () => {
   };
 
   useEffect(() => {
+    console.log('call this');
     searchEdamam();
   }, []);
 
