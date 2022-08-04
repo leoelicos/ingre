@@ -1,15 +1,31 @@
+import React from 'react';
 // Import React Router Link component for internal hyperlinks
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+
+import { useStoreContext } from '../utils/GlobalState';
+import { TOGGLE_COLLAPSED } from '../utils/actions';
 
 const Header = () => {
+  const [state, dispatch] = useStoreContext();
+  const toggleCollapsed = () => {
+    dispatch({ type: TOGGLE_COLLAPSED });
+  };
   return (
     <header>
       <ul className="navbar">
         <div className="navbar-left">
           <li className="hamburger">
             <Link to="/">
-              <FontAwesomeIcon icon="fa-solid fa-bars" style={{ marginRight: '0.3rem' }} />
+              <div
+                className="trigger"
+                onClick={() => {
+                  toggleCollapsed();
+                }}
+              >
+                {state.collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              </div>
             </Link>
           </li>
           <li className="navbar-item">
