@@ -18,15 +18,13 @@
 /**************
  * Page *
  **************/
-.content {
-  background-color: var(--ingre-light-red);
-  padding: 1rem;
+
+body {
+  width: 100vw;
+  height: 100vh;
 }
-.page-layout {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  min-height: 100vh;
+.layout {
+  width: 100%;
 }
 
 /**************
@@ -40,6 +38,7 @@
   padding: 0rem 1.5rem;
   list-style-type: none;
   border-bottom: 1px solid var(--ingre-grey);
+  margin-bottom: 0 !important;
 }
 .navbar-left,
 .navbar-right {
@@ -73,12 +72,20 @@ a.active {
   color: var(--ingre-dark-brown);
 }
 
+.guide-button {
+  border: none !important;
+  outline: none;
+  width: 20px;
+}
+
 /**************
  * Main *
  **************/
 
 .main {
   display: flex;
+  flex: 1;
+  width: 100%;
 }
 
 /* Sidebar */
@@ -107,10 +114,6 @@ a.active {
 
 .ant-layout-sider {
   background: white !important;
-}
-
-.ant-menu {
-  color: var(--ingre-dark-brown) !important;
 }
 
 /**************
