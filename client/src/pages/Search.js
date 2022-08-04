@@ -1,33 +1,51 @@
-import React, { useState } from 'react';
+// We import useState and useEffect in our component
+import React, { useState, useEffect } from 'react';
+import SearchBar from '../components/SearchBar';
+import RecipeCard from '../components/RecipeCard';
 
-function Search({ onFormSubmit }) {
-  // Our state variable for the search term. Defaults to "microsoft/vscode".
-  const [term, setTerm] = useState('microsoft/vscode');
+function App() {
+  // We declare a state variable that is an array called `issues` and a function to update it.
+  const [recipes, setRecipes] = useState([]);
 
-  const sendTerm = (e) => {
-    e.preventDefault();
+  // When the page loads, set the document title to something specific to this app. Runs once because of optional dependency array
+  useEffect(() => {
+    document.title = 'React Hooks Review';
+  }, []);
 
-    onFormSubmit(term);
+  // Helper function that preforms an API request and sets the `recipes` array to a list of recipes from GitHub
+  const getRecipes = async (query) => {
+    let recipesURL = `https://api.edamam.com/api/recipes/v2?type=public&beta=false&q=${query}/&app_id=9ee15e11&app_key=a2af12a629d82717d1dcef269a4ea4f0`;
+    const response = await fetch(recipesURL);
+    const data = await response.json();
+    setRecipes(
+      data.data.hits.map(({ recipe }) => ({
+        label: recipe.label,
+        yield: recipe.yield,
+        image: recipe.image,
+        ingredients: recipe.ingredients.map((ingredient) => ({
+          name: ingredient.food,
+          category: ingredient.foodCategory,
+          quantity: ingredient.quantity,
+          measure: ingredient.measure,
+          text: ingredient.text
+        }))
+      }))
+    );
   };
 
   return (
-    <>
-      <h1>GitHub Issues</h1>
-      <span className="text-primary">Retrieve issues for a particular organization and repo. Example (facebook/react)</span>
-      <hr></hr>
-      <div className="form-group">
-        <form className="form" onSubmit={sendTerm}>
-          <div className="field">
-            <label style={{ marginRight: '5px' }}>Retrieve GitHub Issues</label>
-            <input type="text" value={term} onChange={(e) => setTerm(e.target.value)} placeholder="facebook/react" />
-            <button className="btn" style={{ margin: '5px' }}>
-              Search
-            </button>
+    <div>
+      {/* Here we pass our getRecipes function as a prop to SearchBar */}
+      <SearchBar onFormSubmit={getRecipes} />
+      <div>
+        <div>
+          <div>
+            <RecipeCard recipes={recipes} />
           </div>
-        </form>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
-export default Search;
+export default App;
