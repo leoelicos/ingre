@@ -20,6 +20,7 @@ const search = () =>
     ); */
 
 const search = () => {
+  console.log('API was called');
   return [
     {
       label: 'Summer Squash, Tomato, and Basil Pasta',
