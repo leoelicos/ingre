@@ -1,27 +1,18 @@
-import { useState, useEffect } from 'react';
 import RecipeCardContainer from '../components/RecipeCardContainer';
-import search from '../utils/API';
+
 import Content from '../components/Content';
 import ContentTitle from '../components/ContentTitle';
 import ContentSubtitle from '../components/ContentSubtitle';
 
+import { useStoreContext } from '../utils/GlobalState';
+
 const Home = () => {
-  const [results, setResults] = useState([]);
-  const searchEdamam = async () => {
-    const data = await search();
-    setResults(data);
-  };
-
-  useEffect(() => {
-    console.log('call this');
-    searchEdamam();
-  }, []);
-
+  const [state] = useStoreContext();
   return (
     <Content>
       <ContentTitle>Recipes, recipes, recipes</ContentTitle>
       <ContentSubtitle>Classic Italian favorites</ContentSubtitle>
-      <RecipeCardContainer results={results} />
+      <RecipeCardContainer results={state.results} />
     </Content>
   );
 };

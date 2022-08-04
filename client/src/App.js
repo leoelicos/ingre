@@ -6,11 +6,11 @@ import { setContext } from '@apollo/client/link/context';
 import { StoreProvider } from './utils/GlobalState';
 
 // layout components
-import Layout from './components/Layout';
+
 import Header from './components/Header';
-import Sidebar from './components/Sidebar';
 import Main from './components/Main';
-import Guide from './components/Guide';
+import Content from './components/Content';
+import Sidebar from './components/Sidebar';
 
 // main pages
 import Home from './pages/Home'; // list of recipes automatically generated
@@ -63,32 +63,29 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <Router>
-        <div className="page-layout">
-          <StoreProvider>
-            <Layout>
-              <Header />
+        <StoreProvider>
+          <div className="layout">
+            <Header />
+            <Main>
               <Sidebar />
-              <Main>
+              <Content>
                 <Routes>
-                  {/* main pages */}
                   <Route path="/" element={<Home />} />
                   <Route path="/search" element={<Search />} />
                   <Route path="/custom" element={<Custom />} />
                   <Route path="/saved" element={<Saved />} />
                   <Route path="/shoppinglist" element={<ShoppingList />} />
                   <Route path="/tapoff" element={<TapOff />} />
-                  {/* auxiliary pages */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/success" element={<Success />} />
                   <Route path="/orderHistory" element={<OrderHistory />} />
                   <Route path="*" element={<NoMatch />} />
                 </Routes>
-              </Main>
-              <Guide />
-            </Layout>
-          </StoreProvider>
-        </div>
+              </Content>
+            </Main>
+          </div>
+        </StoreProvider>
       </Router>
     </ApolloProvider>
   );
