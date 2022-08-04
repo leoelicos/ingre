@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const RecipeCard = ({ result }) => {
+  console.log('RecipeCard result = ', result);
   return (
     <article className="recipe-card">
       <div className="card-header">
