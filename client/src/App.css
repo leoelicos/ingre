@@ -1,23 +1,56 @@
 @import '~antd/dist/antd.css';
 
-#components-layout-demo-custom-trigger .trigger {
-  padding: 0 24px;
-  font-size: 18px;
-  line-height: 64px;
-  cursor: pointer;
-  transition: color 0.3s;
+/* --ingre-blue: #0074ba;
+   --ingre-white: #fff;
+   --ingre-light-red: #fff9f7;
+   --ingre-dark-brown: #b55f26;
+   --ingre-eggshell: #f3ad61;
+   --ingre-grey: #a5a5a5; */
+
+/* manual overrides */
+
+.ant-menu-item-selected,
+.ant-menu-light.ant-menu-item:hover,
+.ant-menu-item:hover,
+.ant-menu-item a:hover,
+.ant-menu-item-selected a,
+.ant-menu-item-selected a:hover {
+  color: var(--ingre-dark-brown) !important;
+  background-color: var(--ingre-light-red) !important;
+}
+.ant-menu-item-selected,
+.ant-menu-item-selected.ant-menu-item-active {
+  font-weight: bold;
+  color: var(--ingre-dark-brown) !important;
+}
+.ant-menu-item::after {
+  border-right: 3px solid var(--ingre-dark-brown) !important;
+}
+.ant-modal-title,
+.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon,
+.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon {
+  color: var(--ingre-dark-brown) !important;
+}
+.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-title::after {
+  background-color: var(--ingre-dark-brown) !important;
 }
 
-#components-layout-demo-custom-trigger .trigger:hover {
-  color: #1890ff;
+.ant-menu,
+.ant-menu-item-icon {
+  font-size: 1.2rem !important;
+}
+.ant-menu-item-icon {
+  width: 1.2rem !important;
+  text-align: center !important;
+}
+.ant-menu-inline {
+  margin-bottom: 0 !important;
+}
+.ant-menu-item {
+  margin-top: 0 !important;
+  padding: 0 1rem !important;
 }
 
-#components-layout-demo-custom-trigger .logo {
-  height: 32px;
-  margin: 16px;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.site-layout .site-layout-background {
-  background: #fff;
+.ant-layout {
+  background: var(--ingre-white);
 }
