@@ -1,12 +1,6 @@
-import { Layout, Divider } from 'antd';
-const App = (props) => {
-  /// la di da
+import { Layout } from 'antd';
 
-  return (
-    <Layout>
-      <Divider>Divider</Divider>
-      {props.children}
-    </Layout>
-  );
+const App = (props) => {
+  return <Layout>{props.children}</Layout>;
 };
 export default App;
