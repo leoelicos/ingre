@@ -1,5 +1,5 @@
-import { Button, Modal } from 'antd';
-import { blue } from '@ant-design/colors';
+import { Button, Modal, Divider, Space } from 'antd';
+
 import { useStoreContext } from '../../../utils/state/GlobalState';
 import { HIDE_MODAL } from '../../../utils/state/actions';
 import { useLocation } from 'react-router-dom';
@@ -25,7 +25,13 @@ const App = () => {
 
   return (
     <Modal
-      title={getModalTitle(pathname)}
+      title={
+        <>
+          <Space style={{ color: 'black' }}>{<FontAwesomeIcon icon="fa-solid fa-circle-info" />} Info</Space>
+          <Divider />
+          {getModalTitle(pathname)}
+        </>
+      }
       visible={state.modalVisible}
       onCancel={handleOk}
       footer={[
@@ -81,36 +87,73 @@ var getModalText = (pathname) => {
   switch (pathname) {
     case '/':
       return (
-        <p>
-          Explore recipes from your phone. 2 million recipes specially curated by Edamam. You'll see a random list every time you load this page. Like a recipe? Click {faSave} to add it to your Saved list. You can also {faPen} customize them!
-        </p>
+        <>
+          <p>Explore recipes from your phone. 2 million recipes specially curated by Edamam.</p>
+          <p>You'll see a random list every time you load this page.</p>
+          <p>Like a recipe? Click {faSave} to add it to your Saved list.</p>
+          <p>You can also {faPen} customize them!</p>
+        </>
       );
     case '/search':
       return (
-        <p>
-          Search from 2 million tested recipes. Enter a search term and click {faMagnifyingGlass} or type Enter. To clear search, click {faCircleXmark}. To narrow your search, select from our many filters available. Like a recipe? Click {faSave} to add it to your Saved list. You can also {faPen} customize them!
-        </p>
+        <>
+          <p>Search from 2 million tested recipes. </p>
+          <p>Enter a search term and click {faMagnifyingGlass} or type Enter. </p>
+          <p>To clear search, click {faCircleXmark}.</p>
+          <p>To narrow your search, select from our many filters available.</p>
+          <p>Like a recipe? Click {faSave} to add it to your Saved list.</p>
+          <p>You can also {faPen} customize them!</p>
+        </>
       );
 
     case '/custom':
       return (
-        <p>
-          Make it your own. Customize a recipe, or Reset to start from scratch! To edit recipe name, click on the box to type. For servings and quantities, enter a number or a decimal. For dropdown menus, click on the box and select from the options that appear. To add a new ingredient, click on {faAdd}. To delete an existing ingredient, click on {faTrash}.
-        </p>
+        <>
+          <p>Make it your own.</p>
+          <p>Customize a recipe, or Reset to start from scratch! </p>
+          <p>To edit recipe name, click on the box to type.</p>
+          <p>For servings and quantities, enter a number or a decimal.</p>
+          <p>For dropdown menus, click on the box and select from the options that appear.</p>
+          <p>To add a new ingredient, click on {faAdd}.</p>
+          <p>To delete an existing ingredient, click on {faTrash}.</p>
+        </>
       );
 
     case '/saved':
-      return <p>Keep your recipes safe All your recipes in one place! You can edit portion sizes on this page. Want to permanently save your recipes to Library? Upgrade to {faCubesStacked} PRO for $5 today!</p>;
+      return (
+        <>
+          <p>Keep your recipes safe</p>
+          <p>All your recipes in one place!</p>
+          <p>You can edit portion sizes on this page.</p>
+          <p>Want to permanently save your recipes to Library? Upgrade to {faCubesStacked} PRO for $5 today! </p>
+        </>
+      );
 
     case '/shoppinglist':
       return (
-        <p>
-          The final edit! We've added everything up for you and divided them into categories. It's up to you to consider: Have I got it already in my fridge? Corn is not in season, can I use peas instead? Fish doesn't look fresh, can I use a different protein? No problem! Just click on the boxes to edit the ingredients. There's even a Misc section for additional groceries! Click {faAdd} to add a new ingredient. Click {faTrash} to remove an ingredient.
-        </p>
+        <>
+          <p>The final edit!</p>
+          <p>We've added everything up for you and divided them into categories.</p>
+          <p>It's up to you to consider: </p>
+          <p>Have I got it already in my fridge?</p>
+          <p>Corn is not in season, can I use peas instead?</p>
+          <p>Fish doesn't look fresh, can I use a different protein?</p>
+          <p>No problem! Just click on the boxes to edit the ingredients.</p>
+          <p>There's even a Misc section for additional groceries!</p>
+          <p>
+            Click {faAdd} to add a new ingredient. Click {faTrash} to remove an ingredient.
+          </p>
+        </>
       );
 
     case '/tapoff':
-      return <p>Tap off each ingredient as you shop in the supermarket. Good luck! When you're done, click "All done" to clear your Saved recipes and Shopping list. Upgrade to {faCubesStacked} PRO for $5 and automatically save your recipes permanently in Library!</p>;
+      return (
+        <>
+          <p> Tap off each ingredient as you shop in the supermarket.</p>
+          <p>Good luck! When you're done, click "All done" to clear your Saved recipes and Shopping list.</p>
+          <p>Upgrade to {faCubesStacked} PRO for $5 and automatically save your recipes permanently in Library!</p>
+        </>
+      );
 
     case '/login':
       return <p>Log in to start saving recipes!</p>;
