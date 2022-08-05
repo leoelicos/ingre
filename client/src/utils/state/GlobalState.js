@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { useGlobalReducer } from './reducers';
-import searchEdamam from '../utils/API';
+import searchEdamam from '../API';
 
 const StoreContext = createContext();
 const { Provider } = StoreContext;
@@ -8,7 +8,8 @@ const recipeSeeds = searchEdamam();
 
 const StoreProvider = ({ value = [], ...props }) => {
   const [state, dispatch] = useGlobalReducer({
-    collapsed: false,
+    modalVisible: false,
+    leftSidebarCollapsed: false,
     homeRecipes: [],
     results: recipeSeeds
   });
