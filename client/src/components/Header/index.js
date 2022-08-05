@@ -3,7 +3,7 @@ import { useStoreContext } from '../../utils/state/GlobalState';
 import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Col, Row, Button, Steps, Typography } from 'antd';
-import ModalGuide from './ModalGuide';
+import ModalGuide from './ModalGuide/index';
 import React from 'react';
 import { SHOW_MODAL, TOGGLE_SIDEBAR } from '../../utils/state/actions';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
@@ -44,7 +44,6 @@ const App = () => {
             </Link>
           </Row>
         </Col>
-
         <Col xs={0} sm={8} lg={0}>
           <Row align="middle">
             <Steps size="small" current={getStep} responsive={false}>
@@ -54,7 +53,6 @@ const App = () => {
             </Steps>
           </Row>
         </Col>
-
         <Col xs={0} lg={12}>
           <Row align="middle">
             <Steps size="small" current={getStep} responsive={false}>
@@ -64,7 +62,6 @@ const App = () => {
             </Steps>
           </Row>
         </Col>
-
         <Col
           xs={{ span: 12, pull: 0 }}
           sm={{ span: 8, pull: 0 }}

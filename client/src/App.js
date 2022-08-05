@@ -10,7 +10,7 @@ import { StoreProvider } from './utils/state/GlobalState';
 
 // layout components
 
-import Header from './components/Header';
+import Header from './components/Header/index';
 import Layout from './components/Layout.js';
 import SiderLeft from './components/SiderLeft';
 // import Main from './components/Main';
@@ -71,6 +71,7 @@ function App() {
       <StoreProvider>
         <Layout>
           <Header />
+
           <Layout>
             <SiderLeft />
             {/* <Main>
