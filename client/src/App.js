@@ -12,7 +12,7 @@ import { StoreProvider } from './utils/state/GlobalState';
 
 import Header from './components/Header';
 import Layout from './components/Layout.js';
-// import SiderLeft from './components/SiderLeft';
+import SiderLeft from './components/SiderLeft';
 // import Main from './components/Main';
 // import Content from './components/Content';
 // import Sidebar from './components/Sidebar';
@@ -37,8 +37,8 @@ import './App.css';
 
 // Font Awesome React Component Icon Library
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faCircle, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus } from '@fortawesome/free-solid-svg-icons';
-library.add(faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faCircle, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus);
+import { faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faSquareCheck, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+library.add(faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faSquareCheck, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus);
 
 // const httpLink = createHttpLink({
 //   uri: '/graphql'
@@ -69,10 +69,11 @@ function App() {
     // <ApolloProvider client={client}>
     <Router>
       <StoreProvider>
-        <Header />
         <Layout>
-          {/* <SiderLeft /> */}
-          {/* <Main>
+          <Header />
+          <Layout>
+            <SiderLeft />
+            {/* <Main>
               <Sidebar />
               <Content>
                 <Routes>
@@ -90,6 +91,7 @@ function App() {
                 </Routes>
               </Content>
             </Main> */}
+          </Layout>
         </Layout>
       </StoreProvider>
     </Router>
