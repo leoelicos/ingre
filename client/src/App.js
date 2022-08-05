@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Layout } from 'antd';
+
 import { BrowserRouter as Router } from 'react-router-dom';
 // import { Route, Routes } from 'react-router-dom';
 
@@ -11,7 +11,8 @@ import { StoreProvider } from './utils/state/GlobalState';
 // layout components
 
 import Header from './components/Header';
-import SiderLeft from './components/SiderLeft';
+import Layout from './components/Layout.js';
+// import SiderLeft from './components/SiderLeft';
 // import Main from './components/Main';
 // import Content from './components/Content';
 // import Sidebar from './components/Sidebar';
@@ -69,9 +70,9 @@ function App() {
     <Router>
       <StoreProvider>
         <Header />
-        {/* <Layout> */}
-        {/* <SiderLeft /> */}
-        {/* <Main>
+        <Layout>
+          {/* <SiderLeft /> */}
+          {/* <Main>
               <Sidebar />
               <Content>
                 <Routes>
@@ -89,7 +90,7 @@ function App() {
                 </Routes>
               </Content>
             </Main> */}
-        {/* </Layout> */}
+        </Layout>
       </StoreProvider>
     </Router>
     // </ApolloProvider>
