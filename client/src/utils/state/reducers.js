@@ -2,8 +2,7 @@ import { useReducer } from 'react';
 import {
   SHOW_MODAL,
   HIDE_MODAL,
-  SHOW_SIDEBAR,
-  HIDE_SIDEBAR
+  TOGGLE_SIDEBAR
 
   //
 } from './actions';
@@ -16,11 +15,9 @@ export const reducer = (state, action) => {
     case HIDE_MODAL:
       return { ...state, modalVisible: false };
 
-    case SHOW_SIDEBAR:
-      return { ...state, leftSidebarCollapsed: false };
-
-    case HIDE_SIDEBAR:
-      return { ...state, leftSidebarCollapsed: true };
+    case TOGGLE_SIDEBAR:
+      console.log('reducing TOGGLE_SIDEBAR');
+      return { ...state, leftSidebarCollapsed: !state.leftSidebarCollapsed };
 
     default:
       return state;
