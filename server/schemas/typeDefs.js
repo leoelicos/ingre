@@ -14,7 +14,6 @@ const typeDefs = gql`
     lastName: String
     email: String
     #  password: String
-
     savedRecipes: [Recipe]
     libraryRecipes: [Recipe]
     orders: [Order]
@@ -25,7 +24,6 @@ const typeDefs = gql`
     lastName: String
     email: String
     password: String
-
     savedRecipes: [String]
     libraryRecipes: [String]
     orders: [String]
