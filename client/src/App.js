@@ -14,9 +14,14 @@ import { StoreProvider } from './utils/state/GlobalState';
 import Header from './components/Header/index';
 import Layout from './components/Layout.js';
 import SiderLeft from './components/SiderLeft';
-// import Main from './components/Main';
 import Content from './components/Content';
-// import Sidebar from './components/Sidebar';
+
+// admin
+import Login from './pages/Admin/Login';
+import Signup from './pages/Admin/Signup';
+import NoMatch from './pages/Admin/NoMatch';
+// import Success from './pages/Success';
+// import OrderHistory from './pages/OrderHistory';
 
 // pages
 import Home from './pages/Home';
@@ -25,13 +30,6 @@ import Home from './pages/Home';
 // import Saved from './pages/Saved';
 // import ShoppingList from './pages/ShoppingList';
 // import TapOff from './pages/TapOff';
-
-// more pages
-// import NoMatch from './pages/NoMatch';
-import Login from './pages/Admin/Login';
-import Signup from './pages/Admin/Signup';
-// import Success from './pages/Success';
-// import OrderHistory from './pages/OrderHistory';
 
 // style
 import './App.css';
@@ -76,9 +74,8 @@ function App() {
               <SiderLeft />
               <Content>
                 <Routes>
+                  {/* pages */}
                   <Route path="/" element={<Home />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
                   {/*
                   <Route path="/search" element={<Search />} />
                   <Route path="/custom" element={<Custom />} />
@@ -89,8 +86,12 @@ function App() {
                   
                   <Route path="/success" element={<Success />} />
                   <Route path="/orderHistory" element={<OrderHistory />} />
-                  <Route path="*" element={<NoMatch />} />
+                  
                   */}
+                  {/* admin */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="*" element={<NoMatch />} />
                 </Routes>
               </Content>
             </Layout>
