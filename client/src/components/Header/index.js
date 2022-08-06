@@ -56,7 +56,7 @@ const App = () => {
             </Link>
           </Row>
         </Col>
-        <Col xs={0} sm={8} lg={0}>
+        <Col xs={0} sm={7} lg={0}>
           <Row align="middle">
             <Steps size="small" current={getStep} responsive={false}>
               <Step icon={<FontAwesomeIcon icon="fa-solid fa-egg" />} />
@@ -76,7 +76,7 @@ const App = () => {
         </Col>
         <Col
           xs={{ span: 12, pull: 0 }}
-          sm={{ span: 8, pull: 0 }}
+          sm={{ span: 9, pull: 0 }}
           lg={{ span: 6, pull: 0 }}
 
           //
