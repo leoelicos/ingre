@@ -4,7 +4,6 @@
  * This script contains resolvers for graphQL schema
  * Copyright 2022 Leo Wong
  */
-
 const { AuthenticationError } = require('apollo-server-express');
 const { User, Recipe, Ingredient, Category, Order, Product } = require('../models');
 const { signToken } = require('../utils/auth');
@@ -13,22 +12,16 @@ const ObjectID = require('mongoose').Types.ObjectId;
 const authThrow = (text) => {
   throw new AuthenticationError(text);
 };
+const axios = require('axios');
 
 const resolvers = {
   Query: {
     getUser: async (_, __, context) => {
-      if (!context.user) authThrow('Not logged in!');
       // console.log('context.user = ', context.user);
+      if (!context.user) authThrow('Not logged in!');
       return await User.findById(context.user._id)
         // populate each list
         .populate([
-          {
-            path: 'homeRecipes',
-            populate: {
-              path: 'ingredients',
-              populate: 'category'
-            }
-          },
           {
             path: 'savedRecipes',
             populate: {
@@ -50,11 +43,13 @@ const resolvers = {
         ]);
     },
 
-    getRecipes: async () =>
-      await Recipe.find().populate({
+    getRecipes: async () => {
+      console.log('getRecipes was called');
+      return await Recipe.find().populate({
         path: 'ingredients',
         populate: 'category'
-      }),
+      });
+    },
     //
     getRecipe: async (_, { _id }) =>
       await Recipe.findById(_id).populate({
@@ -134,14 +129,75 @@ const resolvers = {
     //
   },
   Mutation: {
-    // user
+    addRandomRecipes: async (_, __, context) => {
+      // debounce
+      // call api
+      console.log('api was called');
+      const search = await axios.get(`https://api.edamam.com/api/recipes/v2?type=public&beta=false&q=Delicious&app_id=9ee15e11&app_key=a2af12a629d82717d1dcef269a4ea4f0&diet=balanced&health=vegetarian&cuisineType=Italian&mealType=Dinner&dishType=Main%20course&imageSize=LARGE&random=true`);
+      const hits = search.data.hits;
+      // serialize
+      const serialized = hits.map(({ recipe }) => ({
+        label: recipe.label,
+        yield: recipe.yield,
+        image: recipe.image,
+        ingredients: recipe.ingredients.map((ingredient) => ({
+          name: ingredient.food,
+          quantity: ingredient.quantity,
+          measure: ingredient.measure,
+          category: ingredient.foodCategory,
+          text: ingredient.text
+        }))
+      }));
+
+      // create categories and ingredients
+      const uniqueCategories = [];
+      const currentCategories = await Category.find();
+      for (const category of currentCategories) {
+        uniqueCategories.push(category.name);
+      }
+      const createdRecipes = [];
+      for (const recipe of serialized) {
+        const createdIngredients = [];
+        for (const ingredient of recipe.ingredients) {
+          let { name, quantity, measure, text, category } = ingredient;
+          if (!category) category = 'General';
+          if (!name) name = 'Generic';
+          if (!uniqueCategories.includes(category)) {
+            uniqueCategories.push(category);
+            await Category.create({ name: category });
+          }
+          const { _id } = await Category.findOne({ name: category });
+          const createdIngredient = await Ingredient.create({
+            name,
+            quantity,
+            measure,
+            text,
+            category: _id
+          });
+          createdIngredients.push(createdIngredient._id);
+        }
+        // create recipes
+        const createdRecipe = await Recipe.create({
+          name: recipe.label,
+          yield: recipe.yield,
+          ingredients: createdIngredients,
+          picture_url: recipe.image
+        });
+        createdRecipes.push(createdRecipe._id);
+      }
+      return Recipe.find().populate({
+        path: 'ingredients',
+        populate: 'category'
+      });
+    },
+    //
     addUser: async (_, { input }) => {
       const user = await User.create({ ...input });
       const token = signToken(user);
 
       return { token, user };
     },
-    // recipe
+    //
     addRecipe: async (_, { input }, context) => {
       if (!context.user) authThrow('Not logged in!');
       const recipe = await Recipe.create({ ...input });
@@ -151,6 +207,7 @@ const resolvers = {
         populate: 'category'
       });
     },
+    //
     addIngredient: async (_, { input }, context) => {
       if (!context.user) authThrow('Not logged in!');
 
@@ -162,47 +219,28 @@ const resolvers = {
       return ingredient.populate('category');
     },
     //
-
-    //
     addOrder: async (_, { products }, context) => {
       if (!context.user) authThrow('Not logged in!');
-
       for (const product of products) {
         const productExists = await Product.findById(product);
         if (!productExists) throw new Error('product does not exist');
       }
-
       const order = await new Order({ products }).populate('products');
-
-      // console.log('order = ', order);
-
       await User.findByIdAndUpdate(
         // find user with id and push the order to its order history
         context.user._id,
         { $push: { orders: order } }
       );
-
       return order;
     },
     //
-
-    //
     updateUser: async (_, { input }, context) => {
       if (!context.user) authThrow('Not logged in!');
-
       const query = context.user._id;
       const update = { ...input };
       const options = { new: true, runValidators: true };
-
       const user = await User.findByIdAndUpdate(query, update, options);
       return user.populate([
-        {
-          path: 'homeRecipes',
-          populate: {
-            path: 'ingredients',
-            populate: 'category'
-          }
-        },
         {
           path: 'savedRecipes',
           populate: {
@@ -223,7 +261,7 @@ const resolvers = {
         }
       ]);
     },
-
+    //
     updateRecipe: async (_, { recipeID, input }, context) => {
       if (!context.user) authThrow('Not logged in!');
       const recipeExists = await Recipe.findById(recipeID);
@@ -236,6 +274,7 @@ const resolvers = {
         populate: 'category'
       });
     },
+    //
     removeRecipe: async (_, { recipeID }, context) => {
       if (!context.user) authThrow('Not logged in!');
 
@@ -248,6 +287,7 @@ const resolvers = {
         populate: 'category'
       });
     },
+    //
     removeIngredient: async (_, { ingredientID }, context) => {
       if (!context.user) authThrow('Not logged in!');
 
@@ -257,14 +297,17 @@ const resolvers = {
       await Ingredient.findByIdAndDelete(ingredientID);
       return await Ingredient.find();
     },
+    //
     login: async (_, { email, password }) => {
       const user = await User.findOne({ email });
-      if (!user) authThrow('Incorrect credentials!1');
-      console.log('user = ', user);
+      if (!user) authThrow('Incorrect credentials!');
+
       const correctPw = await user.isCorrectPassword(password);
-      if (!correctPw) authThrow('Incorrect credentials!2');
+      if (!correctPw) authThrow('Incorrect credentials!');
 
       const token = signToken(user);
+
+      console.log(token ? `Login successful:\n[firstName] ${user.firstName}\n[token] ${token}` : `Login unsuccessful.`);
       return { token, user };
     }
   }
