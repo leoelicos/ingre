@@ -28,8 +28,8 @@ import Home from './pages/Home';
 
 // more pages
 // import NoMatch from './pages/NoMatch';
-import Login from './pages/Login';
-// import Signup from './pages/Signup';
+import Login from './pages/Admin/Login';
+import Signup from './pages/Admin/Signup';
 // import Success from './pages/Success';
 // import OrderHistory from './pages/OrderHistory';
 
@@ -77,7 +77,8 @@ function App() {
               <Content>
                 <Routes>
                   <Route path="/" element={<Home />} />
-                  {/* <Route path="/login" element={<Login />} /> */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
                   {/*
                   <Route path="/search" element={<Search />} />
                   <Route path="/custom" element={<Custom />} />
@@ -85,7 +86,7 @@ function App() {
                   <Route path="/shoppinglist" element={<ShoppingList />} />
                   <Route path="/tapoff" element={<TapOff />} />
                   
-                  <Route path="/signup" element={<Signup />} />
+                  
                   <Route path="/success" element={<Success />} />
                   <Route path="/orderHistory" element={<OrderHistory />} />
                   <Route path="*" element={<NoMatch />} />
