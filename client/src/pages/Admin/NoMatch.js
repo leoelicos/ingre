@@ -1,18 +1,13 @@
-import React from 'react';
+import { Empty } from 'antd';
 
-const NoMatch = () => {
+const App = () => {
   return (
     <div>
-      <div style={{ height: 560, clear: 'both', paddingTop: 120, textAlign: 'center' }}>
-        <h1>404 Page Not Found</h1>
-        <h1>
-          <span role="img" aria-label="Face With Rolling Eyes Emoji">
-            🙄
-          </span>
-        </h1>
-      </div>
+      <Empty style={{ height: 560, clear: 'both', paddingTop: 120, textAlign: 'center' }}>
+        <h1>Page Not Found</h1>
+      </Empty>
     </div>
   );
 };
 
-export default NoMatch;
+export default App;
