@@ -15,3 +15,7 @@
 #root {
   height: 100vh !important;
 }
+
+section.ant-layout {
+  height: 100%;
+}
