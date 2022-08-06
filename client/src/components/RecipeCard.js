@@ -1,29 +1,18 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-const RecipeCard = (props) => {
-  if (!props?.result?.label) console.log('eror, props = ', props);
-
+import { Card, Image } from 'antd';
+const { Meta } = Card;
+const App = (props) => {
   return (
-    <article className="recipe-card">
-      <div className="card-header">
-        <div className="header-left">
-          <p className="recipe-title">{props.result.label}</p>
-          {/* <p className="recipe-title">recipe.label</p> */}
-        </div>
-        <div className="header-right">
-          <button className="card-title-button">
-            <FontAwesomeIcon icon="fa-solid fa-pen" />
-          </button>
-          <button className="card-title-button">
-            <FontAwesomeIcon icon="fa-solid fa-floppy-disk" />
-          </button>
-        </div>
-      </div>
-      <div className="card-body">
-        <img alt={props.result.label} src={props.result.image} className="card-image" />
-      </div>
-    </article>
+    <Card
+      style={{ width: 300, margin: '0.3rem 0.1rem' }}
+      cover={<Image width={300} alt={props.name} src={props.picture_url} />}
+      actions={[<FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />, <FontAwesomeIcon key="save" icon="fa-solid fa-floppy-disk" />]}
+
+      //
+    >
+      <Meta title={props.name} />
+    </Card>
   );
 };
 
-export default RecipeCard;
+export default App;
