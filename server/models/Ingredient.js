@@ -24,6 +24,9 @@ const ingredientSchema = new Schema({
   measure: {
     type: String
   },
+  text: {
+    type: String
+  },
   category: {
     type: Schema.Types.ObjectId,
     ref: 'Category',

@@ -1,12 +1,19 @@
-// import { useState } from 'react';
+// react
 import { useStoreContext } from '../../utils/state/GlobalState';
 import { Link, useLocation } from 'react-router-dom';
+
+// Font Awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Col, Row, Button, Steps, Typography } from 'antd';
-import ModalGuide from './ModalGuide/index';
-import React from 'react';
+
+// state
 import { SHOW_MODAL, TOGGLE_SIDEBAR } from '../../utils/state/actions';
+
+// components
+import ModalGuide from './ModalGuide/index';
+
+// Ant Design
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { Col, Row, Button, Steps, Typography } from 'antd';
 const { Step } = Steps;
 const { Title } = Typography;
 
@@ -66,10 +73,10 @@ const App = () => {
           xs={{ span: 12, pull: 0 }}
           sm={{ span: 8, pull: 0 }}
           lg={{ span: 6, pull: 0 }}
-          style={{ height: '100%' }}
+
           //
         >
-          <Row align="middle" justify="end">
+          <Row align="bottom" justify="end">
             <Link to="/login">
               <Button>Login</Button>
             </Link>

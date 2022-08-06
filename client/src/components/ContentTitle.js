@@ -1,4 +1,9 @@
-const ContentTitle = (props) => {
-  return <h1 className="content-title">{props.children}</h1>;
-};
-export default ContentTitle;
+import { Typography } from 'antd';
+const { Title } = Typography;
+
+const App = (props) => (
+  <>
+    <Title level={1}>{props.children}</Title>
+  </>
+);
+export default App;

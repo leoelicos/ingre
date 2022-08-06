@@ -36,11 +36,10 @@ const server = new ApolloServer({
   context: authMiddleware
 });
 
-// implement middleware that parses urlencoded bodies
-app.use(express.urlencoded({ extended: false }));
-
 // implement middleware that parses json
-app.use(express.json());
+app.use(express.json({ limit: '13MB' }));
+// implement middleware that parses urlencoded bodies
+app.use(express.urlencoded({ limit: '13MB', extended: true }));
 
 // middleware to serve static images
 app.use('/images', express.static(path.join(__dirname, '../client/images')));

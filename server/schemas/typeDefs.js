@@ -14,7 +14,6 @@ const typeDefs = gql`
     lastName: String
     email: String
     #  password: String
-    homeRecipes: [Recipe]
     savedRecipes: [Recipe]
     libraryRecipes: [Recipe]
     orders: [Order]
@@ -25,7 +24,6 @@ const typeDefs = gql`
     lastName: String
     email: String
     password: String
-    homeRecipes: [String]
     savedRecipes: [String]
     libraryRecipes: [String]
     orders: [String]
@@ -38,6 +36,7 @@ const typeDefs = gql`
     ingredients: [Ingredient]
     picture_url: String
   }
+
   input RecipeInput {
     name: String
     portions: Int
@@ -49,6 +48,7 @@ const typeDefs = gql`
     name: String
     quantity: Float
     measure: String
+    text: String
     category: Category
   }
 
@@ -56,6 +56,7 @@ const typeDefs = gql`
     name: String
     quantity: Float
     measure: String
+    text: String
     category: String
   }
 
@@ -103,6 +104,8 @@ const typeDefs = gql`
   }
 
   type Mutation {
+    #
+    addRandomRecipes: [Recipe]
     #
     addUser(input: UserInput!): Auth
     addRecipe(input: RecipeInput!): Recipe

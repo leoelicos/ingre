@@ -21,6 +21,7 @@ const seedIngredients = async () => {
       name: 'chicken wings',
       quantity: '1',
       measure: 'kg',
+      text: '1kg chicken wings',
       category: proteinId
     }
   ];

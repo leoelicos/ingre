@@ -1,7 +1,7 @@
 {
   "name": "client",
-  "proxy": "http://localhost:3000",
   "version": "0.1.0",
+  "proxy": "http://localhost:3001/",
   "private": true,
   "dependencies": {
     "@ant-design/colors": "^6.0.0",

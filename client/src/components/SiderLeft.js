@@ -6,7 +6,7 @@ const { Sider } = Layout;
 const App = () => {
   const [state] = useStoreContext();
   return (
-    <Sider trigger={null} collapsible collapsed={state.leftSidebarCollapsed} style={{ background: 'pink' }}>
+    <Sider trigger={null} collapsible collapsed={state.leftSidebarCollapsed} style={{ background: 'var(--ingre-white)' }}>
       <div className="logo" />
       <Menu
         theme="light"

@@ -54,3 +54,7 @@
 .ant-layout {
   background: var(--ingre-white);
 }
+
+.ant-menu {
+  height: 100%;
+}
