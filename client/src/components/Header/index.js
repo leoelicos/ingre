@@ -1,7 +1,7 @@
 // react
 import { useStoreContext } from '../../utils/state/GlobalState';
 import { Link, useLocation } from 'react-router-dom';
-
+import Auth from '../../utils/auth';
 // Font Awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -30,6 +30,11 @@ const App = () => {
 
   const { pathname } = useLocation();
   const getStep = pathname === '/tapoff' ? 2 : pathname === '/shoppinglist' ? 1 : 0;
+
+  const logout = (event) => {
+    event.preventDefault();
+    Auth.logout();
+  };
 
   return (
     <>
@@ -77,9 +82,20 @@ const App = () => {
           //
         >
           <Row align="bottom" justify="end">
-            <Link to="/login">
-              <Button>Login</Button>
-            </Link>
+            {Auth.loggedIn() ? (
+              <>
+                <Button onClick={logout}>Logout</Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button>Login</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button>Signup</Button>
+                </Link>
+              </>
+            )}
             <Button onClick={showModal} style={{ margin: '0 0.3rem' }}>
               <FontAwesomeIcon icon="fa-solid fa-circle-info" />
             </Button>
