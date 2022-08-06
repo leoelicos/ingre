@@ -1,10 +1,17 @@
-const Content = (props) => {
-  const style = {
-    backgroundColor: 'var(--ingre-light-red)',
-    padding: '1rem',
-    width: '100%'
-  };
-
-  return <div style={style}>{props.children}</div>;
+import { Layout } from 'antd';
+const { Content } = Layout;
+const App = (props) => {
+  return (
+    <Content
+      style={{
+        backgroundColor: 'var(--ingre-light-red)',
+        borderColor: '1px solid red',
+        padding: '1rem',
+        overflowY: 'scroll'
+      }}
+    >
+      {props.children}
+    </Content>
+  );
 };
-export default Content;
+export default App;
