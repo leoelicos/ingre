@@ -44,7 +44,7 @@ const App = () => {
       <Divider></Divider>
       <ContentTitle>
         <FontAwesomeIcon className="ingre-logo" icon="fa-solid fa-egg" style={{ margin: '0 0.3rem 0 0.6rem', color: 'var(--ingre-eggshell)', fontSize: '1.8rem', paddingBottom: '2px' }} />
-        <span style={{ color: 'var(--ingre-dark-brown)', fontFamily: 'Poppins, sans-serif', fontSize: '36px', letterSpacing: -1, fontWeight: '800' }}>ingré Login</span>
+        ingré Login
       </ContentTitle>
       <Form
         labelCol={{
