@@ -192,6 +192,7 @@ const resolvers = {
     },
     //
     addUser: async (_, { input }) => {
+      console.log('Data to create new user: ', input);
       const user = await User.create({ ...input });
       const token = signToken(user);
 
