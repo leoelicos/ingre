@@ -26,7 +26,7 @@ import NoMatch from './pages/Admin/NoMatch';
 // pages
 import Home from './pages/Home';
 import Search from './pages/Search';
-// import Custom from './pages/Custom';
+import Custom from './pages/Custom';
 // import Saved from './pages/Saved';
 // import ShoppingList from './pages/ShoppingList';
 // import TapOff from './pages/TapOff';
@@ -76,8 +76,8 @@ function App() {
                   {/* pages */}
                   <Route path="/" element={<Home />} />
                   <Route path="/search" element={<Search />} />
-                  {/*
                   <Route path="/custom" element={<Custom />} />
+                  {/*
                   <Route path="/saved" element={<Saved />} />
                   <Route path="/shoppinglist" element={<ShoppingList />} />
                   <Route path="/tapoff" element={<TapOff />} />
