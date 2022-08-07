@@ -2,8 +2,11 @@ import { useReducer } from 'react';
 import {
   SHOW_MODAL,
   HIDE_MODAL,
-  TOGGLE_SIDEBAR
-
+  TOGGLE_SIDEBAR,
+  UPDATE_SEARCHED_RECIPES,
+  UPDATE_HOME_RECIPES,
+  ADD_SAVED_RECIPE,
+  ADD_EDIT_RECIPE
   //
 } from './actions';
 
@@ -18,6 +21,31 @@ export const reducer = (state, action) => {
     case TOGGLE_SIDEBAR:
       console.log('reducing TOGGLE_SIDEBAR');
       return { ...state, leftSidebarCollapsed: !state.leftSidebarCollapsed };
+
+    case UPDATE_SEARCHED_RECIPES:
+      console.log(`reducer UPDATE_SEARCHED_RECIPES from ${state.searchedRecipes.length} items to ${action.data.length} items`);
+      return { ...state, searchedRecipes: action.data };
+
+    case UPDATE_HOME_RECIPES:
+      console.log(`reducer UPDATE_HOME_RECIPES from ${state.homeRecipes.length} items to ${action.data.length} items`);
+      return { ...state, homeRecipes: action.data };
+
+    case ADD_SAVED_RECIPE:
+      console.log(`reducer ADD_SAVED_RECIPE with this id:\n${action.data._id}`);
+      if (state.savedRecipes.find((r) => r._id === action.data._id)) {
+        console.log(`Already saved!!`);
+        return { ...state };
+      }
+
+      const newSavedRecipes = JSON.parse(JSON.stringify(state.savedRecipes));
+      newSavedRecipes.push(action.data);
+      return { ...state, savedRecipes: newSavedRecipes };
+
+    case ADD_EDIT_RECIPE:
+      console.log(`reducer ADD_EDIT_RECIPE with this recipe:\n${action.data.name}`);
+      const newEditRecipe = action.data;
+      console.log('newEditRecipe = ', newEditRecipe);
+      return { ...state, customRecipe: newEditRecipe };
 
     default:
       return state;

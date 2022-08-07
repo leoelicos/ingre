@@ -12,8 +12,11 @@ const ObjectID = require('mongoose').Types.ObjectId;
 const authThrow = (text) => {
   throw new AuthenticationError(text);
 };
-const axios = require('axios');
 
+const axios = require('axios');
+require('dotenv').config();
+const EDAMAM_APP_KEY = process.env.HEROKU_EDAMAM_APP_KEY || process.env.PRODUCTION_EDAMAM_APP_KEY;
+const EDAMAM_APP_ID = process.env.HEROKU_EDAMAM_APP_ID || process.env.PRODUCTION_EDAMAM_APP_ID;
 const resolvers = {
   Query: {
     getUser: async (_, __, context) => {
@@ -129,16 +132,43 @@ const resolvers = {
     //
   },
   Mutation: {
-    addRandomRecipes: async (_, __, context) => {
+    addRandomRecipes: async (_, args, context) => {
+      // console.log('received args = ', JSON.stringify(args));
+      const { input } = args;
+      const { q, diet, health, cuisineType, mealType, dishType } = input;
+      // console.log(`Received [${q}] [${diet}] [${health}] [${cuisineType}] [${mealType}] [${dishType}] `);
+
       // debounce
       // call api
-      console.log('api was called');
-      const search = await axios.get(`https://api.edamam.com/api/recipes/v2?type=public&beta=false&q=Delicious&app_id=9ee15e11&app_key=a2af12a629d82717d1dcef269a4ea4f0&diet=balanced&health=vegetarian&cuisineType=Italian&mealType=Dinner&dishType=Main%20course&imageSize=LARGE&random=true`);
+      // params mapped as strings
+      let uri;
+      let _q = '&q=Delicious';
+      let _diet = '&diet=balanced';
+      let _health = '&health=vegetarian';
+      let _cuisineType = '&cuisineType=Italian';
+      let _mealType = '&mealType=Dinner';
+      let _dishType = '&dishType=Main%20course';
+
+      const createTags = (key, arr) => arr.map((val) => `&${key}=${encodeURIComponent(val)}`).join('');
+      if (q) _q = '&q=' + encodeURIComponent(q);
+      if (diet) _diet = diet && createTags('diet', diet);
+      if (health) _health = health && createTags('health', health);
+      if (cuisineType) _cuisineType = cuisineType && createTags('cuisineType', cuisineType);
+      if (mealType) _mealType = mealType && createTags('mealType', mealType);
+      if (dishType) _dishType = dishType && createTags('dishType', dishType);
+
+      uri = `https://api.edamam.com/api/recipes/v2?type=public&beta=false${_q}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}${_diet}${_health}${_cuisineType}${_mealType}${_dishType}&imageSize=LARGE&random=true&field=label&field=image&field=yield&field=ingredients`;
+      // console.log('uri:\n', uri);
+      // console.log(`Created ${uri} `);
+
+      const search = await axios.get(uri);
+      console.log(`Edamam API was called with ${_q}${_diet}${_health}${_cuisineType}${_mealType}${_dishType}`);
+
       const hits = search.data.hits;
       // serialize
       const serialized = hits.map(({ recipe }) => ({
         label: recipe.label,
-        yield: recipe.yield,
+        portions: recipe.yield,
         image: recipe.image,
         ingredients: recipe.ingredients.map((ingredient) => ({
           name: ingredient.food,
@@ -179,19 +209,24 @@ const resolvers = {
         // create recipes
         const createdRecipe = await Recipe.create({
           name: recipe.label,
-          yield: recipe.yield,
+          portions: recipe.portions,
           ingredients: createdIngredients,
           picture_url: recipe.image
         });
         createdRecipes.push(createdRecipe._id);
       }
-      return Recipe.find().populate({
+      return Recipe.find({
+        _id: {
+          $in: createdRecipes.map((_id) => ObjectID(_id))
+        }
+      }).populate({
         path: 'ingredients',
         populate: 'category'
       });
     },
     //
     addUser: async (_, { input }) => {
+      console.log('Data to create new user: ', input);
       const user = await User.create({ ...input });
       const token = signToken(user);
 

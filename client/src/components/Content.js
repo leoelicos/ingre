@@ -7,7 +7,7 @@ const App = (props) => {
         backgroundColor: 'var(--ingre-light-red)',
         borderColor: '1px solid red',
         padding: '1rem',
-        overflowY: 'scroll'
+        overflowY: 'auto'
       }}
     >
       {props.children}

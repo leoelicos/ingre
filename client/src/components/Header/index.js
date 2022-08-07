@@ -1,7 +1,7 @@
 // react
 import { useStoreContext } from '../../utils/state/GlobalState';
 import { Link, useLocation } from 'react-router-dom';
-
+import Auth from '../../utils/auth';
 // Font Awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -31,6 +31,11 @@ const App = () => {
   const { pathname } = useLocation();
   const getStep = pathname === '/tapoff' ? 2 : pathname === '/shoppinglist' ? 1 : 0;
 
+  const logout = (event) => {
+    event.preventDefault();
+    Auth.logout();
+  };
+
   return (
     <>
       <Row align="middle" style={{ borderBottom: '1px solid var(--ingre-grey)', paddingBottom: '2px' }}>
@@ -51,7 +56,7 @@ const App = () => {
             </Link>
           </Row>
         </Col>
-        <Col xs={0} sm={8} lg={0}>
+        <Col xs={0} sm={7} lg={0}>
           <Row align="middle">
             <Steps size="small" current={getStep} responsive={false}>
               <Step icon={<FontAwesomeIcon icon="fa-solid fa-egg" />} />
@@ -71,15 +76,26 @@ const App = () => {
         </Col>
         <Col
           xs={{ span: 12, pull: 0 }}
-          sm={{ span: 8, pull: 0 }}
+          sm={{ span: 9, pull: 0 }}
           lg={{ span: 6, pull: 0 }}
 
           //
         >
           <Row align="bottom" justify="end">
-            <Link to="/login">
-              <Button>Login</Button>
-            </Link>
+            {Auth.loggedIn() ? (
+              <>
+                <Button onClick={logout}>Logout</Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button>Login</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button>Signup</Button>
+                </Link>
+              </>
+            )}
             <Button onClick={showModal} style={{ margin: '0 0.3rem' }}>
               <FontAwesomeIcon icon="fa-solid fa-circle-info" />
             </Button>

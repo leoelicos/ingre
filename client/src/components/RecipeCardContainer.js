@@ -1,17 +1,18 @@
 import RecipeCard from './RecipeCard';
+import Empty from './Empty';
 
-const App = (props) => {
-  const recipes = props.results.getRecipes;
-
-  for (const recipe of recipes) {
-    console.log(`Recipe name = ${recipe._id}`);
-  }
+const App = ({ results, children }) => {
+  // console.log('results = ', results);
 
   return (
     <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'space-evenly' }}>
-      {recipes.map((recipe) => (
-        <RecipeCard key={recipe._id.toString()} name={recipe.name} picture_url={recipe.picture_url} />
-      ))}
+      {results.length ? (
+        results.map((recipe) => {
+          return <RecipeCard key={recipe._id} name={recipe.name} picture_url={recipe.picture_url} recipe={recipe} />;
+        })
+      ) : (
+        <Empty />
+      )}
     </div>
   );
 };

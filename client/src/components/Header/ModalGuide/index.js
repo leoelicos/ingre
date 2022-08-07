@@ -89,7 +89,6 @@ var getModalText = (pathname) => {
       return (
         <>
           <p>Explore recipes from your phone. 2 million recipes specially curated by Edamam.</p>
-          <p>You'll see a random list every time you load this page.</p>
           <p>Like a recipe? Click {faSave} to add it to your Saved list.</p>
           <p>You can also {faPen} customize them!</p>
         </>
