@@ -10,7 +10,8 @@ const StoreProvider = ({ value = [], ...props }) => {
     leftSidebarCollapsed: false,
     searchedRecipes: [],
     homeRecipes: [],
-    savedRecipes: []
+    savedRecipes: [],
+    customRecipe: null
   });
 
   return <Provider value={[state, dispatch]} {...props} />;
