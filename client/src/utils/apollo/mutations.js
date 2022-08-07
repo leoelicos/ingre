@@ -20,3 +20,25 @@ export const LOGIN = gql`
     }
   }
 `;
+
+export const ADD_RANDOM_RECIPES = gql`
+  mutation addRandomRecipes($input: EdamamAPIInput) {
+    addRandomRecipes(input: $input) {
+      _id
+      name
+      portions
+      ingredients {
+        _id
+        name
+        quantity
+        measure
+        text
+        category {
+          _id
+          name
+        }
+      }
+      picture_url
+    }
+  }
+`;
