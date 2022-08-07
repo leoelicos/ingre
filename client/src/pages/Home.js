@@ -1,9 +1,5 @@
 // react
 import { useState, useEffect } from 'react';
-// import {useState } from 'react';
-// apollo
-// import { useQuery } from '@apollo/client';
-// import { QUERY_RECIPES } from '../utils/apollo/queries';
 
 // components
 import RecipeCardContainer from '../components/RecipeCardContainer';
@@ -21,11 +17,11 @@ import { UPDATE_HOME_RECIPES } from '../utils/state/actions';
 import { useStoreContext } from '../utils/state/GlobalState';
 
 const Home = () => {
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(true);
   const [state, dispatch] = useStoreContext();
-  // const [recipes, setRecipes] = useState();
+
   const [addRandomRecipes, { error }] = useMutation(ADD_RANDOM_RECIPES);
-  // const { loading, data } = useQuery(QUERY_RECIPES);
+
   const handleRefresh = async () => {
     try {
       const randomQueries = ['Delicious', 'Quick', 'Easy'];
@@ -36,9 +32,8 @@ const Home = () => {
       setLoading(false);
       if (error) console.log('error ', error);
       const data = mutationResponse.data.addRandomRecipes;
-      // setRecipes(data)
+
       dispatch({ type: UPDATE_HOME_RECIPES, data: data });
-      // setRecipeState(data);
     } catch (e) {
       console.log(e);
     }
@@ -46,16 +41,20 @@ const Home = () => {
 
   useEffect(() => {
     const call = () => {
+      console.log('Call from useEffect');
       const randomQueries = ['Delicious', 'Quick', 'Easy'];
       const randomQuery = randomQueries[Math.floor(Math.random() * randomQueries.length)];
       const payload = { variables: { input: { q: randomQuery } } };
+      setLoading(true);
       addRandomRecipes(payload).then((response) => {
+        setLoading(false);
         const recipes = response.data.addRandomRecipes;
         dispatch({ type: UPDATE_HOME_RECIPES, data: recipes });
       });
     };
     call();
   }, [addRandomRecipes, dispatch]);
+
   useEffect(() => {
     document.title = 'ingré';
   }, []);
