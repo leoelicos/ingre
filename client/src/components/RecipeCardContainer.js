@@ -1,5 +1,6 @@
 import RecipeCard from './RecipeCard';
 import Empty from './Empty';
+
 const App = ({ results, children }) => {
   // console.log('results = ', results);
 
@@ -7,10 +8,10 @@ const App = ({ results, children }) => {
     <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'space-evenly' }}>
       {results.length ? (
         results.map((recipe) => {
-          return <RecipeCard key={recipe._id.toString()} name={recipe.name} picture_url={recipe.picture_url} />;
+          return <RecipeCard key={recipe._id} name={recipe.name} picture_url={recipe.picture_url} recipe={recipe} />;
         })
       ) : (
-        <Empty>Sorry, no results were found. Try again?</Empty>
+        <Empty />
       )}
     </div>
   );
