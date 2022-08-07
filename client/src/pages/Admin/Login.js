@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { LOGIN } from '../../utils/apollo/mutations';
@@ -35,6 +35,9 @@ const App = () => {
       [name]: value
     });
   };
+  useEffect(() => {
+    document.title = 'Login';
+  }, []);
 
   return (
     <div>
