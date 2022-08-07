@@ -25,7 +25,7 @@ import NoMatch from './pages/Admin/NoMatch';
 
 // pages
 import Home from './pages/Home';
-// import Search from './pages/Search';
+import Search from './pages/Search';
 // import Custom from './pages/Custom';
 // import Saved from './pages/Saved';
 // import ShoppingList from './pages/ShoppingList';
@@ -59,9 +59,8 @@ const client = new ApolloClient({
 });
 
 function App() {
-  const title = 'ingré';
   useEffect(() => {
-    document.title = title;
+    document.title = 'ingré';
   }, []);
 
   return (
@@ -76,8 +75,8 @@ function App() {
                 <Routes>
                   {/* pages */}
                   <Route path="/" element={<Home />} />
-                  {/*
                   <Route path="/search" element={<Search />} />
+                  {/*
                   <Route path="/custom" element={<Custom />} />
                   <Route path="/saved" element={<Saved />} />
                   <Route path="/shoppinglist" element={<ShoppingList />} />
