@@ -7,7 +7,10 @@ const { Provider } = StoreContext;
 const StoreProvider = ({ value = [], ...props }) => {
   const [state, dispatch] = useGlobalReducer({
     modalVisible: false,
-    leftSidebarCollapsed: false
+    leftSidebarCollapsed: false,
+    searchedRecipes: [],
+    homeRecipes: [],
+    savedRecipes: []
   });
 
   return <Provider value={[state, dispatch]} {...props} />;
