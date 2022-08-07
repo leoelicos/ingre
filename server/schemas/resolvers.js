@@ -133,10 +133,10 @@ const resolvers = {
   },
   Mutation: {
     addRandomRecipes: async (_, args, context) => {
-      console.log('received args = ', JSON.stringify(args));
+      // console.log('received args = ', JSON.stringify(args));
       const { input } = args;
       const { q, diet, health, cuisineType, mealType, dishType } = input;
-      console.log(`Received [${q}] [${diet}] [${health}] [${cuisineType}] [${mealType}] [${dishType}] `);
+      // console.log(`Received [${q}] [${diet}] [${health}] [${cuisineType}] [${mealType}] [${dishType}] `);
 
       // debounce
       // call api
@@ -158,15 +158,11 @@ const resolvers = {
       if (dishType) _dishType = dishType && createTags('dishType', dishType);
 
       uri = `https://api.edamam.com/api/recipes/v2?type=public&beta=false${_q}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}${_diet}${_health}${_cuisineType}${_mealType}${_dishType}&imageSize=LARGE&random=true&field=label&field=image&field=yield&field=ingredients`;
-      console.log('uri:\n', uri);
-      console.log(`Created ${uri} `);
+      // console.log('uri:\n', uri);
+      // console.log(`Created ${uri} `);
 
       const search = await axios.get(uri);
-
-      /*      console.log(typeof thisDoesntWork);
-       const thisWorks = `https://api.edamam.com/api/recipes/v2?type=public&beta=false&q=Delicious&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&diet=balanced&health=vegetarian&cuisineType=Italian&mealType=Dinner&dishType=Main%20course&imageSize=LARGE&random=true`;
-      console.log('This works: \n', thisWorks);
-      console.log(typeof thisWorks); */
+      console.log(`Edamam API was called with ${_q}${_diet}${_health}${_cuisineType}${_mealType}${_dishType}`);
 
       const hits = search.data.hits;
       // serialize
