@@ -7,8 +7,9 @@
  */
 
 const jwt = require('jsonwebtoken');
-
-const secret = 'mysecretsshhhhh';
+require('dotenv').config();
+const secret = process.env.HEROKU_JWT_SECRET || process.env.JWT_SECRET;
+console.log('the secret is ', secret);
 const expiration = '2h';
 
 module.exports = {
