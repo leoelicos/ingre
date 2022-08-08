@@ -1,6 +1,7 @@
 {
   "name": "ingre",
   "version": "1.0.0",
+  "proxy": "http://localhost:3001/",
   "description": "Shopping app for the home cook",
   "main": "server/server.js",
   "scripts": {
