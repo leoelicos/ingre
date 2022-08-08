@@ -3,7 +3,6 @@ import { Card, Image, Button, Space } from 'antd';
 import { useStoreContext } from '../utils/state/GlobalState';
 import { ADD_SAVED_RECIPE, ADD_EDIT_RECIPE } from '../utils/state/actions';
 import { Link } from 'react-router-dom';
-import spinner from '../assets/spinner.gif';
 const { Meta } = Card;
 
 const App = (props) => {
