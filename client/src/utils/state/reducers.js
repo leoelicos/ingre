@@ -6,7 +6,8 @@ import {
   UPDATE_SEARCHED_RECIPES,
   UPDATE_HOME_RECIPES,
   ADD_SAVED_RECIPE,
-  ADD_EDIT_RECIPE
+  ADD_EDIT_RECIPE,
+  CLEAR_EDIT_RECIPE
   //
 } from './actions';
 
@@ -46,6 +47,11 @@ export const reducer = (state, action) => {
       const newEditRecipe = action.data;
       console.log('newEditRecipe = ', newEditRecipe);
       return { ...state, customRecipe: newEditRecipe };
+
+    case CLEAR_EDIT_RECIPE:
+      console.log(`reducer CLEAR_EDIT_RECIPE  :\n `);
+
+      return { ...state, customRecipe: null };
 
     default:
       return state;
