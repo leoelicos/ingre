@@ -132,6 +132,54 @@ const resolvers = {
     //
   },
   Mutation: {
+    addCustomRecipe: async (_, args) => {
+      console.log('Hello my name is Leo');
+      const { input } = args;
+      console.log('Server input received = ', input);
+      // create categories and ingredients
+      const uniqueCategories = [];
+      const currentCategories = await Category.find();
+      for (const c of currentCategories) {
+        uniqueCategories.push(c.name);
+      }
+      const createdRecipes = [];
+      const recipe = args.input;
+      const createdIngredients = [];
+      console.log('Creating categories');
+      for (const ingredient of recipe.ingredients) {
+        let { name, quantity, measure, category } = ingredient;
+        console.log(`ingredient: ${name}, ${quantity}, ${measure}, ${category}`);
+        if (!category) category = 'General';
+        if (!name) name = 'Generic';
+        if (!uniqueCategories.includes(category)) {
+          uniqueCategories.push(category);
+          await Category.create({ name: category });
+        }
+        const { _id } = await Category.findOne({ name: category });
+        const createdIngredient = await Ingredient.create({
+          name,
+          quantity,
+          measure,
+          text: quantity + ' ' + measure + ' ' + name,
+          category: _id
+        });
+        createdIngredients.push(createdIngredient._id);
+      }
+      // create recipes
+      const createdRecipe = await Recipe.create({
+        name: recipe.name,
+        portions: recipe.portions,
+        ingredients: createdIngredients,
+        picture_url: 'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc'
+      });
+      createdRecipes.push(createdRecipe._id);
+      console.log('The recipe has been created');
+      return Recipe.findById(createdRecipes[0]).populate({
+        path: 'ingredients',
+        populate: 'category'
+      });
+    },
+
     addRandomRecipes: async (_, args, context) => {
       // console.log('received args = ', JSON.stringify(args));
       const { input } = args;

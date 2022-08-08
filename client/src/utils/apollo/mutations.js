@@ -42,3 +42,25 @@ export const ADD_RANDOM_RECIPES = gql`
     }
   }
 `;
+
+export const ADD_CUSTOM_RECIPE = gql`
+  mutation addCustomRecipe($input: CustomRecipeInput) {
+    addCustomRecipe(input: $input) {
+      _id
+      name
+      portions
+      ingredients {
+        _id
+        name
+        quantity
+        measure
+        text
+        category {
+          _id
+          name
+        }
+      }
+      picture_url
+    }
+  }
+`;

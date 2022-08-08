@@ -7,8 +7,6 @@ import spinner from '../assets/spinner.gif';
 import ContentTitle from '../components/ContentTitle';
 import ContentSubtitle from '../components/ContentSubtitle';
 
-// import spinner from '../assets/spinner.gif';
-
 import { useMutation } from '@apollo/client';
 import { ADD_RANDOM_RECIPES } from '../utils/apollo/mutations';
 import { Button, Alert } from 'antd';
@@ -72,7 +70,7 @@ const Home = () => {
           </Alert>
         </RecipeCardContainer>
       ) : (
-        <> {loading ? <img src={spinner} alt="loading" /> : <RecipeCardContainer results={state.homeRecipes} />}</>
+        <> {loading ? <img src={spinner} alt="loading" /> : <RecipeCardContainer results={state.homeRecipes} loading={loading} />}</>
       )}
     </>
   );

@@ -109,7 +109,7 @@ var getModalText = (pathname) => {
       return (
         <>
           <p>Make it your own.</p>
-          <p>Customize a recipe, or Reset to start from scratch! </p>
+          <p>Customize a recipe, or Reset to start again! </p>
           <p>To edit recipe name, click on the box to type.</p>
           <p>For servings and quantities, enter a number or a decimal.</p>
           <p>For dropdown menus, click on the box and select from the options that appear.</p>

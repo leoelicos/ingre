@@ -437,7 +437,7 @@ function App() {
 
           <Space>
             <Divider />
-            {loading ? <img src={spinner} alt="loading" /> : <RecipeCardContainer results={state.searchedRecipes} />}
+            {loading ? <img src={spinner} alt="loading" /> : <RecipeCardContainer results={state.searchedRecipes} loading={loading} />}
           </Space>
         </>
       ) : (

@@ -58,3 +58,6 @@
 .ant-menu {
   height: 100%;
 }
+.ant-form-item-control-input {
+  align-items: flex-start;
+}
