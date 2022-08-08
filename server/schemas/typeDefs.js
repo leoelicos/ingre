@@ -116,8 +116,20 @@ const typeDefs = gql`
     dishType: [String]
     # Biscuits and cookies Bread Cereals Condiments and sauces Desserts Drinks Main course Pancake Preps Preserve Salad Sandwiches Side dish Soup Starter Sweets
   }
+  input CustomIngredientInput {
+    category: String
+    measure: String
+    name: String
+    quantity: Float
+  }
+  input CustomRecipeInput {
+    name: String
+    portions: Int
+    ingredients: [CustomIngredientInput]
+  }
   type Mutation {
     #
+    addCustomRecipe(input: CustomRecipeInput): Recipe
     addRandomRecipes(input: EdamamAPIInput): [Recipe]
     #
     addUser(input: UserInput!): Auth
