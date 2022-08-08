@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { LOGIN } from '../../utils/apollo/mutations';
 import Auth from '../../utils/auth';
-import { Button, Form, Input, Space, Divider } from 'antd';
+import { Button, Form, Input, Space, Divider, Col } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ContentTitle from '../../components/ContentTitle';
 const App = () => {
@@ -96,9 +96,11 @@ const App = () => {
         </Form.Item>
 
         {error ? (
-          <Space>
-            <p>The provided credentials are incorrect</p>
-          </Space>
+          <Col span={24}>
+            <Space>
+              <p>Oops! Please check your credentials and try again</p>
+            </Space>
+          </Col>
         ) : null}
 
         <Form.Item
