@@ -5,36 +5,25 @@
  * Copyright 2022 Leo Wong
  */
 
-const { User, Recipe, Product, Order } = require('../models');
-
-const getRecipeId = async (word) => {
-  const recipeID = await Recipe.findOne({ name: word });
-  return recipeID._id;
-};
+const { User } = require('../models');
 
 const seedUsers = async () => {
-  const recipeID = await getRecipeId('Wings');
-  const products = await Product.find();
-  const order = await new Order({ products: [products[0]._id] }).populate('products');
-
-  await User.create({
-    firstName: 'professional',
-    lastName: 'professional',
-    email: 'pro@ingre.com',
-    password: 'professional',
-    savedRecipes: [recipeID],
-    libraryRecipes: [recipeID],
-    orders: [order]
-  });
-  await User.create({
-    firstName: 'regular',
-    lastName: 'regular',
-    email: 'regular@ingre.com',
-    password: 'regular',
-    savedRecipes: [recipeID],
-    libraryRecipes: [recipeID],
-    orders: []
-  });
+  await Promise.all([
+    User.create({
+      firstName: 'pro',
+      lastName: 'pro',
+      email: 'pro@ingre.com',
+      password: 'northshore',
+      pro: true
+    }),
+    User.create({
+      firstName: 'notpro',
+      lastName: 'notpro',
+      email: 'notpro@ingre.com',
+      password: 'northshore',
+      pro: false
+    })
+  ]);
 };
 
 module.exports = seedUsers;
