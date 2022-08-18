@@ -13,10 +13,8 @@ const typeDefs = gql`
     firstName: String
     lastName: String
     email: String
-    #  password: String
+    pro: Boolean
     savedRecipes: [Recipe]
-    libraryRecipes: [Recipe]
-    orders: [Order]
   }
 
   input UserInput {
@@ -24,13 +22,11 @@ const typeDefs = gql`
     lastName: String
     email: String
     password: String
-    savedRecipes: [String]
-    libraryRecipes: [String]
-    orders: [String]
+    pro: Boolean
   }
 
   type Recipe {
-    _id: ID!
+    _id: ID
     name: String
     portions: Int
     ingredients: [Ingredient]
@@ -40,7 +36,7 @@ const typeDefs = gql`
   input RecipeInput {
     name: String
     portions: Int
-    ingredients: [String]
+    ingredients: [IngredientInput]
     picture_url: String
   }
   type Ingredient {
@@ -48,7 +44,6 @@ const typeDefs = gql`
     name: String
     quantity: Float
     measure: String
-    text: String
     category: Category
   }
 
@@ -56,7 +51,6 @@ const typeDefs = gql`
     name: String
     quantity: Float
     measure: String
-    text: String
     category: String
   }
 
@@ -73,11 +67,7 @@ const typeDefs = gql`
     quantity: Int
     price: Float
   }
-  type Order {
-    _id: ID
-    purchaseDate: String
-    products: [Product]
-  }
+
   type Checkout {
     session: ID
   }
@@ -87,63 +77,31 @@ const typeDefs = gql`
     user: User
   }
 
-  type Query {
-    getUser: User
-    getRecipes: [Recipe]
-    getRecipe(_id: ID!): Recipe
-    getIngredients(category: ID): [Ingredient]
-    getIngredient(_id: ID!): Ingredient
-    getOrder(_id: ID!): Order
-    #
-    getCategories: [Category]
-    getCategory(_id: ID!): Category
-    getProducts: [Product]
-    getProduct(_id: ID!): Product
-    #
-    checkout(products: [ID!]): Checkout
+  type EdamamCredentials {
+    appId: String
+    appKey: String
   }
 
-  input EdamamAPIInput {
-    q: String
-    diet: [String]
-    # balanced high-fiber high-protein low-carb low-fat low-sodium
-    health: [String]
-    # alcohol-cocktail alcohol-free celery-free crustacean-free dairy-free DASH egg-free fish-free fodmap-free gluten-free immuno-supportive keto-friendly kidney-friendly kosher low-fat-abs low-potassium low-sugar lupine-free Mediterranean mollusk-free mustard-free no-oil-added paleo peanut-free pescatarian pork-free red-meat-free sesame-free shellfish-free soy-free sugar-conscious sulfite-free tree-nut-free vegan vegetarian wheat-free
-    cuisineType: [String]
-    # American Asian British Caribbean Central Europe Chinese Eastern Europe French Indian Italian Japanese Kosher Mediterranean Mexican Middle Eastern Nordic South American South East Asian
-    mealType: [String]
-    # Breakfast Dinner Lunch Snack Teatime
-    dishType: [String]
-    # Biscuits and cookies Bread Cereals Condiments and sauces Desserts Drinks Main course Pancake Preps Preserve Salad Sandwiches Side dish Soup Starter Sweets
+  type Query {
+    getUserWithEmail(email: String!): User
+    getApiKey: EdamamCredentials
+    getUser: User # Pages: State - firstName, lastName, pro
+    getRecipe(_id: ID!): Recipe # Page: Saved - Edit button
+    getSavedRecipes: [Recipe] # Page: Saved
+    checkout: Checkout # Page: Saved
+    # testing only
+    getCategories: [Category]
+    getIngredients: [Ingredient]
+    getRecipes: [Recipe]
   }
-  input CustomIngredientInput {
-    category: String
-    measure: String
-    name: String
-    quantity: Float
-  }
-  input CustomRecipeInput {
-    name: String
-    portions: Int
-    ingredients: [CustomIngredientInput]
-  }
+
   type Mutation {
-    #
-    addCustomRecipe(input: CustomRecipeInput): Recipe
-    addRandomRecipes(input: EdamamAPIInput): [Recipe]
-    #
-    addUser(input: UserInput!): Auth
-    addRecipe(input: RecipeInput!): Recipe
-    addIngredient(input: IngredientInput!): Ingredient
-    addOrder(products: [ID]!): Order
-    #
-    updateUser(input: UserInput!): User
-    updateRecipe(recipeID: ID!, input: RecipeInput!): Recipe
-    #
-    removeRecipe(recipeID: ID!): [Recipe]
-    removeIngredient(ingredientID: ID!): [Ingredient]
-    #
-    login(email: String!, password: String!): Auth
+    addUser(input: UserInput!): Auth # Page: Signup
+    makeUserPro: User # Saved
+    saveRecipe(input: RecipeInput!): Recipe # Pages: Home, Search, Custom
+    updateRecipe(recipeId: ID!, input: RecipeInput!): Recipe # Page: Custom
+    removeRecipe(recipeId: ID!): User # Page: Saved
+    login(email: String!, password: String!): Auth # Page: Login
   }
 `;
 
