@@ -58,6 +58,60 @@
 .ant-menu {
   height: 100%;
 }
+.ant-form-item {
+  margin-bottom: 0;
+  height: 100% !important;
+}
 .ant-form-item-control-input {
   align-items: flex-start;
+  /* border: 1px solid green; */
+}
+.ant-input,
+.ant-input-password {
+  height: 100% !important;
+  border-color: var(--ingre-dark-brown) !important;
+  padding: 4px 8px !important;
+}
+.ant-input:hover,
+.ant-input-password:hover {
+  border-color: var(--ingre-eggshell) !important;
+}
+.ant-input:focus,
+.ant-input-password:focus {
+  border-color: var(--ingre-eggshell) !important;
+  box-shadow: 0 0 0 2px rgba(243, 173, 97, 0.2) !important;
+}
+
+.ant-input-number {
+  width: 100%;
+}
+
+.ant-input-number-input {
+  padding: 0 !important;
+}
+.ant-form-item-input,
+.ant-form-item-control-input-content,
+.ant-form-item-control-input,
+.ant-row.ant-form-item-row {
+  height: 100% !important;
+}
+
+.ant-input-affix-wrapper {
+  padding: 0 !important;
+}
+.ant-input-suffix {
+  width: 1.5rem;
+  justify-content: center;
+  margin: auto;
+}
+.ant-input-password:focus,
+.ant-input-password:focus-visible,
+.ant-input-password:active {
+  box-shadow: 0 0 0 2px var(--ingre-eggshell) !important;
+}
+.ant-input-clear-icon {
+  right: 4px !important;
+}
+textarea.ant-input {
+  padding: 0px 16px 4px 4px !important;
 }
