@@ -9,7 +9,6 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 const bcrypt = require('bcrypt');
-const Order = require('./Order');
 
 const userSchema = new Schema({
   firstName: {
@@ -40,15 +39,10 @@ const userSchema = new Schema({
       required: true
     }
   ],
-  libraryRecipes: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Recipe',
-      required: true
-    }
-  ],
-
-  orders: [Order.schema]
+  pro: {
+    type: Boolean,
+    default: false
+  }
 });
 
 // set up pre-save middleware to create password
@@ -56,7 +50,6 @@ userSchema.pre('save', async function (next) {
   if (this.isNew || this.isModified('password')) {
     const saltRounds = 10;
     this.password = await bcrypt.hash(this.password, saltRounds);
-    console.log('hashed password = ', this.password);
   }
 
   next();
