@@ -1,117 +1,116 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import { LOGIN } from '../../utils/apollo/mutations';
-import Auth from '../../utils/auth';
-import { Button, Form, Input, Space, Divider, Col } from 'antd';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ContentTitle from '../../components/ContentTitle';
-const App = () => {
-  const [formState, setFormState] = useState({ email: '', password: '' });
-  const [login, { error }] = useMutation(LOGIN);
+import { LOGIN } from '../../utils/apollo/mutations.js';
+import Auth from '../../utils/auth.js';
 
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
+import ContentTitle from '../../components/ContentTitle';
+import ContentSubtitle from '../../components/ContentSubtitle';
+import Alert from '../../components/Alert';
+import { Button, Form, Input, Divider } from 'antd';
+
+const App = () => {
+  const [login, { error }] = useMutation(LOGIN);
+  const [form] = Form.useForm();
+
+  const handleFormSubmit = async (values) => {
+    const { user } = values;
+    const { email, password } = user;
+    const variables = { input: { email, password } };
     try {
-      console.log('logging in with ', formState.email, formState.password);
-      const mutationResponse = await login({
-        variables: {
-          email: formState.email,
-          password: formState.password
-          //
-        }
-      });
-      const token = mutationResponse.data.login.token;
+      console.log('variables = ', variables);
+      const res = await login({ variables });
+      const token = res.data.login.token;
       Auth.login(token);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormState({
-      ...formState,
-      [name]: value
-    });
+  const handleChange = (changedValues) => {
+    const { email, password } = changedValues;
+    if (email) form.setFieldsValue({ email });
+    if (password) form.setFieldsValue({ password });
   };
+
   useEffect(() => {
     document.title = 'Login';
   }, []);
 
   return (
     <div>
-      <Link to="/signup">
-        <Button type="primary">← Go to Signup</Button>
-      </Link>
-      <Divider></Divider>
-      <ContentTitle>
-        <FontAwesomeIcon className="ingre-logo" icon="fa-solid fa-egg" style={{ margin: '0 0.3rem 0 0.6rem', color: 'var(--ingre-eggshell)', fontSize: '1.8rem', paddingBottom: '2px' }} />
-        ingré Login
-      </ContentTitle>
+      <ContentTitle>Login</ContentTitle>
       <Form
-        labelCol={{
-          span: 6
-        }}
-        wrapperCol={{
-          span: 14
-        }}
-        initialValues={{
-          remember: true
-        }}
-        onSubmit={handleFormSubmit}
-        autoComplete="off"
+        form={form}
+        labelCol={{ span: 6 }}
+        labelAlign="left"
+        initialValues={{ remember: true }}
+        style={{ maxWidth: '400px' }}
+        colon={false}
+        onValuesChange={handleChange}
+        onFinish={handleFormSubmit}
         //
       >
         <Form.Item
-          rules={[{ required: true, message: 'Please input your email!' }]}
+          name={['user', 'email']}
           label="Email"
+          style={{ marginBottom: '12px' }}
+          rules={[
+            {
+              required: true,
+              message: <Alert type="warning" message="Please input your email!" />
+              //
+            }
+            //
+          ]}
           //
         >
-          <Input
-            placeholder="youremail@test.com"
-            name="email"
-            type="email"
-            id="email"
-            value={formState.email}
-            onChange={handleChange}
-            //
-          />
+          <Input />
         </Form.Item>
         <Form.Item
+          name={['user', 'password']}
           label="Password"
           rules={[
             {
               required: true,
-              message: 'Please input your password!'
+              message: <Alert type="warning" message="Please input your password!" />
+              //
             }
           ]}
+          style={{ marginBottom: '12px' }}
+          //
         >
-          <Input.Password
-            name="password"
-            value={formState.password}
-            onChange={handleChange}
-            //
-          />
+          <Input.Password />
         </Form.Item>
 
-        {error ? (
-          <Col span={24}>
-            <Space>
-              <p>Oops! Please check your credentials and try again</p>
-            </Space>
-          </Col>
-        ) : null}
+        {error && (
+          <Form.Item label=" ">
+            <Alert message="Couldn't log you in." type="error" />
+          </Form.Item>
+        )}
 
-        <Form.Item
-          wrapperCol={{
-            offset: 8,
-            span: 16
-          }}
-        >
-          <Button type="primary" htmlType="submit" onClick={handleFormSubmit}>
+        <Form.Item label=" ">
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ width: '100%' }}
+            //
+          >
             Submit
           </Button>
+        </Form.Item>
+        <Divider />
+        <Form.Item label=" ">
+          <ContentSubtitle>No account?</ContentSubtitle>
+          <Link to="/signup">
+            <Button
+              type="default"
+              style={{ width: '100%' }}
+              //
+            >
+              Signup
+            </Button>
+          </Link>
         </Form.Item>
       </Form>
     </div>
