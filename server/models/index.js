@@ -9,7 +9,5 @@ const User = require('./User');
 const Recipe = require('./Recipe');
 const Ingredient = require('./Ingredient');
 const Category = require('./Category');
-const Order = require('./Order');
-const Product = require('./Product');
 
-module.exports = { User, Recipe, Ingredient, Category, Order, Product };
+module.exports = { User, Recipe, Ingredient, Category };

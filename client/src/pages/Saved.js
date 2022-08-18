@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
 import { ADD_SAVED_RECIPE, DELETE_SAVED_RECIPE } from '../utils/state/actions';
-import { QUERY_USER } from '../utils/apollo/queries';
-// import { QUERY_USER } from '../utils/apollo/mutations';
+import { GET_USER } from '../utils/apollo/queries';
+// import { GET_USER } from '../utils/apollo/mutations';
 import Auth from '../utils/auth';
 import { Empty } from '../components/Empty';
 

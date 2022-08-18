@@ -1,14 +1,14 @@
 import RecipeCard from './RecipeCard';
 import Empty from './Empty';
-
-const App = ({ results, children, loading }) => {
-  // console.log('results = ', results);
+import { v4 as uuidv4 } from 'uuid';
+const App = ({ results, loading }) => {
+  // console.log('[RecipeCardContainer] results ', results);
 
   return (
     <div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'space-evenly' }}>
       {results.length ? (
         results.map((recipe) => {
-          return <RecipeCard key={recipe._id} name={recipe.name} picture_url={recipe.picture_url} recipe={recipe} loading={loading} />;
+          return <RecipeCard key={uuidv4()} name={recipe.name} picture_url={recipe.picture_url} recipe={recipe} loading={loading} />;
         })
       ) : (
         <Empty />

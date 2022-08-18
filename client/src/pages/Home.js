@@ -1,58 +1,70 @@
-// react
+// React hooks
 import { useState, useEffect } from 'react';
 
-// components
+// Components
+import { Button, Divider } from 'antd';
 import RecipeCardContainer from '../components/RecipeCardContainer';
 import spinner from '../assets/spinner.gif';
 import ContentTitle from '../components/ContentTitle';
 import ContentSubtitle from '../components/ContentSubtitle';
 
-import { useMutation } from '@apollo/client';
-import { ADD_RANDOM_RECIPES } from '../utils/apollo/mutations';
-import { Button, Alert } from 'antd';
-import { UPDATE_HOME_RECIPES } from '../utils/state/actions';
+// Auth
+import Auth from '../utils/auth.js';
+
+// Edamam API
+import FetchEdamam from '../utils/api/index.js';
 
 import { useStoreContext } from '../utils/state/GlobalState';
+import { UPDATE_HOME_RECIPES, FLAG_HOME_MOUNTED } from '../utils/state/actions';
 
 const Home = () => {
-  const [loading, setLoading] = useState(true);
   const [state, dispatch] = useStoreContext();
-
-  const [addRandomRecipes, { error }] = useMutation(ADD_RANDOM_RECIPES);
+  const [loadingEdamam, setLoadingEdamam] = useState(false);
+  const [edamamRecipes, setEdamamRecipes] = useState(state.homeRecipes);
 
   const handleRefresh = async () => {
+    console.log('Refresh clicked, fetchEdamam, setRecipes');
     try {
-      const randomQueries = ['Delicious', 'Quick', 'Easy'];
-      const randomQuery = randomQueries[Math.floor(Math.random() * randomQueries.length)];
-      const payload = { variables: { input: { q: randomQuery } } };
-      setLoading(true);
-      const mutationResponse = await addRandomRecipes(payload);
-      setLoading(false);
-      if (error) console.log('error ', error);
-      const data = mutationResponse.data.addRandomRecipes;
-
-      dispatch({ type: UPDATE_HOME_RECIPES, data: data });
+      setLoadingEdamam(true);
+      const hits = await FetchEdamam();
+      console.log('hits = ', hits);
+      setEdamamRecipes(hits);
+      setLoadingEdamam(false);
+      dispatch({ type: UPDATE_HOME_RECIPES, data: edamamRecipes });
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
+  // update homeRecipes on cleanup
   useEffect(() => {
-    const call = () => {
-      console.log('Call from useEffect');
-      const randomQueries = ['Delicious', 'Quick', 'Easy'];
-      const randomQuery = randomQueries[Math.floor(Math.random() * randomQueries.length)];
-      const payload = { variables: { input: { q: randomQuery } } };
-      setLoading(true);
-      addRandomRecipes(payload).then((response) => {
-        setLoading(false);
-        const recipes = response.data.addRandomRecipes;
-        dispatch({ type: UPDATE_HOME_RECIPES, data: recipes });
-      });
+    return () => {
+      dispatch({ type: UPDATE_HOME_RECIPES, data: edamamRecipes });
     };
-    call();
-  }, [addRandomRecipes, dispatch]);
+  }, [dispatch, edamamRecipes]);
 
+  // fetchEdamam on first load
+  useEffect(() => {
+    const fetchOnFirstLoad = async () => {
+      if (state.homeDidMount === false) {
+        // console.log('home did mount');
+        dispatch({ type: FLAG_HOME_MOUNTED });
+        // populate with random recipes
+        try {
+          setLoadingEdamam(true);
+          const hits = await FetchEdamam();
+          // console.log('hits = ', hits);
+          setEdamamRecipes(hits);
+          setLoadingEdamam(false);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+    fetchOnFirstLoad();
+  }, [dispatch, state, edamamRecipes]);
+
+  // update title on every load
   useEffect(() => {
     document.title = 'ingré';
   }, []);
@@ -63,14 +75,12 @@ const Home = () => {
       <ContentSubtitle>
         Classic Italian favorites <Button onClick={handleRefresh}>Refresh</Button>
       </ContentSubtitle>
-      {error ? (
-        <RecipeCardContainer results={[]}>
-          <Alert message="Error Text" type="error">
-            Please check that you are signed in
-          </Alert>
-        </RecipeCardContainer>
+      {!Auth.loggedIn() && <Divider>Log in to edit and save recipes!</Divider>}
+      {loadingEdamam ? (
+        //
+        <img src={spinner} alt="loading" />
       ) : (
-        <> {loading ? <img src={spinner} alt="loading" /> : <RecipeCardContainer results={state.homeRecipes} loading={loading} />}</>
+        <RecipeCardContainer results={edamamRecipes} loading={loadingEdamam} />
       )}
     </>
   );

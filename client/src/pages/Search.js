@@ -2,23 +2,24 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Space, Divider, Cascader } from 'antd';
 import { useStoreContext } from '../utils/state/GlobalState';
-import { UPDATE_SEARCHED_RECIPES } from '../utils/state/actions';
 // components
 import RecipeCardContainer from '../components/RecipeCardContainer';
 import Empty from '../components/Empty';
 import spinner from '../assets/spinner.gif';
 // mutations
-import { useMutation } from '@apollo/client';
-import { ADD_RANDOM_RECIPES } from '../utils/apollo/mutations';
 import ContentTitle from '../components/ContentTitle';
 import ContentSubtitle from '../components/ContentSubtitle';
 
 import Auth from '../utils/auth';
+import FetchEdamam from '../utils/api/index.js';
+import { UPDATE_SEARCH_RECIPES } from '../utils/state/actions';
+
 const { SHOW_CHILD } = Cascader;
+
 function App() {
-  const [loading, setLoading] = useState(false);
   const [state, dispatch] = useStoreContext();
-  // const [recipeState, setRecipeState] = useState([]);
+  const [loadingEdamam, setLoadingEdamam] = useState(false);
+  const [edamamRecipes, setEdamamRecipes] = useState(state.searchRecipes.length ? state.searchRecipes : []);
 
   const [formState, setFormState] = useState({
     q: '',
@@ -30,20 +31,18 @@ function App() {
     //
   });
 
-  const [addRandomRecipes] = useMutation(ADD_RANDOM_RECIPES);
-
   // Search mutation
   const handleFormSubmit = async (event) => {
+    console.log('Search form submitted, fetchEdamam');
     try {
-      const payload = { variables: { input: { ...formState } } };
-      setLoading(true);
-      const mutationResponse = await addRandomRecipes(payload);
-      setLoading(false);
-      const data = mutationResponse.data.addRandomRecipes;
-      dispatch({ type: UPDATE_SEARCHED_RECIPES, data: data });
-      // setRecipeState(data);
+      setLoadingEdamam(true);
+      const hits = await FetchEdamam();
+      console.log('hits = ', hits);
+      setEdamamRecipes(hits);
+      setLoadingEdamam(false);
+      dispatch({ type: UPDATE_SEARCH_RECIPES, data: edamamRecipes });
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -393,56 +392,49 @@ function App() {
 
   return (
     <>
-      {Auth.loggedIn() ? (
-        <>
-          <ContentTitle>Search recipes</ContentTitle>
-          <ContentSubtitle>What do you want to cook?</ContentSubtitle>
-          <Form
-            initialValues={{ remember: true }}
-            onSubmit={handleFormSubmit}
-            autoComplete="off"
-            {...formItemLayout}
-            layout={'vertical'}
+      <ContentTitle>Search recipes</ContentTitle>
+      <ContentSubtitle>What do you want to cook?</ContentSubtitle>
+      <Form
+        initialValues={{ remember: true }}
+        onSubmit={handleFormSubmit}
+        autoComplete="off"
+        {...formItemLayout}
+        layout={'vertical'}
+        //
+      >
+        <Form.Item rules={[{ required: true, message: 'Please input your query!' }]} style={{ marginBottom: '0.3rem' }}>
+          <Input.Search
+            name="q"
+            type="text"
+            id="q"
+            value={formState.q}
+            size="large"
+            enterButton={true}
+            loading={false}
+            onChange={handleChange}
+            onSearch={handleFormSubmit}
             //
-          >
-            <Form.Item rules={[{ required: true, message: 'Please input your query!' }]} style={{ marginBottom: '0.3rem' }}>
-              <Input.Search
-                name="q"
-                type="text"
-                id="q"
-                value={formState.q}
-                size="large"
-                enterButton={true}
-                loading={false}
-                onChange={handleChange}
-                onSearch={handleFormSubmit}
-                style={{ background: 'yellow' }}
-                //
-              />
-            </Form.Item>
+          />
+        </Form.Item>
 
-            <Form.Item rules={[{ required: true, message: 'Please input your query!' }]}>
-              <Cascader
-                placeholder="Filters…"
-                options={options}
-                onChange={handleFilterChange}
-                multiple
-                maxTagCount="responsive"
-                showCheckedStrategy={SHOW_CHILD}
-                expandTrigger="hover"
-                //
-              />
-            </Form.Item>
-          </Form>
+        <Form.Item rules={[{ required: true, message: 'Please input your query!' }]}>
+          <Cascader
+            placeholder="Filters…"
+            options={options}
+            onChange={handleFilterChange}
+            multiple
+            maxTagCount="responsive"
+            showCheckedStrategy={SHOW_CHILD}
+            expandTrigger="hover"
+            //
+          />
+        </Form.Item>
+      </Form>
 
-          <Space>
-            <Divider />
-            {loading ? <img src={spinner} alt="loading" /> : <RecipeCardContainer results={state.searchedRecipes} loading={loading} />}
-          </Space>
-        </>
-      ) : (
-        <Empty>Please login again, or sign up.</Empty>
-      )}
+      <Space>
+        <Divider />
+        <RecipeCardContainer results={state.searchRecipes} loading={loadingEdamam} />
+      </Space>
     </>
   );
 }

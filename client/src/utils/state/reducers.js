@@ -3,16 +3,19 @@ import {
   SHOW_MODAL,
   HIDE_MODAL,
   TOGGLE_SIDEBAR,
-  UPDATE_SEARCHED_RECIPES,
+  UPDATE_SEARCH_RECIPES,
   UPDATE_HOME_RECIPES,
   ADD_SAVED_RECIPE,
   ADD_EDIT_RECIPE,
-  CLEAR_EDIT_RECIPE
+  CLEAR_EDIT_RECIPE,
+  FLAG_HOME_MOUNTED
   //
 } from './actions';
 
 // The reducer is a function that accepts the current state and an action. It returns a new state based on that action.
 export const reducer = (state, action) => {
+  console.log('action = ', action);
+
   switch (action.type) {
     case SHOW_MODAL:
       return { ...state, modalVisible: true };
@@ -23,9 +26,9 @@ export const reducer = (state, action) => {
       console.log('reducing TOGGLE_SIDEBAR');
       return { ...state, leftSidebarCollapsed: !state.leftSidebarCollapsed };
 
-    case UPDATE_SEARCHED_RECIPES:
-      console.log(`reducer UPDATE_SEARCHED_RECIPES from ${state.searchedRecipes.length} items to ${action.data.length} items`);
-      return { ...state, searchedRecipes: action.data };
+    case UPDATE_SEARCH_RECIPES:
+      console.log(`reducer UPDATE_SEARCH_RECIPES from ${state.searchRecipes.length} items to ${action.data.length} items`);
+      return { ...state, searchRecipes: action.data };
 
     case UPDATE_HOME_RECIPES:
       console.log(`reducer UPDATE_HOME_RECIPES from ${state.homeRecipes.length} items to ${action.data.length} items`);
@@ -53,6 +56,8 @@ export const reducer = (state, action) => {
 
       return { ...state, customRecipe: null };
 
+    case FLAG_HOME_MOUNTED:
+      return { ...state, homeDidMount: true };
     default:
       return state;
   }

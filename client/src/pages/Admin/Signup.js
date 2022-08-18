@@ -1,161 +1,224 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useMutation } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import Auth from '../../utils/auth';
-import { ADD_USER } from '../../utils/apollo/mutations';
-import { Button, Form, Input, Space, Divider } from 'antd';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { GET_USER_WITH_EMAIL } from '../../utils/apollo/queries.js';
+import { ADD_USER } from '../../utils/apollo/mutations.js';
+
 import ContentTitle from '../../components/ContentTitle';
-import { checkPassword, validateEmail } from '../../utils/helpers';
+import ContentSubtitle from '../../components/ContentSubtitle';
+import Alert from '../../components/Alert';
+
+import { Button, Form, Input, Divider, Space } from 'antd';
 
 const App = () => {
-  const [errorMessage, setErrorMessage] = useState('');
-  const [formState, setFormState] = useState({ email: '', password: '', firstname: '', lastname: '' });
   const [addUser, { error }] = useMutation(ADD_USER);
+  const [form] = Form.useForm();
 
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-    if (!validateEmail(formState.email)) {
-      setErrorMessage('Please enter a valid email');
-      return;
-    }
-    if (!checkPassword(formState.password)) {
-      setErrorMessage(`Password must start with a letter and be between 8 and 15 characters`);
-      return;
-    }
+  const client = useApolloClient();
 
+  const userExists = async (email) => {
+    console.log(`Validate ${email}`);
+    const { data } = await client.query({
+      query: GET_USER_WITH_EMAIL,
+      variables: { email }
+    });
+    console.log('data = ', data);
+    if (data.getUserWithEmail)
+      return Promise.reject(
+        <>
+          <Alert
+            type="warning"
+            message={
+              <>
+                <Space>A user with this email already exists!</Space>
+                <Link to="/login">
+                  <Button
+                    type="default"
+                    style={{ width: '100%' }}
+                    //
+                  >
+                    Login?
+                  </Button>
+                </Link>
+              </>
+            }
+          />
+        </>
+      );
+    return Promise.resolve();
+  };
+
+  const handleFormSubmit = async (values) => {
+    const { user } = values;
+    const { firstName, lastName, email, password } = user;
+    const variables = { input: { email, password, firstName, lastName } };
     try {
-      const mutationResponse = await addUser({
-        variables: {
-          input: {
-            email: formState.email,
-            password: formState.password,
-            firstName: formState.firstname,
-            lastName: formState.lastname
-            //
-          }
-        }
-      });
-      const token = mutationResponse.data.addUser.token;
+      console.log('variables = ', variables);
+      const res = await addUser({ variables });
+      const token = res.data.addUser.token;
       Auth.login(token);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormState({
-      ...formState,
-      [name]: value
-    });
+  const handleChange = (changedValues) => {
+    const { firstName, lastName, email, password } = changedValues;
+    if (firstName) form.setFieldsValue({ firstName });
+    if (lastName) form.setFieldsValue({ lastName });
+    if (email) form.setFieldsValue({ email });
+    if (password) form.setFieldsValue({ password });
   };
+
+  useEffect(() => {
+    document.title = 'Signup';
+  }, []);
 
   return (
     <div>
-      <Link to="/login">
-        <Button type="primary">← Go to Login</Button>
-      </Link>
-      <Divider></Divider>
-      <ContentTitle>
-        <FontAwesomeIcon className="ingre-logo" icon="fa-solid fa-egg" style={{ margin: '0 0.3rem 0 0.6rem', color: 'var(--ingre-eggshell)', fontSize: '1.8rem', paddingBottom: '2px' }} />
-        ingré Signup
-      </ContentTitle>
+      <ContentTitle>Signup</ContentTitle>
       <Form
-        labelCol={{
-          span: 6
-        }}
-        wrapperCol={{
-          span: 14
-        }}
-        initialValues={{
-          remember: true
-        }}
-        onSubmit={handleFormSubmit}
-        autoComplete="off"
+        form={form}
+        labelCol={{ span: 6 }}
+        labelAlign="left"
+        initialValues={{ remember: true }}
+        style={{ maxWidth: '400px' }}
+        colon={false}
+        onValuesChange={handleChange}
+        onFinish={handleFormSubmit}
         //
       >
         <Form.Item
-          rules={[{ required: true, message: 'Please input your first name!' }]}
+          name={['user', 'firstName']}
           label="First name"
+          style={{ marginBottom: '12px' }}
+          rules={[
+            {
+              required: true,
+              message: <Alert type="error" message="First name is required" showIcon />
+              //
+            },
+            {
+              pattern: new RegExp(/^[^\s]+$/),
+              message: <Alert type="error" message="First name cannot contain spaces" showIcon />
+              //
+            },
+            {
+              pattern: new RegExp(/^[^!";#$%&'()*+,./:;<=>?@[\]^_{|}~]+$/),
+              message: <Alert type="error" message="First name cannot contain symbols" showIcon />
+              //
+            }
+
+            //
+          ]}
           //
         >
-          <Input
-            placeholder="First name"
-            name="firstname"
-            type="firstname"
-            id="firstname"
-            value={formState.firstname}
-            onChange={handleChange}
-            //
-          />
+          <Input />
         </Form.Item>
         <Form.Item
-          rules={[{ required: true, message: 'Please input your last name!' }]}
+          name={['user', 'lastName']}
           label="Last name"
+          style={{ marginBottom: '12px' }}
+          rules={[
+            {
+              required: true,
+              message: <Alert type="error" message="Last name is required" showIcon />
+              //
+            },
+            {
+              pattern: new RegExp(/^[^\s]+$/),
+              message: <Alert type="error" message="Last name cannot contain spaces" showIcon />
+              //
+            },
+            {
+              pattern: new RegExp(/^[^!";#$%&'()*+,./:;<=>?@[\]^_{|}~]+$/),
+              message: <Alert type="error" message="Last name cannot contain symbols" showIcon />
+              //
+            }
+            //
+          ]}
           //
         >
-          <Input
-            placeholder="Last name"
-            name="lastname"
-            type="lastname"
-            id="lastname"
-            value={formState.lastname}
-            onChange={handleChange}
-            //
-          />
+          <Input />
         </Form.Item>
         <Form.Item
-          rules={[{ required: true, message: 'Please input your email!' }]}
+          name={['user', 'email']}
           label="Email"
+          rules={[
+            {
+              required: true,
+              message: <Alert type="error" message="Email is required" showIcon />
+              //
+            },
+            {
+              type: 'email',
+              message: <Alert type="error" message="Email must be valid" showIcon />
+              //
+            },
+            { validator: (_, value) => userExists(value) }
+            //
+          ]}
+          style={{ marginBottom: '12px' }}
           //
         >
-          <Input
-            placeholder="youremail@test.com"
-            name="email"
-            type="email"
-            id="email"
-            value={formState.email}
-            onChange={handleChange}
-            //
-          />
+          <Input />
         </Form.Item>
         <Form.Item
+          name={['user', 'password']}
           label="Password"
           rules={[
             {
               required: true,
-              message: 'Please input your password!'
+              message: <Alert type="error" message="Password is required" showIcon />
+              //
+            },
+            {
+              pattern: new RegExp(/^[A-Za-z]/),
+              message: <Alert type="error" message="Password must begin with a letter" showIcon />
+              //
+            },
+            {
+              pattern: new RegExp(/\w{8,}/),
+              message: <Alert type="error" message="Password must have a minimum of 8 characters" showIcon />
+              //
             }
-          ]}
-        >
-          <Input.Password
-            name="password"
-            value={formState.password}
-            onChange={handleChange}
             //
-          />
-        </Form.Item>
-        {errorMessage && (
-          <div>
-            <p>{errorMessage}</p>
-          </div>
-        )}
-        {error ? (
-          <Space>
-            <p>A user with this email already exists!</p>
-          </Space>
-        ) : null}
-
-        <Form.Item
-          wrapperCol={{
-            offset: 8,
-            span: 16
-          }}
+          ]}
+          style={{ marginBottom: '12px' }}
+          //
         >
-          <Button type="primary" htmlType="submit" onClick={handleFormSubmit}>
+          <Input.Password />
+        </Form.Item>
+
+        {error && (
+          <Form.Item label=" ">
+            <Alert message="Couldn't sign you up." />
+          </Form.Item>
+        )}
+
+        <Form.Item label=" ">
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ width: '100%' }}
+            //
+          >
             Submit
           </Button>
+        </Form.Item>
+        <Divider />
+        <Form.Item label=" ">
+          <ContentSubtitle>Have an account?</ContentSubtitle>
+          <Link to="/login">
+            <Button
+              type="default"
+              style={{ width: '100%' }}
+              //
+            >
+              Login
+            </Button>
+          </Link>
         </Form.Item>
       </Form>
     </div>
