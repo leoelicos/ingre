@@ -17,7 +17,15 @@ const App = () => {
     return '1';
   };
   return (
-    <Sider trigger={null} collapsible collapsed={state.leftSidebarCollapsed} style={{ background: 'var(--ingre-white)' }}>
+    <Sider
+      trigger={null}
+      collapsible
+      collapsed={state.leftSidebarCollapsed}
+      style={{
+        background: 'var(--ingre-white)'
+        //
+      }}
+    >
       <div className="logo" />
       <Menu
         theme="light"
@@ -32,7 +40,7 @@ const App = () => {
                 <FontAwesomeIcon icon="fa-solid fa-cookie" />
               </Link>
             ),
-            label: 'Home'
+            label: 'Recipes'
           },
           {
             key: 2,
@@ -61,7 +69,19 @@ const App = () => {
             ),
             label: (
               <>
-                Saved <span style={{ fontSize: '1rem', padding: '0 0.4rem', borderRadius: '50%', color: 'var(--ingre-white)', background: 'var(--ingre-dark-brown)' }}>{state.savedRecipes.length}</span>
+                Saved{' '}
+                <span
+                  style={{
+                    fontSize: '1rem',
+                    padding: '0 0.4rem',
+                    borderRadius: '50%',
+                    color: 'var(--ingre-white)',
+                    background: 'var(--ingre-dark-brown)'
+                    //
+                  }}
+                >
+                  {state.savedRecipes.length}
+                </span>
               </>
             )
           },
@@ -72,7 +92,7 @@ const App = () => {
                 <FontAwesomeIcon icon="fa-solid fa-cart-shopping" />
               </Link>
             ),
-            label: 'Shopping List'
+            label: 'Ingredients'
           },
           {
             key: 6,
@@ -81,7 +101,7 @@ const App = () => {
                 <FontAwesomeIcon icon="fa-solid fa-square-check" />
               </Link>
             ),
-            label: 'Tap Off'
+            label: 'Tap'
           }
         ]}
       />
