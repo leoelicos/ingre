@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { LOGIN } from '../../utils/apollo/mutations.js';
-import Auth from '../../utils/auth.js';
+import Auth from '../../utils/auth/index.js';
 
 import ContentTitle from '../../components/ContentTitle';
 import ContentSubtitle from '../../components/ContentSubtitle';
@@ -16,11 +16,12 @@ const App = () => {
   const handleFormSubmit = async (values) => {
     const { user } = values;
     const { email, password } = user;
-    const variables = { input: { email, password } };
+    const payload = { email, password };
     try {
-      console.log('variables = ', variables);
-      const res = await login({ variables });
+      console.log('payload = ', payload);
+      const res = await login({ variables: payload });
       const token = res.data.login.token;
+      console.log('localstorage token', token);
       Auth.login(token);
     } catch (e) {
       console.error(e);
