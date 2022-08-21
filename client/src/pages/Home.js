@@ -1,21 +1,25 @@
 // React hooks
 import { useState, useEffect } from 'react';
 
-// Components
-import { Button, Divider } from 'antd';
+// Ant components
+import { Button } from 'antd';
+
+// Custom components
 import RecipeCardContainer from '../components/RecipeCardContainer';
-import spinner from '../assets/spinner.gif';
 import ContentTitle from '../components/ContentTitle';
 import ContentSubtitle from '../components/ContentSubtitle';
-
-// Auth
-import Auth from '../utils/auth.js';
 
 // Edamam API
 import FetchEdamam from '../utils/api/index.js';
 
+// useContext
 import { useStoreContext } from '../utils/state/GlobalState';
+
+// useReducer
 import { UPDATE_HOME_RECIPES, FLAG_HOME_MOUNTED } from '../utils/state/actions';
+
+// images
+import spinner from '../assets/spinner.gif';
 
 const Home = () => {
   const [state, dispatch] = useStoreContext();
@@ -75,7 +79,6 @@ const Home = () => {
       <ContentSubtitle>
         Classic Italian favorites <Button onClick={handleRefresh}>Refresh</Button>
       </ContentSubtitle>
-      {!Auth.loggedIn() && <Divider>Log in to edit and save recipes!</Divider>}
       {loadingEdamam ? (
         //
         <img src={spinner} alt="loading" />
