@@ -13,30 +13,23 @@ const expiration = '2h';
 
 module.exports = {
   authMiddleware: function ({ req }) {
-    let token = req.body.token || req.query.token || req.headers.authorization;
-    // Remove tokenvalue
-    // ["Bearer", "<tokenvalue>"]
-    if (req.headers.authorization) token = token.split(' ').pop().trim();
-    if (!token) {
-      console.error('No token was found!');
+    try {
+      if (!req) throw new Error('req missing');
+      let token = req.body?.token || req.query?.token || req.headers?.authorization?.split(' ').pop().trim();
+      if (!token) throw new Error('No token was found!');
+      const secretOrPrivateKey = secret;
+      const options = { maxAge: expiration };
+      ({ data: req.user } = jwt.verify(token, secretOrPrivateKey, options));
+    } catch (error) {
+      console.error(error);
+    } finally {
       return req;
     }
-    try {
-      const { data } = jwt.verify(token, secret, { maxAge: expiration });
-      req.user = data;
-    } catch (error) {
-      console.log('[authMiddleware] Invalid token');
-    }
-    return req;
   },
   signToken: function ({ firstName, email, _id }) {
-    const payload = { firstName, email, _id };
-
-    return jwt.sign(
-      { data: payload },
-      secret,
-      { expiresIn: expiration }
-      //
-    );
+    const payload = { data: { firstName, email, _id } };
+    const secretOrPrivateKey = secret;
+    const options = { expiresIn: expiration };
+    return jwt.sign(payload, secretOrPrivateKey, options);
   }
 };
