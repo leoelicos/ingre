@@ -11,7 +11,6 @@ const { signToken } = require('../utils/auth');
 const stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
 const APP_KEY = process.env.HEROKU_EDAMAM_APP_KEY || process.env.PRODUCTION_EDAMAM_APP_KEY;
 const APP_ID = process.env.HEROKU_EDAMAM_APP_ID || process.env.PRODUCTION_EDAMAM_APP_ID;
-
 const resolvers = {
   Query: {
     getUserWithEmail: async (_, args) => {
@@ -158,20 +157,23 @@ const resolvers = {
     },
 
     // saves a recipe to the database
-    saveRecipe: async (_, { input: { name, portions, ingredients, picture_url } }, context) => {
-      console.log('[saveRecipe] REQ\t', JSON.stringify({ name, portions, ingredients, picture_url }));
+    saveRecipe: async (_, args, context) => {
+      const { input } = args;
+      const { name, portions, ingredients, picture_url } = input;
+
       let payload = null;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const uniqueCategories = await Category
-          //
+          // get all categories
           .find()
+          // select only the name
           .select('-_id name')
+          // map new array with only the category name
           .then((categories) => categories.map((c) => c.name));
 
         const createdIngredients = [];
         for (let { name, quantity, measure, category } of ingredients) {
-          console.log('[saveRecipe] req Ing\t', name, quantity, measure, category);
           if (!name) name = 'Generic';
           if (!quantity) quantity = 1;
           if (!measure) measure = 'unit';
@@ -181,13 +183,12 @@ const resolvers = {
           let categoryId;
           if (!uniqueCategories.includes(category)) {
             uniqueCategories.push(category);
+            // new category to create
             let createdCategory = await Category.create({ name: category });
             createdCategory.save();
-            console.log('[saveRecipe] req Cat\t', JSON.stringify(createdCategory));
             categoryId = createdCategory._id;
           } else {
             let foundCategory = await Category.findOne({ name: category });
-            console.log('[saveRecipe] found Cat\t', JSON.stringify(foundCategory));
             categoryId = foundCategory._id;
           }
 
@@ -376,25 +377,26 @@ const resolvers = {
     },
 
     //
-    login: async (_, { email, password }) => {
-      console.log('[login] REQ\t', JSON.stringify({ email, password }));
+    login: async (_, args) => {
+      try {
+        if (!args) throw new Error('No arguments were received');
+        if (!args.email) throw new Error('No email argument was received');
+        if (!args.password) throw new Error('No password argument was received');
 
-      const user = await User.findOne({ email });
-      console.log('[login] user\t', JSON.stringify(user));
+        const { email } = args;
+        const user = await User.findOne({ email });
+        if (!user) throw new AuthenticationError('Incorrect credentials');
 
-      if (!user) throw new AuthenticationError('Incorrect credentials!');
-      console.log('[login] Correct credentials\t');
+        const { password } = args;
+        const isCorrectPassword = await user.isCorrectPassword(password);
+        if (!isCorrectPassword) throw new AuthenticationError('Incorrect credentials');
 
-      const correctPw = await user.isCorrectPassword(password);
-      if (!correctPw) throw new AuthenticationError('Incorrect credentials!');
-      console.log('[login] Correct password\t');
-
-      const token = signToken(user);
-      console.log('[login] token\t', token);
-
-      const payload = { token, user };
-      console.log('[login] payload\t', JSON.stringify(payload));
-      return payload;
+        const token = signToken(user);
+        const payload = { token, user };
+        return payload;
+      } catch (e) {
+        console.error('[login][error]' + e);
+      }
     }
   }
 };
