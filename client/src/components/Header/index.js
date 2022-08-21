@@ -39,7 +39,7 @@ const App = () => {
   return (
     <>
       <Row align="middle" style={{ borderBottom: '1px solid var(--ingre-grey)', paddingBottom: '2px' }}>
-        <Col xs={{ offset: 0, span: 12 }} sm={{ offset: 0, span: 8 }} lg={{ offset: 0, span: 6 }} style={{ width: '1.2rem' }}>
+        <Col span={12} sm={8} md={6} style={{ width: '1.2rem' }}>
           <Row align="middle" style={{ marginTop: '-1px', paddingBottom: '2px' }}>
             {state.leftSidebarCollapsed ? (
               //
@@ -56,31 +56,64 @@ const App = () => {
             </Link>
           </Row>
         </Col>
-        <Col xs={0} sm={7} lg={0}>
+        <Col span={0} sm={7} md={0}>
           <Row align="middle">
             <Steps size="small" current={getStep} responsive={false}>
-              <Step icon={<FontAwesomeIcon icon="fa-solid fa-egg" />} />
-              <Step icon={<FontAwesomeIcon icon="fa-solid fa-cart-shopping" />} />
-              <Step icon={<FontAwesomeIcon icon="fa-solid fa-square-check" />} />
+              <Step
+                icon={
+                  <Link to="/">
+                    <FontAwesomeIcon icon="fa-solid fa-egg" />
+                  </Link>
+                }
+              />
+              <Step
+                icon={
+                  <Link to="/shoppinglist">
+                    <FontAwesomeIcon icon="fa-solid fa-cart-shopping" />
+                  </Link>
+                }
+              />
+              <Step
+                icon={
+                  <Link to="/tapoff">
+                    <FontAwesomeIcon icon="fa-solid fa-square-check" />
+                  </Link>
+                }
+              />
             </Steps>
           </Row>
         </Col>
-        <Col xs={0} lg={12}>
+        <Col span={0} md={11}>
           <Row align="middle">
             <Steps size="small" current={getStep} responsive={false}>
-              <Step title="Recipes" icon={<FontAwesomeIcon icon="fa-solid fa-egg" />} />
-              <Step title="Shopping List" icon={<FontAwesomeIcon icon="fa-solid fa-cart-shopping" />} />
-              <Step title="Tap Off" icon={<FontAwesomeIcon icon="fa-solid fa-square-check" />} />
+              <Step
+                title={<Link to="/">Recipes</Link>}
+                icon={
+                  <Link to="/">
+                    <FontAwesomeIcon icon="fa-solid fa-egg" />
+                  </Link>
+                }
+              />
+              <Step
+                title={<Link to="/shoppinglist">Ingredients</Link>}
+                icon={
+                  <Link to="/shoppinglist">
+                    <FontAwesomeIcon icon="fa-solid fa-cart-shopping" />
+                  </Link>
+                }
+              />
+              <Step
+                title={<Link to="/tapoff">Tap</Link>}
+                icon={
+                  <Link to="/tapoff">
+                    <FontAwesomeIcon icon="fa-solid fa-square-check" />
+                  </Link>
+                }
+              />
             </Steps>
           </Row>
         </Col>
-        <Col
-          xs={{ span: 12, pull: 0 }}
-          sm={{ span: 9, pull: 0 }}
-          lg={{ span: 6, pull: 0 }}
-
-          //
-        >
+        <Col span={12} sm={9} md={7}>
           <Row align="bottom" justify="end">
             {Auth.loggedIn() ? (
               <>
