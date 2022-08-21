@@ -1,67 +1,32 @@
-import { useStoreContext } from '../utils/state/GlobalState';
-// react
+// React hooks
 import { useState } from 'react';
+
+// Ant components
+import { Button, Form, Input, Space, Col, Divider, Row, Alert } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Space, Col, Divider, Row } from 'antd';
+
+// Custom components
 import ContentTitle from '../components/ContentTitle';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+// useContext
+import { useStoreContext } from '../utils/state/GlobalState';
+
+// ApolloClient
 import { useMutation } from '@apollo/client';
 import { SAVE_RECIPE } from '../utils/apollo/mutations';
+
+// Assets
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+// useReducer
 import { ADD_SAVED_RECIPE, CLEAR_EDIT_RECIPE } from '../utils/state/actions';
 
-const App = (props) => {
+const App = () => {
   const [state, dispatch] = useStoreContext();
   const [form] = Form.useForm();
   const [addCustomRecipe, { error }] = useMutation(SAVE_RECIPE);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
-
-  const onFinish = async (values) => {
-    console.log('Save button was clicked with these values:\n', values);
-    const payload = {
-      variables: {
-        input: {
-          name: values.name || 'Custom recipe',
-          portions: parseInt(values.portions),
-          ingredients: values.ingredients.map((i) => {
-            return {
-              name: i.name || 'ingredients',
-              quantity: parseFloat(i.quantity),
-              measure: i.measure || 'unit',
-              category: i.category || 'Generic'
-            };
-          })
-        }
-      }
-    };
-    console.log('Payload = ', payload);
-
-    setLoading(true);
-    const mutationResponse = await addCustomRecipe(payload);
-    setLoading(false);
-    if (error) console.log('error ', error);
-    console.log('mutationResponse =', mutationResponse);
-    const data = mutationResponse.data.saveRecipe;
-    console.log('data = ');
-    console.log(data);
-    dispatch({ type: ADD_SAVED_RECIPE, data });
-    setSaved(true);
-    console.log('added recipe to state.savedRecipes');
-    dispatch({ type: CLEAR_EDIT_RECIPE });
-    console.log('cleared Custom recipe');
-  };
-
-  const handleChange = () => {
-    form.setFieldsValue({
-      recipes: []
-    });
-  };
-
-  const setName = () => {
-    form.setFieldsValue({
-      name: state.customRecipe?.name || ''
-    });
-  };
 
   const initials = () => {
     const name = state.customRecipe?.name || '';
@@ -76,10 +41,33 @@ const App = (props) => {
           category: ingredient.category.name || ingredient.category || 'Generic'
         };
       }) || [];
-    const newInitial = { name, portions, ingredients };
-    console.log('newInitial =', newInitial);
-    // console.log('newInitial = ', newInitial);
-    return newInitial;
+    return { name, portions, ingredients };
+  };
+
+  const onFinish = async (values) => {
+    console.log('onFinish', values);
+    // if (values.ingredients.length === 0) return
+    const input = {
+      name: values.name || 'Custom recipe',
+      portions: parseInt(values.portions || 1),
+      ingredients: values.ingredients.map((i) => {
+        const name = i.name || 'Ingredient';
+        const quantity = parseFloat(i.quantity || 1);
+        const measure = i.measure || 'unit';
+        const category = i.category || 'Generic';
+        const ingredient = { name, quantity, measure, category };
+        return ingredient;
+      })
+    };
+    const payload = { variables: { input } };
+    setLoading(true);
+    const mutationResponse = await addCustomRecipe(payload);
+    setLoading(false);
+    if (error) console.log('error ', error);
+    const data = mutationResponse.data.saveRecipe;
+    dispatch({ type: ADD_SAVED_RECIPE, data });
+    setSaved(true);
+    dispatch({ type: CLEAR_EDIT_RECIPE });
   };
 
   return (
@@ -90,7 +78,7 @@ const App = (props) => {
         initialValues={initials()}
         name="dynamic_form_nest_item"
         onFinish={onFinish}
-        onValuesChange={handleChange}
+        wrapperCol={24}
         //
       >
         <Col span={24} style={{ maxWidth: '800px' }}>
@@ -113,13 +101,12 @@ const App = (props) => {
                 <Col span={16}>
                   <Form.Item
                     name="name"
-                    rules={[{ required: true, message: 'Change required' }]}
+                    rules={[{ required: true, message: <Alert type="error" message="Change required" /> }]}
                     style={{ marginRight: '4px' }}
                     //
                   >
                     <Input.TextArea
-                      onLoad={setName}
-                      placeholder="Name✏️"
+                      placeholder="✏️"
                       autoSize={true}
                       allowClear
                       //
@@ -152,31 +139,41 @@ const App = (props) => {
                 {(fields, { add, remove }) => (
                   <>
                     <Row>
-                      <Col span={6} sm={8}>
-                        <Divider orientation="left" orientationMargin="0">
-                          Ingredient
-                        </Divider>
+                      <Col sm={0} span={6}>
+                        Ingr
                       </Col>
-
-                      <Col span={5} sm={4}>
-                        <Divider orientation="left" orientationMargin="0">
-                          Qty
-                        </Divider>
+                      <Col sm={0} span={5}>
+                        Qty
                       </Col>
-                      <Col span={7} sm={4}>
-                        <Divider orientation="left" orientationMargin="0">
-                          Unit
-                        </Divider>
+                      <Col sm={0} span={7}>
+                        Unit
                       </Col>
-                      <Col span={6} sm={8}>
-                        <Divider orientation="left" orientationMargin="0">
-                          Category
-                        </Divider>
+                      <Col sm={0} span={6}>
+                        Cate
+                      </Col>
+                      {/*  */}
+                      <Col sm={8} span={0}>
+                        Ingredient
+                      </Col>
+                      <Col sm={4} span={0}>
+                        Qty
+                      </Col>
+                      <Col sm={4} span={0}>
+                        Unit
+                      </Col>
+                      <Col sm={8} span={0}>
+                        Category
                       </Col>
                     </Row>
-                    {fields.map((field) => (
-                      <Row style={{ marginBottom: '4px', height: 'fit-content' }}>
-                        <Form.Item key={'ingredient'} noStyle shouldUpdate={(prevValues, curValues) => prevValues.name !== curValues.name} style={{ marginTop: '1rem' }}>
+                    {fields.map((field, idx) => (
+                      <Row key={'ingredientRow' + idx} style={{ marginBottom: '4px', height: 'fit-content' }}>
+                        <Form.Item
+                          key={'ingredient'}
+                          noStyle
+                          shouldUpdate={(prevValues, curValues) => prevValues.name !== curValues.name}
+                          style={{ marginTop: '1rem' }}
+                          //
+                        >
                           {() => (
                             <>
                               {/* Ingredient name */}
@@ -193,7 +190,7 @@ const App = (props) => {
                                     // allowClear={true}
                                     autoSize
                                     placeholder="✏️"
-                                    allowClear
+
                                     //
                                   />
                                 </Form.Item>
@@ -212,13 +209,12 @@ const App = (props) => {
                                   <Input.TextArea
                                     autoSize={true}
                                     placeholder="✏️"
-
                                     //
                                   />
                                 </Form.Item>
                               </Col>
 
-                              {/* Ingredient measure */}
+                              {/* Ingredient unit */}
                               <Col span={7} sm={4}>
                                 <Form.Item
                                   {...field}
@@ -226,13 +222,11 @@ const App = (props) => {
                                   name={[field.name, 'measure']}
                                   rules={[{ required: true, message: '*' }]}
                                   style={{ marginRight: '4px' }}
-
                                   //
                                 >
                                   <Input.TextArea
                                     autoSize
                                     placeholder="✏️"
-
                                     //
                                   />
                                 </Form.Item>
@@ -251,7 +245,6 @@ const App = (props) => {
                                   <Input.TextArea
                                     autoSize
                                     placeholder="✏️"
-                                    allowClear
                                     style={{ padding: '0px 16px 4px 4px !important' }}
                                     //
                                   />
@@ -317,7 +310,6 @@ const App = (props) => {
             <Col span={24}>
               <Form.Item>
                 <Col span={24}>
-                  {saved && <Divider>Saved!</Divider>}
                   <Button
                     disabled={saved}
                     type="primary"
@@ -325,20 +317,30 @@ const App = (props) => {
                     style={{ width: '100%' }}
                     //
                   >
-                    <Space>
-                      <FontAwesomeIcon icon="fa-solid fa-floppy-disk" />
-                      Save Recipe
-                    </Space>
+                    {loading ? (
+                      <Space>Saving…</Space>
+                    ) : saved ? (
+                      <Space>Saved!</Space>
+                    ) : (
+                      <Space>
+                        <FontAwesomeIcon icon="fa-solid fa-floppy-disk" />
+                        Save
+                      </Space>
+                    )}
                   </Button>
 
                   <Button
                     type="secondary"
                     style={{ width: '100%', marginTop: '0.3rem' }}
                     onClick={() => {
-                      form.resetFields();
+                      form.setFieldsValue({
+                        name: '',
+                        portions: '',
+                        ingredients: []
+                      });
                     }}
                   >
-                    Reset
+                    Clear all
                   </Button>
                 </Col>
               </Form.Item>
