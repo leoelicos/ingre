@@ -38,10 +38,19 @@ library.add(faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShop
 // ApolloClient, cache, and 2 middlewares: authLink and GraphQL
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('id_token');
-  return { headers: { ...headers, authorization: token ? `Bearer ${token}` : '' } };
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : ''
+    }
+  };
 });
 const httpLink = createHttpLink({ uri: '/graphql' });
-const client = new ApolloClient({ link: authLink.concat(httpLink), cache: new InMemoryCache() });
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache()
+  //
+});
 
 function App() {
   useEffect(() => {
