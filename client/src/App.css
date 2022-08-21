@@ -112,6 +112,21 @@
 .ant-input-clear-icon {
   right: 4px !important;
 }
-textarea.ant-input {
+/* textarea.ant-input {
   padding: 0px 16px 4px 4px !important;
+} */
+a {
+  color: inherit !important;
+}
+.ant-input-search-button {
+  border: 0;
+  height: 30.5px;
+}
+
+.dropdownFilter {
+  width: 80%;
+  max-width: 824px;
+}
+.ant-cascader-menu {
+  width: fit-content;
 }
