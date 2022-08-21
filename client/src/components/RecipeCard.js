@@ -1,5 +1,5 @@
 // React
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // Font Awesome
@@ -23,20 +23,23 @@ const { Meta } = Card;
 
 const App = (props) => {
   // states to manage saving recipe
-  const [saveRecipe, { loading: dbLoading, error: dbError }] = useMutation(SAVE_RECIPE); // database
+  const [saveRecipe, { loading: dbLoading }] = useMutation(SAVE_RECIPE); // database
   const [state, dispatch] = useStoreContext(); // global store
   const [dbId, setDbId] = useState(''); // after save button clicked and saved
 
-  const handleEdit = (event) => {
+  const handleEdit = () => {
     console.log('Edit button was clicked - the props.recipe is ', props.recipe);
     dispatch({ type: ADD_EDIT_RECIPE, data: props.recipe });
   };
+
   const handleSave = async () => {
     console.log('[RecipeCard][handleSave] props.recipe', props.recipe);
-
     try {
       // update database with recipe object
-      const res = await saveRecipe({ variables: { input: props.recipe } });
+      const recipe = props.recipe;
+      const res = await saveRecipe({ variables: { input: recipe } });
+      if (!res) throw new Error('Could not save recipe');
+
       const saveData = res.data.saveRecipe;
       console.log('[RecipeCard][handleSave] saveData', saveData);
       // update global state with database object
@@ -45,9 +48,10 @@ const App = (props) => {
       setDbId(saveData._id);
     } catch (e) {
       console.log(e);
-      console.log('[RecipeCard][handleSave] Unable to save. Are you logged in?');
     }
   };
+
+  const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
   return (
     <Card
@@ -86,7 +90,7 @@ const App = (props) => {
 
       //
     >
-      <Meta title={props.name} />
+      <Meta title={capitalizeFirstLetter(props.name)} />
     </Card>
   );
 };
