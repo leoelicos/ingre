@@ -1,11 +1,26 @@
 import axios from 'axios';
 
-const fetchEdamam = async (q, diet, health, cuisineType, mealType, dishType) => {
-  // console.log('[fetchEdamam]', q, diet, health, cuisineType, mealType, dishType);
-  // get Edamam credentials from server
+const getQueryParamString = (q, diet, health, cuisineType, mealType, dishType) => {
+  const params = [];
+  params.push(encodeURIComponent(q));
+  diet.forEach((queryParam) => params.push(`diet=${encodeURIComponent(queryParam)}`));
+  health.forEach((queryParam) => params.push(`health=${encodeURIComponent(queryParam)}`));
+  mealType.forEach((queryParam) => params.push(`mealType=${encodeURIComponent(queryParam)}`));
+  dishType.forEach((queryParam) => params.push(`dishType=${encodeURIComponent(queryParam)}`));
+  cuisineType.forEach((queryParam) => params.push(`cuisineType=${encodeURIComponent(queryParam)}`));
+  return params.join('&');
+};
 
-  // helper function to encode arrays into query params
-  const encode = (arr, param, defaultVal) => (!arr || !arr.length ? `${param}=${defaultVal}` : arr.map((val) => `${param}=${encodeURIComponent(val)}`).join('&'));
+const fetchEdamam = async (search) => {
+  console.log('Received', search);
+  let queryString = '%20';
+
+  if (search) {
+    const { q, diet, health, cuisineType, mealType, dishType } = search;
+    queryString = getQueryParamString(q, diet, health, cuisineType, mealType, dishType);
+  }
+
+  console.log('queryString = ', queryString);
   let uri =
     `https://api.edamam.com/api/recipes/v2?` +
     [
@@ -16,15 +31,10 @@ const fetchEdamam = async (q, diet, health, cuisineType, mealType, dishType) => 
       'imageSize=LARGE',
       'random=true',
       'field=label',
-      'field=image',
+      'field=images',
       'field=yield',
       'field=ingredients',
-      `q=${q ? encodeURIComponent(q) : 'Delicious'}`,
-      encode(diet, 'diet', 'balanced'),
-      encode(health, 'health', 'vegetarian'),
-      encode(mealType, 'mealType', 'Dinner'),
-      encode(dishType, 'dishType', 'Main%20course'),
-      encode(cuisineType, 'cuisineType', 'Italian')
+      `q=${queryString}`
       //
     ].join('&');
   console.log('uri = ', uri);
@@ -35,28 +45,42 @@ const fetchEdamam = async (q, diet, health, cuisineType, mealType, dishType) => 
       .then((res) => {
         console.log('res =', res);
         if (!res) throw new Error('Edamam 404: !res');
-        if (!res.data) throw new Error('Edamam 404: !res.data');
-        if (!res.data.hits) throw new Error('Edamam 404: !res.data.hits');
-        return res.data.hits;
+
+        const data = res.data;
+        if (!data) throw new Error('Edamam 404: !res.data');
+
+        const hits = res.data.hits;
+        if (!hits) throw new Error('Edamam 404: !res.data.hits');
+
+        const blankImages = ['fe91e54771717b4aed8e279237b46b11', '323e10a433ca706efb4b22b9d8c2814e'];
+        const filtered = hits.filter(({ recipe }) => {
+          for (let i = 0; i < blankImages.length; i++) {
+            if (recipe.images.LARGE.url.indexOf(blankImages[i]) !== -1) return false;
+          }
+          return true;
+        });
+        return filtered;
       })
       // deserialize
       .then((hits) => {
-        const deserialize = hits.map(({ recipe: { label: name, yield: portions, image: picture_url, ingredients } }) => ({
-          name: name?.trim(),
-          portions: portions ? parseInt(portions) : 2,
-          picture_url,
-          ingredients: ingredients.map(({ food: name, quantity, measure, foodCategory: category, foodId }) => ({
-            name: name?.trim() || 'Generic',
-            quantity: quantity ? parseFloat(quantity) : 1,
-            measure: measure?.trim().replace(/[<>]+/g, '') || 'unit',
-            category: category?.trim() || 'Generic',
-            foodId
-          }))
-        }));
-        console.log('[fetchEdamam] deserialize', deserialize);
+        const deserialize = hits.map((hit) => {
+          const name = hit.recipe.label?.trim() || 'Generic';
+          const portions = parseInt(hit.recipe.yield) || 2;
+          const picture_url = hit.recipe.images.LARGE.url || '../../assets/ingre.png';
+          const ingredients = hit.recipe.ingredients.map((ingredient) => {
+            const name = ingredient.food?.trim() || 'Generic';
+            const quantity = parseFloat(ingredient.quantity) || 1;
+            const measure = ingredient.measure?.trim().replace(/[<>]+/g, '') || 'unit';
+            const category = ingredient.foodCategory?.trim() || 'Generic';
+            const foodId = ingredient.foodId;
+            const parsedIngredient = { name, quantity, measure, category, foodId };
+            return parsedIngredient;
+          });
+          const parsedHit = { name, portions, picture_url, ingredients };
+          return parsedHit;
+        });
         return deserialize;
       })
-
       .catch((err) => console.error(err))
   );
 };
