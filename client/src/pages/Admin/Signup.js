@@ -80,7 +80,7 @@ const App = () => {
       <ContentTitle>Signup</ContentTitle>
       <Form
         form={form}
-        labelCol={{ span: 6 }}
+        labelCol={{ span: 8 }}
         labelAlign="left"
         initialValues={{ remember: true }}
         style={{ maxWidth: '400px' }}
