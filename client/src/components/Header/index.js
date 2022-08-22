@@ -37,39 +37,72 @@ const App = () => {
   };
 
   return (
-    <>
-      <Row align="middle" style={{ borderBottom: '1px solid var(--ingre-grey)', paddingBottom: '2px' }}>
-        <Col span={12} sm={8} md={6} style={{ width: '1.2rem' }}>
+    <Row
+      style={{
+        width: '100%',
+        borderBottom: '1px solid var(--ingre-grey)',
+        justifyContent: 'center'
+        //
+      }}
+    >
+      <Row
+        style={{
+          width: '100%',
+          maxWidth: '1264px',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+          //
+        }}
+      >
+        {/* Toggle menu */}
+        <Col>
           <Row align="middle" style={{ marginTop: '-1px', paddingBottom: '2px' }}>
             {state.leftSidebarCollapsed ? (
               //
-              <MenuUnfoldOutlined onClick={handleMenuToggle} style={{ color: 'var(--ingre-dark-brown', fontSize: '1.2rem', marginLeft: '1rem' }} />
+              <MenuUnfoldOutlined
+                onClick={handleMenuToggle}
+                style={{
+                  color: 'var(--ingre-dark-brown',
+                  fontSize: '1.2rem',
+                  margin: '0 1.2rem'
+                  //
+                }}
+              />
             ) : (
-              <MenuFoldOutlined onClick={handleMenuToggle} style={{ color: 'var(--ingre-dark-brown', fontSize: '1.2rem', marginLeft: '1rem' }} />
+              <MenuFoldOutlined
+                onClick={handleMenuToggle}
+                style={{
+                  color: 'var(--ingre-dark-brown',
+                  fontSize: '1.2rem',
+                  margin: '0 1.2rem'
+                  //
+                }}
+              />
             )}
 
             <Link to="/">
               <Title style={{ marginBottom: 0 }}>
-                <FontAwesomeIcon className="ingre-logo" icon="fa-solid fa-egg" style={{ margin: '0 0.3rem 0 0.6rem', color: 'var(--ingre-eggshell)', fontSize: '1.8rem', paddingBottom: '2px' }} />
+                <FontAwesomeIcon className="ingre-logo" icon="fa-solid fa-egg" style={{ marginRight: '0.3rem', color: 'var(--ingre-eggshell)', fontSize: '1.8rem', paddingBottom: '2px' }} />
                 <span style={{ color: 'var(--ingre-dark-brown)', fontFamily: 'Poppins, sans-serif', fontSize: '36px', letterSpacing: -1, fontWeight: '800' }}>ingré</span>
               </Title>
             </Link>
           </Row>
         </Col>
+        {/* Step small */}
         <Col span={0} sm={7} md={0}>
           <Row align="middle">
             <Steps size="small" current={getStep} responsive={false}>
               <Step
                 icon={
                   <Link to="/">
-                    <FontAwesomeIcon icon="fa-solid fa-egg" />
+                    <FontAwesomeIcon icon="fa-solid fa-cookie" />
                   </Link>
                 }
               />
               <Step
                 icon={
                   <Link to="/shoppinglist">
-                    <FontAwesomeIcon icon="fa-solid fa-cart-shopping" />
+                    <FontAwesomeIcon icon="fa-solid fa-egg" />
                   </Link>
                 }
               />
@@ -83,14 +116,20 @@ const App = () => {
             </Steps>
           </Row>
         </Col>
+        {/* Step big */}
         <Col span={0} md={11}>
           <Row align="middle">
-            <Steps size="small" current={getStep} responsive={false}>
+            <Steps
+              size="small"
+              current={getStep}
+              responsive={false}
+              //
+            >
               <Step
                 title={<Link to="/">Recipes</Link>}
                 icon={
                   <Link to="/">
-                    <FontAwesomeIcon icon="fa-solid fa-egg" />
+                    <FontAwesomeIcon icon="fa-solid fa-cookie" />
                   </Link>
                 }
               />
@@ -98,7 +137,7 @@ const App = () => {
                 title={<Link to="/shoppinglist">Ingredients</Link>}
                 icon={
                   <Link to="/shoppinglist">
-                    <FontAwesomeIcon icon="fa-solid fa-cart-shopping" />
+                    <FontAwesomeIcon icon="fa-solid fa-egg" />
                   </Link>
                 }
               />
@@ -113,21 +152,15 @@ const App = () => {
             </Steps>
           </Row>
         </Col>
-        <Col span={12} sm={9} md={7}>
-          <Row align="bottom" justify="end">
+        {/* Logout/Login/Signup */}
+        <Col>
+          <Row align="middle">
             {Auth.loggedIn() ? (
-              <>
-                <Button onClick={logout}>Logout</Button>
-              </>
+              <Button onClick={logout}>Logout</Button>
             ) : (
-              <>
-                <Link to="/login">
-                  <Button>Login</Button>
-                </Link>
-                <Link to="/signup">
-                  <Button>Signup</Button>
-                </Link>
-              </>
+              <Link to="/login">
+                <Button>Login</Button>
+              </Link>
             )}
             <Button onClick={showModal} style={{ margin: '0 0.3rem' }}>
               <FontAwesomeIcon icon="fa-solid fa-circle-info" />
@@ -135,8 +168,9 @@ const App = () => {
           </Row>
         </Col>
       </Row>
+      {/* Modal Guide */}
       <ModalGuide />
-    </>
+    </Row>
   );
 };
 
