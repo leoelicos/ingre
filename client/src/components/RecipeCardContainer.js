@@ -14,7 +14,10 @@ const App = ({ results, loading }) => {
         style={{
           display: 'flex',
           flexFlow: 'row wrap',
-          justifyContent: 'space-evenly'
+          justifyContent: 'center',
+          marginTop: '1rem',
+          rowGap: '1rem',
+          columnGap: '1rem'
           //
         }}
       >
