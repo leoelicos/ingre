@@ -10,8 +10,7 @@ import { useStoreContext } from '../utils/state/GlobalState';
 import { ADD_SAVED_RECIPE, ADD_EDIT_RECIPE } from '../utils/state/actions';
 
 // Component library
-import { Card, Image, Button, Space } from 'antd';
-
+import { Card, Image, Button, Space, Tooltip } from 'antd';
 // Apollo
 import { useMutation } from '@apollo/client';
 import { SAVE_RECIPE } from '../utils/apollo/mutations.js';
@@ -51,12 +50,35 @@ const App = (props) => {
     }
   };
 
-  const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+  const getTitle = (name) => {
+    let title = name;
+    // capitalize the first letter
+    title = title.charAt(0).toUpperCase() + title.slice(1);
+    // trim the first 100 characters
+    // const titleLength = title.length;
+    // title = title.slice(0, 40);
+    // if (titleLength > 40) title += '...';
+    return title;
+  };
 
   return (
     <Card
-      style={{ width: 300, margin: '0.3rem 0.1rem' }}
-      cover={<Image width={300} alt={props.name} src={props.picture_url} />}
+      cover={
+        <Image
+          width={'100%'}
+          height={150}
+          style={{
+            objectFit: 'cover',
+            borderTopLeftRadius: '1rem',
+            borderTopRightRadius: '1rem'
+          }}
+          alt={props.name}
+          src={props.picture_url}
+          placeholder={true}
+          fallback="/images/ingre.png"
+          //
+        />
+      }
       actions={
         Auth.loggedIn()
           ? [
@@ -69,7 +91,12 @@ const App = (props) => {
                 </Button>
               </Link>,
 
-              <Button onClick={handleSave} disabled={state.savedRecipes.some((r) => r._id === dbId)} loading={dbLoading}>
+              <Button
+                onClick={handleSave}
+                disabled={state.savedRecipes.some((r) => r._id === dbId)}
+                loading={dbLoading}
+                //
+              >
                 {state.savedRecipes.some((r) => r._id === dbId) ? (
                   <Space>Saved!</Space>
                 ) : (
@@ -90,7 +117,23 @@ const App = (props) => {
 
       //
     >
-      <Meta title={capitalizeFirstLetter(props.name)} />
+      <Meta
+        title={
+          <Tooltip
+            title={props.name}
+            style={{ display: 'inline-block' }}
+            //
+          >
+            {getTitle(props.name)}
+          </Tooltip>
+        }
+        style={{
+          display: 'inline-block',
+          height: '50px',
+          whiteSpace: 'wrap'
+        }}
+        //
+      />
     </Card>
   );
 };
