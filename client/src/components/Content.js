@@ -5,9 +5,14 @@ const App = (props) => {
     <Content
       style={{
         backgroundColor: 'var(--ingre-light-red)',
-        borderColor: '1px solid red',
         padding: '1rem',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        display: 'flex',
+        flexFlow: 'column nowrap',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        flex: 1,
+        minHeight: '100%'
       }}
     >
       {props.children}
