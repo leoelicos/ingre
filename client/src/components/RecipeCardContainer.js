@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 // Auth
 import Auth from '../utils/auth';
 
-const App = ({ results, loading }) => {
+const App = ({ results, loading, savePage }) => {
   // console.log('[RecipeCardContainer] results ', results);
 
   return (
@@ -21,16 +21,15 @@ const App = ({ results, loading }) => {
           //
         }}
       >
-        {results.length ? !Auth.loggedIn() && <Divider>Log in to edit and save recipes!</Divider> : null}
-        {results.length ? (
+        {!Auth.loggedIn() && <Divider>Log in to edit and save recipes!</Divider>}
+        {results?.length ? (
           results.map((recipe) => {
             return (
               <RecipeCard
                 key={uuidv4()}
-                name={recipe.name}
-                picture_url={recipe.picture_url}
                 recipe={recipe}
                 loading={loading}
+                savePage={savePage}
                 //
               />
             );
