@@ -7,13 +7,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // Global state
 import { useStoreContext } from '../utils/state/GlobalState';
-import { ADD_SAVED_RECIPE, ADD_EDIT_RECIPE } from '../utils/state/actions';
+import { ADD_SAVED_RECIPE, ADD_EDIT_RECIPE, REMOVE_SAVED_RECIPE } from '../utils/state/actions';
 
 // Component library
 import { Card, Image, Button, Space, Tooltip } from 'antd';
+
 // Apollo
 import { useMutation } from '@apollo/client';
-import { SAVE_RECIPE } from '../utils/apollo/mutations.js';
+import { SAVE_RECIPE, REMOVE_RECIPE } from '../utils/apollo/mutations';
 
 // JWT Decode
 import Auth from '../utils/auth';
@@ -21,45 +22,66 @@ import Auth from '../utils/auth';
 const { Meta } = Card;
 
 const App = (props) => {
-  // states to manage saving recipe
-  const [saveRecipe, { loading: dbLoading }] = useMutation(SAVE_RECIPE); // database
-  const [state, dispatch] = useStoreContext(); // global store
-  const [dbId, setDbId] = useState(''); // after save button clicked and saved
+  const { recipe } = props;
+  // ApolloClient
+  const [saveRecipe, { data: saveRecipeData, loading: saveRecipeLoading, error: saveRecipeError }] = useMutation(SAVE_RECIPE);
+  const [removeRecipe, { data: removeRecipeData, loading: removeRecipeLoading, error: removeRecipeError }] = useMutation(REMOVE_RECIPE);
+
+  const [state, dispatch] = useStoreContext();
 
   const handleEdit = () => {
-    console.log('Edit button was clicked - the props.recipe is ', props.recipe);
-    dispatch({ type: ADD_EDIT_RECIPE, data: props.recipe });
+    dispatch({ type: ADD_EDIT_RECIPE, data: recipe });
   };
 
   const handleSave = async () => {
-    console.log('[RecipeCard][handleSave] props.recipe', props.recipe);
     try {
-      // update database with recipe object
-      const recipe = props.recipe;
-      const res = await saveRecipe({ variables: { input: recipe } });
+      console.log('[RecipeCard][handleSave]', recipe);
+      const input = {
+        name: recipe.name,
+        portions: parseInt(recipe.portions || 1),
+        ingredients: recipe.ingredients.map((i) => {
+          const name = i.name || 'Ingredient';
+          const quantity = parseFloat(i.quantity) || 1;
+          const measure = i.measure || 'unit';
+          const category = i.category || 'Generic';
+          const ingredient = { name, quantity, measure, category };
+          return ingredient;
+        }),
+        picture_url: recipe.picture_url,
+        edamamId: recipe.edamamId
+      };
+      const payload = { variables: { input } };
+      console.log('payload = ', payload);
+
+      const res = await saveRecipe(payload);
       if (!res) throw new Error('Could not save recipe');
 
       const saveData = res.data.saveRecipe;
-      console.log('[RecipeCard][handleSave] saveData', saveData);
-      // update global state with database object
-      dispatch({ type: ADD_SAVED_RECIPE, data: saveData });
-      console.log('[RecipeCard][handleSave] dispatch state.savedRecipes', state.savedRecipes);
-      setDbId(saveData._id);
-    } catch (e) {
-      console.log(e);
+      console.log('[RecipeCard][handleSave]', saveData);
+      await dispatch({ type: ADD_SAVED_RECIPE, data: saveData });
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const getTitle = (name) => {
-    let title = name;
-    // capitalize the first letter
-    title = title.charAt(0).toUpperCase() + title.slice(1);
-    // trim the first 100 characters
-    // const titleLength = title.length;
-    // title = title.slice(0, 40);
-    // if (titleLength > 40) title += '...';
-    return title;
+  const handleRemove = async () => {
+    try {
+      if (!recipe._id) return;
+      console.log('[RecipeCard][handleRemove] recipe', recipe);
+
+      const payload = { variables: { recipeId: recipe._id } };
+      console.log('[RecipeCard][handleRemove] payload', payload);
+      const res = await removeRecipe(payload);
+      if (!res) throw new Error('Could not save recipe');
+      const removeData = res.data;
+      console.log('[RecipeCard][handleRemove] removeData', removeData);
+      await dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe._id });
+    } catch (error) {
+      console.error(Error);
+    }
   };
+
+  const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
 
   return (
     <Card
@@ -72,8 +94,8 @@ const App = (props) => {
             borderTopLeftRadius: '1rem',
             borderTopRightRadius: '1rem'
           }}
-          alt={props.name}
-          src={props.picture_url}
+          alt={recipe.name}
+          src={recipe.picture_url}
           placeholder={true}
           fallback="/images/ingre.png"
           //
@@ -82,30 +104,26 @@ const App = (props) => {
       actions={
         Auth.loggedIn()
           ? [
+              // edit button
               <Link to="/custom">
-                <Button onClick={handleEdit}>
+                <Button onClick={handleEdit} style={{ borderRadius: '50%', padding: '4px 8px' }}>
                   <Space>
-                    Edit
                     <FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />
                   </Space>
                 </Button>
               </Link>,
-
-              <Button
-                onClick={handleSave}
-                disabled={state.savedRecipes.some((r) => r._id === dbId)}
-                loading={dbLoading}
-                //
-              >
-                {state.savedRecipes.some((r) => r._id === dbId) ? (
-                  <Space>Saved!</Space>
-                ) : (
-                  <Space>
-                    Save <FontAwesomeIcon key="save" icon="fa-solid fa-floppy-disk" />
-                  </Space>
-                )}
+              // save button
+              <Button onClick={handleSave} disabled={recipe.edamamId === '-1' || state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)} style={{ borderRadius: '50%', padding: '4px 8px' }}>
+                <Space>
+                  <FontAwesomeIcon key="save" icon="fa-solid fa-floppy-disk" />
+                </Space>
+              </Button>,
+              // remove button
+              <Button onClick={handleRemove} disabled={!recipe._id || !state.savedRecipes.find((r) => r._id === recipe._id)} style={{ borderRadius: '50%', padding: '4px 8px' }}>
+                <Space>
+                  <FontAwesomeIcon key="save" icon="fa-solid fa-trash" />
+                </Space>
               </Button>
-
               //
             ]
           : [
@@ -120,11 +138,11 @@ const App = (props) => {
       <Meta
         title={
           <Tooltip
-            title={props.name}
+            title={recipe.name}
             style={{ display: 'inline-block' }}
             //
           >
-            {getTitle(props.name)}
+            {capitalize(recipe.name)}
           </Tooltip>
         }
         style={{
