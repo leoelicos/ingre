@@ -7,7 +7,7 @@ import Auth from '../../utils/auth/index.js';
 import ContentTitle from '../../components/ContentTitle';
 import ContentSubtitle from '../../components/ContentSubtitle';
 import Alert from '../../components/Alert';
-import { Button, Form, Input, Divider, Layout, Row, Col } from 'antd';
+import { Button, Form, Input, Divider, Row, Col } from 'antd';
 
 const App = () => {
   const [login, { error }] = useMutation(LOGIN);
@@ -56,10 +56,10 @@ const App = () => {
         labelCol={{ span: 8 }}
         labelAlign="left"
         initialValues={{ remember: true }}
-        style={{ maxWidth: '400px' }}
         colon={false}
         onValuesChange={handleChange}
         onFinish={handleFormSubmit}
+        style={{ maxWidth: '600px' }}
         //
       >
         <Form.Item
