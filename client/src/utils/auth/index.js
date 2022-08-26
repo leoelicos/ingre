@@ -5,7 +5,10 @@ export default new (class AuthService {
   isTokenExpired = (token) => decode(token) < Date.now() / 1000;
   loggedIn = () => {
     const token = this.getToken();
-    return !!token && !this.isTokenExpired(token);
+    if (!token) return false;
+    const tokenValid = !this.isTokenExpired(token);
+    if (!tokenValid) return false;
+    return true;
   };
   login(idToken) {
     localStorage.setItem('id_token', idToken);
