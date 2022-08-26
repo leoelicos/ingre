@@ -11,6 +11,7 @@ const { signToken } = require('../utils/auth');
 const stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
 const APP_KEY = process.env.HEROKU_EDAMAM_APP_KEY || process.env.PRODUCTION_EDAMAM_APP_KEY;
 const APP_ID = process.env.HEROKU_EDAMAM_APP_ID || process.env.PRODUCTION_EDAMAM_APP_ID;
+let payload;
 const resolvers = {
   Query: {
     getUserWithEmail: async (_, args) => {
@@ -27,20 +28,17 @@ const resolvers = {
     getApiKey: () => ({ appId: APP_ID, appKey: APP_KEY }),
     //
     getUser: async (_, __, context) => {
-      console.log('[getUser] REQ\t', JSON.stringify(Object.values(context.user)));
       let user = null;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
-
         user = await User.findById(context.user._id);
-        console.log('[getUser] user\t', user);
         if (!user) throw new Error('Please log in');
         payload = user;
       } catch (error) {
         console.error(error);
         payload = null;
       } finally {
-        console.log('[getUser] payload\t', JSON.stringify(payload));
+        console.log('[getUser] payload\t', payload);
         return payload;
       }
     },
@@ -61,8 +59,6 @@ const resolvers = {
 
     //
     getSavedRecipes: async (_, __, context) => {
-      // console.log('[getSavedRecipes] CTX\t', JSON.stringify(context.user));
-      let payload;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const user = await User.findById(context.user._id).populate({ path: 'savedRecipes' });
@@ -71,24 +67,22 @@ const resolvers = {
         console.error(e);
         payload = [];
       } finally {
-        console.log('[getSavedRecipes] payload\t', JSON.stringify(payload));
-        console.log('hello');
+        console.log('[getSavedRecipes] payload\t', payload);
         return payload;
       }
     },
 
     //
     getNumSavedRecipes: async (_, __, context) => {
-      console.log('[getNumSavedRecipes] CTX', JSON.stringify(context.user));
-      let payload = 0;
+      payload = 0;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const user = await User.findById(context.user._id);
-        payload = user.numSavedRecipes;
+        payload = user.savedRecipes.length;
       } catch (e) {
         console.error(e);
       } finally {
-        console.log('[getNumSavedRecipes] payload\t', JSON.stringify(payload));
+        console.log('[getNumSavedRecipes] payload\t', payload);
         return payload;
       }
     },
@@ -154,7 +148,6 @@ const resolvers = {
 
     // makes a user pro
     makeUserPro: async (_, __, context) => {
-      console.log('[makeUserPro] CTX\t', JSON.stringify(context.user));
       let user = false;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
@@ -167,18 +160,23 @@ const resolvers = {
       } catch (error) {
         console.error(error);
       }
-      console.log('[makeUserPro] payload\t', user);
+      console.log('[makeUserPro] user\t', user);
       return user;
     },
 
     // saves a recipe to the database
     saveRecipe: async (_, args, context) => {
-      console.log('[saveRecipe] args', args);
-      const { input } = args;
-      const { name, portions, ingredients, picture_url, edamamId } = input;
-
-      let payload = null;
       try {
+        console.log('[saveRecipe]');
+        // console.log('[saveRecipe] args', args);
+        const { input } = args;
+        const { name, portions, ingredients, picture_url, edamamId } = input;
+        payload = null;
+
+        console.log('[saveRecipe]');
+        // console.log('input', input);
+        // console.log('context.user', await context.user);
+
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const uniqueCategories = await Category.find()
           .select('-_id name')
@@ -214,7 +212,7 @@ const resolvers = {
         // create recipe
         const createdImage = 'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc';
         const newRecipe = { name, portions, ingredients: createdIngredients, picture_url: picture_url || createdImage, edamamId: edamamId };
-        console.log('newRecipe', newRecipe);
+        // console.log('newRecipe', newRecipe);
         const recipe = await Recipe
           //
           .create(newRecipe)
@@ -222,46 +220,47 @@ const resolvers = {
 
         // push recipe to user.savedRecipes
         const query = context.user._id;
-        console.log('userId = ', query);
+        // console.log('[saveRecipe] context.user._id', context.user._id);
+        if (!query) throw new Error('No user found');
         const update = { $push: { savedRecipes: recipe._id } };
-        const user = await User.findByIdAndUpdate(query, update);
+        const user = await User.findByIdAndUpdate(query, update, { new: true });
+        console.log('user.savedRecipes:', user.savedRecipes);
         payload = recipe;
       } catch (error) {
         console.log(error);
       }
-      console.log('[saveRecipe] payload\t', payload);
+      // console.log('[saveRecipe] payload\t', payload);
       return payload;
     },
 
     // updates a recipe in the database
     updateRecipe: async (_, { recipeId, input: { name, portions, picture_url, ingredients, edamamId } }, context) => {
-      console.log('[updateRecipe] REQ\t', recipeId, JSON.stringify({ name, portions, picture_url, ingredients, edamamId }));
-      let dbRecipe = null;
+      console.log('[updateRecipe] REQ\t', recipeId, { name, portions, picture_url, ingredients, edamamId });
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
 
         const dbRecipe = await Recipe.findById(recipeId);
         if (!dbRecipe) throw new Error('Recipe does not exist!');
-        console.log('[updateRecipe] db Rec\t', JSON.stringify(dbRecipe));
+        console.log('[updateRecipe] db Rec\t', dbRecipe);
         // delete all ingredients in this recipe from database
         for (const { _id } of dbRecipe.ingredients) {
           const deleteResult = await Ingredient.findByIdAndDelete(_id);
-          console.log('[updateRecipe] del Ing\t', JSON.stringify(deleteResult));
+          console.log('[updateRecipe] del Ing\t', deleteResult);
         }
         // remove all ingredient references in recipe
         const clearedRecipe = await Recipe.findByIdAndUpdate(recipeId, { $set: { ingredients: [] } }, { new: true });
-        console.log('[updateRecipe] upd Rec\t', JSON.stringify(clearedRecipe));
+        console.log('[updateRecipe] upd Rec\t', clearedRecipe);
 
         const uniqueCategories = await Category
           //
           .find()
           .select('-_id name')
           .then((categories) => categories.map((c) => c.name));
-        console.log('[updateRecipe] DB Cat\t', JSON.stringify(uniqueCategories));
+        console.log('[updateRecipe] DB Cat\t', uniqueCategories);
 
         const createdIngredients = [];
         for (let { name, quantity, measure, category } of ingredients) {
-          console.log('[updateRecipe] REQ Ing\t', JSON.stringify({ name, quantity, measure, category }));
+          console.log('[updateRecipe] REQ Ing\t', { name, quantity, measure, category });
 
           if (!name) name = 'Generic';
           if (!quantity) quantity = 1;
@@ -274,11 +273,11 @@ const resolvers = {
             uniqueCategories.push(category);
             let createdCategory = await Category.create({ name: category });
             createdCategory.save();
-            console.log('[updateRecipe] created\t', JSON.stringify(createdCategory));
+            console.log('[updateRecipe] created\t', createdCategory);
             categoryId = createdCategory._id;
           } else {
             let foundCategory = await Category.findOne({ name: category });
-            console.log('[updateRecipe] found \t', JSON.stringify(foundCategory));
+            console.log('[updateRecipe] found \t', foundCategory);
             categoryId = foundCategory._id;
           }
 
@@ -291,7 +290,7 @@ const resolvers = {
             //
           });
           createdIngredient.save();
-          console.log('[updateRecipe] payload\t', JSON.stringify(createdIngredient));
+          console.log('[updateRecipe] createdIngredient\t', createdIngredient);
           createdIngredients.push(createdIngredient._id);
         }
         /* 
@@ -319,15 +318,15 @@ const resolvers = {
               });
             });
           });
-        console.log('[updateRecipe] used Cat\t', JSON.stringify(usedCategories));
+        console.log('[updateRecipe] used Cat\t', usedCategories);
         const allCategories = await Category.find()
           .select('_id')
           .then((arr) => arr.map((val) => val._id));
-        console.log('[updateRecipe] all Cat\t', JSON.stringify(allCategories));
+        console.log('[updateRecipe] all Cat\t', allCategories);
 
         const result = await Category.deleteMany({ _id: { $nin: usedCategories } });
         console.log('[updateRecipe] del Cat\t', result);
-        console.log('[updateRecipe] payload\t', JSON.stringify(dbRecipe));
+        console.log('[updateRecipe] payload\t', dbRecipe);
         return dbRecipe;
       } catch (error) {
         console.error(error);
@@ -337,24 +336,24 @@ const resolvers = {
     // removes a recipe from the database
     removeRecipe: async (_, { recipeId }, context) => {
       console.log('[removeRecipe] REQ id\t', recipeId);
-      let payload = null;
+      payload = null;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const dbRecipe = await Recipe.findById(recipeId);
         if (!dbRecipe) throw new Error('Recipe does not exist!');
-        console.log('[removeRecipe] db Rec\t', JSON.stringify(dbRecipe));
+        console.log('[removeRecipe] db Rec\t', dbRecipe);
         // delete all ingredients in this recipe from database
         for (const { _id } of dbRecipe.ingredients) {
           const deleteResult = await Ingredient.findByIdAndDelete(_id);
-          console.log('[removeRecipe] del Ing\t', JSON.stringify(deleteResult));
+          console.log('[removeRecipe] del Ing\t', deleteResult);
         }
         // remove all ingredient references in recipe
         const clearedRecipe = await Recipe.findByIdAndUpdate(recipeId, { $set: { ingredients: [] } }, { new: true });
-        console.log('[removeRecipe] upd Rec\t', JSON.stringify(clearedRecipe));
+        console.log('[removeRecipe] upd Rec\t', clearedRecipe);
 
         // delete Recipe
         const delRecipe = await Recipe.findByIdAndDelete(recipeId);
-        console.log('[removeRecipe] del rec\t', JSON.stringify(delRecipe));
+        console.log('[removeRecipe] del rec\t', delRecipe);
 
         // clean up categories
         const usedCategories = [];
@@ -369,22 +368,21 @@ const resolvers = {
               });
             });
           });
-        console.log('[removeRecipe] used Cat\t', JSON.stringify(usedCategories));
+        console.log('[removeRecipe] used Cat\t', usedCategories);
         const allCategories = await Category.find()
           .select('_id')
           .then((arr) => arr.map((val) => val._id));
-        console.log('[removeRecipe] all Cat\t', JSON.stringify(allCategories));
+        console.log('[removeRecipe] all Cat\t', allCategories);
 
         const result = await Category.deleteMany({ _id: { $nin: usedCategories } });
         console.log('[removeRecipe] del Cat\t', result);
 
         // remove recipe from user.savedRecipes
-        const query = context.user._id;
-        const update = { $pull: { savedRecipes: recipeId } };
-        const options = { new: true };
-        const user = await User.findByIdAndDelete(query, update, options);
-        payload = user;
+        console.log('context.user._id', context.user._id);
+        const user = await User.findByIdAndUpdate(context.user._id, { $pull: { savedRecipes: recipeId } }, { new: true });
+        payload = true;
       } catch (error) {
+        payload = false;
         console.error(error);
       } finally {
         console.log('[removeRecipe] payload\t', payload);
