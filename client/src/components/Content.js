@@ -6,13 +6,13 @@ const App = (props) => {
       style={{
         backgroundColor: 'var(--ingre-light-red)',
         padding: '1rem',
-        overflowY: 'auto',
         display: 'flex',
         flexFlow: 'column nowrap',
         alignItems: 'center',
         justifyContent: 'flex-start',
         flex: 1,
-        minHeight: '100%'
+        height: '100%',
+        overflowY: 'auto'
       }}
     >
       {props.children}
