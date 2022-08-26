@@ -38,6 +38,7 @@ export const SAVE_RECIPE = gql`
         }
       }
       picture_url
+      edamamId
     }
   }
 `;
@@ -59,6 +60,7 @@ export const UPDATE_RECIPE = gql`
         }
       }
       picture_url
+      edamamId
     }
   }
 `;
