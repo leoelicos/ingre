@@ -1,10 +1,29 @@
-import { Layout, Menu, Space } from 'antd';
+// React
+import { useEffect, useState } from 'react';
+
+// React Router DOM
 import { Link } from 'react-router-dom';
-import { useStoreContext } from '../utils/state/GlobalState';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useLocation } from 'react-router-dom';
+
+// useContext
+import { useStoreContext } from '../utils/state/GlobalState';
+
+// Apollo
+import { useQuery } from '@apollo/client';
+import { GET_NUM_SAVED_RECIPES } from '../utils/apollo/queries';
+
+// Font Awesome
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+// Ant components
+import { Layout, Menu, Space } from 'antd';
+
+// Ant subcomponent
 const { Sider } = Layout;
+
 const App = () => {
+  const { loading, error, data } = useQuery(GET_NUM_SAVED_RECIPES); //! this is faulty
+
   const location = useLocation();
   const { pathname } = location;
   const [state] = useStoreContext();
@@ -16,6 +35,7 @@ const App = () => {
     else if (pathname === '/tapoff') return '6';
     return '1';
   };
+
   return (
     <Sider
       trigger={null}
@@ -100,7 +120,7 @@ const App = () => {
                       //
                     }}
                   >
-                    {state.savedRecipes.length}
+                    {loading || error ? 0 : data.getNumSavedRecipes}
                   </span>
                 </Space>
               </Link>
