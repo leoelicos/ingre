@@ -5,7 +5,9 @@ import {
   TOGGLE_SIDEBAR,
   UPDATE_SEARCH_RECIPES,
   UPDATE_HOME_RECIPES,
+  UPDATE_SAVED_RECIPES,
   ADD_SAVED_RECIPE,
+  REMOVE_SAVED_RECIPE,
   ADD_EDIT_RECIPE,
   CLEAR_EDIT_RECIPE,
   FLAG_HOME_MOUNTED
@@ -14,7 +16,7 @@ import {
 
 // The reducer is a function that accepts the current state and an action. It returns a new state based on that action.
 export const reducer = (state, action) => {
-  console.log('action = ', action);
+  console.log('Reducer', action);
 
   switch (action.type) {
     case SHOW_MODAL:
@@ -23,37 +25,35 @@ export const reducer = (state, action) => {
       return { ...state, modalVisible: false };
 
     case TOGGLE_SIDEBAR:
-      console.log('reducing TOGGLE_SIDEBAR');
       return { ...state, leftSidebarCollapsed: !state.leftSidebarCollapsed };
 
     case UPDATE_SEARCH_RECIPES:
-      console.log(`reducer UPDATE_SEARCH_RECIPES from ${state.searchRecipes.length} items to ${action.data.length} items`);
       return { ...state, searchRecipes: action.data };
 
     case UPDATE_HOME_RECIPES:
-      console.log(`reducer UPDATE_HOME_RECIPES from ${state.homeRecipes.length} items to ${action.data.length} items`);
       return { ...state, homeRecipes: action.data };
+    case UPDATE_SAVED_RECIPES:
+      if (action.data === undefined) return { ...state, savedRecipes: [] };
+      return { ...state, savedRecipes: action.data };
 
     case ADD_SAVED_RECIPE:
-      console.log(`reducer ADD_SAVED_RECIPE with this id:\n${action.data._id}`);
-      if (state.savedRecipes.find((r) => r._id === action.data._id)) {
-        console.log(`Already saved!!`);
-        return { ...state };
-      }
-
-      const newSavedRecipes = JSON.parse(JSON.stringify(state.savedRecipes));
+      console.log('state.savedRecipes before', state.savedRecipes);
+      if (state.savedRecipes.find((r) => r._id === action.data._id)) return { ...state };
+      let newSavedRecipes = JSON.parse(JSON.stringify(state.savedRecipes));
       newSavedRecipes.push(action.data);
+      console.log('state.savedRecipes after', newSavedRecipes);
       return { ...state, savedRecipes: newSavedRecipes };
 
+    case REMOVE_SAVED_RECIPE:
+      const copyOfRecipes = JSON.parse(JSON.stringify(state.savedRecipes));
+      const filteredCopyOfRecipes = copyOfRecipes.filter((r) => r._id !== action.data);
+      return { ...state, savedRecipes: filteredCopyOfRecipes };
+
     case ADD_EDIT_RECIPE:
-      console.log(`reducer ADD_EDIT_RECIPE with this recipe:\n${action.data.name}`);
       const newEditRecipe = action.data;
-      console.log('newEditRecipe = ', newEditRecipe);
       return { ...state, customRecipe: newEditRecipe };
 
     case CLEAR_EDIT_RECIPE:
-      console.log(`reducer CLEAR_EDIT_RECIPE  :\n `);
-
       return { ...state, customRecipe: null };
 
     case FLAG_HOME_MOUNTED:

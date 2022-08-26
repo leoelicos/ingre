@@ -1,20 +1,20 @@
 // React hooks
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+// Ant components
+import { Button, Space, Row, Spin, Divider, Col } from 'antd';
 
-// Components
-import { Button, Divider } from 'antd';
+// Custom components
 import RecipeCardContainer from '../components/RecipeCardContainer';
-import spinner from '../assets/spinner.gif';
 import ContentTitle from '../components/ContentTitle';
-import ContentSubtitle from '../components/ContentSubtitle';
-
-// Auth
-import Auth from '../utils/auth.js';
 
 // Edamam API
 import FetchEdamam from '../utils/api/index.js';
 
+// useContext
 import { useStoreContext } from '../utils/state/GlobalState';
+
+// useReducer
 import { UPDATE_HOME_RECIPES, FLAG_HOME_MOUNTED } from '../utils/state/actions';
 
 const Home = () => {
@@ -22,11 +22,27 @@ const Home = () => {
   const [loadingEdamam, setLoadingEdamam] = useState(false);
   const [edamamRecipes, setEdamamRecipes] = useState(state.homeRecipes);
 
-  const handleRefresh = async () => {
+  const handleRefresh = async (query) => {
     console.log('Refresh clicked, fetchEdamam, setRecipes');
     try {
       setLoadingEdamam(true);
-      const hits = await FetchEdamam();
+      let noQuery = { q: ' ', diet: [], health: [], cuisineType: [], mealType: [], dishType: [] };
+      let hits;
+      if (query === 'vegetarian') {
+        hits = await FetchEdamam({ ...noQuery, health: ['vegetarian'] });
+      } else if (query === 'vegan') {
+        hits = await FetchEdamam({ ...noQuery, health: ['vegan'] });
+      } else if (query === 'balanced') {
+        hits = await FetchEdamam({ ...noQuery, diet: ['balanced'] });
+      } else if (query === 'breakfast') {
+        hits = await FetchEdamam({ ...noQuery, mealType: ['breakfast'] });
+      } else if (query === 'lunch') {
+        hits = await FetchEdamam({ ...noQuery, mealType: ['lunch'] });
+      } else if (query === 'dinner') {
+        hits = await FetchEdamam({ ...noQuery, mealType: ['dinner'] });
+      } else {
+        hits = await FetchEdamam();
+      }
       console.log('hits = ', hits);
       setEdamamRecipes(hits);
       setLoadingEdamam(false);
@@ -70,19 +86,34 @@ const Home = () => {
   }, []);
 
   return (
-    <>
-      <ContentTitle>Recipes, recipes, recipes</ContentTitle>
-      <ContentSubtitle>
-        Classic Italian favorites <Button onClick={handleRefresh}>Refresh</Button>
-      </ContentSubtitle>
-      {!Auth.loggedIn() && <Divider>Log in to edit and save recipes!</Divider>}
+    <Col>
+      <Row>
+        <ContentTitle>Explore recipes</ContentTitle>
+      </Row>
+
+      <Row>
+        <Space className="explore-buttons" wrap>
+          <Button onClick={() => handleRefresh()}>Random</Button>
+          <Button onClick={() => handleRefresh('vegetarian')}>Vegetarian</Button>
+          <Button onClick={() => handleRefresh('vegan')}>Vegan</Button>
+          <Button onClick={() => handleRefresh('balanced')}>Balanced</Button>
+          <Button onClick={() => handleRefresh('breakfast')}>Breakfast</Button>
+          <Button onClick={() => handleRefresh('lunch')}>Lunch</Button>
+          <Button onClick={() => handleRefresh('dinner')}>Dinner</Button>
+          <Button>
+            <Link to="/search">Advanced Search</Link>
+          </Button>
+        </Space>
+      </Row>
       {loadingEdamam ? (
-        //
-        <img src={spinner} alt="loading" />
+        <Divider>
+          <Spin tip="Loading…"></Spin>
+        </Divider>
       ) : (
         <RecipeCardContainer results={edamamRecipes} loading={loadingEdamam} />
+        //
       )}
-    </>
+    </Col>
   );
 };
 

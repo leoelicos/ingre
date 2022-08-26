@@ -33,7 +33,13 @@ export const GET_SAVED_RECIPES = gql`
       name
       portions
       picture_url
+      edamamId
     }
+  }
+`;
+export const GET_NUM_SAVED_RECIPES = gql`
+  query GetNumSavedRecipes {
+    getNumSavedRecipes
   }
 `;
 
@@ -54,6 +60,7 @@ export const GET_RECIPE = gql`
         }
       }
       picture_url
+      edamamId
     }
   }
 `;

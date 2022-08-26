@@ -5,8 +5,13 @@ const App = (props) => {
     <Content
       style={{
         backgroundColor: 'var(--ingre-light-red)',
-        borderColor: '1px solid red',
         padding: '1rem',
+        display: 'flex',
+        flexFlow: 'column nowrap',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        flex: 1,
+        height: '100%',
         overflowY: 'auto'
       }}
     >

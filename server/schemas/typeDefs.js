@@ -15,6 +15,7 @@ const typeDefs = gql`
     email: String
     pro: Boolean
     savedRecipes: [Recipe]
+    numSavedRecipes: Int
   }
 
   input UserInput {
@@ -31,6 +32,7 @@ const typeDefs = gql`
     portions: Int
     ingredients: [Ingredient]
     picture_url: String
+    edamamId: String
   }
 
   input RecipeInput {
@@ -38,6 +40,7 @@ const typeDefs = gql`
     portions: Int
     ingredients: [IngredientInput]
     picture_url: String
+    edamamId: String
   }
   type Ingredient {
     _id: ID
@@ -88,6 +91,7 @@ const typeDefs = gql`
     getUser: User # Pages: State - firstName, lastName, pro
     getRecipe(_id: ID!): Recipe # Page: Saved - Edit button
     getSavedRecipes: [Recipe] # Page: Saved
+    getNumSavedRecipes: Int
     checkout: Checkout # Page: Saved
     # testing only
     getCategories: [Category]

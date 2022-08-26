@@ -60,6 +60,10 @@ userSchema.methods.isCorrectPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+userSchema.virtual('numSavedRecipes').get(function () {
+  return this.savedRecipes.length;
+});
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

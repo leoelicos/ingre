@@ -13,13 +13,14 @@ import { StoreProvider } from './utils/state/GlobalState';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import Custom from './pages/Custom';
-// import Saved from './pages/Saved';
+import Saved from './pages/Saved';
 // import ShoppingList from './pages/ShoppingList';
 // import TapOff from './pages/TapOff';
 
 // Components
 import Header from './components/Header/index';
 import Layout from './components/Layout.js';
+import MainLayout from './components/MainLayout.js';
 import SiderLeft from './components/SiderLeft';
 import Content from './components/Content';
 import Login from './pages/Admin/Login';
@@ -31,17 +32,47 @@ import NoMatch from './pages/Admin/NoMatch';
 import './App.css';
 
 // Font Awesome
-import { faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faSquareCheck, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus, faTruckLoading } from '@fortawesome/free-solid-svg-icons';
+import {
+  faBars,
+  faEgg,
+  faCircleInfo,
+  faCookie,
+  faMagnifyingGlass,
+  faCartShopping,
+  faSquareCheck,
+  faPen,
+  faCircleXmark,
+  faAdd,
+  faFloppyDisk,
+  faTrash,
+  faCubesStacked,
+  faRightToBracket,
+  faRightFromBracket,
+  faUserPlus,
+  faTruckLoading,
+  faRotateRight,
+  faRotateLeft
+  //
+} from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faSquareCheck, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus, faTruckLoading);
+library.add(faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faSquareCheck, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus, faTruckLoading, faRotateRight, faRotateLeft);
 
 // ApolloClient, cache, and 2 middlewares: authLink and GraphQL
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('id_token');
-  return { headers: { ...headers, authorization: token ? `Bearer ${token}` : '' } };
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : ''
+    }
+  };
 });
 const httpLink = createHttpLink({ uri: '/graphql' });
-const client = new ApolloClient({ link: authLink.concat(httpLink), cache: new InMemoryCache() });
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache()
+  //
+});
 
 function App() {
   useEffect(() => {
@@ -54,7 +85,7 @@ function App() {
         <StoreProvider>
           <Layout>
             <Header />
-            <Layout>
+            <MainLayout>
               <SiderLeft />
               <Content>
                 <Routes>
@@ -62,8 +93,8 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/search" element={<Search />} />
                   <Route path="/custom" element={<Custom />} />
-                  {/*
                   <Route path="/saved" element={<Saved />} />
+                  {/*
                   <Route path="/shoppinglist" element={<ShoppingList />} />
                   <Route path="/tapoff" element={<TapOff />} />
                   <Route path="/success" element={<Success />} />
@@ -75,7 +106,7 @@ function App() {
                   <Route path="*" element={<NoMatch />} />
                 </Routes>
               </Content>
-            </Layout>
+            </MainLayout>
           </Layout>
         </StoreProvider>
       </Router>

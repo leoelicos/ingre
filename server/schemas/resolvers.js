@@ -11,7 +11,6 @@ const { signToken } = require('../utils/auth');
 const stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
 const APP_KEY = process.env.HEROKU_EDAMAM_APP_KEY || process.env.PRODUCTION_EDAMAM_APP_KEY;
 const APP_ID = process.env.HEROKU_EDAMAM_APP_ID || process.env.PRODUCTION_EDAMAM_APP_ID;
-
 const resolvers = {
   Query: {
     getUserWithEmail: async (_, args) => {
@@ -62,19 +61,34 @@ const resolvers = {
 
     //
     getSavedRecipes: async (_, __, context) => {
-      console.log('[getSavedRecipes] CTX\t', JSON.stringify(context.user));
+      // console.log('[getSavedRecipes] CTX\t', JSON.stringify(context.user));
       let payload;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const user = await User.findById(context.user._id).populate({ path: 'savedRecipes' });
-        console.log('[getSavedRecipes] user\t', JSON.stringify(user));
-        if (!user.pro) throw new Error('User is not pro!');
         payload = user.savedRecipes;
       } catch (e) {
         console.error(e);
         payload = [];
       } finally {
         console.log('[getSavedRecipes] payload\t', JSON.stringify(payload));
+        console.log('hello');
+        return payload;
+      }
+    },
+
+    //
+    getNumSavedRecipes: async (_, __, context) => {
+      console.log('[getNumSavedRecipes] CTX', JSON.stringify(context.user));
+      let payload = 0;
+      try {
+        if (!context.user) throw new AuthenticationError('Not logged in!');
+        const user = await User.findById(context.user._id);
+        payload = user.numSavedRecipes;
+      } catch (e) {
+        console.error(e);
+      } finally {
+        console.log('[getNumSavedRecipes] payload\t', JSON.stringify(payload));
         return payload;
       }
     },
@@ -158,20 +172,20 @@ const resolvers = {
     },
 
     // saves a recipe to the database
-    saveRecipe: async (_, { input: { name, portions, ingredients, picture_url } }, context) => {
-      console.log('[saveRecipe] REQ\t', JSON.stringify({ name, portions, ingredients, picture_url }));
+    saveRecipe: async (_, args, context) => {
+      console.log('[saveRecipe] args', args);
+      const { input } = args;
+      const { name, portions, ingredients, picture_url, edamamId } = input;
+
       let payload = null;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
-        const uniqueCategories = await Category
-          //
-          .find()
+        const uniqueCategories = await Category.find()
           .select('-_id name')
           .then((categories) => categories.map((c) => c.name));
 
         const createdIngredients = [];
         for (let { name, quantity, measure, category } of ingredients) {
-          console.log('[saveRecipe] req Ing\t', name, quantity, measure, category);
           if (!name) name = 'Generic';
           if (!quantity) quantity = 1;
           if (!measure) measure = 'unit';
@@ -181,13 +195,12 @@ const resolvers = {
           let categoryId;
           if (!uniqueCategories.includes(category)) {
             uniqueCategories.push(category);
+            // new category to create
             let createdCategory = await Category.create({ name: category });
             createdCategory.save();
-            console.log('[saveRecipe] req Cat\t', JSON.stringify(createdCategory));
             categoryId = createdCategory._id;
           } else {
             let foundCategory = await Category.findOne({ name: category });
-            console.log('[saveRecipe] found Cat\t', JSON.stringify(foundCategory));
             categoryId = foundCategory._id;
           }
 
@@ -200,26 +213,29 @@ const resolvers = {
         }
         // create recipe
         const createdImage = 'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc';
+        const newRecipe = { name, portions, ingredients: createdIngredients, picture_url: picture_url || createdImage, edamamId: edamamId };
+        console.log('newRecipe', newRecipe);
         const recipe = await Recipe
           //
-          .create({ name, portions, ingredients: createdIngredients, picture_url: picture_url || createdImage })
+          .create(newRecipe)
           .then((recipe) => recipe.populate({ path: 'ingredients', populate: 'category' }));
 
         // push recipe to user.savedRecipes
         const query = context.user._id;
+        console.log('userId = ', query);
         const update = { $push: { savedRecipes: recipe._id } };
         const user = await User.findByIdAndUpdate(query, update);
         payload = recipe;
       } catch (error) {
         console.log(error);
       }
-      console.log('[saveRecipe] payload\t', JSON.stringify(payload));
+      console.log('[saveRecipe] payload\t', payload);
       return payload;
     },
 
     // updates a recipe in the database
-    updateRecipe: async (_, { recipeId, input: { name, portions, picture_url, ingredients } }, context) => {
-      console.log('[updateRecipe] REQ\t', recipeId, JSON.stringify({ name, portions, picture_url, ingredients }));
+    updateRecipe: async (_, { recipeId, input: { name, portions, picture_url, ingredients, edamamId } }, context) => {
+      console.log('[updateRecipe] REQ\t', recipeId, JSON.stringify({ name, portions, picture_url, ingredients, edamamId }));
       let dbRecipe = null;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
@@ -286,6 +302,7 @@ const resolvers = {
         dbRecipe.portions = portions;
         dbRecipe.ingredients = createdIngredients;
         dbRecipe.picture_url = picture_url || createdImage;
+        dbRecipe.edamamId = edamamId;
         await dbRecipe.save();
         dbRecipe.populate({ path: 'ingredients', populate: 'category' });
 
@@ -376,25 +393,26 @@ const resolvers = {
     },
 
     //
-    login: async (_, { email, password }) => {
-      console.log('[login] REQ\t', JSON.stringify({ email, password }));
+    login: async (_, args) => {
+      try {
+        if (!args) throw new Error('No arguments were received');
+        if (!args.email) throw new Error('No email argument was received');
+        if (!args.password) throw new Error('No password argument was received');
 
-      const user = await User.findOne({ email });
-      console.log('[login] user\t', JSON.stringify(user));
+        const { email } = args;
+        const user = await User.findOne({ email });
+        if (!user) throw new AuthenticationError('Incorrect credentials');
 
-      if (!user) throw new AuthenticationError('Incorrect credentials!');
-      console.log('[login] Correct credentials\t');
+        const { password } = args;
+        const isCorrectPassword = await user.isCorrectPassword(password);
+        if (!isCorrectPassword) throw new AuthenticationError('Incorrect credentials');
 
-      const correctPw = await user.isCorrectPassword(password);
-      if (!correctPw) throw new AuthenticationError('Incorrect credentials!');
-      console.log('[login] Correct password\t');
-
-      const token = signToken(user);
-      console.log('[login] token\t', token);
-
-      const payload = { token, user };
-      console.log('[login] payload\t', JSON.stringify(payload));
-      return payload;
+        const token = signToken(user);
+        const payload = { token, user };
+        return payload;
+      } catch (e) {
+        console.error('[login][error]' + e);
+      }
     }
   }
 };

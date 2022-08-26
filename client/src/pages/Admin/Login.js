@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { LOGIN } from '../../utils/apollo/mutations.js';
-import Auth from '../../utils/auth.js';
+import Auth from '../../utils/auth/index.js';
 
 import ContentTitle from '../../components/ContentTitle';
 import ContentSubtitle from '../../components/ContentSubtitle';
 import Alert from '../../components/Alert';
-import { Button, Form, Input, Divider } from 'antd';
+import { Button, Form, Input, Divider, Row, Col } from 'antd';
 
 const App = () => {
   const [login, { error }] = useMutation(LOGIN);
@@ -16,11 +16,12 @@ const App = () => {
   const handleFormSubmit = async (values) => {
     const { user } = values;
     const { email, password } = user;
-    const variables = { input: { email, password } };
+    const payload = { email, password };
     try {
-      console.log('variables = ', variables);
-      const res = await login({ variables });
+      console.log('payload = ', payload);
+      const res = await login({ variables: payload });
       const token = res.data.login.token;
+      console.log('localstorage token', token);
       Auth.login(token);
     } catch (e) {
       console.error(e);
@@ -38,17 +39,27 @@ const App = () => {
   }, []);
 
   return (
-    <div>
-      <ContentTitle>Login</ContentTitle>
+    <Col
+      style={{
+        width: '100%',
+        display: 'flex',
+        flexFlow: 'column nowrap',
+        alignItems: 'center'
+        //
+      }}
+    >
+      <Row>
+        <ContentTitle>Login</ContentTitle>
+      </Row>
       <Form
         form={form}
-        labelCol={{ span: 6 }}
+        labelCol={{ span: 8 }}
         labelAlign="left"
         initialValues={{ remember: true }}
-        style={{ maxWidth: '400px' }}
         colon={false}
         onValuesChange={handleChange}
         onFinish={handleFormSubmit}
+        style={{ maxWidth: '600px' }}
         //
       >
         <Form.Item
@@ -113,7 +124,7 @@ const App = () => {
           </Link>
         </Form.Item>
       </Form>
-    </div>
+    </Col>
   );
 };
 
