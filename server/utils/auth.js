@@ -9,7 +9,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const secret = process.env.HEROKU_JWT_SECRET || process.env.JWT_SECRET;
-const expiration = '2h';
+const expiration = '24h';
 
 module.exports = {
   authMiddleware: function ({ req }) {
@@ -17,9 +17,11 @@ module.exports = {
       if (!req) throw new Error('req missing');
       let token = req.body?.token || req.query?.token || req.headers?.authorization?.split(' ').pop().trim();
       if (!token) throw new Error('No token was found!');
+      // console.log('token = ', token);
       const secretOrPrivateKey = secret;
       const options = { maxAge: expiration };
-      ({ data: req.user } = jwt.verify(token, secretOrPrivateKey, options));
+      const jwtRes = jwt.verify(token, secretOrPrivateKey, options);
+      req.user = jwtRes.data;
     } catch (error) {
       console.error(error);
     } finally {
