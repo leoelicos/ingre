@@ -57,7 +57,7 @@
 }
 .ant-form-item {
   margin-bottom: 0;
-  height: 100% !important;
+  /* height: 100% !important; */
 }
 .ant-form-item-control-input {
   align-items: flex-start;
@@ -209,7 +209,7 @@ a {
   display: flex;
   flex-flow: column;
   height: fit-content;
-  max-height: 50vh;
+  max-height: 60vh;
   overflow-y: auto;
   background: transparent;
 }
