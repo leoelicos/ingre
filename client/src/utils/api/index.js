@@ -37,13 +37,11 @@ const fetchEdamam = async (search) => {
       `q=${queryString}`
       //
     ].join('&');
-  console.log('uri = ', uri);
   return (
     axios
       .get(uri)
       // check response
       .then((res) => {
-        console.log('res =', res);
         if (!res) throw new Error('Edamam 404: !res');
 
         const data = res.data;
@@ -55,7 +53,7 @@ const fetchEdamam = async (search) => {
         const blankImages = ['fe91e54771717b4aed8e279237b46b11', '323e10a433ca706efb4b22b9d8c2814e'];
         const filtered = hits.filter(({ recipe }) => {
           for (let i = 0; i < blankImages.length; i++) {
-            if (recipe.images.LARGE.url.indexOf(blankImages[i]) !== -1) return false;
+            if (recipe.images.LARGE.url.includes(blankImages[i])) return false;
           }
           return true;
         });
@@ -64,10 +62,13 @@ const fetchEdamam = async (search) => {
       // deserialize
       .then((hits) => {
         const deserialize = hits.map((hit) => {
-          const name = hit.recipe.label?.trim() || 'Generic';
-          const portions = parseInt(hit.recipe.yield) || 2;
-          const picture_url = hit.recipe.images.LARGE.url || '../../assets/ingre.png';
-          const ingredients = hit.recipe.ingredients.map((ingredient) => {
+          const { recipe, _links } = hit;
+          const edamamId = _links.self.href.split('https://api.edamam.com/api/recipes/v2/')[1].split('?')[0];
+          console.log('edamamId', edamamId);
+          const name = recipe.label?.trim() || 'Generic';
+          const portions = parseInt(recipe.yield) || 2;
+          const picture_url = recipe.images.LARGE.url || '../../assets/ingre.png';
+          const ingredients = recipe.ingredients.map((ingredient) => {
             const name = ingredient.food?.trim() || 'Generic';
             const quantity = parseFloat(ingredient.quantity) || 1;
             const measure = ingredient.measure?.trim().replace(/[<>]+/g, '') || 'unit';
@@ -76,7 +77,8 @@ const fetchEdamam = async (search) => {
             const parsedIngredient = { name, quantity, measure, category, foodId };
             return parsedIngredient;
           });
-          const parsedHit = { name, portions, picture_url, ingredients };
+
+          const parsedHit = { name, portions, picture_url, ingredients, edamamId };
           return parsedHit;
         });
         return deserialize;
