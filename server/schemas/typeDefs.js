@@ -104,7 +104,7 @@ const typeDefs = gql`
     makeUserPro: User # Saved
     saveRecipe(input: RecipeInput!): Recipe # Pages: Home, Search, Custom
     updateRecipe(recipeId: ID!, input: RecipeInput!): Recipe # Page: Custom
-    removeRecipe(recipeId: ID!): User # Page: Saved
+    removeRecipe(recipeId: ID!): Boolean # Page: Saved
     login(email: String!, password: String!): Auth # Page: Login
   }
 `;
