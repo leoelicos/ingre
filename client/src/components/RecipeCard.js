@@ -36,7 +36,7 @@ const App = (props) => {
 
   const handleSave = async () => {
     try {
-      console.log('[RecipeCard][handleSave]', recipe);
+      // console.log('[RecipeCard][handleSave]', recipe);
       const input = {
         name: recipe.name,
         portions: parseInt(recipe.portions || 1),
@@ -52,13 +52,13 @@ const App = (props) => {
         edamamId: recipe.edamamId
       };
       const payload = { variables: { input } };
-      console.log('payload = ', payload);
+      // console.log('payload = ', payload);
 
       const res = await saveRecipe(payload);
       if (!res) throw new Error('Could not save recipe');
 
       const saveData = res.data.saveRecipe;
-      console.log('[RecipeCard][handleSave]', saveData);
+      // console.log('[RecipeCard][handleSave]', saveData);
       await dispatch({ type: ADD_SAVED_RECIPE, data: saveData });
     } catch (error) {
       console.error(error);
@@ -67,22 +67,51 @@ const App = (props) => {
 
   const handleRemove = async () => {
     try {
-      if (!recipe._id) return;
-      console.log('[RecipeCard][handleRemove] recipe', recipe);
-
-      const payload = { variables: { recipeId: recipe._id } };
-      console.log('[RecipeCard][handleRemove] payload', payload);
+      let _id;
+      if (props.savePage) {
+        _id = recipe._id;
+      } else {
+        _id = state.savedRecipes.find((r) => r.edamamId === recipe.edamamId)._id;
+      }
+      console.log('[RecipeCard][handleRemove] _id', _id);
+      const payload = { variables: { recipeId: _id } };
       const res = await removeRecipe(payload);
       if (!res) throw new Error('Could not save recipe');
       const removeData = res.data;
       console.log('[RecipeCard][handleRemove] removeData', removeData);
-      await dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe._id });
+      await dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.edamamId });
     } catch (error) {
       console.error(Error);
     }
   };
 
   const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+  const editButton = (
+    <Link key="editButton" to="/custom">
+      <Button onClick={handleEdit} style={{ borderRadius: '50%', padding: '4px 8px' }}>
+        <Space>
+          <FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />
+        </Space>
+      </Button>
+    </Link>
+  );
+
+  const saveButton = (
+    <Button key="saveButton" onClick={handleSave} disabled={recipe.edamamId === '-1' || state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)} style={{ borderRadius: '50%', padding: '4px 8px' }}>
+      <Space>
+        <FontAwesomeIcon key="save" icon="fa-solid fa-floppy-disk" />
+      </Space>
+    </Button>
+  );
+
+  const removeButton = (
+    <Button key="removeButton" loading={removeRecipeLoading} onClick={handleRemove} style={{ borderRadius: '50%', padding: '4px 8px' }}>
+      <Space>
+        <FontAwesomeIcon key="save" icon="fa-solid fa-trash" />
+      </Space>
+    </Button>
+  );
+  const getActions = () => (props.savePage ? [editButton, removeButton] : [editButton, saveButton, removeButton]);
 
   return (
     <Card
@@ -104,29 +133,7 @@ const App = (props) => {
       }
       actions={
         Auth.loggedIn()
-          ? [
-              // edit button
-              <Link to="/custom">
-                <Button onClick={handleEdit} style={{ borderRadius: '50%', padding: '4px 8px' }}>
-                  <Space>
-                    <FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />
-                  </Space>
-                </Button>
-              </Link>,
-              // save button
-              <Button onClick={handleSave} disabled={recipe.edamamId === '-1' || state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)} style={{ borderRadius: '50%', padding: '4px 8px' }}>
-                <Space>
-                  <FontAwesomeIcon key="save" icon="fa-solid fa-floppy-disk" />
-                </Space>
-              </Button>,
-              // remove button
-              <Button onClick={handleRemove} disabled={!recipe._id || !state.savedRecipes.find((r) => r._id === recipe._id)} style={{ borderRadius: '50%', padding: '4px 8px' }}>
-                <Space>
-                  <FontAwesomeIcon key="save" icon="fa-solid fa-trash" />
-                </Space>
-              </Button>
-              //
-            ]
+          ? getActions()
           : [
               <Link to="/Login">
                 <Space>Login to Edit and Save!</Space>
