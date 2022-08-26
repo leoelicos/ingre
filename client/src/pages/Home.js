@@ -17,9 +17,6 @@ import { useStoreContext } from '../utils/state/GlobalState';
 // useReducer
 import { UPDATE_HOME_RECIPES, FLAG_HOME_MOUNTED } from '../utils/state/actions';
 
-// images
-import spinner from '../assets/loading.gif';
-
 const Home = () => {
   const [state, dispatch] = useStoreContext();
   const [loadingEdamam, setLoadingEdamam] = useState(false);
