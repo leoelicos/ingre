@@ -61,19 +61,34 @@ const resolvers = {
 
     //
     getSavedRecipes: async (_, __, context) => {
-      console.log('[getSavedRecipes] CTX\t', JSON.stringify(context.user));
+      // console.log('[getSavedRecipes] CTX\t', JSON.stringify(context.user));
       let payload;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const user = await User.findById(context.user._id).populate({ path: 'savedRecipes' });
-        console.log('[getSavedRecipes] user\t', JSON.stringify(user));
-        if (!user.pro) throw new Error('User is not pro!');
         payload = user.savedRecipes;
       } catch (e) {
         console.error(e);
         payload = [];
       } finally {
         console.log('[getSavedRecipes] payload\t', JSON.stringify(payload));
+        console.log('hello');
+        return payload;
+      }
+    },
+
+    //
+    getNumSavedRecipes: async (_, __, context) => {
+      console.log('[getNumSavedRecipes] CTX', JSON.stringify(context.user));
+      let payload = 0;
+      try {
+        if (!context.user) throw new AuthenticationError('Not logged in!');
+        const user = await User.findById(context.user._id);
+        payload = user.numSavedRecipes;
+      } catch (e) {
+        console.error(e);
+      } finally {
+        console.log('[getNumSavedRecipes] payload\t', JSON.stringify(payload));
         return payload;
       }
     },
@@ -158,18 +173,15 @@ const resolvers = {
 
     // saves a recipe to the database
     saveRecipe: async (_, args, context) => {
+      console.log('[saveRecipe] args', args);
       const { input } = args;
-      const { name, portions, ingredients, picture_url } = input;
+      const { name, portions, ingredients, picture_url, edamamId } = input;
 
       let payload = null;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
-        const uniqueCategories = await Category
-          // get all categories
-          .find()
-          // select only the name
+        const uniqueCategories = await Category.find()
           .select('-_id name')
-          // map new array with only the category name
           .then((categories) => categories.map((c) => c.name));
 
         const createdIngredients = [];
@@ -201,26 +213,29 @@ const resolvers = {
         }
         // create recipe
         const createdImage = 'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc';
+        const newRecipe = { name, portions, ingredients: createdIngredients, picture_url: picture_url || createdImage, edamamId: edamamId };
+        console.log('newRecipe', newRecipe);
         const recipe = await Recipe
           //
-          .create({ name, portions, ingredients: createdIngredients, picture_url: picture_url || createdImage })
+          .create(newRecipe)
           .then((recipe) => recipe.populate({ path: 'ingredients', populate: 'category' }));
 
         // push recipe to user.savedRecipes
         const query = context.user._id;
+        console.log('userId = ', query);
         const update = { $push: { savedRecipes: recipe._id } };
         const user = await User.findByIdAndUpdate(query, update);
         payload = recipe;
       } catch (error) {
         console.log(error);
       }
-      console.log('[saveRecipe] payload\t', JSON.stringify(payload));
+      console.log('[saveRecipe] payload\t', payload);
       return payload;
     },
 
     // updates a recipe in the database
-    updateRecipe: async (_, { recipeId, input: { name, portions, picture_url, ingredients } }, context) => {
-      console.log('[updateRecipe] REQ\t', recipeId, JSON.stringify({ name, portions, picture_url, ingredients }));
+    updateRecipe: async (_, { recipeId, input: { name, portions, picture_url, ingredients, edamamId } }, context) => {
+      console.log('[updateRecipe] REQ\t', recipeId, JSON.stringify({ name, portions, picture_url, ingredients, edamamId }));
       let dbRecipe = null;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
@@ -287,6 +302,7 @@ const resolvers = {
         dbRecipe.portions = portions;
         dbRecipe.ingredients = createdIngredients;
         dbRecipe.picture_url = picture_url || createdImage;
+        dbRecipe.edamamId = edamamId;
         await dbRecipe.save();
         dbRecipe.populate({ path: 'ingredients', populate: 'category' });
 
