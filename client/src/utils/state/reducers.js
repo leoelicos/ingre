@@ -38,7 +38,7 @@ export const reducer = (state, action) => {
 
     case ADD_SAVED_RECIPE:
       console.log('state.savedRecipes before', state.savedRecipes);
-      if (state.savedRecipes.find((r) => r._id === action.data._id)) return { ...state };
+      if (state.savedRecipes.find((r) => r.edamamId === action.data.edamamId)) return { ...state };
       let newSavedRecipes = JSON.parse(JSON.stringify(state.savedRecipes));
       newSavedRecipes.push(action.data);
       console.log('state.savedRecipes after', newSavedRecipes);
@@ -46,7 +46,9 @@ export const reducer = (state, action) => {
 
     case REMOVE_SAVED_RECIPE:
       const copyOfRecipes = JSON.parse(JSON.stringify(state.savedRecipes));
-      const filteredCopyOfRecipes = copyOfRecipes.filter((r) => r._id !== action.data);
+      console.log('copyOfRecipes', copyOfRecipes);
+      const filteredCopyOfRecipes = copyOfRecipes.filter((r) => r.edamamId !== action.data);
+      console.log('filteredCopyOfRecipes', filteredCopyOfRecipes);
       return { ...state, savedRecipes: filteredCopyOfRecipes };
 
     case ADD_EDIT_RECIPE:
