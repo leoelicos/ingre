@@ -1,66 +1,73 @@
-import { useEffect } from 'react';
+// React
+import { useEffect, useState } from 'react';
 
-import { ADD_SAVED_RECIPE, DELETE_SAVED_RECIPE } from '../utils/state/actions';
-import { GET_USER } from '../utils/apollo/queries';
-// import { GET_USER } from '../utils/apollo/mutations';
-import Auth from '../utils/auth';
-import { Empty } from '../components/Empty';
+// useContext
+import { useStoreContext } from '../utils/state/GlobalState';
+import { UPDATE_SAVED_RECIPES } from '../utils/state/actions';
 
-// update savedRecipes
-import { useStoreContext } from '../../utils/state/GlobalState';
+// Ant components
+import { Col, Row, Divider, Spin, Alert } from 'antd';
 
-const SavedBooks = () => {
-  const [state, dispatch] = useStoreContext();
-  if (!Auth.loggedIn()) {
-    return (
-      <Empty>
-        <p>You need to be logged in to see saved recipes!</p>
-      </Empty>
-    );
-  }
+// Custom components
+import Empty from '../components/Empty';
+import RecipeCardContainer from '../components/RecipeCardContainer';
+import ContentTitle from '../components/ContentTitle';
 
-  const handleDeleteBook = async (recipeId) => {
-    dispatch({ type: ADD_SAVED_RECIPE });
-  };
+// Apollo
+import { useQuery } from '@apollo/client';
+import { GET_SAVED_RECIPES } from '../utils/apollo/queries.js';
 
-  // if data isn't here yet, say so
-  /*   if (!userDataLength) {
-    return <h2>LOADING...</h2>;
-  } */
+// Auth
+import Auth from '../utils/auth/index.js';
+
+const Saved = () => {
+  // const [state, dispatch] = useStoreContext();
+  const { loading, error, data } = useQuery(GET_SAVED_RECIPES); //! trying to get this to work
+  const [savedRecipes, setSavedRecipes] = useState([]);
+  const [, dispatch] = useStoreContext();
 
   useEffect(() => {
     document.title = 'ingré Search';
   }, []);
 
+  useEffect(() => {
+    setSavedRecipes(data.getSavedRecipes);
+  }, [data]);
+
+  const getRecipes = (data) => {
+    console.log('Received data: ', data);
+    const recipes = data.getSavedRecipes;
+    console.log('Received recipes: ', recipes);
+    return recipes;
+  };
+
   return (
-    <>
-      <div fluid className="text-light bg-dark">
-        <div>
-          <h1>Viewing saved recipes!</h1>
-        </div>
-      </div>
-      <div>
-        <h2>{userData.savedBooks.length ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'recipe' : 'recipes'}:` : 'You have no saved recipes!'}</h2>
-        <div>
-          {userData.savedBooks.map((recipe) => {
-            return (
-              <div key={recipe.recipeId} border="dark">
-                {recipe.image ? <div.Img src={recipe.image} alt={`The cover for ${recipe.title}`} variant="top" /> : null}
-                <div.Body>
-                  <div.Title>{recipe.title}</div.Title>
-                  <p className="small">Authors: {recipe.authors}</p>
-                  <div.Text>{recipe.description}</div.Text>
-                  <div className="btn-block btn-danger" onClick={() => handleDeleteBook(recipe.recipeId)}>
-                    Delete this Book!
-                  </div>
-                </div.Body>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </>
+    <Col>
+      <Row>
+        <ContentTitle>Saved recipes</ContentTitle>
+      </Row>
+      <Row>
+        {Auth.loggedIn() ? (
+          //
+          <>
+            {loading ? (
+              //
+              <Divider>
+                <Spin tip="Loading saved recipes…"></Spin>
+              </Divider>
+            ) : error ? (
+              //
+              <Alert type="warning">Couldn't load saved recipes</Alert>
+            ) : (
+              <RecipeCardContainer results={savedRecipes} savePage={true} />
+            )}
+          </>
+        ) : (
+          <Empty>You need to be logged in to see saved recipes!</Empty>
+        )}
+      </Row>
+    </Col>
   );
 };
 
-export default SavedBooks;
+export default Saved;
