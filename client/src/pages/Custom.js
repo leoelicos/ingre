@@ -13,18 +13,22 @@ import { useStoreContext } from '../utils/state/GlobalState';
 
 // ApolloClient
 import { useMutation } from '@apollo/client';
-import { SAVE_RECIPE } from '../utils/apollo/mutations';
+import { SAVE_RECIPE, UPDATE_RECIPE } from '../utils/apollo/mutations';
 
 // Assets
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // useReducer
 import { ADD_SAVED_RECIPE, CLEAR_EDIT_RECIPE } from '../utils/state/actions';
+import { GET_SAVED_RECIPES, GET_NUM_SAVED_RECIPES } from '../utils/apollo/queries';
 
 const App = () => {
   const [state, dispatch] = useStoreContext();
   const [form] = Form.useForm();
-  const [addCustomRecipe, { error }] = useMutation(SAVE_RECIPE);
+  const [addCustomRecipe, { error }] = useMutation(SAVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
+
+  const [updateRecipe] = useMutation(UPDATE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }] });
+
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -45,32 +49,48 @@ const App = () => {
   };
 
   const onFinish = async (values) => {
-    console.log('onFinish', values);
-    const eggImage = 'https://i.ebayimg.com/images/g/GxwAAOSwpI5eOv8Q/s-l500.jpg';
-    const input = {
-      name: values.name || 'Custom recipe',
-      portions: isNaN(parseInt(values.portions)) ? 1 : parseInt(values.portions),
-      ingredients: values.ingredients.map((i) => {
-        const name = i.name || 'Ingredient';
-        const quantity = isNaN(parseFloat(i.quantity)) ? 1 : parseFloat(i.quantity);
-        const measure = i.measure || 'unit';
-        const category = i.category || 'Generic';
-        const ingredient = { name, quantity, measure, category };
-        return ingredient;
-      }),
-      picture_url: state.customRecipe?.picture_url || eggImage,
-      edamamId: state.customRecipe?.edamamId || '-1'
-    };
-    const payload = { variables: { input } };
-    console.log('custom payload = ', payload);
-    setLoading(true);
-    const mutationResponse = await addCustomRecipe(payload);
-    setLoading(false);
-    if (error) console.log('error ', error);
-    const data = mutationResponse.data.saveRecipe;
-    dispatch({ type: ADD_SAVED_RECIPE, data });
-    setSaved(true);
-    dispatch({ type: CLEAR_EDIT_RECIPE });
+    try {
+      console.log('onFinish', values);
+      const eggImage = 'https://i.ebayimg.com/images/g/GxwAAOSwpI5eOv8Q/s-l500.jpg';
+      const input = {
+        name: values.name || 'Custom recipe',
+        portions: isNaN(parseInt(values.portions)) ? 1 : parseInt(values.portions),
+        ingredients: values.ingredients.map((i) => {
+          const name = i.name || 'Ingredient';
+          const quantity = isNaN(parseFloat(i.quantity)) ? 1 : parseFloat(i.quantity);
+          const measure = i.measure || 'unit';
+          const category = i.category || 'Generic';
+          const ingredient = { name, quantity, measure, category };
+          return ingredient;
+        }),
+        picture_url: state.customRecipe?.picture_url || eggImage,
+        edamamId: state.customRecipe?.edamamId || '-1'
+      };
+      const payload = { variables: { input } };
+      console.log('custom payload = ', payload);
+      setLoading(true);
+
+      //! Can't work this out
+      let mutationResponse;
+      if (state.savedRecipes.find((r) => r.edamamId === state.customRecipe?.edamamId)) {
+        // already exists in state, update
+        console.log('already exists in state, update');
+        mutationResponse = await updateRecipe(payload);
+      } else {
+        // does not exist in state, create new
+        console.log('does not exist in state, create new');
+        mutationResponse = await addCustomRecipe(payload);
+      }
+
+      setLoading(false);
+      if (error) console.log('error ', error);
+      const data = mutationResponse.data.saveRecipe;
+      dispatch({ type: ADD_SAVED_RECIPE, data });
+      setSaved(true);
+      dispatch({ type: CLEAR_EDIT_RECIPE });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

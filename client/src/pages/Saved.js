@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 // useContext
 import { useStoreContext } from '../utils/state/GlobalState';
-import { UPDATE_SAVED_RECIPES } from '../utils/state/actions';
+// import { UPDATE_SAVED_RECIPES } from '../utils/state/actions';
 
 // Ant components
 import { Col, Row, Divider, Spin, Alert } from 'antd';
@@ -22,25 +22,20 @@ import Auth from '../utils/auth/index.js';
 
 const Saved = () => {
   // const [state, dispatch] = useStoreContext();
-  const { loading, error, data } = useQuery(GET_SAVED_RECIPES); //! trying to get this to work
+  const { loading, error, data } = useQuery(GET_SAVED_RECIPES);
   const [savedRecipes, setSavedRecipes] = useState([]);
-  const [, dispatch] = useStoreContext();
+  // const [, dispatch] = useStoreContext();
 
   useEffect(() => {
     document.title = 'ingré Search';
   }, []);
 
   useEffect(() => {
-    setSavedRecipes(data.getSavedRecipes);
-  }, [data]);
+    if (!loading && !error && data) setSavedRecipes(data.getSavedRecipes);
+  }, [loading, error, data]);
 
-  const getRecipes = (data) => {
-    console.log('Received data: ', data);
-    const recipes = data.getSavedRecipes;
-    console.log('Received recipes: ', recipes);
-    return recipes;
-  };
-
+  if (loading) return <Divider>Loading</Divider>;
+  if (error) return <Divider>Error</Divider>;
   return (
     <Col>
       <Row>
