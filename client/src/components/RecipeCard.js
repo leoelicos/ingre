@@ -15,6 +15,7 @@ import { Card, Image, Button, Space, Tooltip } from 'antd';
 // Apollo
 import { useMutation } from '@apollo/client';
 import { SAVE_RECIPE, REMOVE_RECIPE } from '../utils/apollo/mutations';
+import { GET_SAVED_RECIPES, GET_NUM_SAVED_RECIPES } from '../utils/apollo/queries';
 
 // JWT Decode
 import Auth from '../utils/auth';
@@ -24,8 +25,8 @@ const { Meta } = Card;
 const App = (props) => {
   const { recipe } = props;
   // ApolloClient
-  const [saveRecipe, { data: saveRecipeData, loading: saveRecipeLoading, error: saveRecipeError }] = useMutation(SAVE_RECIPE);
-  const [removeRecipe, { data: removeRecipeData, loading: removeRecipeLoading, error: removeRecipeError }] = useMutation(REMOVE_RECIPE);
+  const [saveRecipe, { data: saveRecipeData, loading: saveRecipeLoading, error: saveRecipeError }] = useMutation(SAVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
+  const [removeRecipe, { data: removeRecipeData, loading: removeRecipeLoading, error: removeRecipeError }] = useMutation(REMOVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
 
   const [state, dispatch] = useStoreContext();
 
