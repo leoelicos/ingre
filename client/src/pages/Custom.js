@@ -46,20 +46,23 @@ const App = () => {
 
   const onFinish = async (values) => {
     console.log('onFinish', values);
-    // if (values.ingredients.length === 0) return
+    const eggImage = 'https://i.ebayimg.com/images/g/GxwAAOSwpI5eOv8Q/s-l500.jpg';
     const input = {
       name: values.name || 'Custom recipe',
-      portions: parseInt(values.portions || 1),
+      portions: isNaN(parseInt(values.portions)) ? 1 : parseInt(values.portions),
       ingredients: values.ingredients.map((i) => {
         const name = i.name || 'Ingredient';
-        const quantity = parseFloat(i.quantity || 1);
+        const quantity = isNaN(parseFloat(i.quantity)) ? 1 : parseFloat(i.quantity);
         const measure = i.measure || 'unit';
         const category = i.category || 'Generic';
         const ingredient = { name, quantity, measure, category };
         return ingredient;
-      })
+      }),
+      picture_url: state.customRecipe?.picture_url || eggImage,
+      edamamId: state.customRecipe?.edamamId || '-1'
     };
     const payload = { variables: { input } };
+    console.log('custom payload = ', payload);
     setLoading(true);
     const mutationResponse = await addCustomRecipe(payload);
     setLoading(false);
