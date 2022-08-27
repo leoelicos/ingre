@@ -1,5 +1,6 @@
 // React hooks
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 // Ant components
 import { Button, Form, Input, Space, Col, Divider, Row, Alert } from 'antd';
@@ -77,7 +78,7 @@ const App = () => {
         console.log('already exists in state, update');
         mutationResponse = await updateRecipe(payload);
       } else {
-        // does not exist in state, create new
+        // does not exist in state.savedRecipes, create new
         console.log('does not exist in state, create new');
         mutationResponse = await addCustomRecipe(payload);
       }
@@ -350,55 +351,73 @@ const App = () => {
             </Form.List>
           </Col>
         </Row>
-        <Row>
+        <Row style={{ marginTop: '1rem' }}>
           <Col span={24}>
             <Form.Item>
-              <Col span={24}>
-                <Button
-                  disabled={saved}
-                  type="primary"
-                  htmlType="submit"
-                  style={{ width: '100%' }}
+              <Button
+                type="secondary"
+                disabled={saved}
+                style={{
+                  width: '100%',
+                  marginTop: '0.3rem'
                   //
-                >
-                  {loading ? (
-                    <Space>Saving…</Space>
-                  ) : saved ? (
-                    <Space>Saved!</Space>
-                  ) : (
-                    <Space>
-                      <FontAwesomeIcon icon="fa-solid fa-floppy-disk" />
-                      Save
-                    </Space>
-                  )}
-                </Button>
+                }}
+                onClick={() => {
+                  form.setFieldsValue({
+                    name: '',
+                    portions: '',
+                    ingredients: []
+                  });
+                }}
+              >
+                Clear all
+              </Button>
+            </Form.Item>
 
-                <Button
-                  type="secondary"
-                  style={{ width: '100%', marginTop: '0.3rem' }}
-                  onClick={() => {
-                    form.setFieldsValue({
-                      name: '',
-                      portions: '',
-                      ingredients: []
-                    });
-                  }}
-                >
-                  Clear all
-                </Button>
+            <Form.Item>
+              <Button
+                type="dashed"
+                disabled={saved}
+                style={{ width: '100%', marginTop: '0.5rem' }}
+                onClick={() => {
+                  form.resetFields();
+                }}
+              >
+                <Space>
+                  <FontAwesomeIcon icon="fa-solid fa-rotate-left" /> Undo all edits
+                </Space>
+              </Button>
+            </Form.Item>
 
-                <Button
-                  type="dashed"
-                  style={{ width: '100%', marginTop: '0.3rem' }}
-                  onClick={() => {
-                    form.resetFields();
-                  }}
-                >
+            <Form.Item>
+              <Button
+                disabled={saved}
+                type="primary"
+                htmlType="submit"
+                style={{ width: '100%', marginTop: '1rem' }}
+                //
+              >
+                {loading ? (
+                  <Space>Saving…</Space>
+                ) : saved ? (
+                  <Space>Saved!</Space>
+                ) : (
                   <Space>
-                    <FontAwesomeIcon icon="fa-solid fa-rotate-left" /> Undo all edits
+                    <FontAwesomeIcon icon="fa-solid fa-floppy-disk" />
+                    Save
                   </Space>
-                </Button>
-              </Col>
+                )}
+              </Button>
+            </Form.Item>
+
+            <Form.Item>
+              {saved && (
+                <Link to="/saved">
+                  <Button type="primary" style={{ width: '100%', marginTop: '1rem' }}>
+                    All saved recipes
+                  </Button>
+                </Link>
+              )}
             </Form.Item>
           </Col>
         </Row>

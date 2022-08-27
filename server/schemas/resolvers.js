@@ -44,8 +44,11 @@ const resolvers = {
     },
 
     //
-    getRecipe: async (_, { _id }) => {
-      console.log('[getRecipe] REQ\t', _id);
+    getRecipe: async (_, args) => {
+      console.log('[getRecipe]');
+      console.log('args', args);
+      const { _id } = args;
+      console.log('_id', _id);
       let recipe = null;
       try {
         recipe = await Recipe.findById(_id).populate({ path: 'ingredients', populate: 'category' });
@@ -60,8 +63,10 @@ const resolvers = {
     //
     getSavedRecipes: async (_, __, context) => {
       try {
+        console.log('[getSavedRecipes]');
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const user = await User.findById(context.user._id).populate({ path: 'savedRecipes' });
+        if (!user) throw new Error('User not found, please log in');
         payload = user.savedRecipes;
       } catch (e) {
         console.error(e);
@@ -78,6 +83,7 @@ const resolvers = {
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const user = await User.findById(context.user._id);
+        if (!user) throw new Error('User not found, please log in');
         payload = user.savedRecipes.length;
       } catch (e) {
         console.error(e);
@@ -138,6 +144,7 @@ const resolvers = {
       let token;
       try {
         user = await User.create({ ...input });
+        if (!user) throw new Error('User not created');
         user.save();
         token = signToken(user);
       } catch (e) {
@@ -155,7 +162,7 @@ const resolvers = {
           //
           .findByIdAndUpdate(context.user._id, { $set: { pro: true } }, { new: true })
           .select('pro');
-
+        if (!user) throw new Error('User not found, please log in');
         pro = true;
       } catch (error) {
         console.error(error);
@@ -224,6 +231,7 @@ const resolvers = {
         if (!query) throw new Error('No user found');
         const update = { $push: { savedRecipes: recipe._id } };
         const user = await User.findByIdAndUpdate(query, update, { new: true });
+        if (!user) throw new Error('User not found, please log in');
         console.log('user.savedRecipes:', user.savedRecipes);
         payload = recipe;
       } catch (error) {
@@ -380,6 +388,7 @@ const resolvers = {
         // remove recipe from user.savedRecipes
         console.log('context.user._id', context.user._id);
         const user = await User.findByIdAndUpdate(context.user._id, { $pull: { savedRecipes: recipeId } }, { new: true });
+        if (!user) throw new Error('User not found, please log in');
         payload = true;
       } catch (error) {
         payload = false;

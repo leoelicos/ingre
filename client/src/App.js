@@ -74,6 +74,7 @@ const client = new ApolloClient({
   //
 });
 
+console.clear();
 function App() {
   useEffect(() => {
     document.title = 'ingré';

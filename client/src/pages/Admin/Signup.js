@@ -77,7 +77,7 @@ const App = () => {
 
   return (
     <div>
-      <ContentTitle>Signup</ContentTitle>
+      <ContentTitle>Sign up</ContentTitle>
       <Form
         form={form}
         labelCol={{ span: 8 }}
@@ -212,7 +212,7 @@ const App = () => {
           <ContentSubtitle>Have an account?</ContentSubtitle>
           <Link to="/login">
             <Button
-              type="default"
+              type="ghost"
               style={{ width: '100%' }}
               //
             >

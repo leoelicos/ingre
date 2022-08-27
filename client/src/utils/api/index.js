@@ -20,6 +20,7 @@ const fetchEdamam = async (search) => {
     queryString = getQueryParamString(q, diet, health, cuisineType, mealType, dishType);
   }
 
+  //! we are supposed to get APP_ID from backend instead
   console.log('queryString = ', queryString);
   let uri =
     `https://api.edamam.com/api/recipes/v2?` +
@@ -64,7 +65,7 @@ const fetchEdamam = async (search) => {
         const deserialize = hits.map((hit) => {
           const { recipe, _links } = hit;
           const edamamId = _links.self.href.split('https://api.edamam.com/api/recipes/v2/')[1].split('?')[0];
-          console.log('edamamId', edamamId);
+          // console.log('edamamId', edamamId);
           const name = recipe.label?.trim() || 'Generic';
           const portions = parseInt(recipe.yield) || 2;
           const picture_url = recipe.images.LARGE.url || '../../assets/ingre.png';
