@@ -43,16 +43,15 @@ function App() {
       const hits = await FetchEdamam(search);
       setEdamamRecipes(hits);
       setLoadingEdamam(false);
-
-      // update global store
-      const type = UPDATE_SEARCH_RECIPES;
-      const data = edamamRecipes;
-      const payload = { type, data };
-      dispatch(payload);
     } catch (e) {
       console.error(e);
     }
   };
+
+  useEffect(() => {
+    // update global store
+    dispatch({ type: UPDATE_SEARCH_RECIPES, data: edamamRecipes });
+  }, [dispatch, edamamRecipes]);
 
   const handleChange = (event) => {
     setQueryState(event.target.value);
