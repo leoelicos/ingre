@@ -13,7 +13,7 @@ import { ADD_SAVED_RECIPE, REMOVE_SAVED_RECIPE, ADD_EDIT_RECIPE } from '../utils
 import { Card, Image, Button, Space, Tooltip } from 'antd';
 
 // Apollo
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { useMutation, useApolloClient } from '@apollo/client';
 import { SAVE_RECIPE, REMOVE_RECIPE } from '../utils/apollo/mutations';
 import { GET_SAVED_RECIPES, GET_NUM_SAVED_RECIPES, GET_RECIPE } from '../utils/apollo/queries';
 
@@ -28,18 +28,25 @@ const App = (props) => {
   const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] = useMutation(SAVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
   const [removeRecipe, { loading: removeRecipeLoading, error: removeRecipeError }] = useMutation(REMOVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
 
-  const [getRecipe, { loading: recipeLoading, error: recipeError, data: recipeData }] = useLazyQuery(GET_RECIPE);
+  // const [getRecipe] = useLazyQuery(GET_RECIPE);
 
   const [state, dispatch] = useStoreContext();
+  const client = useApolloClient();
 
   const handleEdit = async () => {
     let data;
+
     console.log('[handleEdit] recipe', recipe);
     if (recipe._id) {
-      console.log('get ingredients from server', { variables: { _id: recipe._id } });
-      const res = await getRecipe({ variables: { _id: recipe._id } }); //! this isn't working
-      console.log('res', res);
-      data = res.getRecipe;
+      console.log('get ingredients from server', { variables: { id: recipe._id } });
+      // const res = await getRecipe({ variables: { id: recipe._id } }); //! this isn't working
+
+      const res = await client.query({
+        query: GET_RECIPE,
+        variables: { id: recipe._id }
+      });
+
+      data = JSON.parse(JSON.stringify(res.data.getRecipe));
     } else {
       console.log('get ingredients from state.homeRecipes');
       data = recipe;
