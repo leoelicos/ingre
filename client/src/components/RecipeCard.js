@@ -1,5 +1,5 @@
 // React
-import { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 // Font Awesome
@@ -7,15 +7,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // Global state
 import { useStoreContext } from '../utils/state/GlobalState';
-import { ADD_SAVED_RECIPE, ADD_EDIT_RECIPE, REMOVE_SAVED_RECIPE } from '../utils/state/actions';
+import { ADD_SAVED_RECIPE, REMOVE_SAVED_RECIPE, ADD_EDIT_RECIPE } from '../utils/state/actions';
 
 // Component library
 import { Card, Image, Button, Space, Tooltip } from 'antd';
 
 // Apollo
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { SAVE_RECIPE, REMOVE_RECIPE } from '../utils/apollo/mutations';
-import { GET_SAVED_RECIPES, GET_NUM_SAVED_RECIPES } from '../utils/apollo/queries';
+import { GET_SAVED_RECIPES, GET_NUM_SAVED_RECIPES, GET_RECIPE } from '../utils/apollo/queries';
 
 // JWT Decode
 import Auth from '../utils/auth';
@@ -25,13 +25,28 @@ const { Meta } = Card;
 const App = (props) => {
   const { recipe } = props;
   // ApolloClient
-  const [saveRecipe, { data: saveRecipeData, loading: saveRecipeLoading, error: saveRecipeError }] = useMutation(SAVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
-  const [removeRecipe, { data: removeRecipeData, loading: removeRecipeLoading, error: removeRecipeError }] = useMutation(REMOVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
+  const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] = useMutation(SAVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
+  const [removeRecipe, { loading: removeRecipeLoading, error: removeRecipeError }] = useMutation(REMOVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
+
+  const [getRecipe, { loading: recipeLoading, error: recipeError, data: recipeData }] = useLazyQuery(GET_RECIPE);
 
   const [state, dispatch] = useStoreContext();
 
-  const handleEdit = () => {
-    dispatch({ type: ADD_EDIT_RECIPE, data: recipe });
+  const handleEdit = async () => {
+    let data;
+    console.log('[handleEdit] recipe', recipe);
+    if (recipe._id) {
+      console.log('get ingredients from server', { variables: { _id: recipe._id } });
+      const res = await getRecipe({ variables: { _id: recipe._id } }); //! this isn't working
+      console.log('res', res);
+      data = res.getRecipe;
+    } else {
+      console.log('get ingredients from state.homeRecipes');
+      data = recipe;
+    }
+    // push custom to state
+    console.log('data', data);
+    dispatch({ type: ADD_EDIT_RECIPE, data: data });
   };
 
   const handleSave = async () => {
@@ -96,15 +111,19 @@ const App = (props) => {
     </Link>
   );
 
-  const saveButton = (
-    <Button key="saveButton" onClick={handleSave} disabled={recipe.edamamId === '-1' || state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)} style={{ borderRadius: '50%', padding: '4px 8px' }}>
+  const saveButton = saveRecipeError ? (
+    <></>
+  ) : (
+    <Button key="saveButton" loading={saveRecipeLoading} onClick={handleSave} disabled={recipe.edamamId === '-1' || state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)} style={{ borderRadius: '50%', padding: '4px 8px' }}>
       <Space>
         <FontAwesomeIcon key="save" icon="fa-solid fa-floppy-disk" />
       </Space>
     </Button>
   );
 
-  const removeButton = (
+  const removeButton = removeRecipeError ? (
+    <></>
+  ) : (
     <Button key="removeButton" loading={removeRecipeLoading} onClick={handleRemove} style={{ borderRadius: '50%', padding: '4px 8px' }}>
       <Space>
         <FontAwesomeIcon key="save" icon="fa-solid fa-trash" />
