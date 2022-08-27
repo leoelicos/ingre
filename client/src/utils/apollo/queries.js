@@ -33,16 +33,16 @@ export const GET_SAVED_RECIPES = gql`
       name
       portions
       picture_url
-      ingredients {
-        _id
-        name
-        quantity
-        measure
-        category {
-          _id
-          name
-        }
-      }
+      # ingredients {
+      #   _id
+      #   name
+      #   quantity
+      #   measure
+      #   category {
+      #     _id
+      #     name
+      #   }
+      # }
     }
   }
 `;
