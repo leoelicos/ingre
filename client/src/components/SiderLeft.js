@@ -22,7 +22,7 @@ import { Layout, Menu, Space } from 'antd';
 const { Sider } = Layout;
 
 const App = () => {
-  const { loading, error, data } = useQuery(GET_NUM_SAVED_RECIPES); //! this is faulty
+  const { loading, error, data } = useQuery(GET_NUM_SAVED_RECIPES);
 
   const location = useLocation();
   const { pathname } = location;
