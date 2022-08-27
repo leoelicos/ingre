@@ -35,7 +35,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    document.title = 'Login';
+    document.title = 'Log in';
   }, []);
 
   return (
@@ -115,11 +115,11 @@ const App = () => {
           <ContentSubtitle>No account?</ContentSubtitle>
           <Link to="/signup">
             <Button
-              type="default"
+              type="ghost"
               style={{ width: '100%' }}
               //
             >
-              Signup
+              Sign up
             </Button>
           </Link>
         </Form.Item>
