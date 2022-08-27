@@ -14,14 +14,16 @@ const seedUsers = async () => {
       lastName: 'pro',
       email: 'pro@ingre.com',
       password: 'northshore',
-      pro: true
+      pro: true,
+      savedRecipes: []
     }),
     User.create({
       firstName: 'notpro',
       lastName: 'notpro',
       email: 'notpro@ingre.com',
       password: 'northshore',
-      pro: false
+      pro: false,
+      savedRecipes: []
     })
   ]);
 };
