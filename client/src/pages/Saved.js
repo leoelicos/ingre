@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 // useContext
 import { useStoreContext } from '../utils/state/GlobalState';
-// import { UPDATE_SAVED_RECIPES } from '../utils/state/actions';
+import { UPDATE_SAVED_RECIPES } from '../utils/state/actions';
 
 // Ant components
 import { Col, Row, Divider, Spin, Alert } from 'antd';
@@ -21,18 +21,23 @@ import { GET_SAVED_RECIPES } from '../utils/apollo/queries.js';
 import Auth from '../utils/auth/index.js';
 
 const Saved = () => {
-  // const [state, dispatch] = useStoreContext();
   const { loading, error, data } = useQuery(GET_SAVED_RECIPES);
   const [savedRecipes, setSavedRecipes] = useState([]);
-  // const [, dispatch] = useStoreContext();
+  const [, dispatch] = useStoreContext();
 
   useEffect(() => {
     document.title = 'ingré Search';
   }, []);
 
   useEffect(() => {
-    if (!loading && !error && data) setSavedRecipes(data.getSavedRecipes);
+    if (!loading && !error && data) {
+      setSavedRecipes(data.getSavedRecipes);
+    }
   }, [loading, error, data]);
+
+  useEffect(() => {
+    dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes });
+  }, [dispatch, savedRecipes]);
 
   if (loading) return <Divider>Loading</Divider>;
   if (error) return <Divider>Error</Divider>;
