@@ -100,8 +100,8 @@ const Home = () => {
           <Button onClick={() => handleRefresh('breakfast')}>Breakfast</Button>
           <Button onClick={() => handleRefresh('lunch')}>Lunch</Button>
           <Button onClick={() => handleRefresh('dinner')}>Dinner</Button>
-          <Button>
-            <Link to="/search">Advanced Search</Link>
+          <Button type="ghost">
+            <Link to="/search">Search</Link>
           </Button>
         </Space>
       </Row>
