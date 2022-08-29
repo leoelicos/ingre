@@ -1,6 +1,3 @@
-// React
-import { useEffect, useState } from 'react';
-
 // React Router DOM
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
@@ -93,7 +90,7 @@ const App = () => {
                 />
               </Link>
             ),
-            label: <Link to="/custom">Custom</Link>
+            label: <Link to="/custom">Customise</Link>
           },
           {
             key: 4,
@@ -110,18 +107,7 @@ const App = () => {
               <Link to="/saved">
                 <Space>
                   Saved
-                  <span
-                    style={{
-                      fontSize: '1rem',
-                      padding: '0 0.4rem',
-                      borderRadius: '50%',
-                      color: 'var(--ingre-white)',
-                      background: 'var(--ingre-dark-brown)'
-                      //
-                    }}
-                  >
-                    {loading || error ? 0 : data.getNumSavedRecipes}
-                  </span>
+                  <span style={{ color: 'var(--ingre-dark-brown)' }}>{loading || error ? 0 : data.getNumSavedRecipes}</span>
                 </Space>
               </Link>
             )
