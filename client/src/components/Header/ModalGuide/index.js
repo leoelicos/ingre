@@ -1,4 +1,4 @@
-import { Button, Modal, Divider, Space } from 'antd';
+import { Button, Modal, Divider, Space, Timeline } from 'antd';
 
 import { useStoreContext } from '../../../utils/state/GlobalState';
 import { HIDE_MODAL } from '../../../utils/state/actions';
@@ -87,79 +87,86 @@ var getModalText = (pathname) => {
   switch (pathname) {
     case '/':
       return (
-        <>
-          <p>Explore recipes from your phone. 2 million recipes specially curated by Edamam.</p>
-          <p>Like a recipe? Click {faSave} to add it to your Saved list.</p>
-          <p>You can also {faPen} customize them!</p>
-        </>
+        <Timeline>
+          <Timeline.Item color="green">Explore recipes from your phone. 2 million recipes specially curated by Edamam.</Timeline.Item>
+          <Timeline.Item>Like a recipe? Click {faSave} to add it to your Saved list.</Timeline.Item>
+          <Timeline.Item>You can also {faPen} customize them!</Timeline.Item>
+        </Timeline>
       );
     case '/search':
       return (
-        <>
-          <p>Search from 2 million tested recipes. </p>
-          <p>Enter a search term and click {faMagnifyingGlass} or type Enter. </p>
-          <p>To clear search, click {faCircleXmark}.</p>
-          <p>To narrow your search, select from our many filters available.</p>
-          <p>Like a recipe? Click {faSave} to add it to your Saved list.</p>
-          <p>You can also {faPen} customize them!</p>
-        </>
+        <Timeline>
+          <Timeline.Item color="green">Search from 2 million tested recipes. </Timeline.Item>
+          <Timeline.Item color="blue">Enter a search term and click {faMagnifyingGlass} or type Enter. </Timeline.Item>
+          <Timeline.Item color="red">To clear search, click {faCircleXmark}.</Timeline.Item>
+          <Timeline.Item>To narrow your search, select from our many filters available.</Timeline.Item>
+          <Timeline.Item>Like a recipe? Click {faSave} to add it to your Saved list.</Timeline.Item>
+          <Timeline.Item>You can also {faPen} customize them!</Timeline.Item>
+        </Timeline>
       );
 
     case '/custom':
       return (
-        <>
-          <p>Make it your own.</p>
-          <p>Customize a recipe, or Reset to start again! </p>
-          <p>To edit recipe name, click on the box to type.</p>
-          <p>For servings and quantities, enter a number or a decimal.</p>
-          <p>For dropdown menus, click on the box and select from the options that appear.</p>
-          <p>To add a new ingredient, click on {faAdd}.</p>
-          <p>To delete an existing ingredient, click on {faTrash}.</p>
-        </>
+        <Timeline>
+          <Timeline.Item color="green">Make it your own.</Timeline.Item>
+          <Timeline.Item>Customize a recipe, or Reset to start again! </Timeline.Item>
+          <Timeline.Item color="blue">To edit recipe name, click on the box to type.</Timeline.Item>
+          <Timeline.Item color="blue">For servings and quantities, enter a number or a decimal.</Timeline.Item>
+          <Timeline.Item color="blue">For dropdown menus, click on the box and select from the options that appear.</Timeline.Item>
+          <Timeline.Item color="blue">To add a new ingredient, click on {faAdd}.</Timeline.Item>
+          <Timeline.Item color="red">To delete an existing ingredient, click on {faTrash}.</Timeline.Item>
+        </Timeline>
       );
 
     case '/saved':
       return (
-        <>
-          <p>Keep your recipes safe</p>
-          <p>All your recipes in one place!</p>
-          <p>You can edit portion sizes on this page.</p>
-          <p>Want to permanently save your recipes to Library? Upgrade to {faCubesStacked} PRO for $5 today! </p>
-        </>
+        <Timeline>
+          <Timeline.Item color="green">Your saved recipes are stored here for 24 hours</Timeline.Item>
+          <Timeline.Item>All your recipes in one place!</Timeline.Item>
+          <Timeline.Item color="blue">Click {faPen} to edit recipes.</Timeline.Item>
+          <Timeline.Item color="blue">Click {faTrash} to remove recipes.</Timeline.Item>
+          <Timeline.Item color="red">Your recipes will be deleted after 24 hours.</Timeline.Item>
+          <Timeline.Item color="blue">Upgrade to {faCubesStacked} PRO for $5 to save recipes permanently.</Timeline.Item>
+        </Timeline>
       );
 
     case '/shoppinglist':
       return (
-        <>
-          <p>The final edit!</p>
-          <p>We've added everything up for you and divided them into categories.</p>
-          <p>It's up to you to consider: </p>
-          <p>Have I got it already in my fridge?</p>
-          <p>Corn is not in season, can I use peas instead?</p>
-          <p>Fish doesn't look fresh, can I use a different protein?</p>
-          <p>No problem! Just click on the boxes to edit the ingredients.</p>
-          <p>There's even a Misc section for additional groceries!</p>
-          <p>
-            Click {faAdd} to add a new ingredient. Click {faTrash} to remove an ingredient.
-          </p>
-        </>
+        <Timeline>
+          <Timeline.Item color="green">The final edit!</Timeline.Item>
+          <Timeline.Item>Have you checked your fridge? Is it in season? Edit away!</Timeline.Item>
+          <Timeline.Item color="blue">Click {faAdd} to add a new ingredient.</Timeline.Item>
+          <Timeline.Item color="red">Click {faTrash} to remove an ingredient.</Timeline.Item>
+          <Timeline.Item>There is a Misc section for additional groceries!</Timeline.Item>
+        </Timeline>
       );
 
     case '/tapoff':
       return (
-        <>
-          <p> Tap off each ingredient as you shop in the supermarket.</p>
-          <p>Good luck! When you're done, click "All done" to clear your Saved recipes and Shopping list.</p>
-          <p>Upgrade to {faCubesStacked} PRO for $5 and automatically save your recipes permanently in Library!</p>
-        </>
+        <Timeline>
+          <Timeline.Item color="green"> Tap off each ingredient as you shop in the supermarket.</Timeline.Item>
+          <Timeline.Item color="blue">Good luck! When you're done, click "All done" to clear your Saved recipes and Shopping list.</Timeline.Item>
+        </Timeline>
       );
 
     case '/login':
-      return <p>Log in to start saving recipes!</p>;
+      return (
+        <Timeline>
+          <Timeline.Item color="green">Log in to start saving recipes!</Timeline.Item>
+        </Timeline>
+      );
     case '/signup':
-      return <p>Sign up to start saving recipes!</p>;
+      return (
+        <Timeline>
+          <Timeline.Item color="green">Sign up to start saving recipes!</Timeline.Item>
+        </Timeline>
+      );
 
     default:
-      return <p>Please check that you are on a valid page.</p>;
+      return (
+        <Timeline>
+          <Timeline.Item color="green">Please check that you are on a valid page.</Timeline.Item>
+        </Timeline>
+      );
   }
 };
