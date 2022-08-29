@@ -16,7 +16,7 @@ import {
 
 // The reducer is a function that accepts the current state and an action. It returns a new state based on that action.
 export const reducer = (state, action) => {
-  console.log('Reducer', action);
+  console.log(`REDUCER\t[${action.type}]`, action.data);
 
   switch (action.type) {
     case SHOW_MODAL:
@@ -32,6 +32,7 @@ export const reducer = (state, action) => {
 
     case UPDATE_HOME_RECIPES:
       return { ...state, homeRecipes: action.data };
+
     case UPDATE_SAVED_RECIPES:
       if (action.data === undefined) return { ...state, savedRecipes: [] };
       return { ...state, savedRecipes: action.data };
