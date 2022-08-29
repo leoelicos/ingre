@@ -6,7 +6,6 @@ import { Button, Space, Row, Spin, Divider, Col } from 'antd';
 
 // Custom components
 import RecipeCardContainer from '../components/RecipeCardContainer';
-import ContentTitle from '../components/ContentTitle';
 
 // Edamam API
 import FetchEdamam from '../utils/api/index.js';
@@ -23,7 +22,6 @@ const Home = () => {
   const [edamamRecipes, setEdamamRecipes] = useState(state.homeRecipes);
 
   const handleRefresh = async (query) => {
-    console.log('Refresh clicked, fetchEdamam, setRecipes');
     try {
       setLoadingEdamam(true);
       let noQuery = { q: ' ', diet: [], health: [], cuisineType: [], mealType: [], dishType: [] };
@@ -43,7 +41,7 @@ const Home = () => {
       } else {
         hits = await FetchEdamam();
       }
-      console.log('hits = ', hits);
+      // console.log('hits = ', hits);
       setEdamamRecipes(hits);
       setLoadingEdamam(false);
       dispatch({ type: UPDATE_HOME_RECIPES, data: edamamRecipes });
@@ -87,10 +85,6 @@ const Home = () => {
 
   return (
     <Col>
-      <Row>
-        <ContentTitle>Explore recipes</ContentTitle>
-      </Row>
-
       <Row>
         <Space className="explore-buttons" wrap>
           <Button onClick={() => handleRefresh()}>Random</Button>
