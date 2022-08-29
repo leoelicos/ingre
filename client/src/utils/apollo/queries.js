@@ -33,6 +33,7 @@ export const GET_SAVED_RECIPES = gql`
       name
       portions
       picture_url
+      edamamId
       # ingredients {
       #   _id
       #   name

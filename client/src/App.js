@@ -51,11 +51,12 @@ import {
   faUserPlus,
   faTruckLoading,
   faRotateRight,
-  faRotateLeft
+  faRotateLeft,
+  faEraser
   //
 } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faSquareCheck, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus, faTruckLoading, faRotateRight, faRotateLeft);
+library.add(faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faSquareCheck, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus, faTruckLoading, faRotateRight, faRotateLeft, faEraser);
 
 // ApolloClient, cache, and 2 middlewares: authLink and GraphQL
 const authLink = setContext((_, { headers }) => {

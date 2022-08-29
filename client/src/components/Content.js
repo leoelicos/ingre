@@ -12,7 +12,7 @@ const App = (props) => {
         justifyContent: 'flex-start',
         flex: 1,
         height: '100%',
-        overflowY: 'auto'
+        overflowY: 'scroll'
       }}
     >
       {props.children}

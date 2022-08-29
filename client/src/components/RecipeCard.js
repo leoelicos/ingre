@@ -1,5 +1,4 @@
 // React
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 // Font Awesome
@@ -10,7 +9,7 @@ import { useStoreContext } from '../utils/state/GlobalState';
 import { ADD_SAVED_RECIPE, REMOVE_SAVED_RECIPE, ADD_EDIT_RECIPE } from '../utils/state/actions';
 
 // Component library
-import { Card, Image, Button, Space, Tooltip } from 'antd';
+import { Card, Image, Button, Tooltip, Space } from 'antd';
 
 // Apollo
 import { useMutation, useApolloClient } from '@apollo/client';
@@ -24,11 +23,10 @@ const { Meta } = Card;
 
 const App = (props) => {
   const { recipe } = props;
-  // ApolloClient
-  const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] = useMutation(SAVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
-  const [removeRecipe, { loading: removeRecipeLoading, error: removeRecipeError }] = useMutation(REMOVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
 
-  // const [getRecipe] = useLazyQuery(GET_RECIPE);
+  const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] = useMutation(SAVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
+
+  const [removeRecipe, { loading: removeRecipeLoading, error: removeRecipeError }] = useMutation(REMOVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
 
   const [state, dispatch] = useStoreContext();
   const client = useApolloClient();
@@ -36,10 +34,8 @@ const App = (props) => {
   const handleEdit = async () => {
     let data;
 
-    console.log('[handleEdit] recipe', recipe);
     if (recipe._id) {
-      console.log('get ingredients from server', { variables: { id: recipe._id } });
-      // const res = await getRecipe({ variables: { id: recipe._id } }); //! this isn't working
+      console.log('[handleEdit] Server', { variables: { id: recipe._id } });
 
       const res = await client.query({
         query: GET_RECIPE,
@@ -48,12 +44,11 @@ const App = (props) => {
 
       data = JSON.parse(JSON.stringify(res.data.getRecipe));
     } else {
-      console.log('get ingredients from state.homeRecipes');
+      console.log('[handleEdit] Props', recipe);
       data = recipe;
     }
-    // push custom to state
-    console.log('data', data);
-    dispatch({ type: ADD_EDIT_RECIPE, data: data });
+    console.log('[handleEdit] data', data);
+    await dispatch({ type: ADD_EDIT_RECIPE, data: data });
   };
 
   const handleSave = async () => {
@@ -109,32 +104,22 @@ const App = (props) => {
 
   const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
   const editButton = (
-    <Link key="editButton" to="/custom">
-      <Button onClick={handleEdit} style={{ borderRadius: '50%', padding: '4px 8px' }}>
-        <Space>
-          <FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />
-        </Space>
-      </Button>
-    </Link>
-  );
-
-  const saveButton = saveRecipeError ? (
-    <></>
-  ) : (
-    <Button key="saveButton" loading={saveRecipeLoading} onClick={handleSave} disabled={recipe.edamamId === '-1' || state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)} style={{ borderRadius: '50%', padding: '4px 8px' }}>
-      <Space>
-        <FontAwesomeIcon key="save" icon="fa-solid fa-floppy-disk" />
-      </Space>
+    <Button onClick={handleEdit} style={{ borderRadius: '50%', padding: '4px 8px' }}>
+      <Link to="/custom">
+        <FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />
+      </Link>
     </Button>
   );
 
-  const removeButton = removeRecipeError ? (
-    <></>
-  ) : (
-    <Button key="removeButton" loading={removeRecipeLoading} onClick={handleRemove} style={{ borderRadius: '50%', padding: '4px 8px' }}>
-      <Space>
-        <FontAwesomeIcon key="save" icon="fa-solid fa-trash" />
-      </Space>
+  const saveButton = saveRecipeError ? null : (
+    <Button key="saveButton" loading={saveRecipeLoading} onClick={handleSave} disabled={state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)} style={{ borderRadius: '50%', padding: '4px 8px' }}>
+      {saveRecipeLoading ? null : <FontAwesomeIcon key="save" icon="fa-solid fa-floppy-disk" />}
+    </Button>
+  );
+
+  const removeButton = removeRecipeError ? null : (
+    <Button key="removeButton" loading={removeRecipeLoading} disabled={!state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)} onClick={handleRemove} style={{ borderRadius: '50%', padding: '4px 8px' }}>
+      <FontAwesomeIcon key="remove" icon="fa-solid fa-trash" />
     </Button>
   );
   const getActions = () => (props.savePage ? [editButton, removeButton] : [editButton, saveButton, removeButton]);
@@ -161,9 +146,41 @@ const App = (props) => {
         Auth.loggedIn()
           ? getActions()
           : [
-              <Link to="/Login">
-                <Space>Login to Edit and Save!</Space>
-              </Link>
+              <Space>
+                <Tooltip
+                  title={
+                    <Link to="/login">
+                      <Button type="primary">Login</Button>
+                    </Link>
+                  }
+                >
+                  <Button disabled style={{ borderRadius: '50%', padding: '4px 8px' }}>
+                    <FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />
+                  </Button>
+                </Tooltip>
+                <Tooltip
+                  title={
+                    <Link to="/login">
+                      <Button type="primary">Login</Button>
+                    </Link>
+                  }
+                >
+                  <Button disabled style={{ borderRadius: '50%', padding: '4px 8px' }}>
+                    <FontAwesomeIcon key="edit" icon="fa-solid fa-floppy-disk" />
+                  </Button>
+                </Tooltip>
+                <Tooltip
+                  title={
+                    <Link to="/login">
+                      <Button type="primary">Login</Button>
+                    </Link>
+                  }
+                >
+                  <Button disabled style={{ borderRadius: '50%', padding: '4px 8px' }}>
+                    <FontAwesomeIcon key="edit" icon="fa-solid fa-trash" />
+                  </Button>
+                </Tooltip>
+              </Space>
             ]
       }
 

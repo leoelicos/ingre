@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { LOGIN } from '../../utils/apollo/mutations.js';
 import Auth from '../../utils/auth/index.js';
 
@@ -12,6 +12,7 @@ import { Button, Form, Input, Divider, Row, Col } from 'antd';
 const App = () => {
   const [login, { error }] = useMutation(LOGIN);
   const [form] = Form.useForm();
+  const [redirect, setRedirect] = useState(false);
 
   const handleFormSubmit = async (values) => {
     const { user } = values;
@@ -23,6 +24,8 @@ const App = () => {
       const token = res.data.login.token;
       console.log('localstorage token', token);
       Auth.login(token);
+      // can we redirect here?
+      setRedirect(true);
     } catch (e) {
       console.error(e);
     }
@@ -37,6 +40,8 @@ const App = () => {
   useEffect(() => {
     document.title = 'Log in';
   }, []);
+
+  if (redirect) return <Navigate to="/" />;
 
   return (
     <Col

@@ -12,7 +12,8 @@ export default new (class AuthService {
   };
   login(idToken) {
     localStorage.setItem('id_token', idToken);
-    window.location.assign('/');
+    console.log('login - location assign replaced with Navigate');
+    // window.location.assign('/');
   }
   logout() {
     localStorage.removeItem('id_token');
