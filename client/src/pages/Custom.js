@@ -1,10 +1,10 @@
 // React hooks
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Ant components
-import { Button, Form, Input, Space, Col, Divider, Row, Alert } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Col, Divider, Row, Alert } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 
 // Custom components
 import ContentTitle from '../components/ContentTitle';
@@ -13,46 +13,77 @@ import ContentTitle from '../components/ContentTitle';
 import { useStoreContext } from '../utils/state/GlobalState';
 
 // ApolloClient
-import { useMutation } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import { SAVE_RECIPE, UPDATE_RECIPE } from '../utils/apollo/mutations';
 
 // Assets
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // useReducer
-import { ADD_SAVED_RECIPE, CLEAR_EDIT_RECIPE } from '../utils/state/actions';
-import { GET_SAVED_RECIPES, GET_NUM_SAVED_RECIPES } from '../utils/apollo/queries';
+import { ADD_SAVED_RECIPE } from '../utils/state/actions';
+import { GET_SAVED_RECIPES, GET_NUM_SAVED_RECIPES, GET_RECIPE } from '../utils/apollo/queries';
 
+const eggImage = 'https://i.ebayimg.com/images/g/GxwAAOSwpI5eOv8Q/s-l500.jpg';
 const App = () => {
   const [state, dispatch] = useStoreContext();
   const [form] = Form.useForm();
-  const [addCustomRecipe, { error }] = useMutation(SAVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
+  const [addCustomRecipe, { error: saveRecipeError }] = useMutation(SAVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
 
-  const [updateRecipe] = useMutation(UPDATE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }] });
+  const [updateRecipe, { error: updateRecipeError }] = useMutation(UPDATE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }] });
 
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [init, setInit] = useState({ name: 'Tea', portions: 2, ingredients: [{ name: 'p', quantity: 2, measure: 'unit', category: 'tea' }] });
 
-  const initials = () => {
-    const name = state.customRecipe?.name || '';
-    const portions = parseInt(state.customRecipe?.portions) || '';
-    const ingredients =
-      state.customRecipe?.ingredients?.map((ingredient, idx) => {
-        return {
-          key: ingredient._id || ingredient.foodId || 'ingredient' + idx,
-          name: ingredient.name || 'ingredient',
-          quantity: parseFloat(ingredient.quantity || 1),
-          measure: ingredient.measure || 'unit',
-          category: ingredient.category.name || ingredient.category || 'Generic'
-        };
-      }) || [];
-    return { name, portions, ingredients };
-  };
+  const client = useApolloClient();
+
+  const initialize = useCallback(async () => {
+    let name, portions, ingredients;
+    // console.log('[Custom] initialize', state.customRecipe);
+    if (state.customRecipe?._id) {
+      //* FROM BACKEND
+      console.log('BACKEND');
+
+      const res = await client.query({
+        query: GET_RECIPE,
+        variables: { id: state.customRecipe._id }
+      });
+      const data = JSON.parse(JSON.stringify(res.data.getRecipe));
+      // dispatch({ type: ADD_EDIT_RECIPE, data: custom });
+
+      name = data.name || 'Recipe';
+      portions = parseInt(data.portions) || 1;
+      ingredients =
+        data.ingredients?.map((v) => {
+          const ingredient = { ...v, category: v.category.name };
+          return ingredient;
+        }) || [];
+      // dispatch({ type: ADD_EDIT_RECIPE, data: data });
+    } else {
+      //* FROM FRONTEND
+      console.log('FRONTEND');
+      name = state.customRecipe?.name || 'Recipe';
+      portions = parseInt(state.customRecipe?.portions) || 1;
+      ingredients =
+        state.customRecipe?.ingredients?.map((v, i) => {
+          const ingredient = {
+            key: 'ingredient' + i,
+            name: v.name || 'ingredient',
+            quantity: parseFloat(v.quantity || 1),
+            measure: v.measure || 'unit',
+            category: v.category || 'Generic'
+          };
+          return ingredient;
+        }) || [];
+    }
+    console.log('Initials', { name, portions, ingredients });
+    setInit({ name, portions, ingredients });
+    return { name: 'Ben', portions: 4, ingredients: [] };
+  }, [client, state.customRecipe?._id, state.customRecipe?.ingredients, state.customRecipe?.name, state.customRecipe?.portions]);
 
   const onFinish = async (values) => {
     try {
       console.log('onFinish', values);
-      const eggImage = 'https://i.ebayimg.com/images/g/GxwAAOSwpI5eOv8Q/s-l500.jpg';
       const input = {
         name: values.name || 'Custom recipe',
         portions: isNaN(parseInt(values.portions)) ? 1 : parseInt(values.portions),
@@ -67,41 +98,67 @@ const App = () => {
         picture_url: state.customRecipe?.picture_url || eggImage,
         edamamId: state.customRecipe?.edamamId || '-1'
       };
-      const payload = { variables: { input } };
-      console.log('custom payload = ', payload);
-      setLoading(true);
 
-      //! Can't work this out
-      let mutationResponse;
-      if (state.savedRecipes.find((r) => r.edamamId === state.customRecipe?.edamamId)) {
-        // already exists in state, update
-        console.log('already exists in state, update');
-        mutationResponse = await updateRecipe(payload);
+      console.log('[onFinish] input = ', input);
+
+      //* SERVER
+
+      if (state.customRecipe?._id) {
+        setLoading(true);
+        const recipeId = state.customRecipe._id;
+        const payload = { variables: { input, recipeId } };
+        console.log('[onFinish] Update existing recipe', payload);
+        payload.variables.recipeId = state.customRecipe?._id;
+        const res = await updateRecipe(payload);
+        const data = res.data.updateRecipe;
+        console.log('[onFinish] Update - res', data);
+        if (updateRecipeError) throw updateRecipeError;
       } else {
-        // does not exist in state.savedRecipes, create new
-        console.log('does not exist in state, create new');
-        mutationResponse = await addCustomRecipe(payload);
-      }
+        setLoading(true);
+        const payload = { variables: { input } };
+        console.log('[onFinish] Create new recipe', payload);
+        const res = await addCustomRecipe(payload);
+        const data = res.data.saveRecipe;
 
+        console.log('[onFinish] Create - res', data);
+        if (saveRecipeError) throw saveRecipeError;
+        dispatch({ type: ADD_SAVED_RECIPE, data });
+      }
       setLoading(false);
-      if (error) console.log('error ', error);
-      const data = mutationResponse.data.saveRecipe;
-      dispatch({ type: ADD_SAVED_RECIPE, data });
+
       setSaved(true);
-      dispatch({ type: CLEAR_EDIT_RECIPE });
+      setTimeout(() => {
+        setSaved(false);
+      }, 1000);
+      // dispatch({ type: CLEAR_EDIT_RECIPE });
     } catch (error) {
       console.error(error);
     }
   };
 
+  // useEffect(() => {
+  //   return () => dispatch({ type: CLEAR_EDIT_RECIPE });
+  // }, [dispatch]);
+
+  useEffect(() => {
+    form.setFieldsValue(init);
+  }, [form, init]);
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  const navigate = useNavigate();
   return (
     <Col style={{ width: '100%' }}>
       <Row>
-        <ContentTitle>Custom recipe</ContentTitle>
+        <ContentTitle>Customise</ContentTitle>
       </Row>
+
       <Form
         form={form}
-        initialValues={initials()}
+        // initialValues={initials()}
+        // initialValues={init}
         name="dynamic_form_nest_item"
         onFinish={onFinish}
         style={{ width: '100%' }}
@@ -126,7 +183,7 @@ const App = () => {
               <Col span={16}>
                 <Form.Item
                   name="name"
-                  rules={[{ required: true, message: <Alert type="error" message="Change required" /> }]}
+                  rules={[{ required: true, message: <Alert type="error" message="Required" /> }]}
                   style={{
                     marginRight: '4px'
                   }}
@@ -144,7 +201,7 @@ const App = () => {
               <Col span={8}>
                 <Form.Item
                   name="portions"
-                  rules={[{ required: true, message: 'Change required' }]}
+                  rules={[{ required: true, message: 'Required' }]}
                   style={{ height: '100%' }}
                   //
                 >
@@ -219,6 +276,7 @@ const App = () => {
                               >
                                 <Input.TextArea
                                   // allowClear={true}
+
                                   autoSize
                                   placeholder="✏️"
                                   style={{
@@ -310,10 +368,11 @@ const App = () => {
                                 }}
                               >
                                 <Button
+                                  danger
+                                  type="primary"
                                   onClick={() => remove(field.name)}
                                   style={{
-                                    background: 'var(--ingre-dark-brown)',
-                                    fontSize: 'calc(14px + 0.5vw',
+                                    fontSize: '14px',
                                     height: '100%',
                                     color: 'white',
                                     padding: '0',
@@ -321,10 +380,10 @@ const App = () => {
                                     width: '100%'
                                     //
                                   }}
+                                  shape="round"
+                                  icon={<FontAwesomeIcon icon="fa-solid fa-trash" />}
                                   //
-                                >
-                                  <MinusCircleOutlined />
-                                </Button>
+                                />
                               </Form.Item>
                             </Col>
                           </>
@@ -332,17 +391,19 @@ const App = () => {
                       </Form.Item>
                     </Row>
                   ))}
+                  {/* Add ingredient */}
                   <Row style={{ width: '100%', marginTop: '1rem' }}>
-                    <Form.Item style={{ width: '100%', maxWidth: '824px' }}>
+                    <Form.Item style={{ width: '100%' }}>
                       <Button
-                        type="dashed"
+                        type="primary"
                         onClick={() => add()}
                         block
                         icon={<PlusOutlined />}
-                        style={{ width: '100%', maxWidth: '824px' }}
+                        style={{ width: '100%' }}
+                        shape="round"
                         //
                       >
-                        Add ingredient
+                        Ingredient
                       </Button>
                     </Form.Item>
                   </Row>
@@ -351,12 +412,11 @@ const App = () => {
             </Form.List>
           </Col>
         </Row>
-        <Row style={{ marginTop: '1rem' }}>
+        <Row style={{ marginTop: '1rem', paddingBottom: '10vh' }}>
           <Col span={24}>
             <Form.Item>
               <Button
-                type="secondary"
-                disabled={saved}
+                danger
                 style={{
                   width: '100%',
                   marginTop: '0.3rem'
@@ -366,9 +426,11 @@ const App = () => {
                   form.setFieldsValue({
                     name: '',
                     portions: '',
-                    ingredients: []
+                    ingredients: [{ name: '', quantity: '', unit: '', category: '' }]
                   });
                 }}
+                icon={<FontAwesomeIcon icon="fa-solid fa-eraser" style={{ marginRight: '4px' }} />}
+                shape="round"
               >
                 Clear all
               </Button>
@@ -376,16 +438,16 @@ const App = () => {
 
             <Form.Item>
               <Button
+                danger
                 type="dashed"
-                disabled={saved}
-                style={{ width: '100%', marginTop: '0.5rem' }}
+                style={{ width: '100%', marginTop: '1rem' }}
                 onClick={() => {
-                  form.resetFields();
+                  form.setFieldsValue(init);
                 }}
+                icon={<FontAwesomeIcon icon="fa-solid fa-rotate-left" style={{ marginRight: '4px' }} />}
+                shape="round"
               >
-                <Space>
-                  <FontAwesomeIcon icon="fa-solid fa-rotate-left" /> Undo all edits
-                </Space>
+                Undo all
               </Button>
             </Form.Item>
 
@@ -395,29 +457,27 @@ const App = () => {
                 type="primary"
                 htmlType="submit"
                 style={{ width: '100%', marginTop: '1rem' }}
+                icon={<FontAwesomeIcon icon="fa-solid fa-floppy-disk" style={{ marginRight: '4px' }} />}
+                shape="round"
                 //
               >
-                {loading ? (
-                  <Space>Saving…</Space>
-                ) : saved ? (
-                  <Space>Saved!</Space>
-                ) : (
-                  <Space>
-                    <FontAwesomeIcon icon="fa-solid fa-floppy-disk" />
-                    Save
-                  </Space>
-                )}
+                {loading ? <>Saving…</> : saved ? <>Saved!</> : <>Save</>}
               </Button>
             </Form.Item>
 
             <Form.Item>
-              {saved && (
-                <Link to="/saved">
-                  <Button type="primary" style={{ width: '100%', marginTop: '1rem' }}>
-                    All saved recipes
-                  </Button>
-                </Link>
-              )}
+              <Button
+                danger
+                disabled={saved}
+                type="primary"
+                htmlType="submit"
+                style={{ width: '100%', marginTop: '1rem' }}
+                shape="round"
+                onClick={() => navigate(-1)}
+                //
+              >
+                Go back
+              </Button>
             </Form.Item>
           </Col>
         </Row>
