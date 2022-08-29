@@ -1,9 +1,10 @@
 import RecipeCard from './RecipeCard';
-import { Divider } from 'antd';
+// import { Link } from 'react-router-dom';
+// import { Row, Button } from 'antd';
 import Empty from './Empty';
 import { v4 as uuidv4 } from 'uuid';
 // Auth
-import Auth from '../utils/auth';
+// import Auth from '../utils/auth';
 
 const App = ({ results, loading, savePage }) => {
   // console.log('[RecipeCardContainer] results ', results);
@@ -21,7 +22,13 @@ const App = ({ results, loading, savePage }) => {
           //
         }}
       >
-        {!Auth.loggedIn() && <Divider>Log in to edit and save recipes!</Divider>}
+        {/* {!Auth.loggedIn() && (
+          <Row>
+            <Link to="/Login">
+              <Button type="primary">Log in to edit and save</Button>
+            </Link>
+          </Row>
+        )} */}
         {results?.length ? (
           results.map((recipe) => {
             return (
@@ -35,7 +42,7 @@ const App = ({ results, loading, savePage }) => {
             );
           })
         ) : (
-          <Empty />
+          <Empty>No results</Empty>
         )}
       </div>
     </>
