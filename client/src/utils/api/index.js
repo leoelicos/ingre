@@ -12,7 +12,7 @@ const getQueryParamString = (q, diet, health, cuisineType, mealType, dishType) =
 };
 
 const fetchEdamam = async (search) => {
-  console.log('Received', search);
+  // console.log('Received', search);
   let queryString = '%20';
 
   if (search) {
@@ -21,7 +21,7 @@ const fetchEdamam = async (search) => {
   }
 
   //! we are supposed to get APP_ID from backend instead
-  console.log('queryString = ', queryString);
+  // console.log('queryString = ', queryString);
   let uri =
     `https://api.edamam.com/api/recipes/v2?` +
     [
