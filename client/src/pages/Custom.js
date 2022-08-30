@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 // Ant components
 import { Button, Form, Input, Col, Divider, Row, Alert } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 
 // Custom components
 import ContentTitle from '../components/ContentTitle';
