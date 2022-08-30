@@ -131,8 +131,18 @@ const resolvers = {
       }
       return { session: id, error };
     },
+    getSavedIngredients: async () => {
+      return [
+        {
+          name: 'bob',
+          quantity: 1,
+          measure: 'unit',
+          category: 'fridge',
+          recipe: 'bobs ice'
+        }
+      ];
+    },
     getCategories: async () => await Category.find(),
-    getIngredients: async () => await Ingredient.find().populate('category'),
     getRecipes: async () => await Recipe.find().populate({ path: 'ingredients', populate: 'category' })
     //
   },
