@@ -14,8 +14,8 @@ import Home from './pages/Home';
 import Search from './pages/Search';
 import Custom from './pages/Custom';
 import Saved from './pages/Saved';
-// import ShoppingList from './pages/ShoppingList';
-// import TapOff from './pages/TapOff';
+import Ingredients from './pages/Ingredients';
+import TapOff from './pages/TapOff';
 
 // Components
 import Header from './components/Header/index';
@@ -52,11 +52,12 @@ import {
   faTruckLoading,
   faRotateRight,
   faRotateLeft,
-  faEraser
+  faEraser,
+  faExclamation
   //
 } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faSquareCheck, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus, faTruckLoading, faRotateRight, faRotateLeft, faEraser);
+library.add(faBars, faEgg, faCircleInfo, faCookie, faMagnifyingGlass, faCartShopping, faSquareCheck, faPen, faCircleXmark, faAdd, faFloppyDisk, faTrash, faCubesStacked, faRightToBracket, faRightFromBracket, faUserPlus, faTruckLoading, faRotateRight, faRotateLeft, faEraser, faExclamation);
 
 // ApolloClient, cache, and 2 middlewares: authLink and GraphQL
 const authLink = setContext((_, { headers }) => {
@@ -96,9 +97,9 @@ function App() {
                   <Route path="/search" element={<Search />} />
                   <Route path="/custom" element={<Custom />} />
                   <Route path="/saved" element={<Saved />} />
-                  {/*
-                  <Route path="/shoppinglist" element={<ShoppingList />} />
+                  <Route path="/ingredients" element={<Ingredients />} />
                   <Route path="/tapoff" element={<TapOff />} />
+                  {/*
                   <Route path="/success" element={<Success />} />
                   
                   */}
