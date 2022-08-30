@@ -3,6 +3,7 @@ import {
   SHOW_MODAL,
   HIDE_MODAL,
   TOGGLE_SIDEBAR,
+  COLLAPSE_SIDEBAR,
   UPDATE_SEARCH_RECIPES,
   UPDATE_HOME_RECIPES,
   UPDATE_SAVED_RECIPES,
@@ -26,6 +27,8 @@ export const reducer = (state, action) => {
 
     case TOGGLE_SIDEBAR:
       return { ...state, leftSidebarCollapsed: !state.leftSidebarCollapsed };
+    case COLLAPSE_SIDEBAR:
+      return { ...state, leftSidebarCollapsed: true };
 
     case UPDATE_SEARCH_RECIPES:
       return { ...state, searchRecipes: action.data };
