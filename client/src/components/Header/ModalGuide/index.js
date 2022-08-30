@@ -112,7 +112,6 @@ var getModalText = (pathname) => {
           <Timeline.Item>Customize a recipe, or Reset to start again! </Timeline.Item>
           <Timeline.Item color="blue">To edit recipe name, click on the box to type.</Timeline.Item>
           <Timeline.Item color="blue">For servings and quantities, enter a number or a decimal.</Timeline.Item>
-          <Timeline.Item color="blue">For dropdown menus, click on the box and select from the options that appear.</Timeline.Item>
           <Timeline.Item color="blue">To add a new ingredient, click on {faAdd}.</Timeline.Item>
           <Timeline.Item color="red">To delete an existing ingredient, click on {faTrash}.</Timeline.Item>
         </Timeline>
