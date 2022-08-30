@@ -167,7 +167,7 @@ a {
   margin-bottom: 1rem;
   border-radius: 1rem;
   background: white;
-  box-shadow: 0px 0px 3px 1px var(--ingre-blue);
+  box-shadow: 0px 0px 3px 1px var(--ingre-dark-brown);
 }
 
 .explore-buttons > * > button {
@@ -247,4 +247,16 @@ a {
 }
 textarea.ant-input {
   border-radius: 1rem;
+}
+
+.ant-btn:hover,
+.ant-btn:focus {
+  color: var(--ingre-dark-brown);
+  border-color: var(--ingre-dark-brown);
+  background: #fff;
+}
+.ant-btn:active {
+  color: var(--ingre-eggshell);
+  border-color: var(--ingre-eggshell);
+  background: #fff;
 }
