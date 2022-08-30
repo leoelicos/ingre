@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 // Ant components
 import { Button, Form, Input, Col, Divider, Row, Alert } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 
 // Custom components
 import ContentTitle from '../components/ContentTitle';
@@ -62,23 +61,21 @@ const App = () => {
     } else {
       //* FROM FRONTEND
       console.log('FRONTEND');
-      name = state.customRecipe?.name || 'Recipe';
-      portions = parseInt(state.customRecipe?.portions) || 1;
-      ingredients =
-        state.customRecipe?.ingredients?.map((v, i) => {
-          const ingredient = {
-            key: 'ingredient' + i,
-            name: v.name || 'ingredient',
-            quantity: parseFloat(v.quantity || 1),
-            measure: v.measure || 'unit',
-            category: v.category || 'Generic'
-          };
-          return ingredient;
-        }) || [];
+      name = state.customRecipe?.name || '';
+      portions = parseInt(state.customRecipe?.portions) || '';
+      ingredients = state.customRecipe?.ingredients?.map((v, i) => {
+        const ingredient = {
+          key: 'ingredient' + i,
+          name: v.name || 'ingredient',
+          quantity: parseFloat(v.quantity || 1),
+          measure: v.measure || 'unit',
+          category: v.category || 'Generic'
+        };
+        return ingredient;
+      }) || [{ key: 'ingredient0', name: '', quantity: '', measure: '', category: '' }];
     }
-    console.log('Initials', { name, portions, ingredients });
+
     setInit({ name, portions, ingredients });
-    return { name: 'Ben', portions: 4, ingredients: [] };
   }, [client, state.customRecipe?._id, state.customRecipe?.ingredients, state.customRecipe?.name, state.customRecipe?.portions]);
 
   const onFinish = async (values) => {
@@ -170,7 +167,7 @@ const App = () => {
             <Row style={{ marginBottom: '0.3rem', fontWeight: 'bold', color: 'var(--ingre-dark-brown' }}>
               <Col span={16}>
                 <Divider orientation="left" orientationMargin="0">
-                  Name
+                  Recipe Name
                 </Divider>
               </Col>
               <Col span={8}>
@@ -183,14 +180,14 @@ const App = () => {
               <Col span={16}>
                 <Form.Item
                   name="name"
-                  rules={[{ required: true, message: <Alert type="error" message="Required" /> }]}
+                  rules={[{ required: true, message: <Alert type="error" message="Required" showIcon icon={<FontAwesomeIcon icon="fa-solid fa-exclamation" />} /> }]}
                   style={{
                     marginRight: '4px'
                   }}
                   //
                 >
                   <Input.TextArea
-                    placeholder="✏️"
+                    placeholder="Recipe name ✏️"
                     autoSize={true}
                     allowClear
 
@@ -201,12 +198,12 @@ const App = () => {
               <Col span={8}>
                 <Form.Item
                   name="portions"
-                  rules={[{ required: true, message: 'Required' }]}
+                  rules={[{ required: true, message: <Alert type="error" message="Required" showIcon icon={<FontAwesomeIcon icon="fa-solid fa-exclamation" />} /> }]}
                   style={{ height: '100%' }}
                   //
                 >
                   <Input.TextArea
-                    placeholder="✏️"
+                    placeholder="Recipe Portions ✏️"
                     autoSize={true}
                     allowClear
                     style={{
@@ -270,7 +267,7 @@ const App = () => {
                                 {...field}
                                 key="name"
                                 name={[field.name, 'name']}
-                                rules={[{ required: true, message: '*' }]}
+                                rules={[{ required: true, message: <Alert type="error" message="Required" showIcon icon={<FontAwesomeIcon icon="fa-solid fa-exclamation" />} /> }]}
                                 style={{ marginRight: '4px', padding: '0px 16px 4px 4px !important' }}
                                 //
                               >
@@ -294,7 +291,7 @@ const App = () => {
                                 {...field}
                                 key="quantity"
                                 name={[field.name, 'quantity']}
-                                rules={[{ required: true, message: '*' }]}
+                                rules={[{ required: true, message: <Alert type="error" message="Required" showIcon icon={<FontAwesomeIcon icon="fa-solid fa-exclamation" />} /> }]}
                                 style={{ marginRight: '4px' }}
                                 //
                               >
@@ -316,7 +313,7 @@ const App = () => {
                                 {...field}
                                 key="measure"
                                 name={[field.name, 'measure']}
-                                rules={[{ required: true, message: '*' }]}
+                                rules={[{ required: true, message: <Alert type="error" message="Required" showIcon icon={<FontAwesomeIcon icon="fa-solid fa-exclamation" />} /> }]}
                                 style={{ marginRight: '4px' }}
                                 //
                               >
@@ -338,7 +335,7 @@ const App = () => {
                                 {...field}
                                 key="category"
                                 name={[field.name, 'category']}
-                                rules={[{ required: true, message: '*' }]}
+                                rules={[{ required: true, message: <Alert type="error" message="Required" showIcon icon={<FontAwesomeIcon icon="fa-solid fa-exclamation" />} /> }]}
                                 style={{ marginRight: '4px', padding: '0px 16px 4px 4px !important' }}
                                 //
                               >
@@ -398,7 +395,7 @@ const App = () => {
                         type="primary"
                         onClick={() => add()}
                         block
-                        icon={<PlusOutlined />}
+                        icon={<FontAwesomeIcon icon="fa-solid fa-plus" style={{ marginRight: '4px' }} />}
                         style={{ width: '100%' }}
                         shape="round"
                         //

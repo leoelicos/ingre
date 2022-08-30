@@ -16,30 +16,48 @@ import { useStoreContext } from '../utils/state/GlobalState';
 // useReducer
 import { UPDATE_HOME_RECIPES, FLAG_HOME_MOUNTED } from '../utils/state/actions';
 
+// get API key
+import { GET_API_KEY } from '../utils/apollo/queries';
+import { useApolloClient } from '@apollo/client';
+
 const Home = () => {
+  const client = useApolloClient();
+
   const [state, dispatch] = useStoreContext();
   const [loadingEdamam, setLoadingEdamam] = useState(false);
   const [edamamRecipes, setEdamamRecipes] = useState(state.homeRecipes);
 
+  const getAppCredentials = async () => {
+    // get credentials from backend
+    const res = await client.query({ query: GET_API_KEY });
+    if (!res) throw new Error('[handleRefresh] GET_API_KEY error');
+    const appId = res.data.getApiKey.appId;
+    const appKey = res.data.getApiKey.appKey;
+    return { appId, appKey };
+  };
+
   const handleRefresh = async (query) => {
     try {
+      // get credentials from backend
+      const { appId, appKey } = await getAppCredentials();
+
       setLoadingEdamam(true);
       let noQuery = { q: ' ', diet: [], health: [], cuisineType: [], mealType: [], dishType: [] };
       let hits;
       if (query === 'vegetarian') {
-        hits = await FetchEdamam({ ...noQuery, health: ['vegetarian'] });
+        hits = await FetchEdamam({ ...noQuery, health: ['vegetarian'] }, appId, appKey);
       } else if (query === 'vegan') {
-        hits = await FetchEdamam({ ...noQuery, health: ['vegan'] });
+        hits = await FetchEdamam({ ...noQuery, health: ['vegan'] }, appId, appKey);
       } else if (query === 'balanced') {
-        hits = await FetchEdamam({ ...noQuery, diet: ['balanced'] });
+        hits = await FetchEdamam({ ...noQuery, diet: ['balanced'] }, appId, appKey);
       } else if (query === 'breakfast') {
-        hits = await FetchEdamam({ ...noQuery, mealType: ['breakfast'] });
+        hits = await FetchEdamam({ ...noQuery, mealType: ['breakfast'] }, appId, appKey);
       } else if (query === 'lunch') {
-        hits = await FetchEdamam({ ...noQuery, mealType: ['lunch'] });
+        hits = await FetchEdamam({ ...noQuery, mealType: ['lunch'] }, appId, appKey);
       } else if (query === 'dinner') {
-        hits = await FetchEdamam({ ...noQuery, mealType: ['dinner'] });
+        hits = await FetchEdamam({ ...noQuery, mealType: ['dinner'] }, appId, appKey);
       } else {
-        hits = await FetchEdamam();
+        hits = await FetchEdamam(null, appId, appKey);
       }
       // console.log('hits = ', hits);
       setEdamamRecipes(hits);
@@ -50,7 +68,7 @@ const Home = () => {
     }
   };
 
-  // update homeRecipes on cleanup
+  //* edamamRecipes > GlobalState.homeRecipes
   useEffect(() => {
     return () => {
       dispatch({ type: UPDATE_HOME_RECIPES, data: edamamRecipes });
@@ -66,7 +84,9 @@ const Home = () => {
         // populate with random recipes
         try {
           setLoadingEdamam(true);
-          const hits = await FetchEdamam();
+          // get credentials from backend
+          const { appId, appKey } = await getAppCredentials();
+          const hits = await FetchEdamam(null, appId, appKey);
           // console.log('hits = ', hits);
           setEdamamRecipes(hits);
           setLoadingEdamam(false);
@@ -76,7 +96,7 @@ const Home = () => {
       }
     };
     fetchOnFirstLoad();
-  }, [dispatch, state, edamamRecipes]);
+  }, [dispatch, state, edamamRecipes, getAppCredentials]);
 
   // update title on every load
   useEffect(() => {

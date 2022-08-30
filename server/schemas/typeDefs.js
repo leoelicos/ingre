@@ -57,6 +57,14 @@ const typeDefs = gql`
     category: String
   }
 
+  type IngredientListItem {
+    name: String
+    quantity: Float
+    measure: String
+    category: String
+    recipe: String
+  }
+
   type Category {
     _id: ID
     name: String
@@ -93,9 +101,9 @@ const typeDefs = gql`
     getSavedRecipes: [Recipe] # Page: Saved
     getNumSavedRecipes: Int
     checkout: Checkout # Page: Saved
+    getSavedIngredients: [IngredientListItem]
     # testing only
     getCategories: [Category]
-    getIngredients: [Ingredient]
     getRecipes: [Recipe]
   }
 

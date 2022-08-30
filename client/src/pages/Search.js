@@ -17,17 +17,22 @@ import { useStoreContext } from '../utils/state/GlobalState';
 // useReducer
 import { UPDATE_SEARCH_RECIPES } from '../utils/state/actions';
 
+// get API key
+import { GET_API_KEY } from '../utils/apollo/queries';
+import { useApolloClient } from '@apollo/client';
+
 // Ant subcomponents
 const { SHOW_CHILD } = Cascader;
 
-function App() {
+function Search() {
+  const client = useApolloClient();
+
   // Global state
   const [state, dispatch] = useStoreContext();
 
   // Local state
   const [loadingEdamam, setLoadingEdamam] = useState(false);
   const [edamamRecipes, setEdamamRecipes] = useState(state.searchRecipes);
-  const [queryState, setQueryState] = useState('');
   const blankForm = { diet: [], health: [], cuisineType: [], mealType: [], dishType: [] };
   const [formState, setFormState] = useState(blankForm);
 
@@ -37,24 +42,23 @@ function App() {
   // Handle search submit
   const handleFormSubmit = async (values) => {
     try {
+      // get credentials from backend
+      const res = await client.query({ query: GET_API_KEY });
+      if (!res) throw new Error('[handleRefresh] GET_API_KEY error');
+      const appId = res.data.getApiKey.appId;
+      const appKey = res.data.getApiKey.appKey;
+
       // load API results into local state
       setLoadingEdamam(true);
-      const search = { q: queryState, ...formState };
-      const hits = await FetchEdamam(search);
+      const search = { q: values, ...formState };
+      const hits = await FetchEdamam(search, appId, appKey);
       setEdamamRecipes(hits);
       setLoadingEdamam(false);
+      //* edamamRecipes > GlobalState.searchRecipes
+      dispatch({ type: UPDATE_SEARCH_RECIPES, data: edamamRecipes });
     } catch (e) {
       console.error(e);
     }
-  };
-
-  useEffect(() => {
-    // update global store
-    dispatch({ type: UPDATE_SEARCH_RECIPES, data: edamamRecipes });
-  }, [dispatch, edamamRecipes]);
-
-  const handleChange = (event) => {
-    setQueryState(event.target.value);
   };
 
   const handleFilterChange = (event) => {
@@ -94,12 +98,12 @@ function App() {
           //
         >
           <Form.Item
+            name="q"
             style={{
               marginBottom: '0.3rem'
 
               //
             }}
-            onChange={handleChange}
           >
             <Input.Search
               placeholder="Search"
@@ -249,4 +253,4 @@ function App() {
   );
 }
 
-export default App;
+export default Search;

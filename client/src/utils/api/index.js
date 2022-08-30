@@ -1,3 +1,5 @@
+// ApolloClient
+
 import axios from 'axios';
 
 const getQueryParamString = (q, diet, health, cuisineType, mealType, dishType) => {
@@ -11,7 +13,7 @@ const getQueryParamString = (q, diet, health, cuisineType, mealType, dishType) =
   return params.join('&');
 };
 
-const fetchEdamam = async (search) => {
+const fetchEdamam = async (search, appId, appKey) => {
   // console.log('Received', search);
   let queryString = '%20';
 
@@ -27,8 +29,8 @@ const fetchEdamam = async (search) => {
     [
       'type=public',
       'beta=false',
-      `app_id=${process.env.REACT_APP_PRODUCTION_EDAMAM_APP_ID}`,
-      `app_key=${process.env.REACT_APP_PRODUCTION_EDAMAM_APP_KEY}`,
+      `app_id=${appId}`,
+      `app_key=${appKey}`,
       'imageSize=LARGE',
       'random=true',
       'field=label',

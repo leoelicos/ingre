@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // Ant components
 import { Layout, Menu, Space } from 'antd';
+import { COLLAPSE_SIDEBAR } from '../utils/state/actions';
 
 // Ant subcomponent
 const { Sider } = Layout;
@@ -23,18 +24,24 @@ const App = () => {
 
   const location = useLocation();
   const { pathname } = location;
-  const [state] = useStoreContext();
+  const [state, dispatch] = useStoreContext();
   const getKey = () => {
     if (pathname === '/search') return '2';
     else if (pathname === '/custom') return '3';
     else if (pathname === '/saved') return '4';
-    else if (pathname === '/shoppinglist') return '5';
+    else if (pathname === '/ingredients') return '5';
     else if (pathname === '/tapoff') return '6';
     return '1';
   };
 
   return (
     <Sider
+      breakpoint="md"
+      onBreakpoint={(broken) => {
+        console.log(broken);
+        dispatch({ type: COLLAPSE_SIDEBAR });
+      }}
+      defaultCollapsed={false}
       trigger={null}
       collapsible
       collapsed={state.leftSidebarCollapsed}
@@ -115,11 +122,11 @@ const App = () => {
           {
             key: 5,
             icon: (
-              <Link to="/shoppinglist" style={{ width: '19.19px', transform: 'translateX(1px)' }}>
+              <Link to="/ingredients" style={{ width: '19.19px', transform: 'translateX(1px)' }}>
                 <FontAwesomeIcon icon="fa-solid fa-egg" />
               </Link>
             ),
-            label: <Link to="/shoppinglist">Ingredients</Link>
+            label: <Link to="/ingredients">Ingredients</Link>
           },
           {
             key: 6,
@@ -128,7 +135,7 @@ const App = () => {
                 <FontAwesomeIcon icon="fa-solid fa-square-check" style={{ width: '19.19px' }} />
               </Link>
             ),
-            label: <Link to="/tapoff">Tap</Link>
+            label: <Link to="/tapoff">Tap Off</Link>
           }
         ]}
       />
