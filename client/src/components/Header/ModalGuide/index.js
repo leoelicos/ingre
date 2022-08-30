@@ -64,7 +64,7 @@ var getModalTitle = (pathname) => {
     case '/saved':
       return <p>{faSave} Saved</p>;
 
-    case '/shoppinglist':
+    case '/ingredients':
       return <p>{faCartShopping} Shopping List</p>;
 
     case '/tapoff':
@@ -129,7 +129,7 @@ var getModalText = (pathname) => {
         </Timeline>
       );
 
-    case '/shoppinglist':
+    case '/ingredients':
       return (
         <Timeline>
           <Timeline.Item color="green">The final edit!</Timeline.Item>
