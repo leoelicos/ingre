@@ -128,7 +128,7 @@ const App = () => {
                 <FontAwesomeIcon icon="fa-solid fa-square-check" style={{ width: '19.19px' }} />
               </Link>
             ),
-            label: <Link to="/tapoff">Tap</Link>
+            label: <Link to="/tapoff">Tap Off</Link>
           }
         ]}
       />
