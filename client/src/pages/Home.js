@@ -27,13 +27,20 @@ const Home = () => {
   const [loadingEdamam, setLoadingEdamam] = useState(false);
   const [edamamRecipes, setEdamamRecipes] = useState(state.homeRecipes);
 
+  const getAppCredentials = async () => {
+    // get credentials from backend
+    const res = await client.query({ query: GET_API_KEY });
+    if (!res) throw new Error('[handleRefresh] GET_API_KEY error');
+    const appId = res.data.getApiKey.appId;
+    const appKey = res.data.getApiKey.appKey;
+    return { appId, appKey };
+  };
+
   const handleRefresh = async (query) => {
     try {
       // get credentials from backend
-      const res = await client.query({ query: GET_API_KEY });
-      if (!res) throw new Error('[handleRefresh] GET_API_KEY error');
-      const appId = res.data.getApiKey.appId;
-      const appKey = res.data.getApiKey.appKey;
+      const { appId, appKey } = await getAppCredentials();
+
       setLoadingEdamam(true);
       let noQuery = { q: ' ', diet: [], health: [], cuisineType: [], mealType: [], dishType: [] };
       let hits;
@@ -77,7 +84,9 @@ const Home = () => {
         // populate with random recipes
         try {
           setLoadingEdamam(true);
-          const hits = await FetchEdamam();
+          // get credentials from backend
+          const { appId, appKey } = await getAppCredentials();
+          const hits = await FetchEdamam(null, appId, appKey);
           // console.log('hits = ', hits);
           setEdamamRecipes(hits);
           setLoadingEdamam(false);
@@ -87,7 +96,7 @@ const Home = () => {
       }
     };
     fetchOnFirstLoad();
-  }, [dispatch, state, edamamRecipes]);
+  }, [dispatch, state, edamamRecipes, getAppCredentials]);
 
   // update title on every load
   useEffect(() => {
