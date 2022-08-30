@@ -30,7 +30,7 @@ const App = () => {
   };
 
   const { pathname } = useLocation();
-  const getStep = pathname === '/tapoff' ? 2 : pathname === '/shoppinglist' ? 1 : 0;
+  const getStep = pathname === '/tapoff' ? 2 : pathname === '/ingredients' ? 1 : 0;
 
   const logout = (event) => {
     event.preventDefault();
@@ -102,7 +102,7 @@ const App = () => {
               />
               <Step
                 icon={
-                  <Link to="/shoppinglist">
+                  <Link to="/ingredients">
                     <FontAwesomeIcon icon="fa-solid fa-egg" />
                   </Link>
                 }
@@ -135,9 +135,9 @@ const App = () => {
                 }
               />
               <Step
-                title={<Link to="/shoppinglist">Ingredients</Link>}
+                title={<Link to="/ingredients">Ingredients</Link>}
                 icon={
-                  <Link to="/shoppinglist">
+                  <Link to="/ingredients">
                     <FontAwesomeIcon icon="fa-solid fa-egg" />
                   </Link>
                 }
