@@ -82,3 +82,15 @@ export const CHECKOUT = gql`
     }
   }
 `;
+
+export const GET_SAVED_INGREDIENTS = gql`
+  query GetSavedIngredients {
+    getSavedIngredients {
+      name
+      quantity
+      measure
+      category
+      recipe
+    }
+  }
+`;
