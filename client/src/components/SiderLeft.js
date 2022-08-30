@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // Ant components
 import { Layout, Menu, Space } from 'antd';
+import { COLLAPSE_SIDEBAR } from '../utils/state/actions';
 
 // Ant subcomponent
 const { Sider } = Layout;
@@ -23,7 +24,7 @@ const App = () => {
 
   const location = useLocation();
   const { pathname } = location;
-  const [state] = useStoreContext();
+  const [state, dispatch] = useStoreContext();
   const getKey = () => {
     if (pathname === '/search') return '2';
     else if (pathname === '/custom') return '3';
@@ -35,6 +36,12 @@ const App = () => {
 
   return (
     <Sider
+      breakpoint="md"
+      onBreakpoint={(broken) => {
+        console.log(broken);
+        dispatch({ type: COLLAPSE_SIDEBAR });
+      }}
+      defaultCollapsed={false}
       trigger={null}
       collapsible
       collapsed={state.leftSidebarCollapsed}
