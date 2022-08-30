@@ -29,7 +29,7 @@ const App = () => {
     if (pathname === '/search') return '2';
     else if (pathname === '/custom') return '3';
     else if (pathname === '/saved') return '4';
-    else if (pathname === '/shoppinglist') return '5';
+    else if (pathname === '/ingredients') return '5';
     else if (pathname === '/tapoff') return '6';
     return '1';
   };
@@ -122,11 +122,11 @@ const App = () => {
           {
             key: 5,
             icon: (
-              <Link to="/shoppinglist" style={{ width: '19.19px', transform: 'translateX(1px)' }}>
+              <Link to="/ingredients" style={{ width: '19.19px', transform: 'translateX(1px)' }}>
                 <FontAwesomeIcon icon="fa-solid fa-egg" />
               </Link>
             ),
-            label: <Link to="/shoppinglist">Ingredients</Link>
+            label: <Link to="/ingredients">Ingredients</Link>
           },
           {
             key: 6,
