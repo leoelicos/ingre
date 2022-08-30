@@ -11,9 +11,10 @@ import { SHOW_MODAL, TOGGLE_SIDEBAR } from '../../utils/state/actions';
 // components
 import ModalGuide from './ModalGuide/index';
 
-// Ant Design
+// Ant Components
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Col, Row, Button, Steps, Typography } from 'antd';
+
 const { Step } = Steps;
 const { Title } = Typography;
 
@@ -142,7 +143,7 @@ const App = () => {
                 }
               />
               <Step
-                title={<Link to="/tapoff">Tap</Link>}
+                title={<Link to="/tapoff">Tap Off</Link>}
                 icon={
                   <Link to="/tapoff">
                     <FontAwesomeIcon icon="fa-solid fa-square-check" />
