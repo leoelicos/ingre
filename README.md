@@ -52,9 +52,9 @@ Video is also available on [YouTube](TBA)
 
 ![saved](TBA)
 
-### Shopping list
+### Ingredients
 
-![shoppinglist](TBA)
+![ingredients](TBA)
 
 ### Tap off
 
