@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 const TapOff = (props) => {
   useEffect(() => {
     document.title = 'ingré Tap Off';
