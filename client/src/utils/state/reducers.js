@@ -7,11 +7,15 @@ import {
   UPDATE_SEARCH_RECIPES,
   UPDATE_HOME_RECIPES,
   UPDATE_SAVED_RECIPES,
+  UPDATE_SAVED_INGREDIENTS,
+  UPDATE_TAP_OFF,
   ADD_SAVED_RECIPE,
   REMOVE_SAVED_RECIPE,
   ADD_EDIT_RECIPE,
   CLEAR_EDIT_RECIPE,
-  FLAG_HOME_MOUNTED
+  FLAG_HOME_MOUNTED,
+  FLAG_INGREDIENTS_GENERATED
+
   //
 } from './actions';
 
@@ -40,6 +44,15 @@ export const reducer = (state, action) => {
       if (action.data === undefined) return { ...state, savedRecipes: [] };
       return { ...state, savedRecipes: action.data };
 
+    case UPDATE_SAVED_INGREDIENTS:
+      if (action.data === undefined) return { ...state, savedIngredients: [] };
+      return { ...state, savedIngredients: action.data };
+
+    case UPDATE_TAP_OFF: {
+      if (!action.data) return { ...state };
+      return { ...state, tapOff: action.data };
+    }
+
     case ADD_SAVED_RECIPE:
       console.log('state.savedRecipes before', state.savedRecipes);
       if (state.savedRecipes.find((r) => r.edamamId === action.data.edamamId)) return { ...state };
@@ -64,6 +77,9 @@ export const reducer = (state, action) => {
 
     case FLAG_HOME_MOUNTED:
       return { ...state, homeDidMount: true };
+
+    case FLAG_INGREDIENTS_GENERATED:
+      return { ...state, ingredientsDidGenerate: true };
     default:
       return state;
   }
