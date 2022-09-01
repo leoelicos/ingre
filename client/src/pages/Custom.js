@@ -33,6 +33,7 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [init, setInit] = useState({ name: 'Tea', portions: 2, ingredients: [{ name: 'p', quantity: 2, measure: 'unit', category: 'tea' }] });
+  const [cancel, setCancel] = useState(false);
 
   const client = useApolloClient();
 
@@ -79,6 +80,8 @@ const App = () => {
   }, [client, state.customRecipe?._id, state.customRecipe?.ingredients, state.customRecipe?.name, state.customRecipe?.portions]);
 
   const onFinish = async (values) => {
+    if (cancel) return;
+
     try {
       console.log('onFinish', values);
       const input = {
@@ -470,7 +473,10 @@ const App = () => {
                 htmlType="submit"
                 style={{ width: '100%', marginTop: '1rem' }}
                 shape="round"
-                onClick={() => navigate(-1)}
+                onClick={() => {
+                  setCancel(true);
+                  navigate(-1);
+                }}
                 //
               >
                 Go back
