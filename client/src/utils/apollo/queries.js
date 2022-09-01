@@ -34,16 +34,6 @@ export const GET_SAVED_RECIPES = gql`
       portions
       picture_url
       edamamId
-      # ingredients {
-      #   _id
-      #   name
-      #   quantity
-      #   measure
-      #   category {
-      #     _id
-      #     name
-      #   }
-      # }
     }
   }
 `;
@@ -79,18 +69,6 @@ export const CHECKOUT = gql`
   query Checkout {
     checkout {
       session
-    }
-  }
-`;
-
-export const GET_SAVED_INGREDIENTS = gql`
-  query GetSavedIngredients {
-    getSavedIngredients {
-      name
-      quantity
-      measure
-      category
-      recipe
     }
   }
 `;
