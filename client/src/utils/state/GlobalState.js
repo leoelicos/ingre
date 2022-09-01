@@ -12,7 +12,10 @@ const StoreProvider = ({ value = [], ...props }) => {
     homeRecipes: [],
     savedRecipes: [],
     customRecipe: null,
-    homeDidMount: false
+    homeDidMount: false,
+    savedIngredients: [],
+    ingredientsDidGenerate: false,
+    tapOff: null
   };
   const [state, dispatch] = useGlobalReducer(initialState);
 

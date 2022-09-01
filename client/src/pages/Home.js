@@ -96,7 +96,8 @@ const Home = () => {
       }
     };
     fetchOnFirstLoad();
-  }, [dispatch, state, edamamRecipes, getAppCredentials]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, state, edamamRecipes]);
 
   // update title on every load
   useEffect(() => {

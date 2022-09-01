@@ -81,7 +81,7 @@ function Search() {
   return (
     <Col style={{ width: '100%' }}>
       <Row>
-        <ContentTitle>Advanced search</ContentTitle>
+        <ContentTitle>Search</ContentTitle>
       </Row>
       <Row>
         <Form

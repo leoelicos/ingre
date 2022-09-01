@@ -1,4 +1,4 @@
-import { Layout } from 'antd';
+import { BackTop, Layout } from 'antd';
 const { Content } = Layout;
 const App = (props) => {
   return (
@@ -15,6 +15,7 @@ const App = (props) => {
         overflowY: 'scroll'
       }}
     >
+      <BackTop />
       {props.children}
     </Content>
   );

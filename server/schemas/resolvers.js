@@ -45,19 +45,17 @@ const resolvers = {
 
     //
     getRecipe: async (_, args) => {
-      console.log('[getRecipe]');
-      console.log('args', args);
       const { _id } = args;
-      console.log('_id', _id);
+      console.log('[getRecipe] _id', _id);
       let recipe = null;
       try {
         recipe = await Recipe.findById(_id).populate({ path: 'ingredients', populate: 'category' });
-        return recipe;
+        payload = recipe;
+        console.log('[getRecipe] payload\t', payload);
+        return payload;
       } catch (error) {
         console.error(error);
       }
-      console.log('[getRecipe] payload\t', recipe);
-      return recipe;
     },
 
     //
@@ -88,7 +86,7 @@ const resolvers = {
       } catch (e) {
         console.error(e);
       } finally {
-        console.log('[getNumSavedRecipes] payload\t', payload);
+        // console.log('[getNumSavedRecipes] payload\t', payload);
         return payload;
       }
     },
@@ -130,20 +128,44 @@ const resolvers = {
         console.log(e);
       }
       return { session: id, error };
-    },
-    getSavedIngredients: async () => {
-      return [
-        {
-          name: 'bob',
-          quantity: 1,
-          measure: 'unit',
-          category: 'fridge',
-          recipe: 'bobs ice'
+    }
+
+    /* generateSavedIngredients: async (_, __, context) => {
+      try {
+        console.log('[generateSavedIngredients]');
+        if (!context.user) throw new AuthenticationError('Not logged in!');
+        const user = await User
+          //
+          .findById(context.user._id)
+          .populate({
+            path: 'savedRecipes',
+            populate: {
+              path: 'ingredients',
+              populate: 'category'
+            }
+          });
+        if (!user) throw new Error('User not found, please log in');
+
+        const savedIngredients = [];
+        for (const recipe of user.savedRecipes) {
+          for (const ingredient of recipe.ingredients) {
+            const { _id, name, quantity, measure, category } = ingredient;
+            const savedIngredient = { _id, name, quantity, measure, category: category.name, recipe: recipe.name, recipeId: recipe._id.toString() };
+            savedIngredients.push(savedIngredient);
+          }
         }
-      ];
-    },
-    getCategories: async () => await Category.find(),
-    getRecipes: async () => await Recipe.find().populate({ path: 'ingredients', populate: 'category' })
+
+        payload = savedIngredients;
+      } catch (e) {
+        console.error(e);
+        payload = [];
+      } finally {
+        console.log('[generateSavedIngredients] payload\t', payload);
+        return payload;
+      }
+    }, */
+    /*     getCategories: async () => await Category.find(),
+    getRecipes: async () => await Recipe.find().populate({ path: 'ingredients', populate: 'category' }) */
     //
   },
   Mutation: {
