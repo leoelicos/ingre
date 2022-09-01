@@ -58,11 +58,13 @@ const typeDefs = gql`
   }
 
   type IngredientListItem {
+    _id: ID
     name: String
     quantity: Float
     measure: String
     category: String
     recipe: String
+    recipeId: ID
   }
 
   type Category {
@@ -96,24 +98,20 @@ const typeDefs = gql`
   type Query {
     getUserWithEmail(email: String!): User
     getApiKey: EdamamCredentials
-    getUser: User # Pages: State - firstName, lastName, pro
-    getRecipe(_id: ID!): Recipe # Page: Saved - Edit button
-    getSavedRecipes: [Recipe] # Page: Saved
+    getUser: User
+    getRecipe(_id: ID!): Recipe
+    getSavedRecipes: [Recipe]
     getNumSavedRecipes: Int
-    checkout: Checkout # Page: Saved
-    getSavedIngredients: [IngredientListItem]
-    # testing only
-    getCategories: [Category]
-    getRecipes: [Recipe]
+    checkout: Checkout
   }
 
   type Mutation {
-    addUser(input: UserInput!): Auth # Page: Signup
-    makeUserPro: User # Saved
-    saveRecipe(input: RecipeInput!): Recipe # Pages: Home, Search, Custom
-    updateRecipe(recipeId: ID!, input: RecipeInput!): Recipe # Page: Custom
-    removeRecipe(recipeId: ID!): Boolean # Page: Saved
-    login(email: String!, password: String!): Auth # Page: Login
+    addUser(input: UserInput!): Auth
+    makeUserPro: User
+    saveRecipe(input: RecipeInput!): Recipe
+    updateRecipe(recipeId: ID!, input: RecipeInput!): Recipe
+    removeRecipe(recipeId: ID!): Boolean
+    login(email: String!, password: String!): Auth
   }
 `;
 
