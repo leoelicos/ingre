@@ -13,14 +13,15 @@ import { GET_NUM_SAVED_RECIPES } from '../utils/apollo/queries';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // Ant components
-import { Layout, Menu, Space } from 'antd';
+import { Layout, Menu } from 'antd';
 import { COLLAPSE_SIDEBAR } from '../utils/state/actions';
+import { useEffect } from 'react';
 
 // Ant subcomponent
 const { Sider } = Layout;
 
 const App = () => {
-  const { loading, error, data } = useQuery(GET_NUM_SAVED_RECIPES);
+  const { loading, error, data, refetch } = useQuery(GET_NUM_SAVED_RECIPES);
 
   const location = useLocation();
   const { pathname } = location;
@@ -34,6 +35,10 @@ const App = () => {
     return '1';
   };
 
+  useEffect(() => {
+    refetch();
+  });
+
   return (
     <Sider
       breakpoint="md"
@@ -41,7 +46,6 @@ const App = () => {
         console.log(broken);
         dispatch({ type: COLLAPSE_SIDEBAR });
       }}
-      defaultCollapsed={false}
       trigger={null}
       collapsible
       collapsed={state.leftSidebarCollapsed}
@@ -102,20 +106,22 @@ const App = () => {
           {
             key: 4,
             icon: (
-              <Link to="/saved">
-                <FontAwesomeIcon
+              <Link to="/saved" style={{ minWidth: '19.19px', textAlign: 'center' }}>
+                {/*  <FontAwesomeIcon
                   icon="fa-solid fa-floppy-disk"
                   style={{ width: '19.19px' }}
                   //
-                />
+                /> */}
+                <span style={{ minWidth: '22px', color: 'var(--ingre-dark-brown)' }}>{loading || error ? 0 : data.getNumSavedRecipes}</span>
               </Link>
             ),
             label: (
               <Link to="/saved">
-                <Space>
+                Saved
+                {/* <Space>
                   Saved
                   <span style={{ color: 'var(--ingre-dark-brown)' }}>{loading || error ? 0 : data.getNumSavedRecipes}</span>
-                </Space>
+                </Space> */}
               </Link>
             )
           },
