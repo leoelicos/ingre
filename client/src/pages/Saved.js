@@ -44,7 +44,7 @@ const Saved = () => {
   return (
     <Col>
       <Row>
-        <ContentTitle>Saved recipes</ContentTitle>
+        <ContentTitle>Saved</ContentTitle>
       </Row>
       <Row>
         {Auth.loggedIn() ? (
