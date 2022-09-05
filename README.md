@@ -1,21 +1,22 @@
 # ingré
 
-![react](https://img.shields.io/badge/17.0.1-0?label=react.js&style=for-the-badge&labelColor=white&color=black) ![apollo client](https://img.shields.io/badge/3.5.8-0?label=@apollo/client&style=for-the-badge&labelColor=white&color=black) ![apollo server express](https://img.shields.io/badge/3.10.0-0?label=@apollo%20server%20express&style=for-the-badge&labelColor=white&color=black) ![graphql](https://img.shields.io/badge/15.4.0-0?label=graphql&style=for-the-badge&labelColor=white&color=black)
+### Front end
+
+![react](https://img.shields.io/badge/-React-blue) ![reactrouterdom](https://img.shields.io/badge/-React_Router_DOM-blue) ![edamam](https://img.shields.io/badge/-Edamam_API-blueviolet) ![apolloclient](https://img.shields.io/badge/-Apollo_Client-blueviolet) ![antdesign](https://img.shields.io/badge/-Ant_Design-success) ![JWTDecode](https://img.shields.io/badge/-JWT_decode-success) ![reactmasonrycss](https://img.shields.io/badge/-React_Masonry_CSS-lightgrey) ![pluralize](https://img.shields.io/badge/-pluralize-lightgrey) ![workbox](https://img.shields.io/badge/-workbox-lightgrey) ![axios](https://img.shields.io/badge/-Axios-lightgrey)
+
+### Back end
+
+![mongoose](https://img.shields.io/badge/-Mongoose-blue) ![express](https://img.shields.io/badge/-Express.js-blue) ![node](https://img.shields.io/badge/-Node.js-blue) ![apollo-server-express](https://img.shields.io/badge/-Apollo_Server_Express-blueviolet) ![graphql](https://img.shields.io/badge/-GraphQL-blueviolet) ![stripe](https://img.shields.io/badge/-Stripe-blueviolet) ![JWT](https://img.shields.io/badge/-JWT-success) ![bcrypt](https://img.shields.io/badge/-bcrypt-lightgrey) ![dotenv](https://img.shields.io/badge/-dotenv-lightgrey)
 
 ## Introduction
 
-This six-page web app was an exercise in the appreciation of React, usually used with large web applications using complex state. It features a GlobalStore with React and Redux and Apollo client front-end and Apollo Server and Graph QL backend. The app allows users to login and save recipes to their recipes list without refreshing the page. They can also search recipes by category by clicking on filters. They can also pay with Stripe using a credit card.
+🥚ingré is a mobile shopping app for home cooks who love meal kit subscriptions but not the price. Find and edit recipes and ingré will compile an editable and tappable shopping list sorted by supermarket section.
 
-On the front end, this Node application uses npm packages `@apollo/client`, `react` and `antd`.
-
-On the back end, this application uses npm packages `apollo-server-express`, `graphql`, `jsonwebtoken` and `mongoose`.
-
-I made this app in order to learn how to implement complex state on the front end.
+ingré was built in Node.js over a MERN stack and was the final Project of my bootcamp course. I made this app in order to learn about React in a MERN setup.
 
 ## Usage
 
-- The app is deployed at https://egg-ingre.herokuapp.com/
-- The repo is at https://github.com/leoelicos/ingre
+**Deployed** https://egg-ingre.herokuapp.com/
 
 ## Development and Testing
 
@@ -23,7 +24,7 @@ I made this app in order to learn how to implement complex state on the front en
 
 ```sh
 git clone https://github.com/leoelicos/ingre.git
-cd one-stop-shop
+cd ingre
 npm install
 npm run develop
 ```
