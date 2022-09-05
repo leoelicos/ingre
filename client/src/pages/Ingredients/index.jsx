@@ -2,22 +2,27 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 // Ant components
-import { Button, Form, Input, Popconfirm, Table, Row, Col, Divider, Spin, Empty } from 'antd';
+import { Button, Form, Input, Popconfirm, Table, Row, Col, Divider, Spin } from 'antd';
 
 // Custom components
-import ContentTitle from '../components/ContentTitle';
+import ContentTitle from '../../components/ContentTitle';
+import Empty from '../../components/Empty';
+import Alert from '../../components/Alert';
 
 // Apollo
-import { GET_SAVED_RECIPES, GET_RECIPE } from '../utils/apollo/queries';
+import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries';
 import { useApolloClient, useQuery } from '@apollo/client';
 
 // GlobalState
-import { useStoreContext } from '../utils/state/GlobalState';
-import { UPDATE_SAVED_RECIPES, FLAG_INGREDIENTS_GENERATED, UPDATE_SAVED_INGREDIENTS } from '../utils/state/actions';
+import { useStoreContext } from '../../utils/state/GlobalState';
+import { UPDATE_SAVED_RECIPES, FLAG_INGREDIENTS_GENERATED, UPDATE_SAVED_INGREDIENTS } from '../../utils/state/actions';
 
 // Assets
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
+
+// Auth
+import Auth from '../../utils/auth/index.js';
 
 const EditableContext = React.createContext(null);
 
@@ -54,8 +59,8 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
       const values = await form.validateFields();
       toggleEdit();
       handleSave({ ...record, ...values });
-    } catch (errInfo) {
-      console.log('Save failed:', errInfo);
+    } catch (e) {
+      console.error('Save failed:', e);
     }
   };
 
@@ -63,21 +68,8 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 
   if (editable) {
     childNode = editing ? (
-      <Form.Item
-        name={dataIndex}
-        rules={[
-          {
-            required: true,
-            message: `${title} is required.`
-          }
-        ]}
-      >
-        <Input
-          ref={inputRef}
-          onPressEnter={save}
-          onBlur={save}
-          //
-        />
+      <Form.Item name={dataIndex} rules={[{ required: true, message: `${title} is required.` }]}>
+        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
       </Form.Item>
     ) : (
       <div className="editable-cell-value-wrap" onClick={toggleEdit}>
@@ -93,20 +85,16 @@ const Ingredients = () => {
   const [form] = Form.useForm();
   const [state, dispatch] = useStoreContext();
 
-  const { loading: savedRecipeLoading, error: savedRecipeError, data: savedRecipeData } = useQuery(GET_SAVED_RECIPES);
+  const {
+    loading: savedRecipeLoading,
+    error: savedRecipeError,
+    data: savedRecipeData
+    //
+  } = useQuery(GET_SAVED_RECIPES);
 
   const [savedRecipes, setSavedRecipes] = useState([]);
 
-  const [dataSource, setDataSource] = useState([
-    {
-      key: '0',
-      name: 'Loading',
-      quantity: 'Loading',
-      measure: 'Loading',
-      category: 'Loading',
-      recipe: 'Loading'
-    }
-  ]);
+  const [dataSource, setDataSource] = useState([]);
 
   const client = useApolloClient();
 
@@ -124,6 +112,7 @@ const Ingredients = () => {
           savedIngredientArray.push(savedIngredient);
         });
       }
+      console.log('savedIngredientArray', savedIngredientArray);
       setDataSource(savedIngredientArray);
       dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: savedIngredientArray });
     };
@@ -167,7 +156,6 @@ const Ingredients = () => {
       key: 'name',
       title: 'Name',
       dataIndex: 'name',
-      // width: '25%',
       editable: true,
       sorter: function (a, b) {
         return a.name.localeCompare(b.name);
@@ -178,7 +166,6 @@ const Ingredients = () => {
       key: 'quantity',
       title: 'Quantity',
       dataIndex: 'quantity',
-      // width: '15%',
       editable: true,
       sorter: function (a, b) {
         return parseFloat(a.quantity) - parseFloat(b.quantity);
@@ -189,7 +176,6 @@ const Ingredients = () => {
       key: 'measure',
       title: 'Measure',
       dataIndex: 'measure',
-      // width: '15%',
       editable: true,
       sorter: function (a, b) {
         return a.measure.localeCompare(b.measure);
@@ -200,7 +186,6 @@ const Ingredients = () => {
       key: 'category',
       title: 'Category',
       dataIndex: 'category',
-      // width: '25%',
       editable: true,
       sorter: function (a, b) {
         return a.category.localeCompare(b.category);
@@ -212,7 +197,6 @@ const Ingredients = () => {
       title: 'From recipe',
       dataIndex: 'recipe',
       editable: true,
-      // width: '15%',
 
       sorter: function (a, b) {
         return a.recipe.localeCompare(b.recipe);
@@ -222,7 +206,6 @@ const Ingredients = () => {
     {
       title: ' ',
       dataIndex: ' ',
-      // width: '5%',
       render: (_, record) =>
         dataSource.length >= 1 ? (
           <Popconfirm placement="leftTop" title="Confirm" icon={null} onConfirm={() => handleDelete(record.key)}>
@@ -284,82 +267,125 @@ const Ingredients = () => {
     dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: dataSource });
   };
 
-  useEffect(() => {
-    reload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <Col span={24}>
       <Row>
         <ContentTitle>Ingredients</ContentTitle>
       </Row>
-      <Row style={{ marginTop: '1rem' }}>
-        <Button
-          type="primary"
-          onClick={() => reload()}
-          shape="round"
-          icon={<FontAwesomeIcon icon="fa-solid fa-rotate-left" style={{ marginRight: '4px' }} />}
-          //
-        >
-          Generate
-        </Button>
-      </Row>
-
-      <Row style={{ marginTop: '1rem', paddingBottom: '1rem', height: '100%' }}>
-        {savedRecipeLoading ? (
-          <Spin>Loading</Spin>
-        ) : savedRecipeError ? (
-          <Empty />
-        ) : (
-          <Form
-            form={form}
-            component={false}
-            style={{ marginTop: '1rem' }}
-            // onFinish={onFinish}
-            //
-          >
-            <Table
-              style={{ width: '100%' }}
-              components={components}
-              rowClassName={() => 'editable-row'}
-              bordered
-              dataSource={dataSource}
-              columns={columns}
-              pagination={false}
-              //
-            />
-            <Row style={{ marginTop: '1rem' }}>
-              <Button
-                onClick={handleAdd}
-                type="ghost"
-                icon={<FontAwesomeIcon icon="fa-solid fa-add" style={{ marginRight: '4px' }} />}
-                shape="round"
-                style={{ width: '100%' }}
-                //
-              >
-                Ingredient
-              </Button>
-            </Row>
-
-            <Row style={{ marginTop: '1rem' }}>
-              <Link to="/tapoff" style={{ width: '100%' }}>
+      <Row style={{ paddingBottom: '1rem' }}>
+        {Auth.loggedIn() ? (
+          <>
+            <Col span={24}>
+              <Row>
                 <Button
-                  htmlType="submit"
                   type="primary"
-                  style={{ width: '100%' }}
-                  icon={<FontAwesomeIcon icon="fa-solid fa-floppy-disk" style={{ marginRight: '4px' }} />}
+                  onClick={() => reload()}
                   shape="round"
-                  onClick={onFinish}
-                  //
+                  icon={
+                    <FontAwesomeIcon
+                      icon="fa-solid fa-rotate-left"
+                      style={{
+                        marginRight: '4px'
+                      }}
+                    />
+                  }
+                  style={{
+                    margin: '1rem 0'
+                  }}
                 >
-                  Tap Off
+                  Generate
                 </Button>
-              </Link>
-            </Row>
-          </Form>
+              </Row>
+            </Col>
+
+            {savedRecipeLoading ? (
+              <Divider>
+                <Spin tip="Loading saved ingredients"></Spin>
+              </Divider>
+            ) : savedRecipeError ? (
+              <Alert type="error" message="Couldn't load saved ingredients" />
+            ) : (
+              <Form
+                form={form}
+                component={false}
+                style={{
+                  marginTop: '1rem'
+                }}
+              >
+                <Table
+                  style={{
+                    width: '100%'
+                  }}
+                  components={components}
+                  rowClassName={() => 'editable-row'}
+                  bordered
+                  dataSource={dataSource}
+                  columns={columns}
+                  pagination={false}
+                />
+                <Row style={{ marginTop: '1rem' }}>
+                  <Button
+                    onClick={handleAdd}
+                    type="ghost"
+                    icon={
+                      <FontAwesomeIcon
+                        icon="fa-solid fa-add"
+                        style={{
+                          marginRight: '4px'
+                        }}
+                      />
+                    }
+                    shape="round"
+                    block
+                  >
+                    Ingredient
+                  </Button>
+                </Row>
+
+                <Row
+                  style={{
+                    marginTop: '1rem'
+                  }}
+                >
+                  <Link to="/tapoff" style={{ width: '100%' }}>
+                    <Button
+                      htmlType="submit"
+                      type="primary"
+                      icon={
+                        <FontAwesomeIcon
+                          icon="fa-solid fa-floppy-disk"
+                          style={{
+                            marginRight: '4px'
+                          }}
+                        />
+                      }
+                      shape="round"
+                      onClick={onFinish}
+                      block
+                    >
+                      Tap Off
+                    </Button>
+                  </Link>
+                </Row>
+              </Form>
+            )}
+          </>
+        ) : (
+          <Empty>
+            <Divider />
+            <Row>You need to be logged in to see this page.</Row>
+            <Link to="/login">
+              <Button
+                type="primary"
+                style={{
+                  marginTop: '1rem'
+                }}
+              >
+                Log in
+              </Button>
+            </Link>
+          </Empty>
         )}
-        <Divider />
       </Row>
     </Col>
   );
