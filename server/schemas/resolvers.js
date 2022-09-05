@@ -28,6 +28,7 @@ const resolvers = {
     getApiKey: () => ({ appId: APP_ID, appKey: APP_KEY }),
     //
     getUser: async (_, __, context) => {
+      console.log('[getUser]');
       let user = null;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
@@ -38,20 +39,18 @@ const resolvers = {
         console.error(error);
         payload = null;
       } finally {
-        console.log('[getUser] payload\t', payload);
         return payload;
       }
     },
 
     //
     getRecipe: async (_, args) => {
+      console.log('[getRecipe]');
       const { _id } = args;
-      console.log('[getRecipe] _id', _id);
       let recipe = null;
       try {
         recipe = await Recipe.findById(_id).populate({ path: 'ingredients', populate: 'category' });
         payload = recipe;
-        console.log('[getRecipe] payload\t', payload);
         return payload;
       } catch (error) {
         console.error(error);
@@ -70,7 +69,6 @@ const resolvers = {
         console.error(e);
         payload = [];
       } finally {
-        console.log('[getSavedRecipes] payload\t', payload);
         return payload;
       }
     },
@@ -86,26 +84,25 @@ const resolvers = {
       } catch (e) {
         console.error(e);
       } finally {
-        // console.log('[getNumSavedRecipes] payload\t', payload);
         return payload;
       }
     },
 
     //
-    checkout: async (_, args, context) => {
+    checkout: async (_, __, context) => {
       console.log('[checkout]');
       let error = '';
       let id = '';
       try {
-        const url = context?.headers?.referer ? new URL(context.headers.referer).origin : 'https://localhost:3000';
+        const url = new URL(context.headers.referer).origin;
 
         // array to store product metadata in Stripe
         const line_items = [];
 
         const product = await stripe.products.create({
-          name: 'ingre Pro',
-          description: 'Permanently save your recipes to Library',
-          images: [`${url}/cookie-tin.jpg`]
+          name: 'ingré PRO',
+          description: 'Access instructions to cook each recipe',
+          images: [`https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc`]
         });
 
         const price = await stripe.prices.create({
@@ -125,48 +122,10 @@ const resolvers = {
         }));
       } catch (e) {
         error = e;
-        console.log(e);
+        console.error(e);
       }
       return { session: id, error };
     }
-
-    /* generateSavedIngredients: async (_, __, context) => {
-      try {
-        console.log('[generateSavedIngredients]');
-        if (!context.user) throw new AuthenticationError('Not logged in!');
-        const user = await User
-          //
-          .findById(context.user._id)
-          .populate({
-            path: 'savedRecipes',
-            populate: {
-              path: 'ingredients',
-              populate: 'category'
-            }
-          });
-        if (!user) throw new Error('User not found, please log in');
-
-        const savedIngredients = [];
-        for (const recipe of user.savedRecipes) {
-          for (const ingredient of recipe.ingredients) {
-            const { _id, name, quantity, measure, category } = ingredient;
-            const savedIngredient = { _id, name, quantity, measure, category: category.name, recipe: recipe.name, recipeId: recipe._id.toString() };
-            savedIngredients.push(savedIngredient);
-          }
-        }
-
-        payload = savedIngredients;
-      } catch (e) {
-        console.error(e);
-        payload = [];
-      } finally {
-        console.log('[generateSavedIngredients] payload\t', payload);
-        return payload;
-      }
-    }, */
-    /*     getCategories: async () => await Category.find(),
-    getRecipes: async () => await Recipe.find().populate({ path: 'ingredients', populate: 'category' }) */
-    //
   },
   Mutation: {
     // adds a user to the database
@@ -187,6 +146,7 @@ const resolvers = {
 
     // makes a user pro
     makeUserPro: async (_, __, context) => {
+      console.log('[makeUserPro]');
       let user = false;
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
@@ -199,7 +159,6 @@ const resolvers = {
       } catch (error) {
         console.error(error);
       }
-      console.log('[makeUserPro] user\t', user);
       return user;
     },
 
@@ -207,14 +166,9 @@ const resolvers = {
     saveRecipe: async (_, args, context) => {
       try {
         console.log('[saveRecipe]');
-        // console.log('[saveRecipe] args', args);
         const { input } = args;
-        const { name, portions, ingredients, picture_url, edamamId } = input;
+        const { name, portions, ingredients, picture_url, edamamId, instructions } = input;
         payload = null;
-
-        console.log('[saveRecipe]');
-        // console.log('input', input);
-        // console.log('context.user', await context.user);
 
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const uniqueCategories = await Category.find()
@@ -250,8 +204,14 @@ const resolvers = {
         }
         // create recipe
         const createdImage = 'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc';
-        const newRecipe = { name, portions, ingredients: createdIngredients, picture_url: picture_url || createdImage, edamamId: edamamId };
-        // console.log('newRecipe', newRecipe);
+        const newRecipe = {
+          name,
+          portions,
+          instructions,
+          ingredients: createdIngredients,
+          picture_url: picture_url || createdImage,
+          edamamId: edamamId
+        };
         const recipe = await Recipe
           //
           .create(newRecipe)
@@ -259,49 +219,40 @@ const resolvers = {
 
         // push recipe to user.savedRecipes
         const query = context.user._id;
-        // console.log('[saveRecipe] context.user._id', context.user._id);
         if (!query) throw new Error('No user found');
         const update = { $push: { savedRecipes: recipe._id } };
         const user = await User.findByIdAndUpdate(query, update, { new: true });
         if (!user) throw new Error('User not found, please log in');
-        console.log('user.savedRecipes:', user.savedRecipes);
         payload = recipe;
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
-      // console.log('[saveRecipe] payload\t', payload);
       return payload;
     },
 
     // updates a recipe in the database
-    updateRecipe: async (_, { recipeId, input: { name, portions, picture_url, ingredients, edamamId } }, context) => {
-      console.log('[updateRecipe] REQ\t', recipeId, { name, portions, picture_url, ingredients, edamamId });
+    updateRecipe: async (_, { recipeId, input: { name, portions, picture_url, ingredients, edamamId, instructions } }, context) => {
+      console.log('[updateRecipe]');
       try {
         if (!context.user) throw new AuthenticationError('Not logged in!');
 
         const dbRecipe = await Recipe.findById(recipeId);
         if (!dbRecipe) throw new Error('Recipe does not exist!');
-        console.log('[updateRecipe] db Rec\t', dbRecipe);
         // delete all ingredients in this recipe from database
         for (const { _id } of dbRecipe.ingredients) {
           const deleteResult = await Ingredient.findByIdAndDelete(_id);
-          console.log('[updateRecipe] del Ing\t', deleteResult);
         }
         // remove all ingredient references in recipe
         const clearedRecipe = await Recipe.findByIdAndUpdate(recipeId, { $set: { ingredients: [] } }, { new: true });
-        console.log('[updateRecipe] upd Rec\t', clearedRecipe);
 
         const uniqueCategories = await Category
           //
           .find()
           .select('-_id name')
           .then((categories) => categories.map((c) => c.name));
-        console.log('[updateRecipe] DB Cat\t', uniqueCategories);
 
         const createdIngredients = [];
         for (let { name, quantity, measure, category } of ingredients) {
-          console.log('[updateRecipe] REQ Ing\t', { name, quantity, measure, category });
-
           if (!name) name = 'Generic';
           if (!quantity) quantity = 1;
           if (!measure) measure = 'unit';
@@ -313,35 +264,26 @@ const resolvers = {
             uniqueCategories.push(category);
             let createdCategory = await Category.create({ name: category });
             createdCategory.save();
-            console.log('[updateRecipe] created\t', createdCategory);
             categoryId = createdCategory._id;
           } else {
             let foundCategory = await Category.findOne({ name: category });
-            console.log('[updateRecipe] found \t', foundCategory);
             categoryId = foundCategory._id;
           }
 
           // create ingredient
-          let createdIngredient = await Ingredient.create({
-            name,
-            quantity,
-            measure,
-            category: categoryId
-            //
-          });
+          const newIngredient = { name, quantity, measure, category: categoryId };
+          let createdIngredient = await Ingredient.create(newIngredient);
           createdIngredient.save();
-          console.log('[updateRecipe] createdIngredient\t', createdIngredient);
           createdIngredients.push(createdIngredient._id);
         }
-        /* 
-        update recipe 
-        */
+        /* update recipe */
         const createdImage = 'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc';
         dbRecipe.name = name;
         dbRecipe.portions = portions;
         dbRecipe.ingredients = createdIngredients;
         dbRecipe.picture_url = picture_url || createdImage;
         dbRecipe.edamamId = edamamId;
+        dbRecipe.instructions = instructions;
         await dbRecipe.save();
         dbRecipe.populate({ path: 'ingredients', populate: 'category' });
 
@@ -358,15 +300,11 @@ const resolvers = {
               });
             });
           });
-        console.log('[updateRecipe] used Cat\t', usedCategories);
         const allCategories = await Category.find()
           .select('_id')
           .then((arr) => arr.map((val) => val._id));
-        console.log('[updateRecipe] all Cat\t', allCategories);
 
         const result = await Category.deleteMany({ _id: { $nin: usedCategories } });
-        console.log('[updateRecipe] del Cat\t', result);
-        console.log('[updateRecipe] payload\t', dbRecipe);
         return dbRecipe;
       } catch (error) {
         console.error(error);
@@ -381,19 +319,16 @@ const resolvers = {
         if (!context.user) throw new AuthenticationError('Not logged in!');
         const dbRecipe = await Recipe.findById(recipeId);
         if (!dbRecipe) throw new Error('Recipe does not exist!');
-        console.log('[removeRecipe] db Rec\t', dbRecipe);
+
         // delete all ingredients in this recipe from database
         for (const { _id } of dbRecipe.ingredients) {
           const deleteResult = await Ingredient.findByIdAndDelete(_id);
-          console.log('[removeRecipe] del Ing\t', deleteResult);
         }
         // remove all ingredient references in recipe
         const clearedRecipe = await Recipe.findByIdAndUpdate(recipeId, { $set: { ingredients: [] } }, { new: true });
-        console.log('[removeRecipe] upd Rec\t', clearedRecipe);
 
         // delete Recipe
         const delRecipe = await Recipe.findByIdAndDelete(recipeId);
-        console.log('[removeRecipe] del rec\t', delRecipe);
 
         // clean up categories
         const usedCategories = [];
@@ -408,17 +343,13 @@ const resolvers = {
               });
             });
           });
-        console.log('[removeRecipe] used Cat\t', usedCategories);
         const allCategories = await Category.find()
           .select('_id')
           .then((arr) => arr.map((val) => val._id));
-        console.log('[removeRecipe] all Cat\t', allCategories);
 
         const result = await Category.deleteMany({ _id: { $nin: usedCategories } });
-        console.log('[removeRecipe] del Cat\t', result);
 
         // remove recipe from user.savedRecipes
-        console.log('context.user._id', context.user._id);
         const user = await User.findByIdAndUpdate(context.user._id, { $pull: { savedRecipes: recipeId } }, { new: true });
         if (!user) throw new Error('User not found, please log in');
         payload = true;
@@ -426,7 +357,6 @@ const resolvers = {
         payload = false;
         console.error(error);
       } finally {
-        console.log('[removeRecipe] payload\t', payload);
         return payload;
       }
     },
