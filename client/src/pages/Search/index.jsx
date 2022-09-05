@@ -5,20 +5,20 @@ import { useEffect, useState } from 'react';
 import { Form, Input, Cascader, Row, Spin, Divider, Col } from 'antd';
 
 // Custom components
-import RecipeCardContainer from '../components/RecipeCardContainer';
-import ContentTitle from '../components/ContentTitle';
+import RecipeCardContainer from '../../components/RecipeCardContainer';
+import ContentTitle from '../../components/ContentTitle';
 
 // Edamam API
-import FetchEdamam from '../utils/api/index.js';
+import FetchEdamam from '../../utils/api/index.js';
 
 // useContext
-import { useStoreContext } from '../utils/state/GlobalState';
+import { useStoreContext } from '../../utils/state/GlobalState';
 
 // useReducer
-import { UPDATE_SEARCH_RECIPES } from '../utils/state/actions';
+import { UPDATE_SEARCH_RECIPES } from '../../utils/state/actions';
 
 // get API key
-import { GET_API_KEY } from '../utils/apollo/queries';
+import { GET_API_KEY } from '../../utils/apollo/queries';
 import { useApolloClient } from '@apollo/client';
 
 // Ant subcomponents
@@ -39,38 +39,53 @@ function Search() {
   // Ant Form hook to enable setFormFields()
   const [form] = Form.useForm();
 
-  // Handle search submit
-  const handleFormSubmit = async (values) => {
+  const handleFormSubmit = async (values, event) => {
+    console.log('values', values, '\nformState', formState);
     try {
-      // get credentials from backend
+      // prevent API call when Ant.Search form is cleared with the 'x' button
+      if (event.type === 'click' && event.target.value === '' && event.currentTarget.tagName === 'INPUT') return;
+
+      // Flag API fetch
+      setLoadingEdamam(true);
+
+      // Apollo Query to get Edamam API credentials
       const res = await client.query({ query: GET_API_KEY });
       if (!res) throw new Error('[handleRefresh] GET_API_KEY error');
+
+      // Call API
+      const search = { q: values, ...formState };
       const appId = res.data.getApiKey.appId;
       const appKey = res.data.getApiKey.appKey;
-
-      // load API results into local state
-      setLoadingEdamam(true);
-      const search = { q: values, ...formState };
       const hits = await FetchEdamam(search, appId, appKey);
-      setEdamamRecipes(hits);
-      setLoadingEdamam(false);
-      //* edamamRecipes > GlobalState.searchRecipes
+
+      // Store results in local state
+      await setEdamamRecipes(hits);
+
+      // Store results in global state
       dispatch({ type: UPDATE_SEARCH_RECIPES, data: edamamRecipes });
+
+      // Unflag API fetch
+      setLoadingEdamam(false);
     } catch (e) {
       console.error(e);
     }
   };
 
   const handleFilterChange = (event) => {
-    const obj = { diet: [], health: [], cuisineType: [], mealType: [], dishType: [] };
-    event.forEach((e) => {
-      if (e[0] === 'diet') obj.diet[obj.diet.length] = e[1];
-      else if (e[0] === 'health') obj.health[obj.health.length] = e[1];
-      else if (e[0] === 'cuisine-type') obj.cuisineType[obj.cuisineType.length] = e[1];
-      else if (e[0] === 'meal-type') obj.mealType[obj.mealType.length] = e[1];
-      else if (e[0] === 'dish-type') obj.dishType[obj.dishType.length] = e[1];
-    });
-    const newState = { ...formState, ...obj };
+    const newState = event.reduce(
+      (prev, curr) => {
+        let key = curr[0];
+        let val = curr[1];
+        if (key === 'diet') prev.diet.push(val);
+        else if (key === 'health') prev.health.push(val);
+        else if (key === 'cuisine-type') prev.cuisineType.push(val);
+        else if (key === 'meal-type') prev.mealType.push(val);
+        else if (key === 'dish-type') prev.dishType.push(val);
+        return prev;
+      },
+      { diet: [], health: [], cuisineType: [], mealType: [], dishType: [] }
+    );
+    console.log('newState', newState);
     setFormState(newState);
   };
 
@@ -115,6 +130,7 @@ function Search() {
               enterButton={true}
               loading={false}
               onSearch={handleFormSubmit}
+              allowClear={true}
               //
             />
           </Form.Item>
