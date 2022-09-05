@@ -34,6 +34,7 @@ export const GET_SAVED_RECIPES = gql`
       portions
       picture_url
       edamamId
+      instructions
     }
   }
 `;
@@ -61,6 +62,7 @@ export const GET_RECIPE = gql`
       }
       picture_url
       edamamId
+      instructions
     }
   }
 `;
