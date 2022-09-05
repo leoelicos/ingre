@@ -96,11 +96,19 @@
 
 .ant-input-affix-wrapper {
   padding: 0 !important;
+  background-color: transparent;
+  border: none;
 }
+.ant-input-affix-wrapper:hover {
+  border: none;
+}
+
 .ant-input-suffix {
   width: 1.5rem;
   justify-content: center;
-  margin: auto;
+  margin: -1.5rem;
+  transform: translate3d(0, 0, 0);
+  z-index: 1;
 }
 .ant-input-password:focus,
 .ant-input-password:focus-visible,
@@ -113,28 +121,12 @@
 a {
   color: inherit !important;
 }
-.ant-input-search-button {
-  border: 0;
-
-  font-size: 0.7rem;
-  margin-top: -1px;
-  background: var(--ingre-blue);
-}
 
 .dropdownFilter {
   width: 100%;
   max-width: 600px;
 }
 
-.ant-input-search-button {
-  height: 31px;
-  width: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--ingre-dark-brown);
-  border-left: none;
-}
 .ant-card-actions > li:not(:last-child) {
   border-right: none;
   margin-right: 4px;
@@ -196,14 +188,17 @@ a {
   padding: 2px 1rem !important;
   height: 40px !important;
 }
-.ant-input-search-large .ant-input-search-button {
+.ant-input-search-button {
+  background: var(--ingre-blue);
+  width: 64px;
+  justify-content: center;
   height: 40px !important;
   display: flex;
   align-items: center;
   font-size: 1.2rem;
   margin: 0;
-  border: none !important;
-  border-radius: 0 !important;
+  border: 1px solid var(--ingre-blue) !important;
+  border-left: none !important;
   border-radius: 0 1rem 1rem 0 !important;
 }
 .ant-cascader-menu {
@@ -226,6 +221,7 @@ a {
 .ant-image-mask {
   border-radius: 1rem 1rem 0 0;
 }
+/* search filters button */
 .ant-select:not(.ant-select-customize-input) .ant-select-selector {
   border-radius: 1rem;
   border: 0;
@@ -233,6 +229,14 @@ a {
   border: 1px solid var(--ingre-dark-brown);
   background: var(--ingre-white);
   padding: 1px 5px;
+}
+.ant-select:not(.ant-select-customize-input) .ant-select-selector:hover {
+  border: 1px solid var(--ingre-dark-brown);
+}
+.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  border: 1px solid var(--ingre-dark-brown);
+  box-shadow: none;
+  outline: 0;
 }
 .ant-select-multiple .ant-select-selection-placeholder {
   padding-left: 0.3rem;
@@ -254,9 +258,7 @@ textarea.ant-input {
 
 .ant-btn:hover,
 .ant-btn:focus {
-  color: var(--ingre-dark-brown);
   border-color: var(--ingre-dark-brown);
-  background: #fff;
 }
 .ant-btn:active {
   color: var(--ingre-eggshell);
@@ -284,7 +286,7 @@ textarea.ant-input {
 }
 .ant-table-tbody > tr > td,
 .ant-table-thead > tr > th {
-  padding: 4px;
+  padding: 2px;
 }
 .ant-table-cell {
   vertical-align: top;
@@ -397,4 +399,37 @@ textarea.ant-input {
   opacity: 1;
   transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) 0.1s;
   content: ' ';
+}
+
+/* search bar */
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+  border: none;
+  box-shadow: none;
+  outline: 0;
+}
+
+/* modal title  */
+.ant-drawer-header {
+  padding: 14.5px 24px;
+  font-size: 16px;
+  line-height: 22px;
+  border-bottom: 1px solid var(--ingre-grey);
+}
+.ant-drawer-close {
+  padding: 1px 0;
+}
+.ant-drawer-right .ant-drawer-content-wrapper {
+  width: calc(min(70%, 378px)) !important;
+}
+
+/* preview button */
+ul.ant-card-actions > li:first-child {
+  position: absolute;
+  bottom: 0;
+  left: 4px;
+}
+.preview-button {
+  display: flex;
+  align-items: center;
 }
