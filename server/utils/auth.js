@@ -2,7 +2,7 @@
  * ingre
  * seeds/user-seeds.js
  * This script implements authMiddleware, which uses JSON Web Token to prevents users from doing certain actions if they are not signed in.
- * It also implements signToken, which creates a token for a user that lasts 2 hours
+ * It also implements signToken, which creates a token for a user that lasts a period of time
  * Copyright 2022 Leo Wong
  */
 
@@ -28,8 +28,10 @@ module.exports = {
       return req;
     }
   },
-  signToken: function ({ firstName, email, _id }) {
-    const payload = { data: { firstName, email, _id } };
+  signToken: function (user) {
+    const { firstName, email, _id, pro } = user;
+    const data = { firstName, email, _id, pro };
+    const payload = { data };
     const secretOrPrivateKey = secret;
     const options = { expiresIn: expiration };
     return jwt.sign(payload, secretOrPrivateKey, options);

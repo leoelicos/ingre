@@ -1,40 +1,41 @@
-// react
-import { useStoreContext } from '../../utils/state/GlobalState';
-import { Link, useLocation } from 'react-router-dom';
-import Auth from '../../utils/auth';
+// useReducer
+import { useStoreContext } from '../utils/state/GlobalState';
+
+// react-router-dom
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
+// utils
+import Auth from '../utils/auth';
+
 // Font Awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // state
-import { SHOW_MODAL, TOGGLE_SIDEBAR } from '../../utils/state/actions';
-
-// components
-import ModalGuide from './ModalGuide/index';
+import { TOGGLE_SIDEBAR } from '../utils/state/actions';
 
 // Ant Components
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Col, Row, Button, Steps, Typography } from 'antd';
 
+// Ant subcomponents
 const { Step } = Steps;
 const { Title } = Typography;
 
-const App = () => {
+const Header = () => {
   const [state, dispatch] = useStoreContext();
 
   const handleMenuToggle = () => {
     dispatch({ type: TOGGLE_SIDEBAR });
   };
 
-  const showModal = () => {
-    dispatch({ type: SHOW_MODAL });
-  };
-
   const { pathname } = useLocation();
   const getStep = pathname === '/tapoff' ? 2 : pathname === '/ingredients' ? 1 : 0;
+  const navigate = useNavigate();
 
   const logout = (event) => {
     event.preventDefault();
     Auth.logout();
+    navigate(0);
   };
 
   return (
@@ -43,7 +44,6 @@ const App = () => {
         width: '100%',
         borderBottom: '1px solid var(--ingre-grey)',
         justifyContent: 'center'
-        //
       }}
     >
       <Row
@@ -52,31 +52,27 @@ const App = () => {
           maxWidth: '1264px',
           justifyContent: 'space-between',
           alignItems: 'center'
-          //
         }}
       >
         {/* Toggle menu */}
         <Col>
           <Row align="middle" style={{ marginTop: '-1px', paddingBottom: '2px' }}>
             {state.leftSidebarCollapsed ? (
-              //
               <MenuUnfoldOutlined
                 onClick={handleMenuToggle}
                 style={{
-                  color: 'var(--ingre-dark-brown',
+                  color: 'var(--ingre-dark-brown)',
                   fontSize: '1.2rem',
                   margin: '0 1.2rem'
-                  //
                 }}
               />
             ) : (
               <MenuFoldOutlined
                 onClick={handleMenuToggle}
                 style={{
-                  color: 'var(--ingre-dark-brown',
+                  color: 'var(--ingre-dark-brown)',
                   fontSize: '1.2rem',
                   margin: '0 1.2rem'
-                  //
                 }}
               />
             )}
@@ -120,12 +116,7 @@ const App = () => {
         {/* Step big */}
         <Col span={0} md={11}>
           <Row align="middle">
-            <Steps
-              size="small"
-              current={getStep}
-              responsive={false}
-              //
-            >
+            <Steps size="small" current={getStep} responsive={false}>
               <Step
                 title={<Link to="/">Recipes</Link>}
                 icon={
@@ -157,22 +148,41 @@ const App = () => {
         <Col>
           <Row align="middle">
             {Auth.loggedIn() ? (
-              <Button onClick={logout}>Logout</Button>
+              <Button
+                type="link"
+                onClick={logout}
+                style={{
+                  color: 'var(--ingre-dark-brown)',
+                  fontSize: '1.2rem',
+                  margin: '0 1.2rem',
+                  padding: '0 8px',
+                  borderRadius: '1.2rem'
+                }}
+              >
+                Log out
+              </Button>
             ) : (
               <Link to="/login">
-                <Button>Login</Button>
+                <Button
+                  type="link"
+                  style={{
+                    color: 'var(--ingre-dark-brown)',
+                    fontSize: '1.2rem',
+                    margin: '0 1.2rem',
+                    padding: '0 12px',
+                    borderRadius: '1.2rem'
+                  }}
+                  shape="round"
+                >
+                  Log in
+                </Button>
               </Link>
             )}
-            <Button onClick={showModal} style={{ margin: '0 0.3rem' }}>
-              <FontAwesomeIcon icon="fa-solid fa-circle-info" />
-            </Button>
           </Row>
         </Col>
       </Row>
-      {/* Modal Guide */}
-      <ModalGuide />
     </Row>
   );
 };
 
-export default App;
+export default Header;

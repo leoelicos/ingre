@@ -1,3 +1,4 @@
+// Ant components
 import { Layout, Row } from 'antd';
 
 const App = (props) => {
@@ -6,8 +7,6 @@ const App = (props) => {
       style={{
         width: '100%',
         justifyContent: 'center'
-
-        //
       }}
     >
       <Row
@@ -16,7 +15,6 @@ const App = (props) => {
           maxWidth: '1264px',
           alignItems: 'flex-start',
           background: 'white'
-          //
         }}
       >
         {props.children}

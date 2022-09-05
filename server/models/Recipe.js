@@ -36,6 +36,9 @@ const recipeSchema = new Schema({
   },
   edamamId: {
     type: String
+  },
+  instructions: {
+    type: String
   }
 });
 

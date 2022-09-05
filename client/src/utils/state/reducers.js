@@ -1,8 +1,9 @@
 import { useReducer } from 'react';
 import {
-  SHOW_MODAL,
-  HIDE_MODAL,
+  SHOW_DRAWER,
+  HIDE_DRAWER,
   TOGGLE_SIDEBAR,
+  EXPAND_SIDEBAR,
   COLLAPSE_SIDEBAR,
   UPDATE_SEARCH_RECIPES,
   UPDATE_HOME_RECIPES,
@@ -24,13 +25,16 @@ export const reducer = (state, action) => {
   console.log(`REDUCER\t[${action.type}]`, action.data);
 
   switch (action.type) {
-    case SHOW_MODAL:
+    case SHOW_DRAWER:
       return { ...state, modalVisible: true };
-    case HIDE_MODAL:
+    case HIDE_DRAWER:
       return { ...state, modalVisible: false };
 
     case TOGGLE_SIDEBAR:
       return { ...state, leftSidebarCollapsed: !state.leftSidebarCollapsed };
+
+    case EXPAND_SIDEBAR:
+      return { ...state, leftSidebarCollapsed: false };
     case COLLAPSE_SIDEBAR:
       return { ...state, leftSidebarCollapsed: true };
 
@@ -70,10 +74,10 @@ export const reducer = (state, action) => {
 
     case ADD_EDIT_RECIPE:
       const newEditRecipe = action.data;
-      return { ...state, customRecipe: newEditRecipe };
+      return { ...state, customiseRecipe: newEditRecipe };
 
     case CLEAR_EDIT_RECIPE:
-      return { ...state, customRecipe: null };
+      return { ...state, customiseRecipe: null };
 
     case FLAG_HOME_MOUNTED:
       return { ...state, homeDidMount: true };

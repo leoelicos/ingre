@@ -14,16 +14,6 @@ const getQueryParamString = (q, diet, health, cuisineType, mealType, dishType) =
 };
 
 const fetchEdamam = async (search, appId, appKey) => {
-  // console.log('Received', search);
-  let queryString = '%20';
-
-  if (search) {
-    const { q, diet, health, cuisineType, mealType, dishType } = search;
-    queryString = getQueryParamString(q, diet, health, cuisineType, mealType, dishType);
-  }
-
-  //! we are supposed to get APP_ID from backend instead
-  // console.log('queryString = ', queryString);
   let uri =
     `https://api.edamam.com/api/recipes/v2?` +
     [
@@ -37,7 +27,8 @@ const fetchEdamam = async (search, appId, appKey) => {
       'field=images',
       'field=yield',
       'field=ingredients',
-      `q=${queryString}`
+      'field=shareAs',
+      `q=${search ? getQueryParamString(search.q, search.diet, search.health, search.cuisineType, search.mealType, search.dishType) : '%20'}`
       //
     ].join('&');
   return (
@@ -53,14 +44,7 @@ const fetchEdamam = async (search, appId, appKey) => {
         const hits = res.data.hits;
         if (!hits) throw new Error('Edamam 404: !res.data.hits');
 
-        const blankImages = ['fe91e54771717b4aed8e279237b46b11', '323e10a433ca706efb4b22b9d8c2814e'];
-        const filtered = hits.filter(({ recipe }) => {
-          for (let i = 0; i < blankImages.length; i++) {
-            if (recipe.images.LARGE.url.includes(blankImages[i])) return false;
-          }
-          return true;
-        });
-        return filtered;
+        return hits;
       })
       // deserialize
       .then((hits) => {
@@ -70,7 +54,9 @@ const fetchEdamam = async (search, appId, appKey) => {
           // console.log('edamamId', edamamId);
           const name = recipe.label?.trim() || 'Generic';
           const portions = parseInt(recipe.yield) || 2;
-          const picture_url = recipe.images.LARGE.url || '../../assets/ingre.png';
+          const image = recipe.images.LARGE.url;
+          const picture_url = !image || image.indexOf('fe91e54771717b4aed8e279237b46b11') !== -1 || image.indexOf('323e10a433ca706efb4b22b9d8c2814e') !== -1 ? 'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc' : image;
+          const instructions = recipe.shareAs;
           const ingredients = recipe.ingredients.map((ingredient) => {
             const name = ingredient.food?.trim() || 'Generic';
             const quantity = parseFloat(ingredient.quantity) || 1;
@@ -81,7 +67,7 @@ const fetchEdamam = async (search, appId, appKey) => {
             return parsedIngredient;
           });
 
-          const parsedHit = { name, portions, picture_url, ingredients, edamamId };
+          const parsedHit = { name, portions, picture_url, instructions, ingredients, edamamId };
           return parsedHit;
         });
         return deserialize;

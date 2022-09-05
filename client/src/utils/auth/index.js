@@ -1,22 +1,32 @@
+// jwt-decode to parse
 import decode from 'jwt-decode';
+
+// Singleton class for authentication
 export default new (class AuthService {
-  getProfile = () => decode(this.getToken());
+  getProfile = () => {
+    const token = this.getToken();
+    return token ? decode(this.getToken()) : null;
+  };
+
   getToken = () => localStorage.getItem('id_token');
-  isTokenExpired = (token) => decode(token) < Date.now() / 1000;
+
+  isTokenExpired = (token) => {
+    const decoded = decode(token);
+    const { exp: timeExpiry } = decoded;
+    const timeNow = Date.now() / 1000;
+    return timeExpiry < timeNow;
+  };
+
   loggedIn = () => {
     const token = this.getToken();
-    if (!token) return false;
-    const tokenValid = !this.isTokenExpired(token);
-    if (!tokenValid) return false;
-    return true;
+    return !!token && !this.isTokenExpired(token);
   };
+
   login(idToken) {
     localStorage.setItem('id_token', idToken);
-    console.log('login - location assign replaced with Navigate');
-    // window.location.assign('/');
   }
+
   logout() {
     localStorage.removeItem('id_token');
-    window.location.assign('/');
   }
 })();

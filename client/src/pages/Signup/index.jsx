@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, Navigate } from 'react-router-dom';
 import { useApolloClient, useMutation } from '@apollo/client';
 import Auth from '../../utils/auth';
 import { GET_USER_WITH_EMAIL } from '../../utils/apollo/queries.js';
@@ -9,16 +9,17 @@ import ContentTitle from '../../components/ContentTitle';
 import ContentSubtitle from '../../components/ContentSubtitle';
 import Alert from '../../components/Alert';
 
-import { Button, Form, Input, Divider, Space } from 'antd';
+import { Button, Form, Input, Divider, Space, Row, Col } from 'antd';
 
 const App = () => {
   const [addUser, { error }] = useMutation(ADD_USER);
   const [form] = Form.useForm();
+  const [redirect, setRedirect] = useState(false);
 
   const client = useApolloClient();
 
   const userExists = async (email) => {
-    console.log(`Validate ${email}`);
+    console.log(`[Signup] Validate ${email}`);
     const { data } = await client.query({
       query: GET_USER_WITH_EMAIL,
       variables: { email }
@@ -26,25 +27,17 @@ const App = () => {
     console.log('data = ', data);
     if (data.getUserWithEmail)
       return Promise.reject(
-        <>
-          <Alert
-            type="warning"
-            message={
-              <>
-                <Space>A user with this email already exists!</Space>
-                <Link to="/login">
-                  <Button
-                    type="default"
-                    style={{ width: '100%' }}
-                    //
-                  >
-                    Login?
-                  </Button>
-                </Link>
-              </>
-            }
-          />
-        </>
+        <Alert
+          type="error"
+          message={
+            <Space direction="vertical">
+              A user with this email already exists!
+              <Link to="/login">
+                <Button block={true}>Log in?</Button>
+              </Link>
+            </Space>
+          }
+        />
       );
     return Promise.resolve();
   };
@@ -58,6 +51,8 @@ const App = () => {
       const res = await addUser({ variables });
       const token = res.data.addUser.token;
       Auth.login(token);
+
+      setRedirect(true);
     } catch (e) {
       console.error(e);
     }
@@ -75,70 +70,77 @@ const App = () => {
     document.title = 'Signup';
   }, []);
 
-  return (
-    <div>
-      <ContentTitle>Sign up</ContentTitle>
+  return redirect || Auth.loggedIn() ? (
+    <Navigate to="/" />
+  ) : (
+    <Col
+      style={{
+        width: '100%',
+        display: 'flex',
+        flexFlow: 'column nowrap',
+        alignItems: 'center'
+      }}
+    >
+      <Row>
+        <ContentTitle>Sign up</ContentTitle>
+      </Row>
       <Form
         form={form}
         labelCol={{ span: 8 }}
-        labelAlign="left"
+        labelAlign="right"
         initialValues={{ remember: true }}
-        style={{ maxWidth: '400px' }}
         colon={false}
         onValuesChange={handleChange}
         onFinish={handleFormSubmit}
-        //
+        style={{
+          width: '100%',
+          marginTop: '1rem',
+          maxWidth: '600px'
+        }}
       >
         <Form.Item
           name={['user', 'firstName']}
           label="First name"
-          style={{ marginBottom: '12px' }}
+          style={{
+            marginBottom: '12px'
+          }}
           rules={[
             {
               required: true,
               message: <Alert type="error" message="First name is required" showIcon />
-              //
             },
             {
               pattern: new RegExp(/^[^\s]+$/),
               message: <Alert type="error" message="First name cannot contain spaces" showIcon />
-              //
             },
             {
               pattern: new RegExp(/^[^!";#$%&'()*+,./:;<=>?@[\]^_{|}~]+$/),
               message: <Alert type="error" message="First name cannot contain symbols" showIcon />
-              //
             }
-
-            //
           ]}
-          //
         >
           <Input />
         </Form.Item>
         <Form.Item
           name={['user', 'lastName']}
           label="Last name"
-          style={{ marginBottom: '12px' }}
+          style={{
+            marginBottom: '12px'
+          }}
           rules={[
             {
               required: true,
               message: <Alert type="error" message="Last name is required" showIcon />
-              //
             },
             {
               pattern: new RegExp(/^[^\s]+$/),
               message: <Alert type="error" message="Last name cannot contain spaces" showIcon />
-              //
             },
             {
               pattern: new RegExp(/^[^!";#$%&'()*+,./:;<=>?@[\]^_{|}~]+$/),
               message: <Alert type="error" message="Last name cannot contain symbols" showIcon />
-              //
             }
-            //
           ]}
-          //
         >
           <Input />
         </Form.Item>
@@ -149,18 +151,16 @@ const App = () => {
             {
               required: true,
               message: <Alert type="error" message="Email is required" showIcon />
-              //
             },
             {
               type: 'email',
               message: <Alert type="error" message="Email must be valid" showIcon />
-              //
             },
             { validator: (_, value) => userExists(value) }
-            //
           ]}
-          style={{ marginBottom: '12px' }}
-          //
+          style={{
+            marginBottom: '12px'
+          }}
         >
           <Input />
         </Form.Item>
@@ -171,29 +171,26 @@ const App = () => {
             {
               required: true,
               message: <Alert type="error" message="Password is required" showIcon />
-              //
             },
             {
               pattern: new RegExp(/^[A-Za-z]/),
               message: <Alert type="error" message="Password must begin with a letter" showIcon />
-              //
             },
             {
               pattern: new RegExp(/\w{8,}/),
               message: <Alert type="error" message="Password must have a minimum of 8 characters" showIcon />
-              //
             }
-            //
           ]}
-          style={{ marginBottom: '12px' }}
-          //
+          style={{
+            marginBottom: '12px'
+          }}
         >
           <Input.Password />
         </Form.Item>
 
         {error && (
           <Form.Item label=" ">
-            <Alert message="Couldn't sign you up." />
+            <Alert type="error" message="Couldn't sign you up." />
           </Form.Item>
         )}
 
@@ -201,7 +198,7 @@ const App = () => {
           <Button
             type="primary"
             htmlType="submit"
-            style={{ width: '100%' }}
+            block
             //
           >
             Submit
@@ -211,17 +208,13 @@ const App = () => {
         <Form.Item label=" ">
           <ContentSubtitle>Have an account?</ContentSubtitle>
           <Link to="/login">
-            <Button
-              type="ghost"
-              style={{ width: '100%' }}
-              //
-            >
+            <Button type="ghost" block={true}>
               Login
             </Button>
           </Link>
         </Form.Item>
       </Form>
-    </div>
+    </Col>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { LOGIN } from '../../utils/apollo/mutations.js';
 import Auth from '../../utils/auth/index.js';
 
@@ -24,7 +24,7 @@ const App = () => {
       const token = res.data.login.token;
       console.log('localstorage token', token);
       Auth.login(token);
-      // can we redirect here?
+
       setRedirect(true);
     } catch (e) {
       console.error(e);
@@ -41,45 +41,46 @@ const App = () => {
     document.title = 'Log in';
   }, []);
 
-  if (redirect) return <Navigate to="/" />;
-
-  return (
+  return redirect || Auth.loggedIn() ? (
+    <Navigate to="/" />
+  ) : (
     <Col
       style={{
         width: '100%',
         display: 'flex',
         flexFlow: 'column nowrap',
         alignItems: 'center'
-        //
       }}
     >
       <Row>
-        <ContentTitle>Login</ContentTitle>
+        <ContentTitle>Log in</ContentTitle>
       </Row>
       <Form
         form={form}
-        labelCol={{ span: 8 }}
-        labelAlign="left"
+        labelCol={{ span: 5 }}
+        labelAlign="right"
         initialValues={{ remember: true }}
         colon={false}
         onValuesChange={handleChange}
         onFinish={handleFormSubmit}
-        style={{ maxWidth: '600px' }}
-        //
+        style={{
+          width: '100%',
+          marginTop: '1rem',
+          maxWidth: '600px'
+        }}
       >
         <Form.Item
           name={['user', 'email']}
           label="Email"
-          style={{ marginBottom: '12px' }}
+          style={{
+            marginBottom: '12px'
+          }}
           rules={[
             {
               required: true,
               message: <Alert type="warning" message="Please input your email!" />
-              //
             }
-            //
           ]}
-          //
         >
           <Input />
         </Form.Item>
@@ -90,11 +91,11 @@ const App = () => {
             {
               required: true,
               message: <Alert type="warning" message="Please input your password!" />
-              //
             }
           ]}
-          style={{ marginBottom: '12px' }}
-          //
+          style={{
+            marginBottom: '12px'
+          }}
         >
           <Input.Password />
         </Form.Item>
@@ -106,12 +107,7 @@ const App = () => {
         )}
 
         <Form.Item label=" ">
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ width: '100%' }}
-            //
-          >
+          <Button type="primary" htmlType="submit" block>
             Submit
           </Button>
         </Form.Item>
@@ -119,11 +115,7 @@ const App = () => {
         <Form.Item label=" ">
           <ContentSubtitle>No account?</ContentSubtitle>
           <Link to="/signup">
-            <Button
-              type="ghost"
-              style={{ width: '100%' }}
-              //
-            >
+            <Button type="ghost" block>
               Sign up
             </Button>
           </Link>

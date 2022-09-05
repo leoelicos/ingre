@@ -33,6 +33,7 @@ const typeDefs = gql`
     ingredients: [Ingredient]
     picture_url: String
     edamamId: String
+    instructions: String
   }
 
   input RecipeInput {
@@ -41,6 +42,7 @@ const typeDefs = gql`
     ingredients: [IngredientInput]
     picture_url: String
     edamamId: String
+    instructions: String
   }
   type Ingredient {
     _id: ID

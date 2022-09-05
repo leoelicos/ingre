@@ -1,7 +1,8 @@
-export const SHOW_MODAL = 'SHOW_MODAL';
-export const HIDE_MODAL = 'HIDE_MODAL';
+export const SHOW_DRAWER = 'SHOW_DRAWER';
+export const HIDE_DRAWER = 'HIDE_DRAWER';
 
 export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
+export const EXPAND_SIDEBAR = 'EXPAND_SIDEBAR';
 export const COLLAPSE_SIDEBAR = 'COLLAPSE_SIDEBAR';
 
 export const UPDATE_SEARCH_RECIPES = 'UPDATE_SEARCH_RECIPES';

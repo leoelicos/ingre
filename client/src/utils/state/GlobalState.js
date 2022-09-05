@@ -11,7 +11,7 @@ const StoreProvider = ({ value = [], ...props }) => {
     searchRecipes: [],
     homeRecipes: [],
     savedRecipes: [],
-    customRecipe: null,
+    customiseRecipe: null,
     homeDidMount: false,
     savedIngredients: [],
     ingredientsDidGenerate: false,
