@@ -5,20 +5,25 @@ import { Link } from 'react-router-dom';
 import { Button, Space, Row, Spin, Divider, Col } from 'antd';
 
 // Custom components
-import RecipeCardContainer from '../components/RecipeCardContainer';
+import RecipeCardContainer from '../../components/RecipeCardContainer';
 
 // Edamam API
-import FetchEdamam from '../utils/api/index.js';
+import FetchEdamam from '../../utils/api/index.js';
 
 // useContext
-import { useStoreContext } from '../utils/state/GlobalState';
+import { useStoreContext } from '../../utils/state/GlobalState';
 
 // useReducer
-import { UPDATE_HOME_RECIPES, FLAG_HOME_MOUNTED } from '../utils/state/actions';
+import { UPDATE_HOME_RECIPES, FLAG_HOME_MOUNTED } from '../../utils/state/actions';
 
 // get API key
-import { GET_API_KEY } from '../utils/apollo/queries';
+import { GET_API_KEY } from '../../utils/apollo/queries';
 import { useApolloClient } from '@apollo/client';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+// Auth
+import Auth from '../../utils/auth';
+import ContentTitle from '../../components/ContentTitle';
 
 const Home = () => {
   const client = useApolloClient();
@@ -106,6 +111,13 @@ const Home = () => {
 
   return (
     <Col>
+      {Auth.loggedIn() && (
+        <Row>
+          <ContentTitle>
+            <Space>Welcome {Auth.getProfile()?.data?.firstName}</Space>
+          </ContentTitle>
+        </Row>
+      )}
       <Row>
         <Space className="explore-buttons" wrap>
           <Button onClick={() => handleRefresh()}>Random</Button>
@@ -115,8 +127,13 @@ const Home = () => {
           <Button onClick={() => handleRefresh('breakfast')}>Breakfast</Button>
           <Button onClick={() => handleRefresh('lunch')}>Lunch</Button>
           <Button onClick={() => handleRefresh('dinner')}>Dinner</Button>
-          <Button type="ghost">
-            <Link to="/search">Search</Link>
+          <Button type="primary">
+            <Link to="/search">
+              <Space>
+                <FontAwesomeIcon icon="fa-solid fa-magnifying-glass" />
+                Search
+              </Space>
+            </Link>
           </Button>
         </Space>
       </Row>
