@@ -2,23 +2,25 @@
 import { useEffect, useState } from 'react';
 
 // useContext
-import { useStoreContext } from '../utils/state/GlobalState';
-import { UPDATE_SAVED_RECIPES } from '../utils/state/actions';
+import { useStoreContext } from '../../utils/state/GlobalState';
+import { UPDATE_SAVED_RECIPES } from '../../utils/state/actions';
 
 // Ant components
-import { Col, Row, Divider, Spin, Alert } from 'antd';
+import { Col, Row, Divider, Spin, Button } from 'antd';
 
 // Custom components
-import Empty from '../components/Empty';
-import RecipeCardContainer from '../components/RecipeCardContainer';
-import ContentTitle from '../components/ContentTitle';
+import Empty from '../../components/Empty';
+import RecipeCardContainer from '../../components/RecipeCardContainer';
+import ContentTitle from '../../components/ContentTitle';
+import Alert from '../../components/Alert';
 
 // Apollo
 import { useQuery } from '@apollo/client';
-import { GET_SAVED_RECIPES } from '../utils/apollo/queries.js';
+import { GET_SAVED_RECIPES } from '../../utils/apollo/queries.js';
 
 // Auth
-import Auth from '../utils/auth/index.js';
+import Auth from '../../utils/auth/index.js';
+import { Link } from 'react-router-dom';
 
 const Saved = () => {
   const { loading, error, data } = useQuery(GET_SAVED_RECIPES);
@@ -51,19 +53,29 @@ const Saved = () => {
           //
           <>
             {loading ? (
-              //
               <Divider>
                 <Spin tip="Loading saved recipes…"></Spin>
               </Divider>
             ) : error ? (
-              //
-              <Alert type="warning">Couldn't load saved recipes</Alert>
+              <Alert
+                type="error"
+                message="Couldn't load saved recipes"
+                //
+              />
             ) : (
               <RecipeCardContainer results={savedRecipes} savePage={true} />
             )}
           </>
         ) : (
-          <Empty>You need to be logged in to see saved recipes!</Empty>
+          <Empty>
+            <Divider />
+            <Row>You need to be logged in to see this page.</Row>
+            <Link to="/login">
+              <Button type="primary" style={{ marginTop: '1rem' }}>
+                Log in
+              </Button>
+            </Link>
+          </Empty>
         )}
       </Row>
     </Col>
