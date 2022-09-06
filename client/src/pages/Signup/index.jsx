@@ -86,7 +86,7 @@ const App = () => {
       </Row>
       <Form
         form={form}
-        labelCol={{ span: 8 }}
+        labelCol={{ span: 5 }}
         labelAlign="right"
         initialValues={{ remember: true }}
         colon={false}
