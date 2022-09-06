@@ -142,7 +142,7 @@ const App = (props) => {
   );
   const disabledEditButton = (
     <Tooltip
-      placement="left"
+      placement="top"
       title={
         <Link to="/login">
           <Button type="primary">Log in</Button>
@@ -163,7 +163,7 @@ const App = (props) => {
 
   const disabledSaveButton = (
     <Tooltip
-      placement="left"
+      placement="top"
       title={
         <Link to="/login">
           <Button type="primary">Log in</Button>
@@ -184,7 +184,7 @@ const App = (props) => {
 
   const disabledTrashButton = (
     <Tooltip
-      placement="left"
+      placement="top"
       title={
         <Link to="/login">
           <Button type="primary">Log in</Button>
@@ -204,7 +204,7 @@ const App = (props) => {
   );
 
   const portionsButton = (
-    <Tooltip color="volcano" placement="right" title={<Space size="small">Serves{recipe.portions}</Space>} className="preview-button">
+    <Tooltip color="volcano" placement="top" title={<Space size="small">Serves{recipe.portions}</Space>} className="preview-button">
       <FontAwesomeIcon
         icon="fa-solid fa-user-group"
         style={{
@@ -218,7 +218,7 @@ const App = (props) => {
   );
 
   const instructionsButton = (
-    <Tooltip color="volcano" placement="left" title={<Space size="small">Cooking instructions</Space>}>
+    <Tooltip color="volcano" placement="top" title={<Space size="small">Cooking instructions</Space>}>
       <Button
         key="removeButton"
         onClick={handleRemove}
@@ -242,14 +242,18 @@ const App = (props) => {
   );
 
   const getActions = () => {
-    let actions = [portionsButton, editButton, saveButton, removeButton];
-    if (!Auth.loggedIn()) {
-      actions = [portionsButton, disabledEditButton, disabledSaveButton, disabledTrashButton];
-    } else if (props.savePage) {
-      actions = [portionsButton, editButton, removeButton];
-    } else if (Auth.getProfile()?.data?.pro) {
-      actions = [portionsButton, instructionsButton, editButton, saveButton, removeButton];
-    }
+    // Every page gets a portions button
+    let actions = [portionsButton];
+    // if not logged in, buttons are disabled
+    if (!Auth.loggedIn()) return actions.push(disabledEditButton, disabledSaveButton, disabledTrashButton);
+    // if user is pro, instructions button
+    if (props.pro) actions.push(instructionsButton);
+    // everyone gets an edit button
+    actions.push(editButton);
+    // everyone except saved page gets a save button
+    if (!props.savePage) actions.push(saveButton);
+    // everyone gets a remove button
+    actions.push(removeButton);
     return actions;
   };
 
