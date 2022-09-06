@@ -24,7 +24,7 @@ import { Link } from 'react-router-dom';
 
 const Saved = () => {
   const { loading, error, data } = useQuery(GET_SAVED_RECIPES);
-  const [savedRecipes, setSavedRecipes] = useState([]);
+  const [savedRecipes, setSavedRecipes] = useState();
   const [, dispatch] = useStoreContext();
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const Saved = () => {
   }, [loading, error, data]);
 
   useEffect(() => {
-    dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes });
+    if (savedRecipes) dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes });
   }, [dispatch, savedRecipes]);
 
   if (loading) return <Divider>Loading</Divider>;
