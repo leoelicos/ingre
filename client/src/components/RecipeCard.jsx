@@ -247,7 +247,10 @@ const App = (props) => {
     // Every page gets a portions button
     let actions = [portionsButton];
     // if not logged in, buttons are disabled
-    if (!Auth.loggedIn()) return actions.push(disabledEditButton, disabledSaveButton, disabledTrashButton);
+    if (!Auth.loggedIn()) {
+      actions.push(disabledEditButton, disabledSaveButton, disabledTrashButton);
+      return actions;
+    }
     // if user is pro, instructions button
     if (props.pro) actions.push(instructionsButton);
     // everyone gets an edit button
