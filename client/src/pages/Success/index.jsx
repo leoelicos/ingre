@@ -1,8 +1,8 @@
 // React
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 // React Router DOM
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // ApolloClient
 import { useMutation } from '@apollo/client';
@@ -23,7 +23,6 @@ function Success() {
   const navigate = useNavigate();
 
   const [login, { error }] = useMutation(LOGIN);
-  const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     async function saveOrder() {
@@ -41,8 +40,6 @@ function Success() {
         const token = res.data.login.token;
         console.log('localstorage token', token);
         Auth.login(token);
-
-        setRedirect(true);
 
         setTimeout(() => {
           navigate('/');
@@ -68,10 +65,8 @@ function Success() {
       </Empty>
     );
 
-  return redirect ? (
-    <Navigate to="/" />
-  ) : error ? (
-    <Alert message={<Space>{error}"Couldn't make you PRO. Please email admin@ingre.com for assistance."</Space>} type="error" />
+  return error ? (
+    <Alert message={<Space>{JSON.stringify(error)}"Couldn't make you PRO. Please email admin@ingre.com for assistance."</Space>} type="error" />
   ) : (
     <Row>
       <Space direction="vertical">
