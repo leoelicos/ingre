@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useApolloClient, useMutation } from '@apollo/client';
 import Auth from '../../utils/auth';
 import { GET_USER_WITH_EMAIL } from '../../utils/apollo/queries.js';
@@ -14,7 +14,8 @@ import { Button, Form, Input, Divider, Space, Row, Col } from 'antd';
 const App = () => {
   const [addUser, { error }] = useMutation(ADD_USER);
   const [form] = Form.useForm();
-  const [redirect, setRedirect] = useState(false);
+
+  const navigate = useNavigate();
 
   const client = useApolloClient();
 
@@ -52,7 +53,7 @@ const App = () => {
       const token = res.data.addUser.token;
       Auth.login(token);
 
-      setRedirect(true);
+      navigate(-1);
     } catch (e) {
       console.error(e);
     }
@@ -70,7 +71,7 @@ const App = () => {
     document.title = 'Signup';
   }, []);
 
-  return redirect || Auth.loggedIn() ? (
+  return Auth.loggedIn() ? (
     <Navigate to="/" />
   ) : (
     <Col
