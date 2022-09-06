@@ -7,14 +7,12 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 // ApolloClient
 import { useMutation } from '@apollo/client';
 import { MAKE_USER_PRO } from '../../utils/apollo/mutations';
-import { Alert, Button, Col, Divider, Empty, Row, Space } from 'antd';
-
-import { Typography } from 'antd';
+import { Alert, Button, Col, Divider, Empty, Row, Space, Timeline } from 'antd';
 
 import Auth from '../../utils/auth/index.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const { Title } = Typography;
+import ContentTitle from '../../components/ContentTitle';
 
 function Success() {
   const [makeUserPro] = useMutation(MAKE_USER_PRO);
@@ -84,9 +82,14 @@ function Success() {
   return (
     <Row>
       <Space direction="vertical">
-        <Title level={1}>Success!{<Token />}</Title>
-        <Title level={2}>Thank you for your purchase!</Title>
-        <Title level={3}>You will now be redirected to the home page.</Title>
+        <ContentTitle>Success!</ContentTitle>
+        <Timeline>
+          <Timeline.Item color="green">Thank you for your purchase!</Timeline.Item>
+          <Timeline.Item color="green">
+            Your purchase reference is <Token />
+          </Timeline.Item>
+          <Timeline.Item color="blue">You will now be redirected to the home page.</Timeline.Item>
+        </Timeline>
       </Space>
     </Row>
   );
