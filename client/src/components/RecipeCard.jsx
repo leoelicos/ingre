@@ -113,38 +113,33 @@ const App = (props) => {
     </Button>
   );
 
-  const saveButton = saveRecipeError ? null : (
+  const saveButton = (
     <Button
       key="saveButton"
-      loading={saveRecipeLoading}
       onClick={handleSave}
-      disabled={state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)}
+      disabled={saveRecipeError || saveRecipeLoading || state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)}
       style={{
         borderRadius: '50%',
         padding: '4px 8px'
       }}
     >
-      {saveRecipeLoading ? null : <FontAwesomeIcon key="save" icon="fa-solid fa-floppy-disk" />}
+      <FontAwesomeIcon key="save" icon={saveRecipeLoading ? 'fa-solid fa-spinner' : 'fa-solid fa-floppy-disk'} />
     </Button>
   );
 
-  const removeButton = removeRecipeError ? null : removeRecipeLoading ? (
-    <Button key="removeButton" loading style={{ borderRadius: '50%', padding: '4px 8px' }} />
-  ) : (
+  const removeButton = (
     <Button
       key="removeButton"
-      loading={removeRecipeLoading}
-      disabled={!state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)}
+      disabled={removeRecipeError || removeRecipeLoading || !state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)}
       onClick={handleRemove}
       style={{
         borderRadius: '50%',
         padding: '4px 8px'
       }}
     >
-      {removeRecipeLoading ? null : <FontAwesomeIcon key="remove" icon="fa-solid fa-trash" />}
+      <FontAwesomeIcon key="remove" icon={removeRecipeLoading ? 'fa-solid fa-spinner' : 'fas-solid fa-trash'} />
     </Button>
   );
-
   const disabledEditButton = (
     <Tooltip
       placement="left"
@@ -226,7 +221,6 @@ const App = (props) => {
     <Tooltip color="volcano" placement="left" title={<Space size="small">Cooking instructions</Space>}>
       <Button
         key="removeButton"
-        loading={removeRecipeLoading}
         onClick={handleRemove}
         style={{
           borderRadius: '50%',
