@@ -71,7 +71,7 @@ function Success() {
   return redirect ? (
     <Navigate to="/" />
   ) : error ? (
-    <Alert message="Couldn't make you PRO. Please email admin@ingre.com for assistance." type="error" />
+    <Alert message={<Space>{error}"Couldn't make you PRO. Please email admin@ingre.com for assistance."</Space>} type="error" />
   ) : (
     <Row>
       <Space direction="vertical">
