@@ -15,6 +15,7 @@ import {
   ADD_EDIT_RECIPE,
   CLEAR_EDIT_RECIPE,
   FLAG_HOME_MOUNTED,
+  FLAG_SAVED_MOUNTED,
   FLAG_INGREDIENTS_GENERATED
 
   //
@@ -22,8 +23,8 @@ import {
 
 // The reducer is a function that accepts the current state and an action. It returns a new state based on that action.
 export const reducer = (state, action) => {
-  console.log(action.type);
-  // console.log(`REDUCER\t[${action.type}]`, action.data);
+  // console.log(action.type);
+  console.log(`REDUCER\t[${action.type}]`, action.data);
 
   switch (action.type) {
     case SHOW_DRAWER:
@@ -83,8 +84,12 @@ export const reducer = (state, action) => {
     case FLAG_HOME_MOUNTED:
       return { ...state, homeDidMount: true };
 
+    case FLAG_SAVED_MOUNTED:
+      return { ...state, savedDidMount: true };
+
     case FLAG_INGREDIENTS_GENERATED:
       return { ...state, ingredientsDidGenerate: true };
+
     default:
       return state;
   }
