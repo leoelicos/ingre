@@ -378,3 +378,12 @@ ul.ant-card-actions > li:first-child {
   display: flex;
   align-items: center;
 }
+
+/* header - ant steps */
+.ant-steps-small .ant-steps-item-icon {
+  margin-right: 0 !important;
+}
+
+.ant-steps-small .ant-steps-item-content .ant-steps-item-title a {
+  padding-left: 8px;
+}
