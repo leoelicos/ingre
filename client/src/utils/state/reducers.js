@@ -22,7 +22,8 @@ import {
 
 // The reducer is a function that accepts the current state and an action. It returns a new state based on that action.
 export const reducer = (state, action) => {
-  console.log(`REDUCER\t[${action.type}]`, action.data);
+  console.log(action.type);
+  // console.log(`REDUCER\t[${action.type}]`, action.data);
 
   switch (action.type) {
     case SHOW_DRAWER:
@@ -58,18 +59,18 @@ export const reducer = (state, action) => {
     }
 
     case ADD_SAVED_RECIPE:
-      console.log('state.savedRecipes before', state.savedRecipes);
+      // console.log('state.savedRecipes before', state.savedRecipes);
       if (state.savedRecipes.find((r) => r.edamamId === action.data.edamamId)) return { ...state };
       let newSavedRecipes = JSON.parse(JSON.stringify(state.savedRecipes));
       newSavedRecipes.push(action.data);
-      console.log('state.savedRecipes after', newSavedRecipes);
+      // console.log('state.savedRecipes after', newSavedRecipes);
       return { ...state, savedRecipes: newSavedRecipes };
 
     case REMOVE_SAVED_RECIPE:
       const copyOfRecipes = JSON.parse(JSON.stringify(state.savedRecipes));
-      console.log('copyOfRecipes', copyOfRecipes);
+      // console.log('copyOfRecipes', copyOfRecipes);
       const filteredCopyOfRecipes = copyOfRecipes.filter((r) => r.edamamId !== action.data);
-      console.log('filteredCopyOfRecipes', filteredCopyOfRecipes);
+      // console.log('filteredCopyOfRecipes', filteredCopyOfRecipes);
       return { ...state, savedRecipes: filteredCopyOfRecipes };
 
     case ADD_EDIT_RECIPE:
