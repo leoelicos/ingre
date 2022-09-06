@@ -22,6 +22,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Layout, Menu } from 'antd';
 import { COLLAPSE_SIDEBAR, EXPAND_SIDEBAR } from '../utils/state/actions';
 
+// Auth
+import Auth from '../../../server/utils/auth';
+
 // Ant subcomponent
 const { Sider } = Layout;
 
@@ -134,7 +137,7 @@ const App = () => {
                     color: 'var(--ingre-dark-brown)'
                   }}
                 >
-                  {loading || error ? 0 : data.getNumSavedRecipes}
+                  {!Auth.loggedIn() || loading || error ? 0 : data.getNumSavedRecipes}
                 </span>
               </Link>
             ),
