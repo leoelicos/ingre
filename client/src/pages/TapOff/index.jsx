@@ -19,6 +19,9 @@ import Empty from '../../components/Empty';
 import compress from '../../utils/compress.js';
 import Auth from '../../utils/auth/index.js';
 
+// Masonry css
+import './style.css';
+
 const { CheckableTag } = Tag;
 const { Text } = Typography;
 const TapOff = () => {
@@ -38,18 +41,18 @@ const TapOff = () => {
 
   useEffect(() => {
     const compressed = compress(savedIngredients);
-    console.table(compressed);
+    // console.table(compressed);
     setCompressedRecipes(compressed);
     dispatch({ type: UPDATE_TAP_OFF, data: compressed });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <Col span={24}>
+    <Col span={24} className="tap-off-column">
       <Row>
         <ContentTitle>Tap Off</ContentTitle>
       </Row>
-      <Row style={{ paddingBottom: '1rem' }}>
+      <Row style={{ paddingBottom: '1rem', width: '100%' }}>
         {Auth.loggedIn() ? (
           <Masonry
             breakpointCols={state.leftSidebarCollapsed ? { default: 3, 1050: 2, 750: 1 } : { default: 3, 1208: 2, 875: 1 }}
@@ -74,7 +77,7 @@ const TapOff = () => {
                   <Space direction="vertical" style={{ width: '100%' }}>
                     {r.items.map((i, ii) => (
                       <CheckableTag
-                        key={i.description}
+                        key={r.category + i.description}
                         checked={i.checked}
                         onChange={(checked) => handleChange(ri, ii, checked)}
                         className="checkable-tag"
