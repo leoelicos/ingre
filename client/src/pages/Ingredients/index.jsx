@@ -92,7 +92,7 @@ const Ingredients = () => {
     //
   } = useQuery(GET_SAVED_RECIPES);
 
-  const [savedRecipes, setSavedRecipes] = useState([]);
+  const [savedRecipes, setSavedRecipes] = useState();
 
   const [dataSource, setDataSource] = useState([]);
 
@@ -101,8 +101,7 @@ const Ingredients = () => {
   const reload = () => {
     console.log('reload');
     const getSavedIngredients = async () => {
-      const { savedRecipes } = state;
-      if (!savedRecipes.length) return [{ name: 'blank', measure: 'blank', quantity: 0, category: 'blank' }];
+      if (!savedRecipes) return;
       const savedIngredientArray = [];
       for (const recipe of savedRecipes) {
         const res = await client.query({ query: GET_RECIPE, variables: { id: recipe._id } });
@@ -112,7 +111,7 @@ const Ingredients = () => {
           savedIngredientArray.push(savedIngredient);
         });
       }
-      console.log('savedIngredientArray', savedIngredientArray);
+      // console.log('savedIngredientArray', savedIngredientArray);
       setDataSource(savedIngredientArray);
       dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: savedIngredientArray });
     };
@@ -120,24 +119,25 @@ const Ingredients = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 
-  // server > local
+  // server > local and global
   useEffect(() => {
-    if (savedRecipeData) setSavedRecipes(savedRecipeData.getSavedRecipes);
+    if (savedRecipeData) {
+      setSavedRecipes(savedRecipeData.getSavedRecipes);
+      dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipeData.getSavedRecipes });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedRecipeData]);
-
-  // local > global
-  useEffect(() => {
-    dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes });
-  }, [dispatch, savedRecipes]);
 
   // generate on first load
   useEffect(() => {
     if (state.ingredientsDidGenerate === false) {
       dispatch({ type: FLAG_INGREDIENTS_GENERATED });
       reload();
+    } else if (!savedRecipes) {
+      reload();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [state.ingredientsDidGenerate, savedRecipes]);
 
   useEffect(() => {
     document.title = 'Ingredients';
@@ -263,7 +263,7 @@ const Ingredients = () => {
   });
 
   const onFinish = () => {
-    console.log('[Ingredients] onFinish()');
+    // console.log('[Ingredients] onFinish()');
     dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: dataSource });
   };
 
@@ -312,17 +312,22 @@ const Ingredients = () => {
                   marginTop: '1rem'
                 }}
               >
-                <Table
-                  style={{
-                    width: '100%'
-                  }}
-                  components={components}
-                  rowClassName={() => 'editable-row'}
-                  bordered
-                  dataSource={dataSource}
-                  columns={columns}
-                  pagination={false}
-                />
+                {dataSource.length ? (
+                  <Table
+                    style={{
+                      width: '100%'
+                    }}
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    dataSource={dataSource}
+                    columns={columns}
+                    pagination={false}
+                  />
+                ) : (
+                  <Alert message="Click the Generate button to make a new list" />
+                )}
+
                 <Row style={{ marginTop: '1rem' }}>
                   <Button
                     onClick={handleAdd}
