@@ -23,7 +23,7 @@ import { Button, Layout, Menu } from 'antd';
 import { COLLAPSE_SIDEBAR, EXPAND_SIDEBAR } from '../utils/state/actions';
 
 // Auth
-import Auth from '../../../server/utils/auth';
+import Auth from '../utils/auth';
 
 // Ant subcomponent
 const { Sider } = Layout;
@@ -50,7 +50,7 @@ const App = () => {
 
   const [broken, setBroken] = useState(state.leftSidebarCollapsed);
   useEffect(() => {
-    refetch();
+    if (Auth.loggedIn()) refetch();
   });
 
   useEffect(() => {
