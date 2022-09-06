@@ -11,7 +11,7 @@ import Alert from '../../components/Alert';
 
 // Apollo
 import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries';
-import { useApolloClient, useQuery } from '@apollo/client';
+import { useApolloClient, useLazyQuery } from '@apollo/client';
 
 // GlobalState
 import { useStoreContext } from '../../utils/state/GlobalState';
@@ -84,61 +84,85 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 const Ingredients = () => {
   const [form] = Form.useForm();
   const [state, dispatch] = useStoreContext();
+  const [updateRecipes, setUpdateRecipes] = useState(false);
 
-  const {
-    loading: savedRecipeLoading,
-    error: savedRecipeError,
-    data: savedRecipeData
-    //
-  } = useQuery(GET_SAVED_RECIPES);
+  // send asynchronous query to the server
+  const [
+    ,
+    {
+      loading: savedRecipeLoading,
+      error: savedRecipeError,
+      data: savedRecipeData,
+      refetch
+      //
+    }
+  ] = useLazyQuery(GET_SAVED_RECIPES);
 
-  const [savedRecipes, setSavedRecipes] = useState();
+  const [savedRecipes, setSavedRecipes] = useState(state.savedRecipes);
 
-  const [dataSource, setDataSource] = useState([]);
+  const [dataSource, setDataSource] = useState(state.savedIngredients);
 
   const client = useApolloClient();
 
   const reload = () => {
     console.log('reload');
     const getSavedIngredients = async () => {
-      if (!savedRecipes) return;
-      const savedIngredientArray = [];
-      for (const recipe of savedRecipes) {
-        const res = await client.query({ query: GET_RECIPE, variables: { id: recipe._id } });
-        res.data.getRecipe.ingredients.forEach((ingredient) => {
-          const { _id, name, quantity, measure, category } = ingredient;
-          const savedIngredient = { _id, name, quantity, measure, category: category.name, recipe: recipe.name, recipeId: recipe._id.toString(), key: _id };
-          savedIngredientArray.push(savedIngredient);
-        });
+      try {
+        if (!savedRecipes) return;
+        const savedIngredientArray = [];
+        for (const recipe of savedRecipes) {
+          const res = await client.query({ query: GET_RECIPE, variables: { id: recipe._id } });
+          res.data.getRecipe.ingredients.forEach((ingredient) => {
+            const { _id, name, quantity, measure, category } = ingredient;
+            const savedIngredient = { _id, name, quantity, measure, category: category.name, recipe: recipe.name, recipeId: recipe._id.toString(), key: _id };
+            savedIngredientArray.push(savedIngredient);
+          });
+        }
+        // console.log('savedIngredientArray', savedIngredientArray);
+        setDataSource(savedIngredientArray);
+        dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: savedIngredientArray });
+      } catch (error) {
+        console.error(error);
       }
-      // console.log('savedIngredientArray', savedIngredientArray);
-      setDataSource(savedIngredientArray);
-      dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: savedIngredientArray });
     };
     getSavedIngredients();
+    return 1;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 
-  // server > local and global
+  // update global savedRecipes when local savedRecipes changes
   useEffect(() => {
-    if (savedRecipeData) {
+    if (Auth.loggedIn() && updateRecipes && savedRecipes) {
+      dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes });
+      setUpdateRecipes(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateRecipes, savedRecipes]);
+
+  // update local savedRecipes when getSavedRecipes is loaded from server
+  useEffect(() => {
+    if (Auth.loggedIn() && !savedRecipeLoading && !savedRecipeError && savedRecipeData?.getSavedRecipes) {
       setSavedRecipes(savedRecipeData.getSavedRecipes);
-      dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipeData.getSavedRecipes });
+      setUpdateRecipes(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [savedRecipeData]);
+  }, [savedRecipeLoading, savedRecipeError, savedRecipeData]);
 
-  // generate on first load
+  // run on first load
   useEffect(() => {
-    if (state.ingredientsDidGenerate === false) {
-      dispatch({ type: FLAG_INGREDIENTS_GENERATED });
-      reload();
-    } else if (!savedRecipes) {
-      reload();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.ingredientsDidGenerate, savedRecipes]);
+    const generateOnFirstLoad = async () => {
+      if (state.ingredientsDidGenerate === false) {
+        dispatch({ type: FLAG_INGREDIENTS_GENERATED });
+        await refetch();
+        reload();
+        setUpdateRecipes(true);
+      }
+    };
+    if (Auth.loggedIn()) generateOnFirstLoad();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refetch, reload, state.ingredientsDidGenerate]);
+
+  // update title on every load
   useEffect(() => {
     document.title = 'Ingredients';
   }, []);

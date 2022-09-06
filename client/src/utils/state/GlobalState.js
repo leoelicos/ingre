@@ -14,6 +14,7 @@ const StoreProvider = ({ value = [], ...props }) => {
     customiseRecipe: null,
     homeDidMount: false,
     savedIngredients: [],
+    savedDidMount: false,
     ingredientsDidGenerate: false,
     tapOff: null
   };
