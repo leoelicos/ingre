@@ -8,8 +8,8 @@ import { Row, Col, Button, List, Space, Tooltip, Empty, Alert, Divider } from 'a
 import { loadStripe } from '@stripe/stripe-js';
 
 // Apollo
-import { useLazyQuery } from '@apollo/client';
-import { CHECKOUT } from '../../utils/apollo/queries';
+import { useLazyQuery, useQuery } from '@apollo/client';
+import { CHECKOUT, GET_USER } from '../../utils/apollo/queries';
 
 // Custom components
 import ContentTitle from '../../components/ContentTitle';
@@ -18,12 +18,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import Auth from '../../utils/auth';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 // Stripe
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 const App = () => {
   const [getCheckout, { data }] = useLazyQuery(CHECKOUT);
+  const { data: userData, loading: userLoading, error: userError } = useQuery(GET_USER);
+
+  const [pro, setPro] = useState(false);
 
   useEffect(() => {
     if (data) {
@@ -32,6 +36,13 @@ const App = () => {
       });
     }
   }, [data]);
+
+  useEffect(() => {
+    if (!userLoading && !userError && userData?.getUser) {
+      // console.log('userData', userData);
+      setPro(userData.getUser.pro);
+    }
+  }, [userLoading, userError, userData]);
 
   if (!Auth.loggedIn())
     return (
@@ -45,7 +56,7 @@ const App = () => {
         </Link>
       </Empty>
     );
-  return Auth.getProfile()?.data?.pro ? (
+  return pro ? (
     <Alert type="success" message="You are already pro" />
   ) : (
     <Col span={24}>
@@ -61,7 +72,7 @@ const App = () => {
                 Get an extra button that opens cooking instructions for each recipe
                 <Space>
                   Try it out!
-                  <Tooltip color="volcano" placement="right" title={<Space size="small">Cooking instructions</Space>}>
+                  <Tooltip color="volcano" placement="top" title={<Space size="small">Cooking instructions</Space>}>
                     <Button
                       key="removeButton"
                       style={{
