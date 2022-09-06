@@ -31,6 +31,7 @@ const Home = () => {
   const [state, dispatch] = useStoreContext();
   const [loadingEdamam, setLoadingEdamam] = useState(false);
   const [edamamRecipes, setEdamamRecipes] = useState(state.homeRecipes);
+  const [updateRecipes, setUpdateRecipes] = useState(false);
 
   const getAppCredentials = async () => {
     // get credentials from backend
@@ -67,18 +68,21 @@ const Home = () => {
       // console.log('hits = ', hits);
       setEdamamRecipes(hits);
       setLoadingEdamam(false);
-      dispatch({ type: UPDATE_HOME_RECIPES, data: edamamRecipes });
+
+      setUpdateRecipes(true);
     } catch (e) {
       console.error(e);
     }
   };
 
-  //* edamamRecipes > GlobalState.homeRecipes
+  // Store results in global state
   useEffect(() => {
-    return () => {
+    if (updateRecipes) {
       dispatch({ type: UPDATE_HOME_RECIPES, data: edamamRecipes });
-    };
-  }, [dispatch, edamamRecipes]);
+      setUpdateRecipes(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateRecipes, edamamRecipes]);
 
   // fetchEdamam on first load
   useEffect(() => {
@@ -95,6 +99,8 @@ const Home = () => {
           // console.log('hits = ', hits);
           setEdamamRecipes(hits);
           setLoadingEdamam(false);
+
+          setUpdateRecipes(true);
         } catch (e) {
           console.error(e);
         }
@@ -102,7 +108,7 @@ const Home = () => {
     };
     fetchOnFirstLoad();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, state, edamamRecipes]);
+  }, [state.homeDidMount]);
 
   // update title on every load
   useEffect(() => {

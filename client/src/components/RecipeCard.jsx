@@ -34,7 +34,6 @@ const App = (props) => {
   const client = useApolloClient();
 
   const handleEdit = async () => {
-    console.log('[handleEdit]');
     let data = recipe;
 
     if (recipe._id) {
@@ -48,7 +47,6 @@ const App = (props) => {
   };
 
   const handleSave = async () => {
-    console.log('[handleSave]');
     try {
       const input = {
         name: recipe.name,
@@ -78,7 +76,6 @@ const App = (props) => {
   };
 
   const handleRemove = async () => {
-    console.log('[handleRemove]');
     try {
       let _id;
       if (props.savePage) {
@@ -89,8 +86,7 @@ const App = (props) => {
       const payload = { variables: { recipeId: _id } };
       const res = await removeRecipe(payload);
       if (!res) throw new Error('Could not save recipe');
-      const removeData = res.data;
-      console.log('[RecipeCard][handleRemove] removeData', removeData);
+      // console.log('[RecipeCard][handleRemove] removeData', res.data);
       await dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.edamamId });
     } catch (error) {
       console.error(Error);
@@ -100,49 +96,55 @@ const App = (props) => {
   const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
 
   const editButton = (
-    <Button
-      onClick={handleEdit}
-      style={{
-        borderRadius: '50%',
-        padding: '4px 8px'
-      }}
-    >
-      <Link to="/customise">
-        <FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />
-      </Link>
-    </Button>
+    <Tooltip color="var(--ingre-dark-brown)" placement="top" title="Edit" className="button-tooltip">
+      <Button
+        onClick={handleEdit}
+        style={{
+          borderRadius: '50%',
+          padding: '4px 8px'
+        }}
+      >
+        <Link to="/customise">
+          <FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />
+        </Link>
+      </Button>
+    </Tooltip>
   );
 
   const saveButton = (
-    <Button
-      key="saveButton"
-      onClick={handleSave}
-      disabled={saveRecipeError || saveRecipeLoading || state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)}
-      style={{
-        borderRadius: '50%',
-        padding: '4px 8px'
-      }}
-    >
-      <FontAwesomeIcon key="save" icon={saveRecipeLoading ? 'fa-solid fa-spinner' : 'fa-solid fa-floppy-disk'} />
-    </Button>
+    <Tooltip color="var(--ingre-dark-brown)" placement="top" title="Save" className="button-tooltip">
+      <Button
+        key="saveButton"
+        onClick={handleSave}
+        disabled={saveRecipeError || saveRecipeLoading || state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)}
+        style={{
+          borderRadius: '50%',
+          padding: '4px 8px'
+        }}
+      >
+        <FontAwesomeIcon key="save" icon={saveRecipeLoading ? 'fa-solid fa-spinner' : 'fa-solid fa-floppy-disk'} />
+      </Button>
+    </Tooltip>
   );
 
   const removeButton = (
-    <Button
-      key="removeButton"
-      disabled={removeRecipeError || removeRecipeLoading || !state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)}
-      onClick={handleRemove}
-      style={{
-        borderRadius: '50%',
-        padding: '4px 8px'
-      }}
-    >
-      <FontAwesomeIcon key="remove" icon={removeRecipeLoading ? 'fa-solid fa-spinner' : 'fas-solid fa-trash'} />
-    </Button>
+    <Tooltip color="var(--ingre-dark-brown)" placement="top" title="Unsave" className="button-tooltip">
+      <Button
+        key="removeButton"
+        disabled={removeRecipeError || removeRecipeLoading || !state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)}
+        onClick={handleRemove}
+        style={{
+          borderRadius: '50%',
+          padding: '4px 8px'
+        }}
+      >
+        <FontAwesomeIcon key="remove" icon={removeRecipeLoading ? 'fa-solid fa-spinner' : 'fas-solid fa-trash'} />
+      </Button>
+    </Tooltip>
   );
   const disabledEditButton = (
     <Tooltip
-      placement="left"
+      placement="top"
       title={
         <Link to="/login">
           <Button type="primary">Log in</Button>
@@ -163,7 +165,7 @@ const App = (props) => {
 
   const disabledSaveButton = (
     <Tooltip
-      placement="left"
+      placement="top"
       title={
         <Link to="/login">
           <Button type="primary">Log in</Button>
@@ -184,7 +186,7 @@ const App = (props) => {
 
   const disabledTrashButton = (
     <Tooltip
-      placement="left"
+      placement="top"
       title={
         <Link to="/login">
           <Button type="primary">Log in</Button>
@@ -204,7 +206,7 @@ const App = (props) => {
   );
 
   const portionsButton = (
-    <Tooltip color="volcano" placement="right" title={<Space size="small">Serves{recipe.portions}</Space>} className="preview-button">
+    <Tooltip color="var(--ingre-dark-brown)" placement="top" title={'Serves ' + recipe.portions + ' people'} className="button-tooltip">
       <FontAwesomeIcon
         icon="fa-solid fa-user-group"
         style={{
@@ -218,7 +220,7 @@ const App = (props) => {
   );
 
   const instructionsButton = (
-    <Tooltip color="volcano" placement="left" title={<Space size="small">Cooking instructions</Space>}>
+    <Tooltip color="var(--ingre-dark-brown)" placement="top" title={<Space size="small">Cooking instructions</Space>}>
       <Button
         key="removeButton"
         onClick={handleRemove}
@@ -242,14 +244,18 @@ const App = (props) => {
   );
 
   const getActions = () => {
-    let actions = [portionsButton, editButton, saveButton, removeButton];
-    if (!Auth.loggedIn()) {
-      actions = [portionsButton, disabledEditButton, disabledSaveButton, disabledTrashButton];
-    } else if (props.savePage) {
-      actions = [portionsButton, editButton, removeButton];
-    } else if (Auth.getProfile()?.data?.pro) {
-      actions = [portionsButton, instructionsButton, editButton, saveButton, removeButton];
-    }
+    // Every page gets a portions button
+    let actions = [portionsButton];
+    // if not logged in, buttons are disabled
+    if (!Auth.loggedIn()) return actions.push(disabledEditButton, disabledSaveButton, disabledTrashButton);
+    // if user is pro, instructions button
+    if (props.pro) actions.push(instructionsButton);
+    // everyone gets an edit button
+    actions.push(editButton);
+    // everyone except saved page gets a save button
+    if (!props.savePage) actions.push(saveButton);
+    // everyone gets a remove button
+    actions.push(removeButton);
     return actions;
   };
 

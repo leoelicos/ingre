@@ -15,7 +15,7 @@ import ContentTitle from '../../components/ContentTitle';
 import Alert from '../../components/Alert';
 
 // Apollo
-import { useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { GET_SAVED_RECIPES } from '../../utils/apollo/queries.js';
 
 // Auth
@@ -23,23 +23,35 @@ import Auth from '../../utils/auth/index.js';
 import { Link } from 'react-router-dom';
 
 const Saved = () => {
-  const { loading, error, data } = useQuery(GET_SAVED_RECIPES);
-  const [savedRecipes, setSavedRecipes] = useState([]);
+  const [getSavedRecipes, { loading, error, data }] = useLazyQuery(GET_SAVED_RECIPES);
+  const [savedRecipes, setSavedRecipes] = useState(null);
   const [, dispatch] = useStoreContext();
+  const [updateRecipes, setUpdateRecipes] = useState(false);
+
+  // Store results in global state
+  useEffect(() => {
+    if (Auth.loggedIn() && updateRecipes && savedRecipes) {
+      dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes });
+      setUpdateRecipes(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateRecipes, savedRecipes]);
 
   useEffect(() => {
-    document.title = 'ingré Search';
-  }, []);
-
-  useEffect(() => {
-    if (!loading && !error && data) {
+    if (Auth.loggedIn() && !loading && !error && data?.getSavedRecipes) {
       setSavedRecipes(data.getSavedRecipes);
+      setUpdateRecipes(true);
     }
   }, [loading, error, data]);
 
   useEffect(() => {
-    dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes });
-  }, [dispatch, savedRecipes]);
+    document.title = 'ingré Search';
+    const triggerGetSavedRecipes = async () => {
+      await getSavedRecipes();
+      setUpdateRecipes(true);
+    };
+    if (Auth.loggedIn()) triggerGetSavedRecipes();
+  }, [getSavedRecipes]);
 
   if (loading) return <Divider>Loading</Divider>;
   if (error) return <Divider>Error</Divider>;

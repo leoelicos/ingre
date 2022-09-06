@@ -39,13 +39,14 @@ const App = () => {
   const { pathname } = location;
   const [state, dispatch] = useStoreContext();
   const getKey = () => {
+    if (pathname === '/') return '1';
     if (pathname === '/search') return '2';
     else if (pathname === '/customise') return '3';
     else if (pathname === '/saved') return '4';
     else if (pathname === '/ingredients') return '5';
     else if (pathname === '/tapoff') return '6';
     else if (pathname === '/upgrade') return '7';
-    return '1';
+    return '8';
   };
 
   const [broken, setBroken] = useState(state.leftSidebarCollapsed);

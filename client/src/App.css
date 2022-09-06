@@ -318,61 +318,6 @@ textarea.ant-input {
   color: rgba(64, 64, 64, 0.6);
 }
 
-.my-masonry-grid {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  margin-left: 0px;
-  width: 100%;
-}
-.my-masonry-grid_column {
-  margin-left: 1rem;
-  padding-left: 0px;
-  background-clip: padding-box;
-}
-
-.my-masonry-grid_column > div {
-  margin-bottom: 1rem;
-}
-
-.my-masonry-grid .ant-card-head {
-  padding: 4px 8px;
-}
-.my-masonry-grid .ant-card-head-title {
-  padding: 0;
-}
-
-.my-masonry-grid .ant-tag {
-  padding: 0;
-}
-
-.my-masonry-grid .ant-checkbox-wrapper {
-  margin-right: 4px;
-}
-
-.my-masonry-grid .ant-tag-checkable {
-  margin-left: 24px;
-  width: calc(100% - 24px);
-  white-space: pre-wrap;
-  padding: 0 0.6rem;
-  border-radius: 1rem;
-  background-color: var(--ingre-white);
-  border: 1px solid var(--ingre-grey);
-}
-
-.my-masonry-grid .ant-checkbox-wrapper {
-  margin-left: -32px;
-  margin-right: 16px;
-}
-
-.my-masonry-grid .card-all-tapped {
-  box-shadow: #00b050 0px 0px 0px 4px !important;
-}
-.my-masonry-grid .card-all-tapped > * > * > .ant-typography {
-  border-radius: 1 rem 1rem 0 0;
-  color: var(--ingre-green) !important;
-}
-
 .ant-tag-checkable-checked {
   background-color: var(--ingre-green) !important;
   border-color: transparent !important;
@@ -429,7 +374,16 @@ ul.ant-card-actions > li:first-child {
   bottom: 0;
   left: 4px;
 }
-.preview-button {
+.button-tooltip {
   display: flex;
   align-items: center;
+}
+
+/* header - ant steps */
+.ant-steps-small .ant-steps-item-icon {
+  margin-right: 0 !important;
+}
+
+.ant-steps-small .ant-steps-item-content .ant-steps-item-title a {
+  padding-left: 8px;
 }

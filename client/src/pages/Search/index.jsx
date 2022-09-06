@@ -35,12 +35,13 @@ function Search() {
   const [edamamRecipes, setEdamamRecipes] = useState(state.searchRecipes);
   const blankForm = { diet: [], health: [], cuisineType: [], mealType: [], dishType: [] };
   const [formState, setFormState] = useState(blankForm);
+  const [updateRecipes, setUpdateRecipes] = useState(false);
 
   // Ant Form hook to enable setFormFields()
   const [form] = Form.useForm();
 
   const handleFormSubmit = async (values, event) => {
-    console.log('values', values, '\nformState', formState);
+    // console.log('values', values, '\nformState', formState);
     try {
       // prevent API call when Ant.Search form is cleared with the 'x' button
       if (event.type === 'click' && event.target.value === '' && event.currentTarget.tagName === 'INPUT') return;
@@ -59,10 +60,8 @@ function Search() {
       const hits = await FetchEdamam(search, appId, appKey);
 
       // Store results in local state
-      await setEdamamRecipes(hits);
-
-      // Store results in global state
-      dispatch({ type: UPDATE_SEARCH_RECIPES, data: edamamRecipes });
+      setEdamamRecipes(hits);
+      setUpdateRecipes(true);
 
       // Unflag API fetch
       setLoadingEdamam(false);
@@ -70,6 +69,14 @@ function Search() {
       console.error(e);
     }
   };
+
+  // Store results in global state
+  useEffect(() => {
+    if (updateRecipes) {
+      dispatch({ type: UPDATE_SEARCH_RECIPES, data: edamamRecipes });
+      setUpdateRecipes(false);
+    }
+  }, [updateRecipes, edamamRecipes, dispatch]);
 
   const handleFilterChange = (event) => {
     const newState = event.reduce(
@@ -85,7 +92,7 @@ function Search() {
       },
       { diet: [], health: [], cuisineType: [], mealType: [], dishType: [] }
     );
-    console.log('newState', newState);
+    // console.log('newState', newState);
     setFormState(newState);
   };
 
