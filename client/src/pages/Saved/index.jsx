@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 // useContext
 import { useStoreContext } from '../../utils/state/GlobalState';
-import { UPDATE_SAVED_RECIPES } from '../../utils/state/actions';
+import { FLAG_SAVED_MOUNTED, UPDATE_SAVED_RECIPES } from '../../utils/state/actions';
 
 // Ant components
 import { Col, Row, Divider, Spin, Button } from 'antd';
@@ -23,12 +23,12 @@ import Auth from '../../utils/auth/index.js';
 import { Link } from 'react-router-dom';
 
 const Saved = () => {
-  const [getSavedRecipes, { loading, error, data }] = useLazyQuery(GET_SAVED_RECIPES);
-  const [savedRecipes, setSavedRecipes] = useState(null);
-  const [, dispatch] = useStoreContext();
+  const [, { loading, error, data, refetch }] = useLazyQuery(GET_SAVED_RECIPES);
+  const [state, dispatch] = useStoreContext();
+  const [savedRecipes, setSavedRecipes] = useState(state.savedRecipes);
   const [updateRecipes, setUpdateRecipes] = useState(false);
 
-  // Store results in global state
+  // update global savedRecipes when local savedRecipes changes
   useEffect(() => {
     if (Auth.loggedIn() && updateRecipes && savedRecipes) {
       dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes });
@@ -37,6 +37,7 @@ const Saved = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateRecipes, savedRecipes]);
 
+  // update local savedRecipes when getSavedRecipes is loaded from server
   useEffect(() => {
     if (Auth.loggedIn() && !loading && !error && data?.getSavedRecipes) {
       setSavedRecipes(data.getSavedRecipes);
@@ -44,14 +45,23 @@ const Saved = () => {
     }
   }, [loading, error, data]);
 
+  // run on first load
   useEffect(() => {
-    document.title = 'ingré Search';
-    const triggerGetSavedRecipes = async () => {
-      await getSavedRecipes();
-      setUpdateRecipes(true);
+    const fetchOnFirstLoad = async () => {
+      if (state.savedDidMount === false) {
+        dispatch({ type: FLAG_SAVED_MOUNTED });
+        await refetch();
+        setUpdateRecipes(true);
+      }
     };
-    if (Auth.loggedIn()) triggerGetSavedRecipes();
-  }, [getSavedRecipes]);
+    if (Auth.loggedIn()) fetchOnFirstLoad();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.savedDidMount, refetch]);
+
+  // update title on every load
+  useEffect(() => {
+    document.title = 'Search';
+  }, []);
 
   if (loading) return <Divider>Loading</Divider>;
   if (error) return <Divider>Error</Divider>;
