@@ -20,12 +20,12 @@ const App = () => {
   const client = useApolloClient();
 
   const userExists = async (email) => {
-    console.log(`[Signup] Validate ${email}`);
+    // console.log(`[Signup] Validate ${email}`);
     const { data } = await client.query({
       query: GET_USER_WITH_EMAIL,
       variables: { email }
     });
-    console.log('data = ', data);
+    // console.log('data = ', data);
     if (data.getUserWithEmail)
       return Promise.reject(
         <Alert
@@ -48,7 +48,7 @@ const App = () => {
     const { firstName, lastName, email, password } = user;
     const variables = { input: { email, password, firstName, lastName } };
     try {
-      console.log('variables = ', variables);
+      // console.log('variables = ', variables);
       const res = await addUser({ variables });
       const token = res.data.addUser.token;
       Auth.login(token);
