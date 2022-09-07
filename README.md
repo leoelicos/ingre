@@ -18,52 +18,9 @@ ingré was built in Node.js over a MERN stack and was the final Project of my bo
 
 **Deployed** https://egg-ingre.herokuapp.com/
 
-## Development and Testing
 
-### Download Node: https://nodejs.org/en/download/
 
-```sh
-git clone https://github.com/leoelicos/ingre.git
-cd ingre
-npm install
-npm run develop
-```
 
-## Video Demo
-
-TBA
-
-Video is also available on [YouTube](TBA)
-
-## Screenshots
-
-### Home
-
-![home](TBA)
-
-### Search
-
-![search](TBA)
-
-### Customise
-
-![custom](TBA)
-
-### Saved
-
-![saved](TBA)
-
-### Ingredients
-
-![ingredients](TBA)
-
-### Tap off
-
-![tapoff](TBA)
-
-## Credits
-
-- BCS Resources
 
 ## License
 
