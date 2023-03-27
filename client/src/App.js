@@ -49,7 +49,7 @@ const authLink = setContext((_, { headers: oldHeaders }) => {
   const headers = { ...oldHeaders, authorization };
   return { headers };
 });
-const httpLink = createHttpLink({ uri: '/graphql' });
+const httpLink = createHttpLink({ uri: 'https://ingre-backend.onrender.com/graphql' });
 const link = authLink.concat(httpLink);
 const cache = new InMemoryCache();
 const client = new ApolloClient({ link, cache });
