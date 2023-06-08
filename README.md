@@ -16,11 +16,7 @@ ingré was built in Node.js over a MERN stack and was the final Project of my bo
 
 ## Usage
 
-**Deployed** https://egg-ingre.herokuapp.com/
-
-
-
-
+**Deployed** https://ingre.herokuapp.com/
 
 ## License
 
