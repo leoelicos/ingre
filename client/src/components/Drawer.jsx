@@ -14,6 +14,8 @@ import { useQuery } from '@apollo/client'
 import { GET_USER } from '../utils/apollo/queries'
 import { useEffect, useState } from 'react'
 
+const { Item } = Timeline
+
 const App = () => {
   const [state, dispatch] = useStoreContext()
   const handleOk = () => dispatch({ type: HIDE_DRAWER })
@@ -37,7 +39,7 @@ const App = () => {
       case '/':
         return (
           <Timeline>
-            <Timeline.Item color="green">
+            <Item color="green">
               <Space
                 direction="vertical"
                 className="explore-buttons"
@@ -53,168 +55,155 @@ const App = () => {
                 </Button>
                 to find your own.
               </Space>
-            </Timeline.Item>
-            <Timeline.Item>
+            </Item>
+            <Item>
               <Space direction="vertical">
                 Like a recipe? Save it!
                 <Button style={{ borderRadius: '50%', padding: '4px 8px' }}>
                   <FontAwesomeIcon icon="fa-solid fa-pen" />
                 </Button>
               </Space>
-            </Timeline.Item>
-            <Timeline.Item>
+            </Item>
+            <Item>
               Don&apos;t like it? Customise it{' '}
               {<FontAwesomeIcon icon="fa-solid fa-pen" />} it!
-            </Timeline.Item>
+            </Item>
           </Timeline>
         )
       case '/search':
         return (
           <Timeline>
-            <Timeline.Item color="green">
-              Search from 2 million tested recipes.{' '}
-            </Timeline.Item>
-            <Timeline.Item color="blue">
+            <Item color="green">Search from 2 million tested recipes. </Item>
+            <Item color="blue">
               Enter a search term and click{' '}
               {<FontAwesomeIcon icon="fa-solid fa-magnifying-glass" />} or type
               Enter.{' '}
-            </Timeline.Item>
-            <Timeline.Item color="red">
+            </Item>
+            <Item color="red">
               To clear search, click{' '}
               {<FontAwesomeIcon icon="fa-solid fa-circle-xmark" />}.
-            </Timeline.Item>
-            <Timeline.Item>
+            </Item>
+            <Item>
               To narrow your search, select from our many filters available.
-            </Timeline.Item>
-            <Timeline.Item>
+            </Item>
+            <Item>
               Like a recipe? Click {<FontAwesomeIcon icon="fa-solid fa-save" />}{' '}
               to add it to your Saved list.
-            </Timeline.Item>
-            <Timeline.Item>
+            </Item>
+            <Item>
               You can also {<FontAwesomeIcon icon="fa-solid fa-pen" />}{' '}
               customise them!
-            </Timeline.Item>
+            </Item>
           </Timeline>
         )
 
       case '/customise':
         return (
           <Timeline>
-            <Timeline.Item color="green">Make it your own.</Timeline.Item>
-            <Timeline.Item>
-              Customise a recipe, or Reset to start again!{' '}
-            </Timeline.Item>
-            <Timeline.Item color="blue">
+            <Item color="green">Make it your own.</Item>
+            <Item>Customise a recipe, or Reset to start again! </Item>
+            <Item color="blue">
               To edit recipe name, click on the box to type.
-            </Timeline.Item>
-            <Timeline.Item color="blue">
+            </Item>
+            <Item color="blue">
               For servings and quantities, enter a number or a decimal.
-            </Timeline.Item>
-            <Timeline.Item color="blue">
+            </Item>
+            <Item color="blue">
               To add a new ingredient, click on{' '}
               {<FontAwesomeIcon icon="fa-solid fa-add" />}.
-            </Timeline.Item>
-            <Timeline.Item color="red">
+            </Item>
+            <Item color="red">
               To delete an existing ingredient, click on{' '}
               {<FontAwesomeIcon icon="fa-solid fa-trash" />}.
-            </Timeline.Item>
+            </Item>
           </Timeline>
         )
 
       case '/saved':
         return (
           <Timeline>
-            <Timeline.Item color="green">
+            <Item color="green">
               Your saved recipes are stored here for 24 hours
-            </Timeline.Item>
-            <Timeline.Item>All your recipes in one place!</Timeline.Item>
-            <Timeline.Item color="blue">
+            </Item>
+            <Item>All your recipes in one place!</Item>
+            <Item color="blue">
               Click {<FontAwesomeIcon icon="fa-solid fa-pen" />} to edit
               recipes.
-            </Timeline.Item>
-            <Timeline.Item color="blue">
+            </Item>
+            <Item color="blue">
               Click {<FontAwesomeIcon icon="fa-solid fa-trash" />} to remove
               recipes.
-            </Timeline.Item>
-            <Timeline.Item color="red">
+            </Item>
+            <Item color="red">
               Your recipes will be deleted after 24 hours.
-            </Timeline.Item>
-            <Timeline.Item color="blue">
+            </Item>
+            <Item color="blue">
               Upgrade to {<FontAwesomeIcon icon="fa-solid fa-cubes-stacked" />}{' '}
               PRO for $5 to save recipes permanently.
-            </Timeline.Item>
+            </Item>
           </Timeline>
         )
 
       case '/ingredients':
         return (
           <Timeline>
-            <Timeline.Item color="green">The final edit!</Timeline.Item>
-            <Timeline.Item>
+            <Item color="green">The final edit!</Item>
+            <Item>
               Have you checked your fridge? Is it in season? Edit away!
-            </Timeline.Item>
-            <Timeline.Item color="blue">
+            </Item>
+            <Item color="blue">
               Click {<FontAwesomeIcon icon="fa-solid fa-add" />} to add a new
               ingredient.
-            </Timeline.Item>
-            <Timeline.Item color="red">
+            </Item>
+            <Item color="red">
               Click {<FontAwesomeIcon icon="fa-solid fa-trash" />} to remove an
               ingredient.
-            </Timeline.Item>
-            <Timeline.Item>
-              There is a Misc section for additional groceries!
-            </Timeline.Item>
+            </Item>
+            <Item>There is a Misc section for additional groceries!</Item>
           </Timeline>
         )
 
       case '/tapoff':
         return (
           <Timeline>
-            <Timeline.Item color="green">
+            <Item color="green">
               {' '}
               Tap off each ingredient as you shop in the supermarket.
-            </Timeline.Item>
-            <Timeline.Item color="blue">
+            </Item>
+            <Item color="blue">
               Good luck! When you&apos;re done, click &apos;All done&apos; to
               clear your Saved recipes and Shopping list.
-            </Timeline.Item>
+            </Item>
           </Timeline>
         )
 
       case '/login':
         return (
           <Timeline>
-            <Timeline.Item color="green">
-              Log in to start saving recipes!
-            </Timeline.Item>
+            <Item color="green">Log in to start saving recipes!</Item>
           </Timeline>
         )
       case '/signup':
         return (
           <Timeline>
-            <Timeline.Item color="green">
-              Sign up to start saving recipes!
-            </Timeline.Item>
+            <Item color="green">Sign up to start saving recipes!</Item>
           </Timeline>
         )
 
       case '/upgrade':
         return pro ? (
           <Timeline>
-            <Timeline.Item color="green">
+            <Item color="green">
               <Alert
                 type="success"
                 message="You are already PRO!"
               />
-            </Timeline.Item>
+            </Item>
           </Timeline>
         ) : (
           <Timeline>
-            <Timeline.Item color="green">
-              {' '}
-              How to upgrade to ingré PRO
-            </Timeline.Item>
-            <Timeline.Item color="blue">
+            <Item color="green"> How to upgrade to ingré PRO</Item>
+            <Item color="blue">
               <Space direction="vertical">
                 Click
                 <Button
@@ -224,23 +213,21 @@ const App = () => {
                   Checkout with Stripe
                 </Button>
               </Space>
-            </Timeline.Item>
-            <Timeline.Item color="blue">
+            </Item>
+            <Item color="blue">
               You will be redirected to Stripe&apos;s POS.
-            </Timeline.Item>
-            <Timeline.Item color="blue">Pay with Stripe.</Timeline.Item>
-            <Timeline.Item color="green">
-              You will be redirected back to ingré.
-            </Timeline.Item>
+            </Item>
+            <Item color="blue">Pay with Stripe.</Item>
+            <Item color="green">You will be redirected back to ingré.</Item>
           </Timeline>
         )
 
       default:
         return (
           <Timeline>
-            <Timeline.Item color="green">
+            <Item color="green">
               Please check that you are on a valid page.
-            </Timeline.Item>
+            </Item>
           </Timeline>
         )
     }
