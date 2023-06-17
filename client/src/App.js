@@ -30,10 +30,10 @@ import Success from './pages/Success'
 import Upgrade from './pages/Upgrade'
 
 // Components
+import Drawer from './components/Drawer.jsx'
 import Header from './components/Header'
 import MainLayout from './components/MainLayout'
 import SiderLeft from './components/SiderLeft'
-import Content from './components/Content'
 
 // style
 import './App.css'
@@ -73,6 +73,7 @@ import {
 // Add Font Awesome to library so they can be accessed by children
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { Layout } from 'antd'
+import { Content } from 'antd/lib/layout/layout'
 
 library.add(
   faBars,
@@ -132,7 +133,7 @@ function App() {
             <Header />
             <MainLayout>
               <SiderLeft />
-              <Content>
+              <Content style={contentStyle}>
                 <Routes>
                   {/* pages */}
                   <Route
@@ -181,6 +182,7 @@ function App() {
                     element={<NoMatch />}
                   />
                 </Routes>
+                <Drawer />
               </Content>
             </MainLayout>
           </Layout>
@@ -191,3 +193,15 @@ function App() {
 }
 
 export default App
+
+const contentStyle = {
+  backgroundColor: 'var(--ingre-light-red)',
+  padding: '1rem',
+  display: 'flex',
+  flexFlow: 'column nowrap',
+  alignItems: 'center',
+  justifyContent: 'flex-start',
+  flex: 1,
+  height: '100%',
+  overflowY: 'auto'
+}
