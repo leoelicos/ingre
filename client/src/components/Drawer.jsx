@@ -2,7 +2,7 @@
 import { useLocation } from 'react-router-dom'
 
 // Ant components
-import { Alert, Button, Drawer, Space, Timeline } from 'antd'
+import { Alert, Button, Drawer as AntDrawer, Space, Timeline } from 'antd'
 
 // Global state
 import { useStoreContext } from '../utils/state/GlobalState'
@@ -16,7 +16,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 const { Item } = Timeline
 
-const App = () => {
+const Drawer = () => {
   const [state, dispatch] = useStoreContext()
   const handleOk = () => dispatch({ type: HIDE_DRAWER })
   const { pathname } = useLocation()
@@ -241,7 +241,7 @@ const App = () => {
 
   const drawerText = getDrawerText(memoPathName)
   return (
-    <Drawer
+    <AntDrawer
       visible={state.modalVisible}
       placement="right"
       onClose={handleOk}
@@ -252,8 +252,8 @@ const App = () => {
       }}
     >
       {drawerText}
-    </Drawer>
+    </AntDrawer>
   )
 }
 
-export default App
+export default Drawer
