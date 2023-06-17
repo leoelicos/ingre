@@ -6,8 +6,8 @@ import Auth from '../../utils/auth/index.js'
 
 import ContentTitle from '../../components/ContentTitle'
 import ContentSubtitle from '../../components/ContentSubtitle'
-import Alert from '../../components/Alert'
-import { Button, Form, Input, Divider, Row, Col } from 'antd'
+
+import { Button, Form, Input, Divider, Row, Col, Alert } from 'antd'
 
 const App = () => {
   const [login, { error }] = useMutation(LOGIN)

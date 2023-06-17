@@ -3,12 +3,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 // Ant components
-import { Button, Form, Input, Col, Divider, Row } from 'antd'
+import { Button, Form, Input, Col, Divider, Row, Alert } from 'antd'
 
 // Custom components
 import ContentTitle from '../../components/ContentTitle'
 import Empty from '../../components/Empty'
-import Alert from '../../components/Alert'
 
 // useContext
 import { useStoreContext } from '../../utils/state/GlobalState'
