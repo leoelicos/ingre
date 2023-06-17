@@ -10,7 +10,7 @@ const root = ReactDOM.createRoot(container)
 
 root.render(
   // temporarily disabled React.StrictMode for production
-  <App />
+  <Ingre />
 )
 
 // serviceWorkerRegistration.register();
