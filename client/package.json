@@ -38,6 +38,7 @@
     "workbox-strategies": "^6.5.3",
     "workbox-streams": "^6.5.3"
   },
+  "devDependencies": {},
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
