@@ -3,21 +3,21 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 
 // Ant components
 import {
+  Alert,
   Button,
+  Col,
+  Divider,
+  Empty,
   Form,
   Input,
   Popconfirm,
-  Table,
   Row,
-  Col,
-  Divider,
   Spin,
-  Alert
+  Table
 } from 'antd'
 
 // Custom components
 import ContentTitle from '../../components/ContentTitle'
-import Empty from '../../components/Empty'
 
 // Apollo
 import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries'

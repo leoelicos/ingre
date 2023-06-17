@@ -12,7 +12,7 @@ import {
 import { Col, Row, Divider, Spin, Button, Alert } from 'antd'
 
 // Custom components
-import Empty from '../../components/Empty'
+
 import RecipeCardContainer from '../../components/RecipeCardContainer'
 import ContentTitle from '../../components/ContentTitle'
 
