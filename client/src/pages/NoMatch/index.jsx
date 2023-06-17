@@ -5,10 +5,9 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 // Ant components
-import { Button, Space } from 'antd'
+import { Button, Empty, Space } from 'antd'
 
 // Custom components
-import Empty from '../../components/Empty'
 
 const App = () => {
   useEffect(() => {

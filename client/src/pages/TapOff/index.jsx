@@ -18,13 +18,13 @@ import {
   Typography,
   Button,
   Divider,
-  Alert
+  Alert,
+  Empty
 } from 'antd'
 
 // Custom components
 import ContentTitle from '../../components/ContentTitle'
 import ContentSubtitle from '../../components/ContentSubtitle'
-import Empty from '../../components/Empty'
 
 // Utils
 import compress from '../../utils/compress.js'

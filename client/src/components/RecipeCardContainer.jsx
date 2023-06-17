@@ -1,7 +1,7 @@
 // Custom components
 import RecipeCard from './RecipeCard'
-import Empty from './Empty'
-import { BackTop } from 'antd'
+
+import { BackTop, Empty } from 'antd'
 import { useQuery } from '@apollo/client'
 import { GET_USER } from '../utils/apollo/queries'
 

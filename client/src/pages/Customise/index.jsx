@@ -7,7 +7,6 @@ import { Button, Form, Input, Col, Divider, Row, Alert } from 'antd'
 
 // Custom components
 import ContentTitle from '../../components/ContentTitle'
-import Empty from '../../components/Empty'
 
 // useContext
 import { useStoreContext } from '../../utils/state/GlobalState'
