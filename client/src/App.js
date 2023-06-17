@@ -31,7 +31,6 @@ import Upgrade from './pages/Upgrade'
 
 // Components
 import Header from './components/Header'
-import Layout from './components/Layout'
 import MainLayout from './components/MainLayout'
 import SiderLeft from './components/SiderLeft'
 import Content from './components/Content'
@@ -73,6 +72,7 @@ import {
 
 // Add Font Awesome to library so they can be accessed by children
 import { library } from '@fortawesome/fontawesome-svg-core'
+import { Layout } from 'antd'
 
 library.add(
   faBars,
