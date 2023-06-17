@@ -9,7 +9,7 @@ import {
 } from '../../utils/state/actions'
 
 // Ant components
-import { Col, Row, Divider, Spin, Button, Alert } from 'antd'
+import { Col, Row, Divider, Spin, Button, Alert, Empty } from 'antd'
 
 // Custom components
 
