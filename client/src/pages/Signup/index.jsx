@@ -7,9 +7,8 @@ import { ADD_USER } from '../../utils/apollo/mutations.js'
 
 import ContentTitle from '../../components/ContentTitle'
 import ContentSubtitle from '../../components/ContentSubtitle'
-import Alert from '../../components/Alert'
 
-import { Button, Form, Input, Divider, Space, Row, Col } from 'antd'
+import { Button, Form, Input, Divider, Space, Row, Col, Alert } from 'antd'
 
 const App = () => {
   const [addUser, { error }] = useMutation(ADD_USER)

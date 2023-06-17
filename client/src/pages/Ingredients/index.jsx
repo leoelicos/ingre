@@ -11,13 +11,13 @@ import {
   Row,
   Col,
   Divider,
-  Spin
+  Spin,
+  Alert
 } from 'antd'
 
 // Custom components
 import ContentTitle from '../../components/ContentTitle'
 import Empty from '../../components/Empty'
-import Alert from '../../components/Alert'
 
 // Apollo
 import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries'

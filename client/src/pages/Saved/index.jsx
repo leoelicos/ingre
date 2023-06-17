@@ -9,13 +9,12 @@ import {
 } from '../../utils/state/actions'
 
 // Ant components
-import { Col, Row, Divider, Spin, Button } from 'antd'
+import { Col, Row, Divider, Spin, Button, Alert } from 'antd'
 
 // Custom components
 import Empty from '../../components/Empty'
 import RecipeCardContainer from '../../components/RecipeCardContainer'
 import ContentTitle from '../../components/ContentTitle'
-import Alert from '../../components/Alert'
 
 // Apollo
 import { useLazyQuery } from '@apollo/client'
