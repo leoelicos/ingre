@@ -1,5 +1,5 @@
 // Ant component
-import { Empty } from 'antd';
+import { Empty } from 'antd'
 
-const App = (props) => <Empty description={props.children} />;
-export default App;
+const App = (props) => <Empty description={props.children} />
+export default App

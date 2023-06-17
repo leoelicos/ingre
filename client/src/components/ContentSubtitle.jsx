@@ -1,8 +1,8 @@
 // Ant components
-import { Typography } from 'antd';
+import { Typography } from 'antd'
 
 // Ant subcomponents
-const { Title } = Typography;
+const { Title } = Typography
 
 const titleStyle = {
   color: 'var(--ingre-blue)',
@@ -11,11 +11,14 @@ const titleStyle = {
   letterSpacing: -1,
   fontWeight: '800',
   margin: '0.3rem 0'
-};
+}
 
 const ContentSubtitle = (props) => (
-  <Title level={2} style={titleStyle}>
+  <Title
+    level={2}
+    style={titleStyle}
+  >
     {props.children}
   </Title>
-);
-export default ContentSubtitle;
+)
+export default ContentSubtitle

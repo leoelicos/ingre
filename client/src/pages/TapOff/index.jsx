@@ -1,61 +1,81 @@
 // React packages
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import Masonry from 'react-masonry-css';
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import Masonry from 'react-masonry-css'
 
 // GlobalState
-import { useStoreContext } from '../../utils/state/GlobalState';
-import { UPDATE_TAP_OFF } from '../../utils/state/actions';
+import { useStoreContext } from '../../utils/state/GlobalState'
+import { UPDATE_TAP_OFF } from '../../utils/state/actions'
 
 // Ant components
-import { Col, Card, Tag, Row, Space, Checkbox, Typography, Button, Divider, Alert } from 'antd';
+import {
+  Col,
+  Card,
+  Tag,
+  Row,
+  Space,
+  Checkbox,
+  Typography,
+  Button,
+  Divider,
+  Alert
+} from 'antd'
 
 // Custom components
-import ContentTitle from '../../components/ContentTitle';
-import ContentSubtitle from '../../components/ContentSubtitle';
-import Empty from '../../components/Empty';
+import ContentTitle from '../../components/ContentTitle'
+import ContentSubtitle from '../../components/ContentSubtitle'
+import Empty from '../../components/Empty'
 
 // Utils
-import compress from '../../utils/compress.js';
-import Auth from '../../utils/auth/index.js';
+import compress from '../../utils/compress.js'
+import Auth from '../../utils/auth/index.js'
 
 // Masonry css
-import './style.css';
+import './style.css'
 
-const { CheckableTag } = Tag;
-const { Text } = Typography;
+const { CheckableTag } = Tag
+const { Text } = Typography
 const TapOff = () => {
   const handleChange = (ri, ii, checked) => {
-    const x = JSON.parse(JSON.stringify(compressedRecipes));
-    x[ri].items[ii].checked = checked;
-    setCompressedRecipes(x);
-  };
+    const x = JSON.parse(JSON.stringify(compressedRecipes))
+    x[ri].items[ii].checked = checked
+    setCompressedRecipes(x)
+  }
 
-  const [state, dispatch] = useStoreContext();
-  const { savedIngredients } = state;
-  const [compressedRecipes, setCompressedRecipes] = useState([{ items: ['Loading'], category: 'Loading' }]);
-
-  useEffect(() => {
-    document.title = 'ingré Tap Off';
-  }, []);
+  const [state, dispatch] = useStoreContext()
+  const { savedIngredients } = state
+  const [compressedRecipes, setCompressedRecipes] = useState([
+    { items: ['Loading'], category: 'Loading' }
+  ])
 
   useEffect(() => {
-    const compressed = compress(savedIngredients);
+    document.title = 'ingré Tap Off'
+  }, [])
+
+  useEffect(() => {
+    const compressed = compress(savedIngredients)
     // console.table(compressed);
-    setCompressedRecipes(compressed);
-    dispatch({ type: UPDATE_TAP_OFF, data: compressed });
+    setCompressedRecipes(compressed)
+    dispatch({ type: UPDATE_TAP_OFF, data: compressed })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   return (
-    <Col span={24} className="tap-off-column">
+    <Col
+      span={24}
+      className="tap-off-column"
+    >
       <Row>
         <ContentTitle>Tap Off</ContentTitle>
       </Row>
       <Row style={{ paddingBottom: '1rem', width: '100%' }}>
         {Auth.loggedIn() ? (
           <Masonry
-            breakpointCols={state.leftSidebarCollapsed ? { default: 3, 1050: 2, 750: 1 } : { default: 3, 1208: 2, 875: 1 }}
+            breakpointCols={
+              state.leftSidebarCollapsed
+                ? { default: 3, 1050: 2, 750: 1 }
+                : { default: 3, 1208: 2, 875: 1 }
+            }
             className="my-masonry-grid"
             columnClassName="my-masonry-grid_column"
             //
@@ -69,12 +89,20 @@ const TapOff = () => {
                     boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
                     paddingBottom: '4px'
                   }}
-                  className={r.items.every((i) => i.checked) ? 'card-all-tapped' : ''}
+                  className={
+                    r.items.every((i) => i.checked) ? 'card-all-tapped' : ''
+                  }
                 >
-                  <Row justify="center" style={{ width: '100%', textAlign: 'center' }}>
+                  <Row
+                    justify="center"
+                    style={{ width: '100%', textAlign: 'center' }}
+                  >
                     <ContentSubtitle>{r.category}</ContentSubtitle>
                   </Row>
-                  <Space direction="vertical" style={{ width: '100%' }}>
+                  <Space
+                    direction="vertical"
+                    style={{ width: '100%' }}
+                  >
                     {r.items.map((i, ii) => (
                       <CheckableTag
                         key={r.category + i.description}
@@ -83,21 +111,36 @@ const TapOff = () => {
                         className="checkable-tag"
                         //
                       >
-                        <Checkbox checked={i.checked} className="tap-off-check-box" />
-                        <Text style={{ fontSize: '14px' }}>{i.description}</Text>
+                        <Checkbox
+                          checked={i.checked}
+                          className="tap-off-check-box"
+                        />
+                        <Text style={{ fontSize: '14px' }}>
+                          {i.description}
+                        </Text>
                       </CheckableTag>
                     ))}
                   </Space>
                 </Card>
               ))
             ) : (
-              <Card key="ungenerated" style={{ padding: '1rem' }}>
+              <Card
+                key="ungenerated"
+                style={{ padding: '1rem' }}
+              >
                 <Alert
                   type="warning"
                   message={
-                    <Space direction="vertical" align="center" style={{ textAlign: 'center' }}>
+                    <Space
+                      direction="vertical"
+                      align="center"
+                      style={{ textAlign: 'center' }}
+                    >
                       Generate an ingredient list first
-                      <Button type="primary" style={{ marginTop: '0.5rem' }}>
+                      <Button
+                        type="primary"
+                        style={{ marginTop: '0.5rem' }}
+                      >
                         <Link to="/ingredients">Ingredients</Link>
                       </Button>
                     </Space>
@@ -111,7 +154,10 @@ const TapOff = () => {
             <Divider />
             <Row>You need to be logged in to see this page.</Row>
             <Link to="/login">
-              <Button type="primary" style={{ marginTop: '1rem' }}>
+              <Button
+                type="primary"
+                style={{ marginTop: '1rem' }}
+              >
                 Log in
               </Button>
             </Link>
@@ -119,6 +165,6 @@ const TapOff = () => {
         )}
       </Row>
     </Col>
-  );
-};
-export default TapOff;
+  )
+}
+export default TapOff

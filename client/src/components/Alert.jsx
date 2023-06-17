@@ -1,7 +1,7 @@
 // Ant component
-import { Alert } from 'antd';
+import { Alert } from 'antd'
 
-const alertStyle = { margin: '4px 0' };
+const alertStyle = { margin: '4px 0' }
 
 const App = (props) => (
   <Alert
@@ -9,5 +9,5 @@ const App = (props) => (
     style={alertStyle}
     //
   />
-);
-export default App;
+)
+export default App

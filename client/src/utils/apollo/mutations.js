@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from '@apollo/client'
 
 export const ADD_USER = gql`
   mutation AddUser($input: UserInput!) {
@@ -10,7 +10,7 @@ export const ADD_USER = gql`
       }
     }
   }
-`;
+`
 
 export const MAKE_USER_PRO = gql`
   mutation MakeUserPro {
@@ -19,7 +19,7 @@ export const MAKE_USER_PRO = gql`
       pro
     }
   }
-`;
+`
 
 export const SAVE_RECIPE = gql`
   mutation SaveRecipe($input: RecipeInput!) {
@@ -42,7 +42,7 @@ export const SAVE_RECIPE = gql`
       instructions
     }
   }
-`;
+`
 
 export const UPDATE_RECIPE = gql`
   mutation UpdateRecipe($input: RecipeInput!, $recipeId: ID!) {
@@ -64,13 +64,13 @@ export const UPDATE_RECIPE = gql`
       edamamId
     }
   }
-`;
+`
 
 export const REMOVE_RECIPE = gql`
   mutation RemoveRecipe($recipeId: ID!) {
     removeRecipe(recipeId: $recipeId)
   }
-`;
+`
 
 export const LOGIN = gql`
   mutation Login($email: String!, $password: String!) {
@@ -81,4 +81,4 @@ export const LOGIN = gql`
       }
     }
   }
-`;
+`

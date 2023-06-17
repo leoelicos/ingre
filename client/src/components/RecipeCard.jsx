@@ -1,50 +1,72 @@
 // React
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 
 // Font Awesome
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // Global state
-import { useStoreContext } from '../utils/state/GlobalState';
-import { ADD_SAVED_RECIPE, REMOVE_SAVED_RECIPE, ADD_EDIT_RECIPE } from '../utils/state/actions';
+import { useStoreContext } from '../utils/state/GlobalState'
+import {
+  ADD_SAVED_RECIPE,
+  REMOVE_SAVED_RECIPE,
+  ADD_EDIT_RECIPE
+} from '../utils/state/actions'
 
 // Ant Component
-import { Card, Image, Button, Tooltip, Space, Typography } from 'antd';
+import { Card, Image, Button, Tooltip, Space, Typography } from 'antd'
 
 // Apollo
-import { useMutation, useApolloClient } from '@apollo/client';
-import { SAVE_RECIPE, REMOVE_RECIPE } from '../utils/apollo/mutations';
-import { GET_SAVED_RECIPES, GET_NUM_SAVED_RECIPES, GET_RECIPE } from '../utils/apollo/queries';
+import { useMutation, useApolloClient } from '@apollo/client'
+import { SAVE_RECIPE, REMOVE_RECIPE } from '../utils/apollo/mutations'
+import {
+  GET_SAVED_RECIPES,
+  GET_NUM_SAVED_RECIPES,
+  GET_RECIPE
+} from '../utils/apollo/queries'
 
 // JWT Decode
-import Auth from '../utils/auth';
+import Auth from '../utils/auth'
 
 // Ant subcomponents
-const { Meta } = Card;
-const { Text } = Typography;
+const { Meta } = Card
+const { Text } = Typography
 
 const App = (props) => {
-  const { recipe } = props;
+  const { recipe } = props
 
-  const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] = useMutation(SAVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
+  const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] =
+    useMutation(SAVE_RECIPE, {
+      refetchQueries: [
+        { query: GET_SAVED_RECIPES },
+        { query: GET_NUM_SAVED_RECIPES }
+      ]
+    })
 
-  const [removeRecipe, { loading: removeRecipeLoading, error: removeRecipeError }] = useMutation(REMOVE_RECIPE, { refetchQueries: [{ query: GET_SAVED_RECIPES }, { query: GET_NUM_SAVED_RECIPES }] });
+  const [
+    removeRecipe,
+    { loading: removeRecipeLoading, error: removeRecipeError }
+  ] = useMutation(REMOVE_RECIPE, {
+    refetchQueries: [
+      { query: GET_SAVED_RECIPES },
+      { query: GET_NUM_SAVED_RECIPES }
+    ]
+  })
 
-  const [state, dispatch] = useStoreContext();
-  const client = useApolloClient();
+  const [state, dispatch] = useStoreContext()
+  const client = useApolloClient()
 
   const handleEdit = async () => {
-    let data = recipe;
+    let data = recipe
 
     if (recipe._id) {
       // saved on backend so need to GET ingredients
-      const query = GET_RECIPE;
-      const variables = { id: recipe._id };
-      const res = await client.query({ query, variables });
-      data = res.data.getRecipe;
+      const query = GET_RECIPE
+      const variables = { id: recipe._id }
+      const res = await client.query({ query, variables })
+      data = res.data.getRecipe
     }
-    await dispatch({ type: ADD_EDIT_RECIPE, data: data });
-  };
+    await dispatch({ type: ADD_EDIT_RECIPE, data: data })
+  }
 
   const handleSave = async () => {
     try {
@@ -52,51 +74,56 @@ const App = (props) => {
         name: recipe.name,
         portions: parseInt(recipe.portions || 1),
         ingredients: recipe.ingredients.map((i) => {
-          const name = i.name || 'Ingredient';
-          const quantity = parseFloat(i.quantity) || 1;
-          const measure = i.measure || 'unit';
-          const category = i.category || 'Generic';
-          const ingredient = { name, quantity, measure, category };
-          return ingredient;
+          const name = i.name || 'Ingredient'
+          const quantity = parseFloat(i.quantity) || 1
+          const measure = i.measure || 'unit'
+          const category = i.category || 'Generic'
+          const ingredient = { name, quantity, measure, category }
+          return ingredient
         }),
         picture_url: recipe.picture_url,
         edamamId: recipe.edamamId,
         instructions: recipe.shareAs
-      };
-      const variables = { input };
-      const payload = { variables };
-      const res = await saveRecipe(payload);
-      if (!res) throw new Error('Could not save recipe');
+      }
+      const variables = { input }
+      const payload = { variables }
+      const res = await saveRecipe(payload)
+      if (!res) throw new Error('Could not save recipe')
 
-      const saveData = res.data.saveRecipe;
-      await dispatch({ type: ADD_SAVED_RECIPE, data: saveData });
+      const saveData = res.data.saveRecipe
+      await dispatch({ type: ADD_SAVED_RECIPE, data: saveData })
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
 
   const handleRemove = async () => {
     try {
-      let _id;
+      let _id
       if (props.savePage) {
-        _id = recipe._id;
+        _id = recipe._id
       } else {
-        _id = state.savedRecipes.find((r) => r.edamamId === recipe.edamamId)._id;
+        _id = state.savedRecipes.find((r) => r.edamamId === recipe.edamamId)._id
       }
-      const payload = { variables: { recipeId: _id } };
-      const res = await removeRecipe(payload);
-      if (!res) throw new Error('Could not save recipe');
+      const payload = { variables: { recipeId: _id } }
+      const res = await removeRecipe(payload)
+      if (!res) throw new Error('Could not save recipe')
       // console.log('[RecipeCard][handleRemove] removeData', res.data);
-      await dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.edamamId });
+      await dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.edamamId })
     } catch (error) {
-      console.error(Error);
+      console.error(Error)
     }
-  };
+  }
 
-  const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+  const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1)
 
   const editButton = (
-    <Tooltip color="var(--ingre-dark-brown)" placement="top" title="Edit" className="button-tooltip">
+    <Tooltip
+      color="var(--ingre-dark-brown)"
+      placement="top"
+      title="Edit"
+      className="button-tooltip"
+    >
       <Button
         onClick={handleEdit}
         style={{
@@ -105,43 +132,76 @@ const App = (props) => {
         }}
       >
         <Link to="/customise">
-          <FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />
+          <FontAwesomeIcon
+            key="edit"
+            icon="fa-solid fa-pen"
+          />
         </Link>
       </Button>
     </Tooltip>
-  );
+  )
 
   const saveButton = (
-    <Tooltip color="var(--ingre-dark-brown)" placement="top" title="Save" className="button-tooltip">
+    <Tooltip
+      color="var(--ingre-dark-brown)"
+      placement="top"
+      title="Save"
+      className="button-tooltip"
+    >
       <Button
         key="saveButton"
         onClick={handleSave}
-        disabled={saveRecipeError || saveRecipeLoading || state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)}
+        disabled={
+          saveRecipeError ||
+          saveRecipeLoading ||
+          state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)
+        }
         style={{
           borderRadius: '50%',
           padding: '4px 8px'
         }}
       >
-        <FontAwesomeIcon key="save" icon={saveRecipeLoading ? 'fa-solid fa-spinner' : 'fa-solid fa-floppy-disk'} />
+        <FontAwesomeIcon
+          key="save"
+          icon={
+            saveRecipeLoading
+              ? 'fa-solid fa-spinner'
+              : 'fa-solid fa-floppy-disk'
+          }
+        />
       </Button>
     </Tooltip>
-  );
+  )
 
   const removeButton = (
-    <Tooltip color="var(--ingre-dark-brown)" placement="top" title="Unsave" className="button-tooltip">
+    <Tooltip
+      color="var(--ingre-dark-brown)"
+      placement="top"
+      title="Unsave"
+      className="button-tooltip"
+    >
       <Button
         key="removeButton"
-        disabled={removeRecipeError || removeRecipeLoading || !state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)}
+        disabled={
+          removeRecipeError ||
+          removeRecipeLoading ||
+          !state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)
+        }
         onClick={handleRemove}
         style={{
           borderRadius: '50%',
           padding: '4px 8px'
         }}
       >
-        <FontAwesomeIcon key="remove" icon={removeRecipeLoading ? 'fa-solid fa-spinner' : 'fas-solid fa-trash'} />
+        <FontAwesomeIcon
+          key="remove"
+          icon={
+            removeRecipeLoading ? 'fa-solid fa-spinner' : 'fas-solid fa-trash'
+          }
+        />
       </Button>
     </Tooltip>
-  );
+  )
   const disabledEditButton = (
     <Tooltip
       placement="top"
@@ -158,10 +218,13 @@ const App = (props) => {
           padding: '4px 8px'
         }}
       >
-        <FontAwesomeIcon key="edit" icon="fa-solid fa-pen" />
+        <FontAwesomeIcon
+          key="edit"
+          icon="fa-solid fa-pen"
+        />
       </Button>
     </Tooltip>
-  );
+  )
 
   const disabledSaveButton = (
     <Tooltip
@@ -179,10 +242,13 @@ const App = (props) => {
           padding: '4px 8px'
         }}
       >
-        <FontAwesomeIcon key="edit" icon="fa-solid fa-floppy-disk" />
+        <FontAwesomeIcon
+          key="edit"
+          icon="fa-solid fa-floppy-disk"
+        />
       </Button>
     </Tooltip>
-  );
+  )
 
   const disabledTrashButton = (
     <Tooltip
@@ -200,13 +266,21 @@ const App = (props) => {
           padding: '4px 8px'
         }}
       >
-        <FontAwesomeIcon key="edit" icon="fa-solid fa-trash" />
+        <FontAwesomeIcon
+          key="edit"
+          icon="fa-solid fa-trash"
+        />
       </Button>
     </Tooltip>
-  );
+  )
 
   const portionsButton = (
-    <Tooltip color="var(--ingre-dark-brown)" placement="top" title={'Serves ' + recipe.portions + ' people'} className="button-tooltip">
+    <Tooltip
+      color="var(--ingre-dark-brown)"
+      placement="top"
+      title={'Serves ' + recipe.portions + ' people'}
+      className="button-tooltip"
+    >
       <FontAwesomeIcon
         icon="fa-solid fa-user-group"
         style={{
@@ -217,10 +291,14 @@ const App = (props) => {
       />
       <Text>{recipe.portions}</Text>
     </Tooltip>
-  );
+  )
 
   const instructionsButton = (
-    <Tooltip color="var(--ingre-dark-brown)" placement="top" title={<Space size="small">Cooking instructions</Space>}>
+    <Tooltip
+      color="var(--ingre-dark-brown)"
+      placement="top"
+      title={<Space size="small">Cooking instructions</Space>}
+    >
       <Button
         key="removeButton"
         onClick={handleRemove}
@@ -230,7 +308,11 @@ const App = (props) => {
         }}
         shape="circle"
       >
-        <a href={recipe.instructions} target="_blank" rel="noopener noreferrer">
+        <a
+          href={recipe.instructions}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <FontAwesomeIcon
             icon="fa-solid fa-book-open"
             style={{
@@ -241,26 +323,26 @@ const App = (props) => {
         </a>
       </Button>
     </Tooltip>
-  );
+  )
 
   const getActions = () => {
     // Every page gets a portions button
-    let actions = [portionsButton];
+    let actions = [portionsButton]
     // if not logged in, buttons are disabled
     if (!Auth.loggedIn()) {
-      actions.push(disabledEditButton, disabledSaveButton, disabledTrashButton);
-      return actions;
+      actions.push(disabledEditButton, disabledSaveButton, disabledTrashButton)
+      return actions
     }
     // if user is pro, instructions button
-    if (props.pro) actions.push(instructionsButton);
+    if (props.pro) actions.push(instructionsButton)
     // everyone gets an edit button
-    actions.push(editButton);
+    actions.push(editButton)
     // everyone except saved page gets a save button
-    if (!props.savePage) actions.push(saveButton);
+    if (!props.savePage) actions.push(saveButton)
     // everyone gets a remove button
-    actions.push(removeButton);
-    return actions;
-  };
+    actions.push(removeButton)
+    return actions
+  }
 
   const recipeImage = (
     <Image
@@ -276,13 +358,19 @@ const App = (props) => {
       placeholder={true}
       fallback="https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc"
     />
-  );
+  )
 
   return (
-    <Card cover={recipeImage} actions={getActions()}>
+    <Card
+      cover={recipeImage}
+      actions={getActions()}
+    >
       <Meta
         title={
-          <Tooltip title={recipe.name} style={{ display: 'inline-block' }}>
+          <Tooltip
+            title={recipe.name}
+            style={{ display: 'inline-block' }}
+          >
             {capitalize(recipe.name)}
           </Tooltip>
         }
@@ -293,7 +381,7 @@ const App = (props) => {
         }}
       />
     </Card>
-  );
-};
+  )
+}
 
-export default App;
+export default App

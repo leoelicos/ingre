@@ -1,5 +1,5 @@
 // Ant components
-import { Layout, Row } from 'antd';
+import { Layout, Row } from 'antd'
 
 const App = (props) => {
   return (
@@ -20,6 +20,6 @@ const App = (props) => {
         {props.children}
       </Row>
     </Layout>
-  );
-};
-export default App;
+  )
+}
+export default App
