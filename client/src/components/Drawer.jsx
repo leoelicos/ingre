@@ -63,7 +63,7 @@ const App = () => {
               </Space>
             </Timeline.Item>
             <Timeline.Item>
-              Don't like it? Customise it{' '}
+              Don&apos;t like it? Customise it{' '}
               {<FontAwesomeIcon icon="fa-solid fa-pen" />} it!
             </Timeline.Item>
           </Timeline>
@@ -175,8 +175,8 @@ const App = () => {
               Tap off each ingredient as you shop in the supermarket.
             </Timeline.Item>
             <Timeline.Item color="blue">
-              Good luck! When you're done, click "All done" to clear your Saved
-              recipes and Shopping list.
+              Good luck! When you&apos;re done, click &apos;All done&apos; to
+              clear your Saved recipes and Shopping list.
             </Timeline.Item>
           </Timeline>
         )
@@ -226,7 +226,7 @@ const App = () => {
               </Space>
             </Timeline.Item>
             <Timeline.Item color="blue">
-              You will be redirected to Stripe's POS.
+              You will be redirected to Stripe&apos;s POS.
             </Timeline.Item>
             <Timeline.Item color="blue">Pay with Stripe.</Timeline.Item>
             <Timeline.Item color="green">
