@@ -1,5 +1,5 @@
 // React
-import React, { useEffect } from 'react'
+import React, { CSSProperties, useEffect } from 'react'
 
 // React Router DOM
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
@@ -120,7 +120,7 @@ const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
 const client = new ApolloClient({ link, cache })
 
-function App() {
+function Ingre() {
   useEffect(() => {
     document.title = 'ingré'
   }, [])
@@ -192,9 +192,9 @@ function App() {
   )
 }
 
-export default App
+export default Ingre
 
-const contentStyle = {
+const contentStyle: CSSProperties = {
   backgroundColor: 'var(--ingre-light-red)',
   padding: '1rem',
   display: 'flex',
