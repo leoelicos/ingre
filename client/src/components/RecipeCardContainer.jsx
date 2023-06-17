@@ -1,13 +1,13 @@
 // Custom components
-import RecipeCard from './RecipeCard';
-import Empty from './Empty';
-import { BackTop } from 'antd';
-import { useQuery } from '@apollo/client';
-import { GET_USER } from '../utils/apollo/queries';
+import RecipeCard from './RecipeCard'
+import Empty from './Empty'
+import { BackTop } from 'antd'
+import { useQuery } from '@apollo/client'
+import { GET_USER } from '../utils/apollo/queries'
 
-import Auth from '../utils/auth';
+import Auth from '../utils/auth'
 const App = ({ results, loading, savePage }) => {
-  const { data } = useQuery(GET_USER);
+  const { data } = useQuery(GET_USER)
 
   return (
     <>
@@ -32,7 +32,7 @@ const App = ({ results, loading, savePage }) => {
                 pro={Auth.loggedIn() ? data?.getUser?.pro || false : false}
                 //
               />
-            );
+            )
           })
         ) : (
           <Empty>No recipes</Empty>
@@ -40,7 +40,7 @@ const App = ({ results, loading, savePage }) => {
         <BackTop />
       </div>
     </>
-  );
-};
+  )
+}
 
-export default App;
+export default App

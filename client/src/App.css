@@ -28,10 +28,15 @@
 }
 .ant-modal-title,
 .ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon,
-.ant-steps-item-custom.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon {
+.ant-steps-item-custom.ant-steps-item-process
+  .ant-steps-item-icon
+  > .ant-steps-icon {
   color: var(--ingre-dark-brown) !important;
 }
-.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-title::after {
+.ant-steps-item-finish
+  > .ant-steps-item-container
+  > .ant-steps-item-content
+  > .ant-steps-item-title::after {
   background-color: var(--ingre-dark-brown) !important;
 }
 
@@ -233,7 +238,10 @@ a {
 .ant-select:not(.ant-select-customize-input) .ant-select-selector:hover {
   border: 1px solid var(--ingre-dark-brown);
 }
-.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+.ant-select-focused:not(.ant-select-disabled).ant-select:not(
+    .ant-select-customize-input
+  )
+  .ant-select-selector {
   border: 1px solid var(--ingre-dark-brown);
   box-shadow: none;
   outline: 0;

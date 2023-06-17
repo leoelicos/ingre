@@ -1,70 +1,70 @@
 // React
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 
 // React Router DOM
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 // useContext
-import { useStoreContext } from '../utils/state/GlobalState';
+import { useStoreContext } from '../utils/state/GlobalState'
 
 // useReducer
-import { SHOW_DRAWER } from '../utils/state/actions';
+import { SHOW_DRAWER } from '../utils/state/actions'
 
 // Apollo
-import { useQuery } from '@apollo/client';
-import { GET_NUM_SAVED_RECIPES } from '../utils/apollo/queries';
+import { useQuery } from '@apollo/client'
+import { GET_NUM_SAVED_RECIPES } from '../utils/apollo/queries'
 
 // Font Awesome
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // Ant components
-import { Button, Layout, Menu } from 'antd';
-import { COLLAPSE_SIDEBAR, EXPAND_SIDEBAR } from '../utils/state/actions';
+import { Button, Layout, Menu } from 'antd'
+import { COLLAPSE_SIDEBAR, EXPAND_SIDEBAR } from '../utils/state/actions'
 
 // Auth
-import Auth from '../utils/auth';
+import Auth from '../utils/auth'
 
 // Ant subcomponent
-const { Sider } = Layout;
+const { Sider } = Layout
 
 const App = () => {
   const showDrawer = () => {
-    dispatch({ type: SHOW_DRAWER });
-  };
+    dispatch({ type: SHOW_DRAWER })
+  }
 
-  const { loading, error, data, refetch } = useQuery(GET_NUM_SAVED_RECIPES);
+  const { loading, error, data, refetch } = useQuery(GET_NUM_SAVED_RECIPES)
 
-  const location = useLocation();
-  const { pathname } = location;
-  const [state, dispatch] = useStoreContext();
+  const location = useLocation()
+  const { pathname } = location
+  const [state, dispatch] = useStoreContext()
   const getKey = () => {
-    if (pathname === '/') return '1';
-    if (pathname === '/search') return '2';
-    else if (pathname === '/customise') return '3';
-    else if (pathname === '/saved') return '4';
-    else if (pathname === '/ingredients') return '5';
-    else if (pathname === '/tapoff') return '6';
-    else if (pathname === '/upgrade') return '7';
-    return '8';
-  };
+    if (pathname === '/') return '1'
+    if (pathname === '/search') return '2'
+    else if (pathname === '/customise') return '3'
+    else if (pathname === '/saved') return '4'
+    else if (pathname === '/ingredients') return '5'
+    else if (pathname === '/tapoff') return '6'
+    else if (pathname === '/upgrade') return '7'
+    return '8'
+  }
 
-  const [broken, setBroken] = useState(state.leftSidebarCollapsed);
+  const [broken, setBroken] = useState(state.leftSidebarCollapsed)
   useEffect(() => {
-    if (Auth.loggedIn()) refetch();
-  });
+    if (Auth.loggedIn()) refetch()
+  })
 
   useEffect(() => {
-    if (broken === true) dispatch({ type: COLLAPSE_SIDEBAR });
-    else dispatch({ type: EXPAND_SIDEBAR });
+    if (broken === true) dispatch({ type: COLLAPSE_SIDEBAR })
+    else dispatch({ type: EXPAND_SIDEBAR })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [broken]);
+  }, [broken])
 
   return (
     <Sider
       breakpoint="md"
       onBreakpoint={(broken) => {
-        setBroken(broken);
+        setBroken(broken)
       }}
       trigger={null}
       collapsible
@@ -138,7 +138,9 @@ const App = () => {
                     color: 'var(--ingre-dark-brown)'
                   }}
                 >
-                  {!Auth.loggedIn() || loading || error ? 0 : data.getNumSavedRecipes}
+                  {!Auth.loggedIn() || loading || error
+                    ? 0
+                    : data.getNumSavedRecipes}
                 </span>
               </Link>
             ),
@@ -191,7 +193,16 @@ const App = () => {
           {
             key: 8,
             icon: (
-              <Button onClick={showDrawer} style={{ padding: 0, margin: 0, border: 0, background: 'none', boxShadow: 'none' }}>
+              <Button
+                onClick={showDrawer}
+                style={{
+                  padding: 0,
+                  margin: 0,
+                  border: 0,
+                  background: 'none',
+                  boxShadow: 'none'
+                }}
+              >
                 <Link to="">
                   <FontAwesomeIcon
                     icon="fa-solid fa-circle-info"
@@ -215,11 +226,15 @@ const App = () => {
                   boxShadow: 'none',
                   display: 'flex',
                   alignItems: 'center',
-                  transition: 'border-color 0.3s, background 0.3s, padding 0.1s cubic-bezier(0.215, 0.61, 0.355, 1)'
+                  transition:
+                    'border-color 0.3s, background 0.3s, padding 0.1s cubic-bezier(0.215, 0.61, 0.355, 1)'
                 }}
                 block
               >
-                <Link to="#" className="ant-menu-title-content">
+                <Link
+                  to="#"
+                  className="ant-menu-title-content"
+                >
                   Help
                 </Link>
               </Button>
@@ -228,7 +243,7 @@ const App = () => {
         ]}
       />
     </Sider>
-  );
-};
+  )
+}
 
-export default App;
+export default App

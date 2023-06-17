@@ -1,5 +1,5 @@
-import { Typography } from 'antd';
-const { Title } = Typography;
+import { Typography } from 'antd'
+const { Title } = Typography
 
 const App = (props) => (
   <>
@@ -19,5 +19,5 @@ const App = (props) => (
       {props.children}
     </Title>
   </>
-);
-export default App;
+)
+export default App

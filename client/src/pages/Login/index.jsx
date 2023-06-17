@@ -1,46 +1,46 @@
-import React, { useEffect } from 'react';
-import { useMutation } from '@apollo/client';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { LOGIN } from '../../utils/apollo/mutations.js';
-import Auth from '../../utils/auth/index.js';
+import React, { useEffect } from 'react'
+import { useMutation } from '@apollo/client'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { LOGIN } from '../../utils/apollo/mutations.js'
+import Auth from '../../utils/auth/index.js'
 
-import ContentTitle from '../../components/ContentTitle';
-import ContentSubtitle from '../../components/ContentSubtitle';
-import Alert from '../../components/Alert';
-import { Button, Form, Input, Divider, Row, Col } from 'antd';
+import ContentTitle from '../../components/ContentTitle'
+import ContentSubtitle from '../../components/ContentSubtitle'
+import Alert from '../../components/Alert'
+import { Button, Form, Input, Divider, Row, Col } from 'antd'
 
 const App = () => {
-  const [login, { error }] = useMutation(LOGIN);
-  const [form] = Form.useForm();
-  const navigate = useNavigate();
+  const [login, { error }] = useMutation(LOGIN)
+  const [form] = Form.useForm()
+  const navigate = useNavigate()
 
   const handleFormSubmit = async (values) => {
-    const { user } = values;
-    const { email, password } = user;
-    const payload = { email, password };
+    const { user } = values
+    const { email, password } = user
+    const payload = { email, password }
 
     try {
-      console.log('payload = ', payload);
-      const res = await login({ variables: payload });
-      const token = res.data.login.token;
-      console.log('localstorage token', token);
-      Auth.login(token);
+      console.log('payload = ', payload)
+      const res = await login({ variables: payload })
+      const token = res.data.login.token
+      console.log('localstorage token', token)
+      Auth.login(token)
 
-      navigate(-1);
+      navigate(-1)
     } catch (e) {
-      console.error(e);
+      console.error(e)
     }
-  };
+  }
 
   const handleChange = (changedValues) => {
-    const { email, password } = changedValues;
-    if (email) form.setFieldsValue({ email });
-    if (password) form.setFieldsValue({ password });
-  };
+    const { email, password } = changedValues
+    if (email) form.setFieldsValue({ email })
+    if (password) form.setFieldsValue({ password })
+  }
 
   useEffect(() => {
-    document.title = 'Log in';
-  }, []);
+    document.title = 'Log in'
+  }, [])
 
   return Auth.loggedIn() ? (
     <Navigate to="/" />
@@ -79,7 +79,12 @@ const App = () => {
           rules={[
             {
               required: true,
-              message: <Alert type="warning" message="Please input your email!" />
+              message: (
+                <Alert
+                  type="warning"
+                  message="Please input your email!"
+                />
+              )
             }
           ]}
         >
@@ -91,7 +96,12 @@ const App = () => {
           rules={[
             {
               required: true,
-              message: <Alert type="warning" message="Please input your password!" />
+              message: (
+                <Alert
+                  type="warning"
+                  message="Please input your password!"
+                />
+              )
             }
           ]}
           style={{
@@ -103,12 +113,19 @@ const App = () => {
 
         {error && (
           <Form.Item label=" ">
-            <Alert message="Couldn't log you in." type="error" />
+            <Alert
+              message="Couldn't log you in."
+              type="error"
+            />
           </Form.Item>
         )}
 
         <Form.Item label=" ">
-          <Button type="primary" htmlType="submit" block>
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+          >
             Submit
           </Button>
         </Form.Item>
@@ -116,14 +133,17 @@ const App = () => {
         <Form.Item label=" ">
           <ContentSubtitle>No account?</ContentSubtitle>
           <Link to="/signup">
-            <Button type="ghost" block>
+            <Button
+              type="ghost"
+              block
+            >
               Sign up
             </Button>
           </Link>
         </Form.Item>
       </Form>
     </Col>
-  );
-};
+  )
+}
 
-export default App;
+export default App

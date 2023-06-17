@@ -1,42 +1,43 @@
 // useReducer
-import { useStoreContext } from '../utils/state/GlobalState';
+import { useStoreContext } from '../utils/state/GlobalState'
 
 // react-router-dom
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 // utils
-import Auth from '../utils/auth';
+import Auth from '../utils/auth'
 
 // Font Awesome
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // state
-import { TOGGLE_SIDEBAR } from '../utils/state/actions';
+import { TOGGLE_SIDEBAR } from '../utils/state/actions'
 
 // Ant Components
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { Col, Row, Button, Steps, Typography } from 'antd';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
+import { Col, Row, Button, Steps, Typography } from 'antd'
 
 // Ant subcomponents
-const { Step } = Steps;
-const { Title } = Typography;
+const { Step } = Steps
+const { Title } = Typography
 
 const Header = () => {
-  const [state, dispatch] = useStoreContext();
+  const [state, dispatch] = useStoreContext()
 
   const handleMenuToggle = () => {
-    dispatch({ type: TOGGLE_SIDEBAR });
-  };
+    dispatch({ type: TOGGLE_SIDEBAR })
+  }
 
-  const { pathname } = useLocation();
-  const getStep = pathname === '/tapoff' ? 2 : pathname === '/ingredients' ? 1 : 0;
-  const navigate = useNavigate();
+  const { pathname } = useLocation()
+  const getStep =
+    pathname === '/tapoff' ? 2 : pathname === '/ingredients' ? 1 : 0
+  const navigate = useNavigate()
 
   const logout = (event) => {
-    event.preventDefault();
-    Auth.logout();
-    navigate(0);
-  };
+    event.preventDefault()
+    Auth.logout()
+    navigate(0)
+  }
 
   return (
     <Row
@@ -56,7 +57,10 @@ const Header = () => {
       >
         {/* Toggle menu */}
         <Col>
-          <Row align="middle" style={{ marginTop: '-1px', paddingBottom: '2px' }}>
+          <Row
+            align="middle"
+            style={{ marginTop: '-1px', paddingBottom: '2px' }}
+          >
             {state.leftSidebarCollapsed ? (
               <MenuUnfoldOutlined
                 onClick={handleMenuToggle}
@@ -79,16 +83,43 @@ const Header = () => {
 
             <Link to="/">
               <Title style={{ marginBottom: 0 }}>
-                <FontAwesomeIcon className="ingre-logo" icon="fa-solid fa-egg" style={{ marginRight: '0.3rem', color: 'var(--ingre-eggshell)', fontSize: '1.8rem', paddingBottom: '2px' }} />
-                <span style={{ color: 'var(--ingre-dark-brown)', fontFamily: 'Poppins, sans-serif', fontSize: '36px', letterSpacing: -1, fontWeight: '800' }}>ingré</span>
+                <FontAwesomeIcon
+                  className="ingre-logo"
+                  icon="fa-solid fa-egg"
+                  style={{
+                    marginRight: '0.3rem',
+                    color: 'var(--ingre-eggshell)',
+                    fontSize: '1.8rem',
+                    paddingBottom: '2px'
+                  }}
+                />
+                <span
+                  style={{
+                    color: 'var(--ingre-dark-brown)',
+                    fontFamily: 'Poppins, sans-serif',
+                    fontSize: '36px',
+                    letterSpacing: -1,
+                    fontWeight: '800'
+                  }}
+                >
+                  ingré
+                </span>
               </Title>
             </Link>
           </Row>
         </Col>
         {/* Step small */}
-        <Col span={0} sm={7} md={0}>
+        <Col
+          span={0}
+          sm={7}
+          md={0}
+        >
           <Row align="middle">
-            <Steps size="small" current={getStep} responsive={false}>
+            <Steps
+              size="small"
+              current={getStep}
+              responsive={false}
+            >
               <Step
                 icon={
                   <Link to="/">
@@ -114,9 +145,16 @@ const Header = () => {
           </Row>
         </Col>
         {/* Step big */}
-        <Col span={0} md={11}>
+        <Col
+          span={0}
+          md={11}
+        >
           <Row align="middle">
-            <Steps size="small" current={getStep} responsive={false}>
+            <Steps
+              size="small"
+              current={getStep}
+              responsive={false}
+            >
               <Step
                 title={<Link to="/">Recipes</Link>}
                 icon={
@@ -182,7 +220,7 @@ const Header = () => {
         </Col>
       </Row>
     </Row>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

@@ -1,8 +1,8 @@
-import React, { createContext, useContext } from 'react';
-import { useGlobalReducer } from './reducers';
+import React, { createContext, useContext } from 'react'
+import { useGlobalReducer } from './reducers'
 
-const StoreContext = createContext();
-const { Provider } = StoreContext;
+const StoreContext = createContext()
+const { Provider } = StoreContext
 
 const StoreProvider = ({ value = [], ...props }) => {
   const initialState = {
@@ -17,14 +17,19 @@ const StoreProvider = ({ value = [], ...props }) => {
     savedDidMount: false,
     ingredientsDidGenerate: false,
     tapOff: null
-  };
-  const [state, dispatch] = useGlobalReducer(initialState);
+  }
+  const [state, dispatch] = useGlobalReducer(initialState)
 
-  return <Provider value={[state, dispatch]} {...props} />;
-};
+  return (
+    <Provider
+      value={[state, dispatch]}
+      {...props}
+    />
+  )
+}
 
 const useStoreContext = () => {
-  return useContext(StoreContext);
-};
+  return useContext(StoreContext)
+}
 
-export { StoreProvider, useStoreContext };
+export { StoreProvider, useStoreContext }

@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from '@apollo/client'
 
 export const GET_USER_WITH_EMAIL = gql`
   query GetUserWithEmail($email: String!) {
@@ -6,7 +6,7 @@ export const GET_USER_WITH_EMAIL = gql`
       _id
     }
   }
-`;
+`
 
 export const GET_API_KEY = gql`
   query GetApiKey {
@@ -15,7 +15,7 @@ export const GET_API_KEY = gql`
       appKey
     }
   }
-`;
+`
 
 export const GET_USER = gql`
   query GetUser {
@@ -24,7 +24,7 @@ export const GET_USER = gql`
       pro
     }
   }
-`;
+`
 
 export const GET_SAVED_RECIPES = gql`
   query GetSavedRecipes {
@@ -37,12 +37,12 @@ export const GET_SAVED_RECIPES = gql`
       instructions
     }
   }
-`;
+`
 export const GET_NUM_SAVED_RECIPES = gql`
   query GetNumSavedRecipes {
     getNumSavedRecipes
   }
-`;
+`
 
 export const GET_RECIPE = gql`
   query GetRecipe($id: ID!) {
@@ -65,7 +65,7 @@ export const GET_RECIPE = gql`
       instructions
     }
   }
-`;
+`
 
 export const CHECKOUT = gql`
   query Checkout {
@@ -73,4 +73,4 @@ export const CHECKOUT = gql`
       session
     }
   }
-`;
+`

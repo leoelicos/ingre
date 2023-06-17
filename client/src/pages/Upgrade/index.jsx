@@ -1,48 +1,62 @@
 // React hooks
-import { useEffect } from 'react';
+import { useEffect } from 'react'
 
 // Ant components
-import { Row, Col, Button, List, Space, Tooltip, Empty, Alert, Divider } from 'antd';
+import {
+  Row,
+  Col,
+  Button,
+  List,
+  Space,
+  Tooltip,
+  Empty,
+  Alert,
+  Divider
+} from 'antd'
 
 // Stripe
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js'
 
 // Apollo
-import { useLazyQuery, useQuery } from '@apollo/client';
-import { CHECKOUT, GET_USER } from '../../utils/apollo/queries';
+import { useLazyQuery, useQuery } from '@apollo/client'
+import { CHECKOUT, GET_USER } from '../../utils/apollo/queries'
 
 // Custom components
-import ContentTitle from '../../components/ContentTitle';
-import ContentSubtitle from '../../components/ContentSubtitle';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ContentTitle from '../../components/ContentTitle'
+import ContentSubtitle from '../../components/ContentSubtitle'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import Auth from '../../utils/auth';
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import Auth from '../../utils/auth'
+import { Link } from 'react-router-dom'
+import { useState } from 'react'
 
 // Stripe
-const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
 
 const App = () => {
-  const [getCheckout, { data }] = useLazyQuery(CHECKOUT);
-  const { data: userData, loading: userLoading, error: userError } = useQuery(GET_USER);
+  const [getCheckout, { data }] = useLazyQuery(CHECKOUT)
+  const {
+    data: userData,
+    loading: userLoading,
+    error: userError
+  } = useQuery(GET_USER)
 
-  const [pro, setPro] = useState(false);
+  const [pro, setPro] = useState(false)
 
   useEffect(() => {
     if (data) {
       stripePromise.then((res) => {
-        res.redirectToCheckout({ sessionId: data.checkout.session });
-      });
+        res.redirectToCheckout({ sessionId: data.checkout.session })
+      })
     }
-  }, [data]);
+  }, [data])
 
   useEffect(() => {
     if (!userLoading && !userError && userData?.getUser) {
       // console.log('userData', userData);
-      setPro(userData.getUser.pro);
+      setPro(userData.getUser.pro)
     }
-  }, [userLoading, userError, userData]);
+  }, [userLoading, userError, userData])
 
   if (!Auth.loggedIn())
     return (
@@ -50,14 +64,20 @@ const App = () => {
         <Divider />
         <Row>You need to be logged in to see this page.</Row>
         <Link to="/login">
-          <Button type="primary" style={{ marginTop: '1rem' }}>
+          <Button
+            type="primary"
+            style={{ marginTop: '1rem' }}
+          >
             Log in
           </Button>
         </Link>
       </Empty>
-    );
+    )
   return pro ? (
-    <Alert type="success" message="You are already pro" />
+    <Alert
+      type="success"
+      message="You are already pro"
+    />
   ) : (
     <Col span={24}>
       <Row>
@@ -69,10 +89,15 @@ const App = () => {
           <List>
             <List.Item>
               <Space direction="vertical">
-                Get an extra button that opens cooking instructions for each recipe
+                Get an extra button that opens cooking instructions for each
+                recipe
                 <Space>
                   Try it out!
-                  <Tooltip color="volcano" placement="top" title={<Space size="small">Cooking instructions</Space>}>
+                  <Tooltip
+                    color="volcano"
+                    placement="top"
+                    title={<Space size="small">Cooking instructions</Space>}
+                  >
                     <Button
                       key="removeButton"
                       style={{
@@ -81,7 +106,13 @@ const App = () => {
                       }}
                       shape="circle"
                     >
-                      <a href={'https://www.edamam.com/results/recipe/?recipe=healthy-persian-love-cake-recipe-1d81f64f756c268979d9c863403b32d3/-'} target="_blank" rel="noopener noreferrer">
+                      <a
+                        href={
+                          'https://www.edamam.com/results/recipe/?recipe=healthy-persian-love-cake-recipe-1d81f64f756c268979d9c863403b32d3/-'
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <FontAwesomeIcon
                           icon="fa-solid fa-book-open"
                           style={{
@@ -101,12 +132,17 @@ const App = () => {
         </Space>
       </Row>
       <Row style={{ marginTop: '1rem' }}>
-        <Button type="primary" onClick={() => getCheckout()} block shape="round">
+        <Button
+          type="primary"
+          onClick={() => getCheckout()}
+          block
+          shape="round"
+        >
           Checkout with Stripe
         </Button>
       </Row>
     </Col>
-  );
-};
+  )
+}
 
-export default App;
+export default App

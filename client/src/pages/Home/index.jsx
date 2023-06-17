@@ -1,119 +1,153 @@
 // React hooks
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 // Ant components
-import { Button, Space, Row, Spin, Divider, Col } from 'antd';
+import { Button, Space, Row, Spin, Divider, Col } from 'antd'
 
 // Custom components
-import RecipeCardContainer from '../../components/RecipeCardContainer';
+import RecipeCardContainer from '../../components/RecipeCardContainer'
 
 // Edamam API
-import FetchEdamam from '../../utils/api/index.js';
+import FetchEdamam from '../../utils/api/index.js'
 
 // useContext
-import { useStoreContext } from '../../utils/state/GlobalState';
+import { useStoreContext } from '../../utils/state/GlobalState'
 
 // useReducer
-import { UPDATE_HOME_RECIPES, FLAG_HOME_MOUNTED } from '../../utils/state/actions';
+import {
+  UPDATE_HOME_RECIPES,
+  FLAG_HOME_MOUNTED
+} from '../../utils/state/actions'
 
 // get API key
-import { GET_API_KEY } from '../../utils/apollo/queries';
-import { useApolloClient } from '@apollo/client';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { GET_API_KEY } from '../../utils/apollo/queries'
+import { useApolloClient } from '@apollo/client'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // Auth
-import Auth from '../../utils/auth';
-import ContentTitle from '../../components/ContentTitle';
+import Auth from '../../utils/auth'
+import ContentTitle from '../../components/ContentTitle'
 
 const Home = () => {
-  const client = useApolloClient();
+  const client = useApolloClient()
 
-  const [state, dispatch] = useStoreContext();
-  const [loadingEdamam, setLoadingEdamam] = useState(false);
-  const [edamamRecipes, setEdamamRecipes] = useState(state.homeRecipes);
-  const [updateRecipes, setUpdateRecipes] = useState(false);
+  const [state, dispatch] = useStoreContext()
+  const [loadingEdamam, setLoadingEdamam] = useState(false)
+  const [edamamRecipes, setEdamamRecipes] = useState(state.homeRecipes)
+  const [updateRecipes, setUpdateRecipes] = useState(false)
 
   const getAppCredentials = async () => {
     // get credentials from backend
-    const res = await client.query({ query: GET_API_KEY });
-    if (!res) throw new Error('[handleRefresh] GET_API_KEY error');
-    const appId = res.data.getApiKey.appId;
-    const appKey = res.data.getApiKey.appKey;
-    return { appId, appKey };
-  };
+    const res = await client.query({ query: GET_API_KEY })
+    if (!res) throw new Error('[handleRefresh] GET_API_KEY error')
+    const appId = res.data.getApiKey.appId
+    const appKey = res.data.getApiKey.appKey
+    return { appId, appKey }
+  }
 
   const handleRefresh = async (query) => {
     try {
       // get credentials from backend
-      const { appId, appKey } = await getAppCredentials();
+      const { appId, appKey } = await getAppCredentials()
 
-      setLoadingEdamam(true);
-      let noQuery = { q: ' ', diet: [], health: [], cuisineType: [], mealType: [], dishType: [] };
-      let hits;
+      setLoadingEdamam(true)
+      let noQuery = {
+        q: ' ',
+        diet: [],
+        health: [],
+        cuisineType: [],
+        mealType: [],
+        dishType: []
+      }
+      let hits
       if (query === 'vegetarian') {
-        hits = await FetchEdamam({ ...noQuery, health: ['vegetarian'] }, appId, appKey);
+        hits = await FetchEdamam(
+          { ...noQuery, health: ['vegetarian'] },
+          appId,
+          appKey
+        )
       } else if (query === 'vegan') {
-        hits = await FetchEdamam({ ...noQuery, health: ['vegan'] }, appId, appKey);
+        hits = await FetchEdamam(
+          { ...noQuery, health: ['vegan'] },
+          appId,
+          appKey
+        )
       } else if (query === 'balanced') {
-        hits = await FetchEdamam({ ...noQuery, diet: ['balanced'] }, appId, appKey);
+        hits = await FetchEdamam(
+          { ...noQuery, diet: ['balanced'] },
+          appId,
+          appKey
+        )
       } else if (query === 'breakfast') {
-        hits = await FetchEdamam({ ...noQuery, mealType: ['breakfast'] }, appId, appKey);
+        hits = await FetchEdamam(
+          { ...noQuery, mealType: ['breakfast'] },
+          appId,
+          appKey
+        )
       } else if (query === 'lunch') {
-        hits = await FetchEdamam({ ...noQuery, mealType: ['lunch'] }, appId, appKey);
+        hits = await FetchEdamam(
+          { ...noQuery, mealType: ['lunch'] },
+          appId,
+          appKey
+        )
       } else if (query === 'dinner') {
-        hits = await FetchEdamam({ ...noQuery, mealType: ['dinner'] }, appId, appKey);
+        hits = await FetchEdamam(
+          { ...noQuery, mealType: ['dinner'] },
+          appId,
+          appKey
+        )
       } else {
-        hits = await FetchEdamam(null, appId, appKey);
+        hits = await FetchEdamam(null, appId, appKey)
       }
       // console.log('hits = ', hits);
-      setEdamamRecipes(hits);
-      setLoadingEdamam(false);
+      setEdamamRecipes(hits)
+      setLoadingEdamam(false)
 
-      setUpdateRecipes(true);
+      setUpdateRecipes(true)
     } catch (e) {
-      console.error(e);
+      console.error(e)
     }
-  };
+  }
 
   // Store results in global state
   useEffect(() => {
     if (updateRecipes) {
-      dispatch({ type: UPDATE_HOME_RECIPES, data: edamamRecipes });
-      setUpdateRecipes(false);
+      dispatch({ type: UPDATE_HOME_RECIPES, data: edamamRecipes })
+      setUpdateRecipes(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateRecipes, edamamRecipes]);
+  }, [updateRecipes, edamamRecipes])
 
   // fetchEdamam on first load
   useEffect(() => {
     const fetchOnFirstLoad = async () => {
       if (state.homeDidMount === false) {
         // console.log('home did mount');
-        dispatch({ type: FLAG_HOME_MOUNTED });
+        dispatch({ type: FLAG_HOME_MOUNTED })
         // populate with random recipes
         try {
-          setLoadingEdamam(true);
+          setLoadingEdamam(true)
           // get credentials from backend
-          const { appId, appKey } = await getAppCredentials();
-          const hits = await FetchEdamam(null, appId, appKey);
+          const { appId, appKey } = await getAppCredentials()
+          const hits = await FetchEdamam(null, appId, appKey)
           // console.log('hits = ', hits);
-          setEdamamRecipes(hits);
-          setLoadingEdamam(false);
+          setEdamamRecipes(hits)
+          setLoadingEdamam(false)
 
-          setUpdateRecipes(true);
+          setUpdateRecipes(true)
         } catch (e) {
-          console.error(e);
+          console.error(e)
         }
       }
-    };
-    fetchOnFirstLoad();
+    }
+    fetchOnFirstLoad()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.homeDidMount]);
+  }, [state.homeDidMount])
 
   // update title on every load
   useEffect(() => {
-    document.title = 'ingré';
-  }, []);
+    document.title = 'ingré'
+  }, [])
 
   return (
     <Col>
@@ -125,9 +159,14 @@ const Home = () => {
         </Row>
       )}
       <Row>
-        <Space className="explore-buttons" wrap>
+        <Space
+          className="explore-buttons"
+          wrap
+        >
           <Button onClick={() => handleRefresh()}>Random</Button>
-          <Button onClick={() => handleRefresh('vegetarian')}>Vegetarian</Button>
+          <Button onClick={() => handleRefresh('vegetarian')}>
+            Vegetarian
+          </Button>
           <Button onClick={() => handleRefresh('vegan')}>Vegan</Button>
           <Button onClick={() => handleRefresh('balanced')}>Balanced</Button>
           <Button onClick={() => handleRefresh('breakfast')}>Breakfast</Button>
@@ -148,11 +187,14 @@ const Home = () => {
           <Spin tip="Loading…"></Spin>
         </Divider>
       ) : (
-        <RecipeCardContainer results={edamamRecipes} loading={loadingEdamam} />
+        <RecipeCardContainer
+          results={edamamRecipes}
+          loading={loadingEdamam}
+        />
         //
       )}
     </Col>
-  );
-};
+  )
+}
 
-export default Home;
+export default Home
