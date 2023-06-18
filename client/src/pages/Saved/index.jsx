@@ -27,89 +27,91 @@ import { Link } from 'react-router-dom'
 const Saved = () => {
   const [, { loading, error, data, refetch }] = useLazyQuery(GET_SAVED_RECIPES)
   const [state, dispatch] = useStoreContext()
-  const [savedRecipes, setSavedRecipes] = useState(state.savedRecipes)
-  const [updateRecipes, setUpdateRecipes] = useState(false)
-
-  // update global savedRecipes when local savedRecipes changes
-  useEffect(() => {
-    if (Auth.loggedIn() && updateRecipes && savedRecipes) {
-      dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes })
-      setUpdateRecipes(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateRecipes, savedRecipes])
 
   // update local savedRecipes when getSavedRecipes is loaded from server
   useEffect(() => {
     if (Auth.loggedIn() && !loading && !error && data?.getSavedRecipes) {
-      setSavedRecipes(data.getSavedRecipes)
-      setUpdateRecipes(true)
+      dispatch({ type: UPDATE_SAVED_RECIPES, data: data.getSavedRecipes })
     }
-  }, [loading, error, data])
+  }, [loading, error, data, dispatch])
 
   // run on first load
   useEffect(() => {
+    if (!Auth.loggedIn()) return
     const fetchOnFirstLoad = async () => {
       if (state.savedDidMount === false) {
         dispatch({ type: FLAG_SAVED_MOUNTED })
         await refetch()
-        setUpdateRecipes(true)
       }
     }
-    if (Auth.loggedIn()) fetchOnFirstLoad()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.savedDidMount, refetch])
+    fetchOnFirstLoad()
+  }, [state.savedDidMount, refetch, dispatch])
 
   // update title on every load
   useEffect(() => {
     document.title = 'Search'
   }, [])
 
-  if (loading) return <Divider>Loading</Divider>
-  if (error) return <Divider>Error</Divider>
-  return (
-    <Col>
-      <Row>
-        <ContentTitle>Saved</ContentTitle>
-      </Row>
-      <Row>
-        {Auth.loggedIn() ? (
-          //
-          <>
-            {loading ? (
-              <Divider>
-                <Spin tip="Loading saved recipes…"></Spin>
-              </Divider>
-            ) : error ? (
-              <Alert
-                type="error"
-                message="Couldn't load saved recipes"
-                //
-              />
-            ) : (
-              <RecipeCardContainer
-                results={savedRecipes}
-                savePage={true}
-              />
-            )}
-          </>
-        ) : (
-          <Empty>
-            <Divider />
-            <Row>You need to be logged in to see this page.</Row>
-            <Link to="/login">
-              <Button
-                type="primary"
-                style={{ marginTop: '1rem' }}
-              >
-                Log in
-              </Button>
-            </Link>
-          </Empty>
-        )}
-      </Row>
-    </Col>
-  )
+  if (!Auth.loggedIn) return <NotLoggedIn />
+  else if (loading) return <SaveLoading />
+  else if (error) return <SaveError />
+  else
+    return (
+      <Col>
+        <Row>
+          <ContentTitle>Saved</ContentTitle>
+        </Row>
+        <Row>
+          <RecipeCardContainer
+            results={state.savedRecipes}
+            onSavedPage={true}
+            loading={loading}
+          />
+        </Row>
+      </Col>
+    )
 }
 
 export default Saved
+
+const NotLoggedIn = () => (
+  <Empty>
+    <Divider />
+    <Row>You need to be logged in to see this page.</Row>
+    <Link to="/login">
+      <Button
+        type="primary"
+        style={{ marginTop: '1rem' }}
+      >
+        Log in
+      </Button>
+    </Link>
+  </Empty>
+)
+
+const SaveLoading = () => (
+  <Col>
+    <Row>
+      <ContentTitle>Saved</ContentTitle>
+    </Row>
+    <Row>
+      <Divider>
+        <Spin tip="Loading saved recipes…"></Spin>
+      </Divider>
+    </Row>
+  </Col>
+)
+
+const SaveError = () => (
+  <Col>
+    <Row>
+      <ContentTitle>Saved</ContentTitle>
+    </Row>
+    <Row>
+      <Alert
+        type="error"
+        message="Couldn't load saved recipes"
+      />
+    </Row>
+  </Col>
+)
