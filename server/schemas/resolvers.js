@@ -369,17 +369,24 @@ const resolvers = {
 
         const { email } = args
         const user = await User.findOne({ email })
-        if (!user) throw 'Incorrect credentials'
+        if (!user) {
+          throw 'Incorrect credentials'
+          // we can probably handle this better
+        }
 
         const { password } = args
         const isCorrectPassword = await user.isCorrectPassword(password)
-        if (!isCorrectPassword) throw 'Incorrect credentials'
+        if (!isCorrectPassword) {
+          throw 'Incorrect credentials'
+          // we can probably handle this better
+        }
 
         const token = signToken(user)
         const payload = { token, user }
         return payload
       } catch (e) {
         console.error('[login][error]' + e)
+        return null // for now
       }
     }
   }
