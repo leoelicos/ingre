@@ -281,7 +281,6 @@ function Search() {
       </Row>
       <Row>
         {loadingEdamam ? (
-          //
           <Divider>
             <Spin tip="Loading…"></Spin>
           </Divider>
@@ -289,6 +288,7 @@ function Search() {
           <RecipeCardContainer
             results={edamamRecipes}
             loading={loadingEdamam}
+            onSavedPage={false}
           />
         )}
       </Row>
