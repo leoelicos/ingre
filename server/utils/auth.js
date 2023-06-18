@@ -13,63 +13,50 @@ const expiration = '24h'
 
 module.exports = {
   authMiddleware: function ({ req }) {
-    try {
-      if (!req) throw new Error('req missing')
-      let token = req.body?.token || req.query?.token || req.headers?.authorization?.split(' ').pop().trim()
-      if (!token) throw new Error('No token was found!')
-      // console.log('token = ', token);
-      const secretOrPrivateKey = secret
-      const options = { maxAge: expiration }
-      const jwtRes = jwt.verify(token, secretOrPrivateKey, options)
-      req.user = jwtRes.data
-    } catch (error) {
-      console.error(error)
-    } finally {
+    /* check req exists */
+    if (!req) {
+      console.error('No req')
       return req
     }
-  },
-  signToken: function (user) {
-    const { firstName, email, _id, pro } = user
-    const data = { firstName, email, _id, pro }
-    const payload = { data }
-    const secretOrPrivateKey = secret
-    const options = { expiresIn: expiration }
-    return jwt.sign(payload, secretOrPrivateKey, options)
-  }
-}
 
-// new
+    let token = req.body?.token || req.query?.token || req.headers?.authorization?.split(' ').pop().trim()
 
-/*  
-const jwt = require('jsonwebtoken')
-require('dotenv').config()
-const secret = process.env.HEROKU_JWT_SECRET || process.env.JWT_SECRET
-const expiration = '24h'
-
-module.exports = {
-  authMiddleware: function ({ req }) {
-    // first, check if the req contains token or auth headers
-    try {
-      if (!req) throw 'req missing'
-      let token = req.body?.token || req.query?.token || req.headers?.authorization?.split(' ').pop().trim()
-      if (!token) throw 'No token was found!'
-      // console.log('token = ', token);
-    } catch (error) {
-      console.log(error)
+    /* check token exists */
+    if (!token) {
+      console.error('No token was found!')
+      return req
     }
 
-    //next, verify the jwt
+    /* check jwt against token */
+    let data = null
     try {
-      const secretOrPrivateKey = secret
-      const options = { maxAge: expiration }
-      let jwtRes = undefined
-      console.log('checking with', { token, secretOrPrivateKey, options })
-      jwtRes = jwt.verify(token, secretOrPrivateKey, options)
-      console.log({ jwtRes })
-      req.user = jwtRes.data
+      /* this will throw if invalid */
+      const verified = jwt.verify(
+        token, //
+        secret,
+        { maxAge: '12h' }
+      )
+
+      if (!verified.data) {
+        console.error('jwt promise has no data object')
+        return req
+      }
+
+      data = verified.data
     } catch (error) {
-      console.log('JWT not verified', { token, secretOrPrivateKey, options })
+      console.error('Token is invalid - sign in again')
+      return req
     }
+
+    /* some problem with the data */
+    if (!data) {
+      console.error('500 Error with data')
+      return req
+    }
+
+    /* no problems - assign user to req */
+    // console.info('✅ Logged in')
+    req.user = data
     return req
   },
   signToken: function (user) {
@@ -78,8 +65,7 @@ module.exports = {
     const payload = { data }
     const secretOrPrivateKey = secret
     const options = { expiresIn: expiration }
-    const signature = jwt.sign(payload, secretOrPrivateKey, options)
-    console.log('signing in with ', { payload, secretOrPrivateKey, options, signature })
-    return signature
+    const token = jwt.sign(payload, secretOrPrivateKey, options)
+    return token
   }
-}*/
+}
