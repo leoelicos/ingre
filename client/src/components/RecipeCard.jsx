@@ -31,9 +31,7 @@ import Auth from '../utils/auth'
 const { Meta } = Card
 const { Text } = Typography
 
-const App = (props) => {
-  const { recipe } = props
-
+const RecipeCard = ({ recipe, onSavedPage, pro }) => {
   const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] =
     useMutation(SAVE_RECIPE, {
       refetchQueries: [
@@ -100,7 +98,7 @@ const App = (props) => {
   const handleRemove = async () => {
     try {
       let _id
-      if (props.savePage) {
+      if (onSavedPage) {
         _id = recipe._id
       } else {
         _id = state.savedRecipes.find((r) => r.edamamId === recipe.edamamId)._id
@@ -108,8 +106,7 @@ const App = (props) => {
       const payload = { variables: { recipeId: _id } }
       const res = await removeRecipe(payload)
       if (!res) throw new Error('Could not save recipe')
-      // console.log('[RecipeCard][handleRemove] removeData', res.data);
-      await dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.edamamId })
+      await dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.edamamId }) // this won't work if it doesn't have edamamId
     } catch (error) {
       console.error(Error)
     }
@@ -334,11 +331,11 @@ const App = (props) => {
       return actions
     }
     // if user is pro, instructions button
-    if (props.pro) actions.push(instructionsButton)
+    if (pro) actions.push(instructionsButton)
     // everyone gets an edit button
     actions.push(editButton)
     // everyone except saved page gets a save button
-    if (!props.savePage) actions.push(saveButton)
+    if (!onSavedPage) actions.push(saveButton)
     // everyone gets a remove button
     actions.push(removeButton)
     return actions
@@ -384,4 +381,4 @@ const App = (props) => {
   )
 }
 
-export default App
+export default RecipeCard
