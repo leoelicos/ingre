@@ -1,5 +1,4 @@
 import axios from 'axios'
-import mockData from './mockData.js'
 
 import {
   EdamamHit,
@@ -78,8 +77,6 @@ const fetchEdamam = async ({
         'field=shareAs',
         searchString
       ].join('&')
-
-    if (1) return mockData
 
     const response: { status: string; data: EdamamRecipeSearchResponse } =
       await axios.get(uri)
