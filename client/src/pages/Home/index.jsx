@@ -8,7 +8,7 @@ import { Button, Space, Row, Spin, Divider, Col } from 'antd'
 import RecipeCardContainer from '../../components/RecipeCardContainer'
 
 // Edamam API
-import FetchEdamam from '../../utils/api/index.js'
+import fetchEdamam from '../../utils/api/index.js'
 
 // useContext
 import { useStoreContext } from '../../utils/state/GlobalState'
@@ -61,43 +61,43 @@ const Home = () => {
       }
       let hits
       if (query === 'vegetarian') {
-        hits = await FetchEdamam(
+        hits = await fetchEdamam(
           { ...noQuery, health: ['vegetarian'] },
           appId,
           appKey
         )
       } else if (query === 'vegan') {
-        hits = await FetchEdamam(
+        hits = await fetchEdamam(
           { ...noQuery, health: ['vegan'] },
           appId,
           appKey
         )
       } else if (query === 'balanced') {
-        hits = await FetchEdamam(
+        hits = await fetchEdamam(
           { ...noQuery, diet: ['balanced'] },
           appId,
           appKey
         )
       } else if (query === 'breakfast') {
-        hits = await FetchEdamam(
+        hits = await fetchEdamam(
           { ...noQuery, mealType: ['breakfast'] },
           appId,
           appKey
         )
       } else if (query === 'lunch') {
-        hits = await FetchEdamam(
+        hits = await fetchEdamam(
           { ...noQuery, mealType: ['lunch'] },
           appId,
           appKey
         )
       } else if (query === 'dinner') {
-        hits = await FetchEdamam(
+        hits = await fetchEdamam(
           { ...noQuery, mealType: ['dinner'] },
           appId,
           appKey
         )
       } else {
-        hits = await FetchEdamam(null, appId, appKey)
+        hits = await fetchEdamam(null, appId, appKey)
       }
       // console.log('hits = ', hits);
       setEdamamRecipes(hits)
@@ -129,7 +129,7 @@ const Home = () => {
           setLoadingEdamam(true)
           // get credentials from backend
           const { appId, appKey } = await getAppCredentials()
-          const hits = await FetchEdamam(null, appId, appKey)
+          const hits = await fetchEdamam(null, appId, appKey)
           // console.log('hits = ', hits);
           setEdamamRecipes(hits)
           setLoadingEdamam(false)
@@ -190,6 +190,7 @@ const Home = () => {
         <RecipeCardContainer
           results={edamamRecipes}
           loading={loadingEdamam}
+          onSavedPage={false}
         />
         //
       )}
