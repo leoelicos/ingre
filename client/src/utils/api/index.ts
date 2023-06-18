@@ -86,7 +86,7 @@ const fetchEdamam = async ({
     /* from the docs: https://developer.edamam.com/edamam-docs-recipe-api */
     if (response.status === '400') throw 'Error: 400 Edamam error'
     if (response.status === '403') throw 'Error: 403 Edamam error'
-    if (response.status !== '200') console.info('Error: Unknown Edamam error') // but don't throw
+    if (response.status !== '200') throw 'Error: Unknown Edamam error'
 
     if (!response.data) throw 'Error: 404 Edamam no data'
 
