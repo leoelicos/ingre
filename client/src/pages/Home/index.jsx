@@ -8,7 +8,7 @@ import { Button, Space, Row, Spin, Divider, Col } from 'antd'
 import RecipeCardContainer from '../../components/RecipeCardContainer'
 
 // Edamam API
-import fetchEdamam from '../../utils/api/index.js'
+import fetchEdamam from '../../utils/api/index.ts'
 
 // useContext
 import { useStoreContext } from '../../utils/state/GlobalState'
@@ -61,43 +61,47 @@ const Home = () => {
       }
       let hits
       if (query === 'vegetarian') {
-        hits = await fetchEdamam(
-          { ...noQuery, health: ['vegetarian'] },
+        hits = await fetchEdamam({
+          search: { ...noQuery, health: ['vegetarian'] },
           appId,
           appKey
-        )
+        })
       } else if (query === 'vegan') {
-        hits = await fetchEdamam(
-          { ...noQuery, health: ['vegan'] },
+        hits = await fetchEdamam({
+          search: { ...noQuery, health: ['vegan'] },
           appId,
           appKey
-        )
+        })
       } else if (query === 'balanced') {
-        hits = await fetchEdamam(
-          { ...noQuery, diet: ['balanced'] },
+        hits = await fetchEdamam({
+          search: { ...noQuery, diet: ['balanced'] },
           appId,
           appKey
-        )
+        })
       } else if (query === 'breakfast') {
-        hits = await fetchEdamam(
-          { ...noQuery, mealType: ['breakfast'] },
+        hits = await fetchEdamam({
+          search: { ...noQuery, mealType: ['breakfast'] },
           appId,
           appKey
-        )
+        })
       } else if (query === 'lunch') {
-        hits = await fetchEdamam(
-          { ...noQuery, mealType: ['lunch'] },
+        hits = await fetchEdamam({
+          search: { ...noQuery, mealType: ['lunch'] },
           appId,
           appKey
-        )
+        })
       } else if (query === 'dinner') {
-        hits = await fetchEdamam(
-          { ...noQuery, mealType: ['dinner'] },
+        hits = await fetchEdamam({
+          search: { ...noQuery, mealType: ['dinner'] },
           appId,
           appKey
-        )
+        })
       } else {
-        hits = await fetchEdamam(null, appId, appKey)
+        hits = await fetchEdamam({
+          search: noQuery,
+          appId,
+          appKey
+        })
       }
       // console.log('hits = ', hits);
       setEdamamRecipes(hits)
@@ -129,7 +133,7 @@ const Home = () => {
           setLoadingEdamam(true)
           // get credentials from backend
           const { appId, appKey } = await getAppCredentials()
-          const hits = await fetchEdamam(null, appId, appKey)
+          const hits = await fetchEdamam({ search: {}, appId, appKey })
           // console.log('hits = ', hits);
           setEdamamRecipes(hits)
           setLoadingEdamam(false)
