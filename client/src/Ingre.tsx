@@ -113,9 +113,12 @@ const authLink = setContext((_, { headers: oldHeaders }) => {
   const headers = { ...oldHeaders, authorization }
   return { headers }
 })
-// const uri = '/graphql'
-const uri = 'https://ingre-backend.onrender.com/graphql'
 
+const uri =
+  process.env.NODE_ENV === 'production'
+    ? 'https://ingre-backend.onrender.com/graphql'
+    : '/graphql'
+console.log({ uri })
 const httpLink = createHttpLink({ uri })
 const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
