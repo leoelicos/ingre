@@ -2,7 +2,7 @@
 import decode from 'jwt-decode'
 
 // Singleton class for authentication
-export default new (class AuthService {
+class AuthService {
   getProfile = () => {
     const token = this.getToken()
     return token ? decode(this.getToken()) : null
@@ -29,4 +29,8 @@ export default new (class AuthService {
   logout() {
     localStorage.removeItem('id_token')
   }
-})()
+}
+
+const Auth = new AuthService()
+
+export default Auth
