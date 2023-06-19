@@ -138,7 +138,7 @@ const Home = () => {
           setLoadingEdamam(true)
           // get credentials from backend
           const { appId, appKey } = await getAppCredentials()
-          const hits = await fetchEdamam({ search: noQuery, appId, appKey })
+          const hits = await fetchEdamam({ search, appId, appKey })
           // console.log('hits = ', hits);
           setEdamamRecipes(hits)
           setLoadingEdamam(false)
