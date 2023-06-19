@@ -1,4 +1,5 @@
-// jwt-decode to parse
+/* Decode JWT token */
+
 import decode from 'jwt-decode'
 
 // Singleton class for authentication
