@@ -9,7 +9,7 @@ import RecipeCardContainer from '../../components/RecipeCardContainer'
 import ContentTitle from '../../components/ContentTitle'
 
 // Edamam API
-import FetchEdamam from '../../utils/api/index.ts'
+import fetchEdamam from '../../utils/api/index.ts'
 
 // useContext
 import { useStoreContext } from '../../utils/state/GlobalState'
@@ -46,8 +46,8 @@ function Search() {
   // Ant Form hook to enable setFormFields()
   const [form] = Form.useForm()
 
-  const handleFormSubmit = async (values, event) => {
-    // console.log('values', values, '\nformState', formState);
+  const handleFormSubmit = async (q, event) => {
+    // console.log({ q, formState })
     try {
       // prevent API call when Ant.Search form is cleared with the 'x' button
       if (
@@ -65,10 +65,11 @@ function Search() {
       if (!res) throw new Error('[handleRefresh] GET_API_KEY error')
 
       // Call API
-      const search = { q: values, ...formState }
+      const search = { q, ...formState }
       const appId = res.data.getApiKey.appId
       const appKey = res.data.getApiKey.appKey
-      const hits = await FetchEdamam(search, appId, appKey)
+      // console.log({ search })
+      const hits = await fetchEdamam({ search, appId, appKey })
 
       // Store results in local state
       setEdamamRecipes(hits)

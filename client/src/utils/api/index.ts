@@ -50,7 +50,14 @@ const fetchEdamam = async ({
   appKey
 }: FetchEdamamOptions): Promise<IngreRecipe[]> => {
   try {
-    const { q, diet, health, cuisineType, mealType, dishType } = search
+    const {
+      q = '',
+      diet = [],
+      health = [],
+      cuisineType = [],
+      mealType = [],
+      dishType = []
+    } = search
 
     let searchString = encode({
       q,
