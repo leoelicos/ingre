@@ -29,6 +29,18 @@ import Auth from '../../utils/auth'
 import ContentTitle from '../../components/ContentTitle'
 
 const Home = () => {
+  let noQuery = useMemo(
+    () => ({
+      q: ' ',
+      diet: [],
+      health: [],
+      cuisineType: [],
+      mealType: [],
+      dishType: []
+    }),
+    []
+  )
+
   const client = useApolloClient()
 
   const [state, dispatch] = useStoreContext()
