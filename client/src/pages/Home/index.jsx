@@ -29,18 +29,6 @@ import Auth from '../../utils/auth'
 import ContentTitle from '../../components/ContentTitle'
 
 const Home = () => {
-  let noQuery = useMemo(
-    () => ({
-      q: ' ',
-      diet: [],
-      health: [],
-      cuisineType: [],
-      mealType: [],
-      dishType: []
-    }),
-    []
-  )
-
   const client = useApolloClient()
 
   const [state, dispatch] = useStoreContext()
@@ -67,43 +55,43 @@ const Home = () => {
       let hits
       if (query === 'vegetarian') {
         hits = await fetchEdamam({
-          search: { ...noQuery, health: ['vegetarian'] },
+          search: { health: ['vegetarian'] },
           appId,
           appKey
         })
       } else if (query === 'vegan') {
         hits = await fetchEdamam({
-          search: { ...noQuery, health: ['vegan'] },
+          search: { health: ['vegan'] },
           appId,
           appKey
         })
       } else if (query === 'balanced') {
         hits = await fetchEdamam({
-          search: { ...noQuery, diet: ['balanced'] },
+          search: { diet: ['balanced'] },
           appId,
           appKey
         })
       } else if (query === 'breakfast') {
         hits = await fetchEdamam({
-          search: { ...noQuery, mealType: ['breakfast'] },
+          search: { mealType: ['breakfast'] },
           appId,
           appKey
         })
       } else if (query === 'lunch') {
         hits = await fetchEdamam({
-          search: { ...noQuery, mealType: ['lunch'] },
+          search: { mealType: ['lunch'] },
           appId,
           appKey
         })
       } else if (query === 'dinner') {
         hits = await fetchEdamam({
-          search: { ...noQuery, mealType: ['dinner'] },
+          search: { mealType: ['dinner'] },
           appId,
           appKey
         })
       } else {
         hits = await fetchEdamam({
-          search: noQuery,
+          search,
           appId,
           appKey
         })
