@@ -27,7 +27,7 @@ import ContentTitle from '../../components/ContentTitle'
 import ContentSubtitle from '../../components/ContentSubtitle'
 
 // Utils
-import compress from '../../utils/compress.js'
+import compress from '../../utils/compress.ts'
 import Auth from '../../utils/auth/index.js'
 
 // Masonry css
