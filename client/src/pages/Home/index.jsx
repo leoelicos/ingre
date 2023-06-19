@@ -1,5 +1,5 @@
 // React hooks
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 // Ant components
 import { Button, Space, Row, Spin, Divider, Col } from 'antd'
@@ -29,6 +29,18 @@ import Auth from '../../utils/auth'
 import ContentTitle from '../../components/ContentTitle'
 
 const Home = () => {
+  let noQuery = useMemo(
+    () => ({
+      q: ' ',
+      diet: [],
+      health: [],
+      cuisineType: [],
+      mealType: [],
+      dishType: []
+    }),
+    []
+  )
+
   const client = useApolloClient()
 
   const [state, dispatch] = useStoreContext()
@@ -51,14 +63,7 @@ const Home = () => {
       const { appId, appKey } = await getAppCredentials()
 
       setLoadingEdamam(true)
-      let noQuery = {
-        q: ' ',
-        diet: [],
-        health: [],
-        cuisineType: [],
-        mealType: [],
-        dishType: []
-      }
+
       let hits
       if (query === 'vegetarian') {
         hits = await fetchEdamam({
@@ -133,7 +138,7 @@ const Home = () => {
           setLoadingEdamam(true)
           // get credentials from backend
           const { appId, appKey } = await getAppCredentials()
-          const hits = await fetchEdamam({ search: {}, appId, appKey })
+          const hits = await fetchEdamam({ search: noQuery, appId, appKey })
           // console.log('hits = ', hits);
           setEdamamRecipes(hits)
           setLoadingEdamam(false)
