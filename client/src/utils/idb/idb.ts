@@ -1,7 +1,16 @@
-export default function idbPromise(storeName, method, object) {
+/* this file is currently not being used */
+type IdbPromiseType = {
+  storeName: string
+  method: string
+  object: any
+}
+
+const idbPromise: (params: IdbPromiseType) => Promise<any> = (params) => {
+  const { storeName, method, object } = params
+
   return new Promise((resolve, reject) => {
     const request = window.indexedDB.open('ingre', 1)
-    let db, tx, store
+
     request.onupgradeneeded = function (e) {
       const db = request.result
       db.createObjectStore('recipes', { keyPath: '_id' })
@@ -14,9 +23,9 @@ export default function idbPromise(storeName, method, object) {
     }
 
     request.onsuccess = function (e) {
-      db = request.result
-      tx = db.transaction(storeName, 'readwrite')
-      store = tx.objectStore(storeName)
+      const db = request.result
+      const tx = db.transaction(storeName, 'readwrite')
+      const store = tx.objectStore(storeName)
 
       db.onerror = function (e) {
         console.log('error', e)
@@ -47,3 +56,4 @@ export default function idbPromise(storeName, method, object) {
     }
   })
 }
+export default idbPromise
