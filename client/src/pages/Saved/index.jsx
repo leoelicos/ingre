@@ -18,7 +18,7 @@ import ContentTitle from '../../components/ContentTitle'
 
 // Apollo
 import { useLazyQuery } from '@apollo/client'
-import { GET_SAVED_RECIPES } from '../../utils/apollo/queries.js'
+import { GET_SAVED_RECIPES } from '../../utils/apollo/queries.ts'
 
 // Auth
 import Auth from '../../utils/auth/index.js'
