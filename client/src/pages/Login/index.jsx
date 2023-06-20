@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useMutation } from '@apollo/client'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { LOGIN } from '../../utils/apollo/mutations.ts'
-import Auth from '../../utils/auth/index.js'
+import Auth from '../../utils/auth/index.ts'
 
 import ContentTitle from '../../components/ContentTitle'
 import ContentSubtitle from '../../components/ContentSubtitle'

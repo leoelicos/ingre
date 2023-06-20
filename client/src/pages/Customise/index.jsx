@@ -27,7 +27,7 @@ import {
 } from '../../utils/apollo/queries'
 
 // Auth
-import Auth from '../../utils/auth/index.js'
+import Auth from '../../utils/auth/index.ts'
 
 const Customise = () => {
   const [state, dispatch] = useStoreContext()

@@ -21,7 +21,7 @@ import { useLazyQuery } from '@apollo/client'
 import { GET_SAVED_RECIPES } from '../../utils/apollo/queries.ts'
 
 // Auth
-import Auth from '../../utils/auth/index.js'
+import Auth from '../../utils/auth/index.ts'
 import { Link } from 'react-router-dom'
 
 const Saved = () => {

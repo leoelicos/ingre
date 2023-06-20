@@ -36,7 +36,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Link } from 'react-router-dom'
 
 // Auth
-import Auth from '../../utils/auth/index.js'
+import Auth from '../../utils/auth/index.ts'
 
 const EditableContext = React.createContext(null)
 
