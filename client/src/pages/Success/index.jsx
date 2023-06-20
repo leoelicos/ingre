@@ -9,7 +9,7 @@ import { useMutation } from '@apollo/client'
 import { MAKE_USER_PRO } from '../../utils/apollo/mutations'
 import { Alert, Button, Col, Divider, Empty, Row, Space, Timeline } from 'antd'
 
-import Auth from '../../utils/auth/index.js'
+import Auth from '../../utils/auth/index.ts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import ContentTitle from '../../components/ContentTitle'
