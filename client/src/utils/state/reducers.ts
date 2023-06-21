@@ -1,5 +1,7 @@
 import { useReducer } from 'react'
-import {
+import actions from './actions.ts'
+
+const {
   SHOW_DRAWER,
   HIDE_DRAWER,
   TOGGLE_SIDEBAR,
@@ -17,12 +19,13 @@ import {
   FLAG_HOME_MOUNTED,
   FLAG_SAVED_MOUNTED,
   FLAG_INGREDIENTS_GENERATED
-
-  //
-} from './actions'
+} = actions
 
 // The reducer is a function that accepts the current state and an action. It returns a new state based on that action.
-export const reducer = (state, action) => {
+export const reducer: (
+  state: any,
+  action: { type: string; data: any }
+) => any = (state, action) => {
   // console.log(action.type);
   console.log(`REDUCER\t[${action.type}]`, action.data)
 
@@ -61,7 +64,11 @@ export const reducer = (state, action) => {
 
     case ADD_SAVED_RECIPE:
       // console.log('state.savedRecipes before', state.savedRecipes);
-      if (state.savedRecipes.find((r) => r.edamamId === action.data.edamamId))
+      if (
+        state.savedRecipes.find(
+          (r: { edamamId: string }) => r.edamamId === action.data.edamamId
+        )
+      )
         return { ...state }
       let newSavedRecipes = JSON.parse(JSON.stringify(state.savedRecipes))
       newSavedRecipes.push(action.data)
@@ -69,7 +76,9 @@ export const reducer = (state, action) => {
       return { ...state, savedRecipes: newSavedRecipes }
 
     case REMOVE_SAVED_RECIPE:
-      const copyOfRecipes = JSON.parse(JSON.stringify(state.savedRecipes))
+      const copyOfRecipes: { edamamId: string }[] = JSON.parse(
+        JSON.stringify(state.savedRecipes)
+      )
       // console.log('copyOfRecipes', copyOfRecipes);
       const filteredCopyOfRecipes = copyOfRecipes.filter(
         (r) => r.edamamId !== action.data
@@ -98,6 +107,6 @@ export const reducer = (state, action) => {
   }
 }
 
-export function useGlobalReducer(initialState) {
+export function useGlobalReducer(initialState: any) {
   return useReducer(reducer, initialState)
 }
