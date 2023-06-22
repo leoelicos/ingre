@@ -1,7 +1,6 @@
 import { useReducer } from 'react'
-import actions from './actions.ts'
 
-const {
+import {
   SHOW_DRAWER,
   HIDE_DRAWER,
   TOGGLE_SIDEBAR,
@@ -19,7 +18,7 @@ const {
   FLAG_HOME_MOUNTED,
   FLAG_SAVED_MOUNTED,
   FLAG_INGREDIENTS_GENERATED
-} = actions
+} from './actions.ts'
 
 // The reducer is a function that accepts the current state and an action. It returns a new state based on that action.
 export const reducer: (
