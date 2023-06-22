@@ -1,40 +1,49 @@
-export default {
-  /* component: Drawer (help menu on the right) */
-  SHOW_DRAWER: 'SHOW_DRAWER' /* show */,
-  HIDE_DRAWER: 'HIDE_DRAWER' /* hide */,
+//? Drawer component: the help menu on the right
+//* show
+export const SHOW_DRAWER = 'SHOW_DRAWER'
+//* hide
+export const HIDE_DRAWER = 'HIDE_DRAWER'
 
-  /* component: Sidebar (nav menu on the left) */
-  TOGGLE_SIDEBAR: 'TOGGLE_SIDEBAR' /* toggle expanded/collapsed*/,
-  EXPAND_SIDEBAR: 'EXPAND_SIDEBAR' /* expand */,
-  COLLAPSE_SIDEBAR: 'COLLAPSE_SIDEBAR' /* collapse */,
+//? Sidebar component: the nav menu on the left
+//* toggle expanded/collapsed
+export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR'
+//* expand
+export const EXPAND_SIDEBAR = 'EXPAND_SIDEBAR'
+//* collapse
+export const COLLAPSE_SIDEBAR = 'COLLAPSE_SIDEBAR'
 
-  /* page: Home */
-  UPDATE_HOME_RECIPES: 'UPDATE_HOME_RECIPES' /* update home page recipes */,
-  FLAG_HOME_MOUNTED:
-    'FLAG_HOME_MOUNTED' /* set to True: Home has mounted once */,
+//? Home page
+//* update home page recipes
+export const UPDATE_HOME_RECIPES = 'UPDATE_HOME_RECIPES'
+//* set to True: Home has mounted once
+export const FLAG_HOME_MOUNTED = 'FLAG_HOME_MOUNTED'
 
-  /* page: Search */
-  UPDATE_SEARCH_RECIPES:
-    'UPDATE_SEARCH_RECIPES' /* update search page recipes */,
+//? Search page
+//* update search page recipes
+export const UPDATE_SEARCH_RECIPES = 'UPDATE_SEARCH_RECIPES'
 
-  /* page: Customise */
-  ADD_EDIT_RECIPE: 'ADD_EDIT_RECIPE' /* set the recipe on this page */,
-  CLEAR_EDIT_RECIPE: 'CLEAR_EDIT_RECIPE' /* reset */,
+//? Customise page
+//* set the recipe on this page
+export const ADD_EDIT_RECIPE = 'ADD_EDIT_RECIPE'
+//* reset
+export const CLEAR_EDIT_RECIPE = 'CLEAR_EDIT_RECIPE'
 
-  /* page: Saved */
-  UPDATE_SAVED_RECIPES: 'UPDATE_SAVED_RECIPES' /* update saved recipe list */,
-  ADD_SAVED_RECIPE: 'ADD_SAVED_RECIPE' /* add to saved recipe list */,
-  REMOVE_SAVED_RECIPE:
-    'REMOVE_SAVED_RECIPE' /* remove from saved recipe list */,
-  FLAG_SAVED_MOUNTED:
-    'FLAG_SAVED_MOUNTED' /* set True: Saved has mounted once */,
+//? Saved page
+//* update saved recipe list
+export const UPDATE_SAVED_RECIPES = 'UPDATE_SAVED_RECIPES'
+//* add to saved recipe list
+export const ADD_SAVED_RECIPE = 'ADD_SAVED_RECIPE'
+//* remove from saved recipe list
+export const REMOVE_SAVED_RECIPE = 'REMOVE_SAVED_RECIPE'
+//* set True: Saved has mounted once
+export const FLAG_SAVED_MOUNTED = 'FLAG_SAVED_MOUNTED'
 
-  /* page: Ingredients */
-  UPDATE_SAVED_INGREDIENTS:
-    'UPDATE_SAVED_INGREDIENTS' /* update ingredient page ingredients */,
-  FLAG_INGREDIENTS_GENERATED:
-    'FLAG_INGREDIENTS_GENERATED' /* set True: Ingredients has mounted once */,
+//? Ingredients page
+//* update ingredient page ingredients
+export const UPDATE_SAVED_INGREDIENTS = 'UPDATE_SAVED_INGREDIENTS'
+//* set True: Ingredients has mounted once
+export const FLAG_INGREDIENTS_GENERATED = 'FLAG_INGREDIENTS_GENERATED'
 
-  /* page: Tap off */
-  UPDATE_TAP_OFF: 'UPDATE_TAP_OFF' /* update tap page ingredients */
-}
+//? Tap Off page
+//* update tap page ingredients
+export const UPDATE_TAP_OFF = 'UPDATE_TAP_OFF'
