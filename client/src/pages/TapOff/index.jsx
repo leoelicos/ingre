@@ -5,7 +5,7 @@ import Masonry from 'react-masonry-css'
 
 // GlobalState
 import { useStoreContext } from '../../utils/state/GlobalState'
-import { UPDATE_TAP_OFF } from '../../utils/state/actions'
+import { UPDATE_TAP_OFF } from '../../utils/state/actions.ts'
 
 // Ant components
 import {
