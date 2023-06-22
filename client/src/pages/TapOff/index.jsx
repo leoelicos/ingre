@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Masonry from 'react-masonry-css'
 
-// GlobalState
-import { useStoreContext } from '../../utils/state/GlobalState'
+//   GlobalState.tsx
+import { useStoreContext } from '../../utils/state/  GlobalState.tsx'
 import { UPDATE_TAP_OFF } from '../../utils/state/actions.ts'
 
 // Ant components
