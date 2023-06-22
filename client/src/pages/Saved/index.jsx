@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 
 // useContext
-import { useStoreContext } from '../../utils/state/  GlobalState.tsx'
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import {
   FLAG_SAVED_MOUNTED,
   UPDATE_SAVED_RECIPES

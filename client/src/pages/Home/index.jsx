@@ -11,7 +11,7 @@ import RecipeCardContainer from '../../components/RecipeCardContainer'
 import fetchEdamam from '../../utils/api/index.ts'
 
 // useContext
-import { useStoreContext } from '../../utils/state/  GlobalState.tsx'
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 
 // useReducer
 import {

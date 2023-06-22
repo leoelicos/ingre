@@ -1,5 +1,5 @@
 // useReducer
-import { useStoreContext } from '../utils/state/  GlobalState.tsx'
+import { useStoreContext } from '../utils/state/GlobalState.tsx'
 
 // react-router-dom
 import { Link, useLocation, useNavigate } from 'react-router-dom'

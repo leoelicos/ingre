@@ -12,7 +12,7 @@ import ContentTitle from '../../components/ContentTitle'
 import fetchEdamam from '../../utils/api/index.ts'
 
 // useContext
-import { useStoreContext } from '../../utils/state/  GlobalState.tsx'
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 
 // useReducer
 import { UPDATE_SEARCH_RECIPES } from '../../utils/state/actions'
