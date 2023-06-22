@@ -29,7 +29,7 @@ import {
   UPDATE_SAVED_RECIPES,
   FLAG_INGREDIENTS_GENERATED,
   UPDATE_SAVED_INGREDIENTS
-} from '../../utils/state/actions'
+} from '../../utils/state/actions.ts'
 
 // Assets
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
