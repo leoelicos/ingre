@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 // useContext
-import { useStoreContext } from '../utils/state/  GlobalState.tsx'
+import { useStoreContext } from '../utils/state/GlobalState.tsx'
 
 // useReducer
 import { SHOW_DRAWER } from '../utils/state/actions'

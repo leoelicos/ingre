@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom'
 import { Alert, Button, Drawer as AntDrawer, Space, Timeline } from 'antd'
 
 // Global state
-import { useStoreContext } from '../utils/state/  GlobalState.tsx'
+import { useStoreContext } from '../utils/state/GlobalState.tsx'
 import { HIDE_DRAWER } from '../utils/state/actions'
 
 // Font Awesome
