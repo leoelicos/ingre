@@ -23,8 +23,8 @@ import ContentTitle from '../../components/ContentTitle'
 import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries'
 import { useApolloClient, useLazyQuery } from '@apollo/client'
 
-// GlobalState
-import { useStoreContext } from '../../utils/state/GlobalState'
+//   GlobalState.tsx
+import { useStoreContext } from '../../utils/state/  GlobalState.tsx'
 import {
   UPDATE_SAVED_RECIPES,
   FLAG_INGREDIENTS_GENERATED,

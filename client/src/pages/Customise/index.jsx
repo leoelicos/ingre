@@ -9,7 +9,7 @@ import { Button, Form, Input, Col, Divider, Row, Alert, Empty } from 'antd'
 import ContentTitle from '../../components/ContentTitle'
 
 // useContext
-import { useStoreContext } from '../../utils/state/GlobalState'
+import { useStoreContext } from '../../utils/state/  GlobalState.tsx'
 
 // ApolloClient
 import { useApolloClient, useMutation } from '@apollo/client'

@@ -14,7 +14,7 @@ import {
 import { setContext } from '@apollo/client/link/context'
 
 // Global state provider
-import { StoreProvider } from './utils/state/GlobalState'
+import { StoreProvider } from './utils/state/  GlobalState.tsx'
 
 // Pages
 import Home from './pages/Home'

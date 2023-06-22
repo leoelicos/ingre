@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // Global state
-import { useStoreContext } from '../utils/state/GlobalState'
+import { useStoreContext } from '../utils/state/  GlobalState.tsx'
 import {
   ADD_SAVED_RECIPE,
   REMOVE_SAVED_RECIPE,
