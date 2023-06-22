@@ -1,7 +1,7 @@
-import React, { createContext, useContext } from 'react'
+import React, { FC, ReactNode, createContext, useContext } from 'react'
 import { useGlobalReducer } from './reducers.ts'
 
-interface StoreProviderValueType {
+interface Store {
   modalVisible: boolean
   leftSidebarCollapsed: boolean
   searchRecipes: any[]
@@ -15,16 +15,11 @@ interface StoreProviderValueType {
   tapOff: any[]
 }
 
-type StoreProviderProps = StoreProviderValueType
-
-type StoreContextType = [
-  state: StoreProviderValueType,
-  dispatch: React.Dispatch<any>
-]
+type StoreContextType = [state: Store, dispatch: React.Dispatch<any>]
 
 const StoreContext = createContext<StoreContextType | null>(null)
 
-const initialState: StoreProviderValueType = {
+const initialState: Store = {
   modalVisible: false,
   leftSidebarCollapsed: false,
   searchRecipes: [],
@@ -37,10 +32,14 @@ const initialState: StoreProviderValueType = {
   ingredientsDidGenerate: false,
   tapOff: []
 }
-const StoreProvider = (value: StoreProviderProps = initialState) => {
-  const [state, dispatch] = useGlobalReducer(value)
+const StoreProvider: FC<{ children: ReactNode }> = ({ children }) => {
+  const [state, dispatch] = useGlobalReducer(initialState)
 
-  return <StoreContext.Provider value={[state, dispatch]} />
+  return (
+    <StoreContext.Provider value={[state, dispatch]}>
+      {children}
+    </StoreContext.Provider>
+  )
 }
 
 const useStoreContext = () => {
