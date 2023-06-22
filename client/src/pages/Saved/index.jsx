@@ -6,7 +6,7 @@ import { useStoreContext } from '../../utils/state/GlobalState'
 import {
   FLAG_SAVED_MOUNTED,
   UPDATE_SAVED_RECIPES
-} from '../../utils/state/actions'
+} from '../../utils/state/actions.ts'
 
 // Ant components
 import { Col, Row, Divider, Spin, Button, Alert, Empty } from 'antd'
