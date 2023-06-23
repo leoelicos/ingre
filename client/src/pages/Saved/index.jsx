@@ -8,7 +8,7 @@ import {
   UPDATE_SAVED_RECIPES
 } from '../../utils/state/actions.ts'
 
-// Ant components
+// Ant
 import { Col, Row, Divider, Spin, Button, Alert, Empty } from 'antd'
 
 // Custom components
@@ -23,6 +23,7 @@ import { GET_SAVED_RECIPES } from '../../utils/apollo/queries.ts'
 // Auth
 import Auth from '../../utils/auth/index.ts'
 import { Link } from 'react-router-dom'
+import NotLoggedIn from '../../components/NotLoggedIn.tsx'
 
 const Saved = () => {
   const [, { loading, error, data, refetch }] = useLazyQuery(GET_SAVED_RECIPES)
@@ -53,41 +54,28 @@ const Saved = () => {
   }, [])
 
   if (!Auth.loggedIn) return <NotLoggedIn />
-  else if (loading) return <SaveLoading />
-  else if (error) return <SaveError />
-  else
-    return (
-      <Col>
-        <Row>
-          <ContentTitle>Saved</ContentTitle>
-        </Row>
-        <Row>
-          <RecipeCardContainer
-            results={state.savedRecipes}
-            onSavedPage={true}
-            loading={loading}
-          />
-        </Row>
-      </Col>
-    )
+
+  if (loading) return <SaveLoading />
+
+  if (error) return <SaveError />
+
+  return (
+    <Col>
+      <Row>
+        <ContentTitle>Saved</ContentTitle>
+      </Row>
+      <Row>
+        <RecipeCardContainer
+          results={state.savedRecipes}
+          onSavedPage={true}
+          loading={loading}
+        />
+      </Row>
+    </Col>
+  )
 }
 
 export default Saved
-
-const NotLoggedIn = () => (
-  <Empty>
-    <Divider />
-    <Row>You need to be logged in to see this page.</Row>
-    <Link to="/login">
-      <Button
-        type="primary"
-        style={{ marginTop: '1rem' }}
-      >
-        Log in
-      </Button>
-    </Link>
-  </Empty>
-)
 
 const SaveLoading = () => (
   <Col>
