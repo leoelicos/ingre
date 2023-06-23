@@ -13,17 +13,17 @@ import { Col, Row, Divider, Spin, Button, Alert, Empty } from 'antd'
 
 // Custom components
 
-import RecipeCardContainer from '../../components/RecipeCardContainer'
-import ContentTitle from '../../components/ContentTitle'
+import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.jsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 // Apollo
 import { useLazyQuery } from '@apollo/client'
 import { GET_SAVED_RECIPES } from '../../utils/apollo/queries.ts'
 
 // Auth
-import Auth from '../../utils/auth/index.ts'
+import Auth from '../../utils/auth/auth.ts'
 import { Link } from 'react-router-dom'
-import NotLoggedIn from '../../components/NotLoggedIn.tsx'
+import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 
 const Saved = () => {
   const [, { loading, error, data, refetch }] = useLazyQuery(GET_SAVED_RECIPES)
