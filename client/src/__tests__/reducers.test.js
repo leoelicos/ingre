@@ -18,7 +18,7 @@ import {
   FLAG_HOME_MOUNTED,
   FLAG_SAVED_MOUNTED,
   FLAG_INGREDIENTS_GENERATED */
-} from '../utils/state/actions'
+} from '../../utils/state/actions.ts'
 
 const initialState = {
   modalVisible: false,
