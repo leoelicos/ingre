@@ -1,10 +1,8 @@
-// React
+// react
 import React, { CSSProperties, useEffect } from 'react'
-
-// React Router DOM
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
-// Apollo Client
+// data
 import {
   ApolloClient,
   InMemoryCache,
@@ -13,32 +11,33 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 
-// Global state provider
-import { StoreProvider } from './utils/state/GlobalState.tsx'
+// state
+import { StoreProvider } from '../utils/state/GlobalState.tsx'
 
 // Pages
-import Home from './pages/Home'
-import Search from './pages/Search'
-import Customise from './pages/Customise'
-import Saved from './pages/Saved'
-import Ingredients from './pages/Ingredients'
-import TapOff from './pages/TapOff'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
-import NoMatch from './pages/NoMatch'
-import Success from './pages/Success'
-import Upgrade from './pages/Upgrade'
+import Home from '../pages/Home/Home.jsx'
+import Search from '../pages/Search/Search.jsx'
+import Customise from '../pages/Customise/Customise.jsx'
+import Saved from '../pages/Saved/Saved.jsx'
+import Ingredients from '../pages/Ingredients/Ingredients.jsx'
+import TapOff from '../pages/TapOff/TapOff.jsx'
+import Login from '../pages/Admin/Login/Login.jsx'
+import Signup from '../pages/Admin/Signup/Signup.jsx'
+import NoMatch from '../pages/Admin/NoMatch/NoMatch.jsx'
+import Success from '../pages/Admin/Success/Success.jsx'
+import Upgrade from '../pages/Admin/Upgrade/Upgrade.tsx'
 
 // Components
-import Drawer from './components/Drawer.jsx'
-import Header from './components/Header'
-import MainLayout from './components/MainLayout'
-import SiderLeft from './components/SiderLeft'
+import Drawer from './Layout/Drawer.jsx'
+import Header from './Layout/Header.jsx'
+import MainLayout from './Layout/MainLayout.tsx'
+import SiderLeft from './Layout/SiderLeft.jsx'
+import { Layout } from 'antd'
+import { Content } from 'antd/lib/layout/layout'
 
 // style
-import './App.css'
+import './Ingre.css'
 
-// Font Awesome
 import {
   faBars,
   faEgg,
@@ -72,8 +71,6 @@ import {
 
 // Add Font Awesome to library so they can be accessed by children
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { Layout } from 'antd'
-import { Content } from 'antd/lib/layout/layout'
 
 library.add(
   faBars,
