@@ -8,7 +8,7 @@ import { Button, Space, Row, Spin, Divider, Col } from 'antd'
 import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 
 // Edamam API
-import fetchEdamam from '../../utils/api/index.ts'
+import fetchEdamam from '../../utils/api/edamam.ts'
 
 // useContext
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
