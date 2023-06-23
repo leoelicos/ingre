@@ -1,18 +1,8 @@
-// React hooks
-import { useEffect } from 'react'
+// React
+import React, { FC, useState, useEffect } from 'react'
 
-// Ant components
-import {
-  Row,
-  Col,
-  Button,
-  List,
-  Space,
-  Tooltip,
-  Empty,
-  Alert,
-  Divider
-} from 'antd'
+// Ant
+import { Row, Col, Button, List, Space, Tooltip, Alert } from 'antd'
 
 // Stripe
 import { loadStripe } from '@stripe/stripe-js'
@@ -21,19 +11,20 @@ import { loadStripe } from '@stripe/stripe-js'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { CHECKOUT, GET_USER } from '../../utils/apollo/queries'
 
-// Custom components
+// Custom
 import ContentTitle from '../../components/ContentTitle'
 import ContentSubtitle from '../../components/ContentSubtitle'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
+/* Auth */
 import Auth from '../../utils/auth'
-import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { IconName } from '@fortawesome/fontawesome-svg-core'
+import NotLoggedIn from '../../components/NotLoggedIn'
 
 // Stripe
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
 
-const App = () => {
+const Upgrade: FC = () => {
   const [getCheckout, { data }] = useLazyQuery(CHECKOUT)
   const {
     data: userData,
@@ -46,6 +37,10 @@ const App = () => {
   useEffect(() => {
     if (data) {
       stripePromise.then((res) => {
+        if (!res) {
+          console.error('Error: No response from Stripe')
+          return
+        }
         res.redirectToCheckout({ sessionId: data.checkout.session })
       })
     }
@@ -58,21 +53,8 @@ const App = () => {
     }
   }, [userLoading, userError, userData])
 
-  if (!Auth.loggedIn())
-    return (
-      <Empty>
-        <Divider />
-        <Row>You need to be logged in to see this page.</Row>
-        <Link to="/login">
-          <Button
-            type="primary"
-            style={{ marginTop: '1rem' }}
-          >
-            Log in
-          </Button>
-        </Link>
-      </Empty>
-    )
+  if (!Auth.loggedIn()) return <NotLoggedIn />
+
   return pro ? (
     <Alert
       type="success"
@@ -114,7 +96,7 @@ const App = () => {
                         rel="noopener noreferrer"
                       >
                         <FontAwesomeIcon
-                          icon="fa-solid fa-book-open"
+                          icon={'fa-solid fa-book-open' as IconName}
                           style={{
                             borderRadius: '50%',
                             color: 'black'
@@ -145,4 +127,4 @@ const App = () => {
   )
 }
 
-export default App
+export default Upgrade
