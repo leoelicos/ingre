@@ -1,7 +1,8 @@
-// React
+/* react */
 import React, { useContext, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 
-// Ant
+/* components */
 import {
   Alert,
   Button,
@@ -15,15 +16,14 @@ import {
   Spin,
   Table
 } from 'antd'
-
-// Custom components
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-// Apollo
+/* data */
 import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries.ts'
 import { useApolloClient, useLazyQuery } from '@apollo/client'
 
-// GlobalState.tsx
+/* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import {
   UPDATE_SAVED_RECIPES,
@@ -31,12 +31,11 @@ import {
   UPDATE_SAVED_INGREDIENTS
 } from '../../utils/state/actions.ts'
 
-// Assets
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Link } from 'react-router-dom'
-
-// Auth
+/* auth */
 import Auth from '../../utils/auth/auth.ts'
+
+/* utils */
+import { changeTitle } from '../../utils/changeTitle.ts'
 
 const EditableContext = React.createContext(null)
 
@@ -117,6 +116,8 @@ const EditableCell = ({
 }
 
 const Ingredients = () => {
+  changeTitle('Ingredients')
+
   const [form] = Form.useForm()
   const [state, dispatch] = useStoreContext()
   const [updateRecipes, setUpdateRecipes] = useState(false)
@@ -211,11 +212,6 @@ const Ingredients = () => {
     generateOnFirstLoad()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch, reload, state.ingredientsDidGenerate])
-
-  // update title on every load
-  useEffect(() => {
-    document.title = 'Ingredients'
-  }, [])
 
   const [count, setCount] = useState(2)
 

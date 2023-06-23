@@ -1,30 +1,29 @@
-// React hooks
+/* react */
 import { useEffect, useState } from 'react'
 
-// Ant
+/* components */
 import { Form, Input, Cascader, Row, Spin, Divider, Col } from 'antd'
-
-// Custom components
 import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
-// Edamam API
+/* data */
 import fetchEdamam from '../../utils/api/edamam.ts'
-
-// useContext
-import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-
-// useReducer
-import { UPDATE_SEARCH_RECIPES } from '../../utils/state/actions.ts'
-
-// get API key
 import { GET_API_KEY } from '../../utils/apollo/queries.ts'
 import { useApolloClient } from '@apollo/client'
+
+/* state */
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
+import { UPDATE_SEARCH_RECIPES } from '../../utils/state/actions.ts'
+
+/* hooks */
+import { changeTitle } from '../../utils/changeTitle.ts'
 
 // Ant subcomponents
 const { SHOW_CHILD } = Cascader
 
 function Search() {
+  changeTitle('Search')
+
   const client = useApolloClient()
 
   // Global state
@@ -107,10 +106,6 @@ function Search() {
     // console.log('newState', newState);
     setFormState(newState)
   }
-
-  useEffect(() => {
-    document.title = 'Search'
-  }, [])
 
   return (
     <Col style={{ width: '100%' }}>

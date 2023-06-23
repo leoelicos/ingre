@@ -1,8 +1,8 @@
-// react
-import React, { CSSProperties, useEffect } from 'react'
+/* react */
+import React, { FC, CSSProperties } from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
-// data
+/* data */
 import {
   ApolloClient,
   InMemoryCache,
@@ -11,10 +11,10 @@ import {
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 
-// state
+/* state */
 import { StoreProvider } from '../utils/state/GlobalState.tsx'
 
-// Pages
+/* pages */
 import Home from '../pages/Home/Home.jsx'
 import Search from '../pages/Search/Search.jsx'
 import Customise from '../pages/Customise/Customise.jsx'
@@ -27,7 +27,7 @@ import NoMatch from '../pages/Admin/NoMatch.tsx'
 import Success from '../pages/Admin/Success.jsx'
 import Upgrade from '../pages/Admin/Upgrade.tsx'
 
-// Components
+/* components */
 import Drawer from './Layout/Drawer.jsx'
 import Header from './Layout/Header/Header.jsx'
 import MainLayout from './Layout/MainLayout.tsx'
@@ -38,70 +38,11 @@ import { Content } from 'antd/lib/layout/layout'
 // style
 import './Ingre.css'
 
-import {
-  faBars,
-  faEgg,
-  faCircleInfo,
-  faCookie,
-  faMagnifyingGlass,
-  faCartShopping,
-  faSquareCheck,
-  faPen,
-  faCircleXmark,
-  faXmark,
-  faAdd,
-  faFloppyDisk,
-  faTrash,
-  faCubesStacked,
-  faRightToBracket,
-  faRightFromBracket,
-  faUserPlus,
-  faTruckLoading,
-  faRotateRight,
-  faRotateLeft,
-  faEraser,
-  faExclamation,
-  faCropSimple,
-  faDownLeftAndUpRightToCenter,
-  faMagnifyingGlassChart,
-  faUserGroup,
-  faSpinner,
-  faBookOpen
-} from '@fortawesome/free-solid-svg-icons'
+/* utils */
+import { changeTitle } from '../utils/changeTitle.ts'
+import addFontAwesome from '../utils/addFontAwesome.ts'
 
-// Add Font Awesome to library so they can be accessed by children
-import { library } from '@fortawesome/fontawesome-svg-core'
-
-library.add(
-  faBars,
-  faEgg,
-  faCircleInfo,
-  faCookie,
-  faMagnifyingGlass,
-  faCartShopping,
-  faSquareCheck,
-  faPen,
-  faCircleXmark,
-  faXmark,
-  faAdd,
-  faFloppyDisk,
-  faTrash,
-  faCubesStacked,
-  faRightToBracket,
-  faRightFromBracket,
-  faUserPlus,
-  faTruckLoading,
-  faRotateRight,
-  faRotateLeft,
-  faEraser,
-  faExclamation,
-  faCropSimple,
-  faDownLeftAndUpRightToCenter,
-  faMagnifyingGlassChart,
-  faUserGroup,
-  faSpinner,
-  faBookOpen
-)
+addFontAwesome()
 
 // ApolloClient
 const authLink = setContext((_, { headers: oldHeaders }) => {
@@ -121,11 +62,8 @@ const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
 const client = new ApolloClient({ link, cache })
 
-function Ingre() {
-  useEffect(() => {
-    document.title = 'ingré'
-  }, [])
-
+const Ingre: FC = () => {
+  changeTitle('Recipes')
   return (
     <ApolloProvider client={client}>
       <Router>

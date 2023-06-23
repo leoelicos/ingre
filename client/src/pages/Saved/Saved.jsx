@@ -1,31 +1,33 @@
-// React
+/* react */
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
-// useContext
+/* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import {
   FLAG_SAVED_MOUNTED,
   UPDATE_SAVED_RECIPES
 } from '../../utils/state/actions.ts'
 
-// Ant
+/* components */
 import { Col, Row, Divider, Spin, Button, Alert, Empty } from 'antd'
-
-// Custom components
-
 import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 
-// Apollo
+/* data */
 import { useLazyQuery } from '@apollo/client'
 import { GET_SAVED_RECIPES } from '../../utils/apollo/queries.ts'
 
-// Auth
+/* auth */
 import Auth from '../../utils/auth/auth.ts'
-import { Link } from 'react-router-dom'
-import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
+
+/* hooks */
+import { changeTitle } from '../../utils/changeTitle.ts'
 
 const Saved = () => {
+  changeTitle('Search')
+
   const [, { loading, error, data, refetch }] = useLazyQuery(GET_SAVED_RECIPES)
   const [state, dispatch] = useStoreContext()
 
@@ -47,11 +49,6 @@ const Saved = () => {
     }
     fetchOnFirstLoad()
   }, [state.savedDidMount, refetch, dispatch])
-
-  // update title on every load
-  useEffect(() => {
-    document.title = 'Search'
-  }, [])
 
   if (!Auth.loggedIn()) return <NotLoggedIn />
 

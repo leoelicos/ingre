@@ -1,16 +1,26 @@
+/* react */
 import React, { useEffect } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+
+/* data */
 import { useApolloClient, useMutation } from '@apollo/client'
-import Auth from '../../utils/auth/auth.ts'
 import { GET_USER_WITH_EMAIL } from '../../utils/apollo/queries.ts'
 import { ADD_USER } from '../../utils/apollo/mutations.ts'
 
+/* auth */
+import Auth from '../../utils/auth/auth.ts'
+
+/* components */
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
-
 import { Button, Form, Input, Divider, Space, Row, Col, Alert } from 'antd'
 
+/* utils */
+import { changeTitle } from '../../utils/changeTitle.ts'
+
 const Signup = () => {
+  changeTitle('Sign up')
+
   const [addUser, { error }] = useMutation(ADD_USER)
   const [form] = Form.useForm()
 
@@ -65,10 +75,6 @@ const Signup = () => {
     if (email) form.setFieldsValue({ email })
     if (password) form.setFieldsValue({ password })
   }
-
-  useEffect(() => {
-    document.title = 'Signup'
-  }, [])
 
   return Auth.loggedIn() ? (
     <Navigate to="/" />
