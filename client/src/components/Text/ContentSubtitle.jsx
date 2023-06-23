@@ -1,9 +1,6 @@
 // Ant
 import { Typography } from 'antd'
 
-// Ant subcomponents
-const { Title } = Typography
-
 const titleStyle = {
   color: 'var(--ingre-blue)',
   fontFamily: 'Poppins, sans-serif',
@@ -14,11 +11,11 @@ const titleStyle = {
 }
 
 const ContentSubtitle = (props) => (
-  <Title
+  <Typography.Title
     level={2}
     style={titleStyle}
   >
     {props.children}
-  </Title>
+  </Typography.Title>
 )
 export default ContentSubtitle
