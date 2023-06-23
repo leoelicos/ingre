@@ -85,15 +85,16 @@ const fetchEdamam = async ({
         searchString
       ].join('&')
 
-    const response: { status: string; data: EdamamRecipeSearchResponse } =
+    const response: { status: number; data: EdamamRecipeSearchResponse } =
       await axios.get(uri)
 
     if (!response) throw 'Error: 404 Edamam no response'
 
     /* from the docs: https://developer.edamam.com/edamam-docs-recipe-api */
-    if (response.status === '400') throw 'Error: 400 Edamam error'
-    if (response.status === '403') throw 'Error: 403 Edamam error'
-    if (response.status !== '200') console.info('Error: Unknown Edamam error') // but don't throw
+    if (response.status === 400) throw 'Error: 400 Edamam error'
+    if (response.status === 403) throw 'Error: 403 Edamam error'
+    if (response.status !== 200)
+      console.info('Error: Unknown Edamam error', response.status)
 
     if (!response.data) throw 'Error: 404 Edamam no data'
 
