@@ -10,7 +10,7 @@ import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
 
 import { Button, Form, Input, Divider, Space, Row, Col, Alert } from 'antd'
 
-const App = () => {
+const Signup = () => {
   const [addUser, { error }] = useMutation(ADD_USER)
   const [form] = Form.useForm()
 
@@ -290,4 +290,4 @@ const App = () => {
   )
 }
 
-export default App
+export default Signup
