@@ -5,13 +5,13 @@ import { useLocation } from 'react-router-dom'
 import { Alert, Button, Drawer as AntDrawer, Space, Timeline } from 'antd'
 
 // Global state
-import { useStoreContext } from '../utils/state/GlobalState.tsx'
-import { HIDE_DRAWER } from '../utils/state/actions'
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
+import { HIDE_DRAWER } from '../../utils/state/actions.ts'
 
 // Font Awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useQuery } from '@apollo/client'
-import { GET_USER } from '../utils/apollo/queries'
+import { GET_USER } from '../../utils/apollo/queries.ts'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 const { Item } = Timeline
