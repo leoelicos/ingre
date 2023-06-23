@@ -7,7 +7,7 @@ import Masonry from 'react-masonry-css'
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import { UPDATE_TAP_OFF } from '../../utils/state/actions.ts'
 
-// Ant components
+// Ant
 import {
   Col,
   Card,
@@ -32,6 +32,7 @@ import Auth from '../../utils/auth/index.ts'
 
 // Masonry css
 import './style.css'
+import NotLoggedIn from '../../components/NotLoggedIn.tsx'
 
 const { CheckableTag } = Tag
 const { Text } = Typography
@@ -69,7 +70,9 @@ const TapOff = () => {
         <ContentTitle>Tap Off</ContentTitle>
       </Row>
       <Row style={{ paddingBottom: '1rem', width: '100%' }}>
-        {Auth.loggedIn() ? (
+        {!Auth.loggedIn() ? (
+          <NotLoggedIn />
+        ) : (
           <Masonry
             breakpointCols={
               state.leftSidebarCollapsed
@@ -149,19 +152,6 @@ const TapOff = () => {
               </Card>
             )}
           </Masonry>
-        ) : (
-          <Empty>
-            <Divider />
-            <Row>You need to be logged in to see this page.</Row>
-            <Link to="/login">
-              <Button
-                type="primary"
-                style={{ marginTop: '1rem' }}
-              >
-                Log in
-              </Button>
-            </Link>
-          </Empty>
         )}
       </Row>
     </Col>
