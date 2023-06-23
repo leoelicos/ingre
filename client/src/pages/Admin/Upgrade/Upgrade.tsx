@@ -9,17 +9,17 @@ import { loadStripe } from '@stripe/stripe-js'
 
 // Apollo
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { CHECKOUT, GET_USER } from '../../utils/apollo/queries'
+import { CHECKOUT, GET_USER } from '../../../utils/apollo/queries.ts'
 
 // Custom
-import ContentTitle from '../../components/ContentTitle'
-import ContentSubtitle from '../../components/ContentSubtitle'
+import ContentTitle from '../../../components/Text/ContentTitle.tsx'
+import ContentSubtitle from '../../../components/Text/ContentSubtitle.jsx'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /* Auth */
-import Auth from '../../utils/auth'
-import { IconName } from '@fortawesome/fontawesome-svg-core'
-import NotLoggedIn from '../../components/NotLoggedIn'
+import Auth from '../../../utils/auth/auth.ts'
+import NotLoggedIn from '../../../components/Authentication/NotLoggedIn.tsx'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
 // Stripe
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
@@ -55,12 +55,8 @@ const Upgrade: FC = () => {
 
   if (!Auth.loggedIn()) return <NotLoggedIn />
 
-  return pro ? (
-    <Alert
-      type="success"
-      message="You are already pro"
-    />
-  ) : (
+  if (pro) return <AlreadyPro />
+  return (
     <Col span={24}>
       <Row>
         <ContentTitle>ingré PRO</ContentTitle>
@@ -96,7 +92,7 @@ const Upgrade: FC = () => {
                         rel="noopener noreferrer"
                       >
                         <FontAwesomeIcon
-                          icon={'fa-solid fa-book-open' as IconName}
+                          icon={'fa-solid fa-book-open' as IconProp}
                           style={{
                             borderRadius: '50%',
                             color: 'black'
@@ -128,3 +124,10 @@ const Upgrade: FC = () => {
 }
 
 export default Upgrade
+
+const AlreadyPro = () => (
+  <Alert
+    type="success"
+    message="You are already pro"
+  />
+)
