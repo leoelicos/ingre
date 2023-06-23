@@ -9,20 +9,27 @@ import { loadStripe } from '@stripe/stripe-js'
 
 // Apollo
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { CHECKOUT, GET_USER } from '../../../utils/apollo/queries.ts'
+import { CHECKOUT, GET_USER } from '../../utils/apollo/queries.ts'
 
 // Custom
-import ContentTitle from '../../../components/Text/ContentTitle.tsx'
-import ContentSubtitle from '../../../components/Text/ContentSubtitle.jsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /* Auth */
-import Auth from '../../../utils/auth/auth.ts'
-import NotLoggedIn from '../../../components/Authentication/NotLoggedIn.tsx'
+import Auth from '../../utils/auth/auth.ts'
+import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
 // Stripe
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
+
+const AlreadyPro = () => (
+  <Alert
+    type="success"
+    message="You are already pro"
+  />
+)
 
 const Upgrade: FC = () => {
   const [getCheckout, { data }] = useLazyQuery(CHECKOUT)
@@ -53,13 +60,22 @@ const Upgrade: FC = () => {
     }
   }, [userLoading, userError, userData])
 
-  if (!Auth.loggedIn()) return <NotLoggedIn />
-
   if (pro) return <AlreadyPro />
+
+  if (!Auth.loggedIn())
+    return (
+      <Col span={24}>
+        <Row>
+          <ContentTitle>Upgrade</ContentTitle>
+        </Row>
+        <NotLoggedIn />
+      </Col>
+    )
+
   return (
     <Col span={24}>
       <Row>
-        <ContentTitle>ingré PRO</ContentTitle>
+        <ContentTitle>Upgrade</ContentTitle>
       </Row>
       <Row>
         <Space direction="vertical">
@@ -124,10 +140,3 @@ const Upgrade: FC = () => {
 }
 
 export default Upgrade
-
-const AlreadyPro = () => (
-  <Alert
-    type="success"
-    message="You are already pro"
-  />
-)

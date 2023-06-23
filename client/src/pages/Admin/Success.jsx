@@ -6,14 +6,14 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 // ApolloClient
 import { useMutation } from '@apollo/client'
-import { MAKE_USER_PRO } from '../../../utils/apollo/mutations.ts'
+import { MAKE_USER_PRO } from '../../utils/apollo/mutations.ts'
 import { Alert, Button, Col, Divider, Empty, Row, Space, Timeline } from 'antd'
 
-import Auth from '../../../utils/auth/auth.ts'
+import Auth from '../../utils/auth/auth.ts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import ContentTitle from '../../../components/Text/ContentTitle.tsx'
-import NotLoggedIn from '../../../components/Authentication/NotLoggedIn.tsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 
 function Success() {
   const [makeUserPro] = useMutation(MAKE_USER_PRO)
