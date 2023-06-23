@@ -53,7 +53,7 @@ const Saved = () => {
     document.title = 'Search'
   }, [])
 
-  if (!Auth.loggedIn) return <NotLoggedIn />
+  if (!Auth.loggedIn()) return <NotLoggedIn />
 
   if (loading) return <SaveLoading />
 

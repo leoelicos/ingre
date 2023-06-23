@@ -2,9 +2,10 @@
 import React, { FC, useMemo } from 'react'
 
 /* components */
-import RecipeCard from './RecipeCard.jsx'
 import { BackTop } from 'antd'
 import RecipeCardContainerLoading from './RecipeCardContainerLoading.tsx'
+import RecipeCardContainerEmpty from './RecipeCardContainerEmpty.tsx'
+import RecipeCards from './RecipeCards.tsx'
 
 /* data */
 import { useQuery } from '@apollo/client'
@@ -12,8 +13,6 @@ import { GET_USER } from '../../utils/apollo/queries.ts'
 
 /* auth */
 import Auth from '../../utils/auth/auth.ts'
-import RecipeCardContainerEmpty from './RecipeCardContainerEmpty.tsx'
-import RecipeCards from './RecipeCards.tsx'
 
 interface RecipeCardContainerProps {
   results: any[]
@@ -48,7 +47,7 @@ const RecipeCardContainer: FC<RecipeCardContainerProps> = ({
     if (!data) return false
     if (!data.getUser) return false
     if (!data.getUser.pro) return false
-    if (!Auth.loggedIn) return false
+    if (!Auth.loggedIn()) return false
     return true
   }, [data, Auth.loggedIn])
 
