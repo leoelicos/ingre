@@ -1,17 +1,17 @@
-// useReducer
-import { useStoreContext } from '../utils/state/GlobalState.tsx'
-
 // react-router-dom
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
+// useReducer
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
+
 // utils
-import Auth from '../utils/auth'
+import Auth from '../../utils/auth/auth.ts'
 
 // Font Awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // state
-import { TOGGLE_SIDEBAR } from '../utils/state/actions'
+import { TOGGLE_SIDEBAR } from '../../utils/state/actions.ts'
 
 // Ant
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
