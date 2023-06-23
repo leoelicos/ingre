@@ -174,7 +174,6 @@ const Ingredients = () => {
     }
     getSavedIngredients()
     return 1
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }
 
   // update global savedRecipes when local savedRecipes changes
@@ -201,16 +200,15 @@ const Ingredients = () => {
 
   // run on first load
   useEffect(() => {
+    if (!Auth.loggedIn()) return
+    if (state.ingredientsDidGenerate) return
     const generateOnFirstLoad = async () => {
-      if (state.ingredientsDidGenerate === false) {
-        dispatch({ type: FLAG_INGREDIENTS_GENERATED })
-        await refetch()
-        reload()
-        setUpdateRecipes(true)
-      }
+      dispatch({ type: FLAG_INGREDIENTS_GENERATED })
+      await refetch()
+      reload()
+      setUpdateRecipes(true)
     }
-    if (Auth.loggedIn()) generateOnFirstLoad()
-
+    generateOnFirstLoad()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch, reload, state.ingredientsDidGenerate])
 
