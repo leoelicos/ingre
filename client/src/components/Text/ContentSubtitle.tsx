@@ -1,3 +1,4 @@
+import React, { FC, ReactNode } from 'react'
 // Ant
 import { Typography } from 'antd'
 
@@ -10,12 +11,12 @@ const titleStyle = {
   margin: '0.3rem 0'
 }
 
-const ContentSubtitle = (props) => (
+const ContentSubtitle: FC<{ children: ReactNode }> = ({ children }) => (
   <Typography.Title
     level={2}
     style={titleStyle}
   >
-    {props.children}
+    {children}
   </Typography.Title>
 )
 export default ContentSubtitle
