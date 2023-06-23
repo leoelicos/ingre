@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useApolloClient, useMutation } from '@apollo/client'
-import Auth from '../../utils/auth'
-import { GET_USER_WITH_EMAIL } from '../../utils/apollo/queries.ts'
-import { ADD_USER } from '../../utils/apollo/mutations.ts'
+import Auth from '../../../utils/auth/auth.ts'
+import { GET_USER_WITH_EMAIL } from '../../../utils/apollo/queries.ts'
+import { ADD_USER } from '../../../utils/apollo/mutations.ts'
 
-import ContentTitle from '../../components/ContentTitle'
-import ContentSubtitle from '../../components/ContentSubtitle'
+import ContentTitle from '../../../components/Text/ContentTitle.tsx'
+import ContentSubtitle from '../../../components/Text/ContentSubtitle.jsx'
 
 import { Button, Form, Input, Divider, Space, Row, Col, Alert } from 'antd'
 
