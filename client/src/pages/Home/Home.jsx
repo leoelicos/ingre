@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { Button, Space, Row, Spin, Divider, Col } from 'antd'
 
 // Custom components
-import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.jsx'
+import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 
 // Edamam API
 import fetchEdamam from '../../utils/api/index.ts'

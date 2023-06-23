@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { Form, Input, Cascader, Row, Spin, Divider, Col } from 'antd'
 
 // Custom components
-import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.jsx'
+import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 // Edamam API
