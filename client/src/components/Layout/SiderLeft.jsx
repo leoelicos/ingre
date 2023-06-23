@@ -30,7 +30,7 @@ import Auth from '../../utils/auth/auth.ts'
 // Ant subcomponent
 const { Sider } = Layout
 
-const App = () => {
+const SiderLeft = () => {
   const showDrawer = () => {
     dispatch({ type: SHOW_DRAWER })
   }
@@ -248,4 +248,4 @@ const App = () => {
   )
 }
 
-export default App
+export default SiderLeft
