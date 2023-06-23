@@ -1,8 +1,10 @@
-import React, { CSSProperties, FC, ReactNode, useCallback } from 'react'
-import { Typography } from 'antd'
-const { Title } = Typography
+/* react */
+import React, { CSSProperties, FC, ReactNode } from 'react'
 
-const contentTitleStyle: CSSProperties = {
+/* ant */
+import { Typography } from 'antd'
+
+const style: CSSProperties = {
   color: 'var(--ingre-dark-brown)',
   fontFamily: 'Poppins, sans-serif',
   fontSize: '36px',
@@ -11,18 +13,14 @@ const contentTitleStyle: CSSProperties = {
   margin: '0.6rem 0',
   textAlign: 'center'
 }
-const ContentTitle: FC<{ children: ReactNode }> = (props) => {
-  const x = useCallback(
-    (props: { children: ReactNode }) => (
-      <Title
-        level={1}
-        style={contentTitleStyle}
-      >
-        {props.children}
-      </Title>
-    ),
-    []
-  )
-  return x(props)
-}
+
+const ContentTitle: FC<{ children: ReactNode }> = ({ children }) => (
+  <Typography.Title
+    level={1}
+    style={style}
+  >
+    {children}
+  </Typography.Title>
+)
+
 export default ContentTitle
