@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { Button, Space, Row, Spin, Divider, Col } from 'antd'
 
 // Custom components
-import RecipeCardContainer from '../../components/RecipeCardContainer'
+import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.jsx'
 
 // Edamam API
 import fetchEdamam from '../../utils/api/index.ts'
@@ -17,16 +17,16 @@ import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import {
   UPDATE_HOME_RECIPES,
   FLAG_HOME_MOUNTED
-} from '../../utils/state/actions'
+} from '../../utils/state/actions.ts'
 
 // get API key
-import { GET_API_KEY } from '../../utils/apollo/queries'
+import { GET_API_KEY } from '../../utils/apollo/queries.ts'
 import { useApolloClient } from '@apollo/client'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // Auth
-import Auth from '../../utils/auth'
-import ContentTitle from '../../components/ContentTitle'
+import Auth from '../../utils/auth/auth.ts'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 const Home = () => {
   let noQuery = useMemo(
