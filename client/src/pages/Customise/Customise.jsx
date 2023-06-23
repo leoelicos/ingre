@@ -6,28 +6,28 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button, Form, Input, Col, Divider, Row, Alert, Empty } from 'antd'
 
 // Custom components
-import ContentTitle from '../../components/ContentTitle'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 // useContext
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 
 // ApolloClient
 import { useApolloClient, useMutation } from '@apollo/client'
-import { SAVE_RECIPE, UPDATE_RECIPE } from '../../utils/apollo/mutations'
+import { SAVE_RECIPE, UPDATE_RECIPE } from '../../utils/apollo/mutations.ts'
 
 // Assets
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // useReducer
-import { ADD_SAVED_RECIPE } from '../../utils/state/actions'
+import { ADD_SAVED_RECIPE } from '../../utils/state/actions.ts'
 import {
   GET_SAVED_RECIPES,
   GET_NUM_SAVED_RECIPES,
   GET_RECIPE
-} from '../../utils/apollo/queries'
+} from '../../utils/apollo/queries.ts'
 
 // Auth
-import Auth from '../../utils/auth/index.ts'
+import Auth from '../../utils/auth/auth.ts'
 
 const Customise = () => {
   const [state, dispatch] = useStoreContext()
