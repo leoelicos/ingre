@@ -5,7 +5,7 @@ import { LOGIN } from '../../../utils/apollo/mutations.ts'
 import Auth from '../../../utils/auth/auth.ts'
 
 import ContentTitle from '../../../components/Text/ContentTitle.tsx'
-import ContentSubtitle from '../../../components/Text/ContentSubtitle.jsx'
+import ContentSubtitle from '../../../components/Text/ContentSubtitle.tsx'
 
 import { Button, Form, Input, Divider, Row, Col, Alert } from 'antd'
 
@@ -55,7 +55,7 @@ const App = () => {
     document.title = 'Log in'
   }, [])
 
-  if (Auth.loggedIn) return <Navigate to="/" />
+  if (Auth.loggedIn()) return <Navigate to="/" />
 
   return (
     <Col style={colStyle}>
