@@ -9,6 +9,19 @@ import ContentSubtitle from '../../components/ContentSubtitle'
 
 import { Button, Form, Input, Divider, Row, Col, Alert } from 'antd'
 
+const colStyle = {
+  width: '100%',
+  display: 'flex',
+  flexFlow: 'column nowrap',
+  alignItems: 'center'
+}
+
+const formStyle = {
+  width: '100%',
+  marginTop: '1rem',
+  maxWidth: '600px'
+}
+
 const App = () => {
   const [login, { error }] = useMutation(LOGIN)
   const [form] = Form.useForm()
@@ -42,17 +55,10 @@ const App = () => {
     document.title = 'Log in'
   }, [])
 
-  return Auth.loggedIn() ? (
-    <Navigate to="/" />
-  ) : (
-    <Col
-      style={{
-        width: '100%',
-        display: 'flex',
-        flexFlow: 'column nowrap',
-        alignItems: 'center'
-      }}
-    >
+  if (Auth.loggedIn) return <Navigate to="/" />
+
+  return (
+    <Col style={colStyle}>
       <Row>
         <ContentTitle>Log in</ContentTitle>
       </Row>
@@ -64,11 +70,7 @@ const App = () => {
         colon={false}
         onValuesChange={handleChange}
         onFinish={handleFormSubmit}
-        style={{
-          width: '100%',
-          marginTop: '1rem',
-          maxWidth: '600px'
-        }}
+        style={formStyle}
       >
         <Form.Item
           name={['user', 'email']}
