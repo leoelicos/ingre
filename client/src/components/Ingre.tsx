@@ -23,7 +23,7 @@ import Ingredients from '../pages/Ingredients/Ingredients.jsx'
 import TapOff from '../pages/TapOff/TapOff.jsx'
 import Login from '../pages/Admin/Login/Login.jsx'
 import Signup from '../pages/Admin/Signup/Signup.jsx'
-import NoMatch from '../pages/Admin/NoMatch/NoMatch.jsx'
+import NoMatch from '../pages/Admin/NoMatch/NoMatch.tsx'
 import Success from '../pages/Admin/Success/Success.jsx'
 import Upgrade from '../pages/Admin/Upgrade/Upgrade.tsx'
 
