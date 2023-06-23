@@ -26,7 +26,9 @@ class AuthService {
     return timeExpiry < timeNow
   }
 
+  // TODO this function is being called too many times
   loggedIn(): boolean {
+    // console.log('loggedInCount')
     const token = this.getToken()
     return !!token && !this.isTokenExpired(token)
   }
