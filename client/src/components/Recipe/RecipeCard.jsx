@@ -5,27 +5,27 @@ import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // Global state
-import { useStoreContext } from '../utils/state/GlobalState.tsx'
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import {
   ADD_SAVED_RECIPE,
   REMOVE_SAVED_RECIPE,
   ADD_EDIT_RECIPE
-} from '../utils/state/actions'
+} from '../../utils/state/actions.ts'
 
 // Ant Component
 import { Card, Image, Button, Tooltip, Space, Typography } from 'antd'
 
 // Apollo
 import { useMutation, useApolloClient } from '@apollo/client'
-import { SAVE_RECIPE, REMOVE_RECIPE } from '../utils/apollo/mutations'
+import { SAVE_RECIPE, REMOVE_RECIPE } from '../../utils/apollo/mutations.ts'
 import {
   GET_SAVED_RECIPES,
   GET_NUM_SAVED_RECIPES,
   GET_RECIPE
-} from '../utils/apollo/queries'
+} from '../../utils/apollo/queries.ts'
 
 // JWT Decode
-import Auth from '../utils/auth'
+import Auth from '../../utils/auth/auth.ts'
 
 // Ant subcomponents
 const { Meta } = Card
