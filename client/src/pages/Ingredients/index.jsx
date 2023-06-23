@@ -1,7 +1,7 @@
 // React
 import React, { useContext, useEffect, useRef, useState } from 'react'
 
-// Ant components
+// Ant
 import {
   Alert,
   Button,

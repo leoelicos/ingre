@@ -1,7 +1,7 @@
 // React hooks
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-// Ant components
+// Ant
 import { Button, Space, Row, Spin, Divider, Col } from 'antd'
 
 // Custom components

@@ -18,7 +18,7 @@ import { GET_NUM_SAVED_RECIPES } from '../utils/apollo/queries'
 // Font Awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-// Ant components
+// Ant
 import { Button, Layout, Menu } from 'antd'
 import { COLLAPSE_SIDEBAR, EXPAND_SIDEBAR } from '../utils/state/actions'
 

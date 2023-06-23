@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-// Ant components
+// Ant
 import { Button, Form, Input, Col, Divider, Row, Alert, Empty } from 'antd'
 
 // Custom components
@@ -52,7 +52,14 @@ const Customise = () => {
   const [init, setInit] = useState({
     name: 'Tea',
     portions: 2,
-    ingredients: [{ name: 'p', quantity: 2, measure: 'unit', category: 'tea' }]
+    ingredients: [
+      {
+        name: 'p',
+        quantity: 2,
+        measure: 'unit',
+        category: 'tea'
+      }
+    ]
   })
   const [cancel, setCancel] = useState(false)
 
