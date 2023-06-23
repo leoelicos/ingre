@@ -1,8 +1,8 @@
-import RecipeCard from './RecipeCard'
+import RecipeCard from './RecipeCard.jsx'
 import { BackTop, Divider, Empty, Spin } from 'antd'
 import { useQuery } from '@apollo/client'
-import { GET_USER } from '../utils/apollo/queries'
-import Auth from '../utils/auth'
+import { GET_USER } from '../../utils/apollo/queries.ts'
+import Auth from '../../utils/auth/auth.ts'
 import { useMemo } from 'react'
 
 const RecipeCardContainer = ({ results, loading, onSavedPage }) => {
