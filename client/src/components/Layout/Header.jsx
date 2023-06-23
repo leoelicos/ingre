@@ -1,25 +1,17 @@
-// react-router-dom
+// react
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-// useReducer
-import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-
-// utils
-import Auth from '../../utils/auth/auth.ts'
-
-// Font Awesome
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
 // state
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import { TOGGLE_SIDEBAR } from '../../utils/state/actions.ts'
 
-// Ant
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
-import { Col, Row, Button, Steps, Typography } from 'antd'
+// auth
+import Auth from '../../utils/auth/auth.ts'
 
-// Ant subcomponents
-const { Step } = Steps
-const { Title } = Typography
+// components
+import { Col, Row, Button, Steps, Typography } from 'antd'
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const Header = () => {
   const [state, dispatch] = useStoreContext()
@@ -82,7 +74,7 @@ const Header = () => {
             )}
 
             <Link to="/">
-              <Title style={{ marginBottom: 0 }}>
+              <Typography.Title style={{ marginBottom: 0 }}>
                 <FontAwesomeIcon
                   className="ingre-logo"
                   icon="fa-solid fa-egg"
@@ -104,7 +96,7 @@ const Header = () => {
                 >
                   ingré
                 </span>
-              </Title>
+              </Typography.Title>
             </Link>
           </Row>
         </Col>
@@ -120,21 +112,21 @@ const Header = () => {
               current={getStep}
               responsive={false}
             >
-              <Step
+              <Steps.Step
                 icon={
                   <Link to="/">
                     <FontAwesomeIcon icon="fa-solid fa-cookie" />
                   </Link>
                 }
               />
-              <Step
+              <Steps.Step
                 icon={
                   <Link to="/ingredients">
                     <FontAwesomeIcon icon="fa-solid fa-egg" />
                   </Link>
                 }
               />
-              <Step
+              <Steps.Step
                 icon={
                   <Link to="/tapoff">
                     <FontAwesomeIcon icon="fa-solid fa-square-check" />
@@ -155,7 +147,7 @@ const Header = () => {
               current={getStep}
               responsive={false}
             >
-              <Step
+              <Steps.Step
                 title={<Link to="/">Recipes</Link>}
                 icon={
                   <Link to="/">
@@ -163,7 +155,7 @@ const Header = () => {
                   </Link>
                 }
               />
-              <Step
+              <Steps.Step
                 title={<Link to="/ingredients">Ingredients</Link>}
                 icon={
                   <Link to="/ingredients">
@@ -171,7 +163,7 @@ const Header = () => {
                   </Link>
                 }
               />
-              <Step
+              <Steps.Step
                 title={<Link to="/tapoff">Tap Off</Link>}
                 icon={
                   <Link to="/tapoff">
