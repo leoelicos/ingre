@@ -17,10 +17,10 @@ import {
 } from 'antd'
 
 // Custom components
-import ContentTitle from '../../components/ContentTitle'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 // Apollo
-import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries'
+import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries.ts'
 import { useApolloClient, useLazyQuery } from '@apollo/client'
 
 // GlobalState.tsx
@@ -36,7 +36,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Link } from 'react-router-dom'
 
 // Auth
-import Auth from '../../utils/auth/index.ts'
+import Auth from '../../utils/auth/auth.ts'
 
 const EditableContext = React.createContext(null)
 
