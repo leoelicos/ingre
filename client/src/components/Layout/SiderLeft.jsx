@@ -2,28 +2,30 @@
 import { useEffect, useState } from 'react'
 
 // React Router DOM
-import { Link } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 // useContext
-import { useStoreContext } from '../utils/state/GlobalState.tsx'
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 
 // useReducer
-import { SHOW_DRAWER } from '../utils/state/actions'
+import {
+  SHOW_DRAWER,
+  COLLAPSE_SIDEBAR,
+  EXPAND_SIDEBAR
+} from '../../utils/state/actions.ts'
 
 // Apollo
 import { useQuery } from '@apollo/client'
-import { GET_NUM_SAVED_RECIPES } from '../utils/apollo/queries'
+import { GET_NUM_SAVED_RECIPES } from '../../utils/apollo/queries.ts'
 
 // Font Awesome
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 // Ant
 import { Button, Layout, Menu } from 'antd'
-import { COLLAPSE_SIDEBAR, EXPAND_SIDEBAR } from '../utils/state/actions'
 
 // Auth
-import Auth from '../utils/auth'
+import Auth from '../../utils/auth/auth.ts'
 
 // Ant subcomponent
 const { Sider } = Layout
