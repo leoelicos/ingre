@@ -9,7 +9,7 @@ import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 // Edamam API
-import fetchEdamam from '../../utils/api/index.ts'
+import fetchEdamam from '../../utils/api/edamam.ts'
 
 // useContext
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
