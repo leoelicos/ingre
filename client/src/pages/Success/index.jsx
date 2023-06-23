@@ -13,6 +13,7 @@ import Auth from '../../utils/auth/index.ts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import ContentTitle from '../../components/ContentTitle'
+import NotLoggedIn from '../../components/NotLoggedIn.tsx'
 
 function Success() {
   const [makeUserPro] = useMutation(MAKE_USER_PRO)
@@ -44,21 +45,7 @@ function Success() {
     saveOrder()
   }, [makeUserPro, navigate])
 
-  if (!Auth.loggedIn())
-    return (
-      <Empty>
-        <Divider />
-        <Row>You need to be logged in to see this page.</Row>
-        <Link to="/login">
-          <Button
-            type="primary"
-            style={{ marginTop: '1rem' }}
-          >
-            Log in
-          </Button>
-        </Link>
-      </Empty>
-    )
+  if (!Auth.loggedIn()) return <NotLoggedIn />
 
   if (!searchParams.get('session_id')) {
     return (
