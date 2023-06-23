@@ -23,16 +23,16 @@ import {
 } from 'antd'
 
 // Custom components
-import ContentTitle from '../../components/ContentTitle'
-import ContentSubtitle from '../../components/ContentSubtitle'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import ContentSubtitle from '../../components/Text/ContentSubtitle.jsx'
 
 // Utils
 import compress from '../../utils/compress.ts'
-import Auth from '../../utils/auth/index.ts'
+import Auth from '../../utils/auth/auth.ts'
 
 // Masonry css
 import './style.css'
-import NotLoggedIn from '../../components/NotLoggedIn.tsx'
+import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 
 const { CheckableTag } = Tag
 const { Text } = Typography
