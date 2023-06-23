@@ -24,7 +24,7 @@ import {
 
 // Custom components
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import ContentSubtitle from '../../components/Text/ContentSubtitle.jsx'
+import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
 
 // Utils
 import compress from '../../utils/compress.ts'
