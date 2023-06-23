@@ -1,34 +1,34 @@
-// React hooks
+/* react */
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-// Ant
+
+/* components */
 import { Button, Space, Row, Spin, Divider, Col } from 'antd'
-
-// Custom components
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
-// Edamam API
-import fetchEdamam from '../../utils/api/edamam.ts'
-
-// useContext
+/* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-
-// useReducer
 import {
   UPDATE_HOME_RECIPES,
   FLAG_HOME_MOUNTED
 } from '../../utils/state/actions.ts'
 
-// get API key
-import { GET_API_KEY } from '../../utils/apollo/queries.ts'
+/* data */
 import { useApolloClient } from '@apollo/client'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { GET_API_KEY } from '../../utils/apollo/queries.ts'
+import fetchEdamam from '../../utils/api/edamam.ts'
 
-// Auth
+/* auth */
 import Auth from '../../utils/auth/auth.ts'
-import ContentTitle from '../../components/Text/ContentTitle.tsx'
+
+/* hooks */
+import { changeTitle } from '../../utils/changeTitle.ts'
 
 const Home = () => {
+  changeTitle('Recipes')
+
   let noQuery = useMemo(
     () => ({
       q: ' ',
@@ -153,11 +153,6 @@ const Home = () => {
     fetchOnFirstLoad()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.homeDidMount])
-
-  // update title on every load
-  useEffect(() => {
-    document.title = 'ingré'
-  }, [])
 
   return (
     <Col>

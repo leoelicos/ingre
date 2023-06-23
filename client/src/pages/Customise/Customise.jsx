@@ -1,24 +1,19 @@
-// React hooks
+/* react */
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
-// Ant
+/* components */
 import { Button, Form, Input, Col, Divider, Row, Alert, Empty } from 'antd'
-
-// Custom components
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 
-// useContext
-import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-
-// ApolloClient
+/* data */
 import { useApolloClient, useMutation } from '@apollo/client'
 import { SAVE_RECIPE, UPDATE_RECIPE } from '../../utils/apollo/mutations.ts'
 
-// Assets
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
-// useReducer
+/* state */
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import { ADD_SAVED_RECIPE } from '../../utils/state/actions.ts'
 import {
   GET_SAVED_RECIPES,
@@ -26,12 +21,12 @@ import {
   GET_RECIPE
 } from '../../utils/apollo/queries.ts'
 
-// Auth
+/* auth */
 import Auth from '../../utils/auth/auth.ts'
 
 const Customise = () => {
   const [state, dispatch] = useStoreContext()
-  const [form] = Form.useForm()
+  const [form] = Form.useForm(undefined)
   const [addCustomRecipe, { error: saveRecipeError }] = useMutation(
     SAVE_RECIPE,
     {
@@ -194,7 +189,9 @@ const Customise = () => {
       </Row>
 
       <Row>
-        {Auth.loggedIn() ? (
+        {!Auth.loggedIn() ? (
+          <NotLoggedIn />
+        ) : (
           <Form
             form={form}
             name="dynamic_form_nest_item"
@@ -706,19 +703,6 @@ const Customise = () => {
               </Col>
             </Row>
           </Form>
-        ) : (
-          <Empty>
-            <Divider />
-            <Row>You need to be logged in to see this page.</Row>
-            <Link to="/login">
-              <Button
-                type="primary"
-                style={{ marginTop: '1rem' }}
-              >
-                Log in
-              </Button>
-            </Link>
-          </Empty>
         )}
       </Row>
     </Col>

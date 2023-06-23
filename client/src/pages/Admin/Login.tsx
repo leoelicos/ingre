@@ -1,13 +1,21 @@
-import React, { useEffect } from 'react'
-import { useMutation } from '@apollo/client'
+/* react */
+import React, { FC } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+
+/* data */
+import { useMutation } from '@apollo/client'
 import { LOGIN } from '../../utils/apollo/mutations.ts'
+
+/* auth */
 import Auth from '../../utils/auth/auth.ts'
 
+/* components */
+import { Button, Form, Input, Divider, Row, Col, Alert } from 'antd'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
 
-import { Button, Form, Input, Divider, Row, Col, Alert } from 'antd'
+/* utils */
+import { changeTitle } from '../../utils/changeTitle.ts'
 
 const colStyle = {
   width: '100%',
@@ -22,12 +30,23 @@ const formStyle = {
   maxWidth: '600px'
 }
 
-const App = () => {
+interface UserLogin {
+  email: string
+  password: string
+}
+
+interface UserLoginForm {
+  user: UserLogin
+}
+
+const Login: FC = () => {
+  changeTitle('Log in')
+
   const [login, { error }] = useMutation(LOGIN)
   const [form] = Form.useForm()
   const navigate = useNavigate()
 
-  const handleFormSubmit = async (values) => {
+  const handleFormSubmit = async (values: UserLoginForm) => {
     const { user } = values
     const { email, password } = user
     const payload = { email, password }
@@ -45,15 +64,11 @@ const App = () => {
     }
   }
 
-  const handleChange = (changedValues) => {
+  const handleChange = (changedValues: UserLogin) => {
     const { email, password } = changedValues
     if (email) form.setFieldsValue({ email })
     if (password) form.setFieldsValue({ password })
   }
-
-  useEffect(() => {
-    document.title = 'Log in'
-  }, [])
 
   if (Auth.loggedIn()) return <Navigate to="/" />
 
@@ -148,4 +163,4 @@ const App = () => {
   )
 }
 
-export default App
+export default Login

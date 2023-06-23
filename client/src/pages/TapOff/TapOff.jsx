@@ -1,13 +1,12 @@
-// React packages
-import { useEffect, useState } from 'react'
+/* react */
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Masonry from 'react-masonry-css'
 
-// GlobalState.tsx
+/* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import { UPDATE_TAP_OFF } from '../../utils/state/actions.ts'
 
-// Ant
+/* components */
 import {
   Col,
   Card,
@@ -17,26 +16,26 @@ import {
   Checkbox,
   Typography,
   Button,
-  Divider,
-  Alert,
-  Empty
+  Alert
 } from 'antd'
-
-// Custom components
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
+import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
+import Masonry from 'react-masonry-css'
 
-// Utils
-import compress from '../../utils/compress.ts'
+/* auth */
 import Auth from '../../utils/auth/auth.ts'
 
-// Masonry css
-import './style.css'
-import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
+/* utils */
+import compress from '../../utils/compress.ts'
+import { changeTitle } from '../../utils/changeTitle.ts'
 
-const { CheckableTag } = Tag
-const { Text } = Typography
+/* style */
+import './style.css'
+
 const TapOff = () => {
+  changeTitle('tapoff')
+
   const handleChange = (ri, ii, checked) => {
     const x = JSON.parse(JSON.stringify(compressedRecipes))
     x[ri].items[ii].checked = checked
@@ -48,10 +47,6 @@ const TapOff = () => {
   const [compressedRecipes, setCompressedRecipes] = useState([
     { items: ['Loading'], category: 'Loading' }
   ])
-
-  useEffect(() => {
-    document.title = 'ingré Tap Off'
-  }, [])
 
   useEffect(() => {
     const compressed = compress(savedIngredients)
@@ -107,7 +102,7 @@ const TapOff = () => {
                     style={{ width: '100%' }}
                   >
                     {r.items.map((i, ii) => (
-                      <CheckableTag
+                      <Tag.CheckableTag
                         key={r.category + i.description}
                         checked={i.checked}
                         onChange={(checked) => handleChange(ri, ii, checked)}
@@ -118,10 +113,10 @@ const TapOff = () => {
                           checked={i.checked}
                           className="tap-off-check-box"
                         />
-                        <Text style={{ fontSize: '14px' }}>
+                        <Typography.Text style={{ fontSize: '14px' }}>
                           {i.description}
-                        </Text>
-                      </CheckableTag>
+                        </Typography.Text>
+                      </Tag.CheckableTag>
                     ))}
                   </Space>
                 </Card>

@@ -1,16 +1,15 @@
-// react
-import React, { FC, useEffect } from 'react'
-
-// React Router Dom
+/* react */
+import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
 
-// Ant
+/* components */
 import { Button, Empty, Space } from 'antd'
 
+/* utils */
+import { changeTitle } from '../../utils/changeTitle.ts'
+
 const NoMatch: FC = () => {
-  useEffect(() => {
-    document.title = 'ingré'
-  }, [])
+  changeTitle('ingré')
 
   return (
     <Empty>
