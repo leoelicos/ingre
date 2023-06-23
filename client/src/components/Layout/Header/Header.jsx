@@ -2,11 +2,11 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 // state
-import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-import { TOGGLE_SIDEBAR } from '../../utils/state/actions.ts'
+import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
+import { TOGGLE_SIDEBAR } from '../../../utils/state/actions.ts'
 
 // auth
-import Auth from '../../utils/auth/auth.ts'
+import Auth from '../../../utils/auth/auth.ts'
 
 // components
 import { Col, Row, Button, Steps, Typography } from 'antd'
@@ -30,6 +30,8 @@ const Header = () => {
     Auth.logout()
     navigate(0)
   }
+
+  console.log('Auth.loggedIn', Auth.loggedIn())
 
   return (
     <Row
