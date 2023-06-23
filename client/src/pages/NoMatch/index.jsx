@@ -4,14 +4,12 @@ import { useEffect } from 'react'
 // React Router Dom
 import { Link } from 'react-router-dom'
 
-// Ant components
+// Ant
 import { Button, Empty, Space } from 'antd'
 
-// Custom components
-
-const App = () => {
+const NoMatch = () => {
   useEffect(() => {
-    document.title = 'ingré Not Found'
+    document.title = 'ingré'
   }, [])
 
   return (
@@ -26,4 +24,4 @@ const App = () => {
   )
 }
 
-export default App
+export default NoMatch

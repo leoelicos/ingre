@@ -1,4 +1,4 @@
-// Ant components
+// Ant
 import { Typography } from 'antd'
 
 // Ant subcomponents

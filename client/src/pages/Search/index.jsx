@@ -1,7 +1,7 @@
 // React hooks
 import { useEffect, useState } from 'react'
 
-// Ant components
+// Ant
 import { Form, Input, Cascader, Row, Spin, Divider, Col } from 'antd'
 
 // Custom components

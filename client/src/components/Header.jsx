@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // state
 import { TOGGLE_SIDEBAR } from '../utils/state/actions'
 
-// Ant Components
+// Ant
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { Col, Row, Button, Steps, Typography } from 'antd'
 

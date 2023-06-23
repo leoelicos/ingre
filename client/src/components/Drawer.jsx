@@ -1,7 +1,7 @@
 // React hooks
 import { useLocation } from 'react-router-dom'
 
-// Ant components
+// Ant
 import { Alert, Button, Drawer as AntDrawer, Space, Timeline } from 'antd'
 
 // Global state

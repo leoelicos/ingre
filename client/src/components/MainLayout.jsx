@@ -1,4 +1,4 @@
-// Ant components
+// Ant
 import { Layout, Row } from 'antd'
 
 const App = (props) => {
