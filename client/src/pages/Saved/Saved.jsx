@@ -13,7 +13,7 @@ import { Col, Row, Divider, Spin, Button, Alert, Empty } from 'antd'
 
 // Custom components
 
-import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.jsx'
+import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 // Apollo
