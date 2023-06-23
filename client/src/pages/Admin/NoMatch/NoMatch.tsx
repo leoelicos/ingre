@@ -1,5 +1,5 @@
-// React
-import { useEffect } from 'react'
+// react
+import React, { FC, useEffect } from 'react'
 
 // React Router Dom
 import { Link } from 'react-router-dom'
@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 // Ant
 import { Button, Empty, Space } from 'antd'
 
-const NoMatch = () => {
+const NoMatch: FC = () => {
   useEffect(() => {
     document.title = 'ingré'
   }, [])
