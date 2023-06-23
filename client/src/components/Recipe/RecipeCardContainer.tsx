@@ -49,7 +49,7 @@ const RecipeCardContainer: FC<RecipeCardContainerProps> = ({
     if (!data.getUser.pro) return false
     if (!Auth.loggedIn()) return false
     return true
-  }, [data, Auth.loggedIn])
+  }, [data])
 
   return (
     <div style={recipeCardContainerStyle}>
