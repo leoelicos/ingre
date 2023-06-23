@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react'
 import { Form, Input, Cascader, Row, Spin, Divider, Col } from 'antd'
 
 // Custom components
-import RecipeCardContainer from '../../components/RecipeCardContainer'
-import ContentTitle from '../../components/ContentTitle'
+import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.jsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 // Edamam API
 import fetchEdamam from '../../utils/api/index.ts'
@@ -15,10 +15,10 @@ import fetchEdamam from '../../utils/api/index.ts'
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 
 // useReducer
-import { UPDATE_SEARCH_RECIPES } from '../../utils/state/actions'
+import { UPDATE_SEARCH_RECIPES } from '../../utils/state/actions.ts'
 
 // get API key
-import { GET_API_KEY } from '../../utils/apollo/queries'
+import { GET_API_KEY } from '../../utils/apollo/queries.ts'
 import { useApolloClient } from '@apollo/client'
 
 // Ant subcomponents
