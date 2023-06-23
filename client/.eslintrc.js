@@ -1,12 +1,13 @@
 module.exports = {
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: [
+    'plugin:import/recommended',
     'plugin:react/recommended', //
 
     // 'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended'
   ],
-  plugins: ['react-hooks'],
+  plugins: ['react-hooks', 'import'],
   parserOptions: {
     ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
     sourceType: 'module', // Allows for the use of imports
@@ -21,7 +22,14 @@ module.exports = {
     'prettier/prettier': 'error',
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
-    'react-hooks/exhaustive-deps': 'warn'
+    'react-hooks/exhaustive-deps': 'warn',
+    'import/extensions': [
+      'error',
+      'always',
+      {
+        ignorePackages: true // ignore fontawesome
+      }
+    ]
   },
   settings: {
     react: {
