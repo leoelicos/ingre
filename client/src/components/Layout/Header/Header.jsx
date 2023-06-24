@@ -31,8 +31,6 @@ const Header = () => {
     navigate(0)
   }
 
-  console.log('Auth.loggedIn', Auth.loggedIn())
-
   return (
     <Row
       style={{
