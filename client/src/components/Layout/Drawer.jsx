@@ -24,7 +24,7 @@ const Drawer = () => {
     data: userData,
     loading: userLoading,
     error: userError
-  } = useQuery(GET_USER)
+  } = useQuery(GET_USER) // TODO we already have this information from Auth.getProfile
   const [pro, setPro] = useState(false)
 
   useEffect(() => {
