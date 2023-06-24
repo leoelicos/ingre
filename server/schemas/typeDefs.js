@@ -5,7 +5,7 @@
  * Copyright 2022 Leo Wong
  */
 
-const { gql } = require('apollo-server-express');
+const { gql } = require('apollo-server-express')
 
 const typeDefs = gql`
   type User {
@@ -98,7 +98,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    getUserWithEmail(email: String!): User
+    checkEmailAlreadyExists(email: String!): Boolean
     getApiKey: EdamamCredentials
     getUser: User
     getRecipe(_id: ID!): Recipe
@@ -115,6 +115,6 @@ const typeDefs = gql`
     removeRecipe(recipeId: ID!): Boolean
     login(email: String!, password: String!): Auth
   }
-`;
+`
 
-module.exports = typeDefs;
+module.exports = typeDefs
