@@ -18,9 +18,9 @@ const resolvers = {
       try {
         const user = await User.findOne({ email: args.email })
         if (user) return true
+        else return false
       } catch (error) {
         console.error(error)
-        return false
       }
     },
     //
