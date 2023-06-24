@@ -13,15 +13,15 @@ const APP_ID = process.env.HEROKU_EDAMAM_APP_ID || process.env.PRODUCTION_EDAMAM
 let payload
 const resolvers = {
   Query: {
-    getUserWithEmail: async (_, args) => {
+    checkEmailAlreadyExists: async (_, args) => {
       console.log('[getUserWithEmail] REQ\t', args)
-      let user = null
       try {
-        user = await User.findOne({ email: args.email })
+        const user = await User.findOne({ email: args.email })
+        if (user) return true
       } catch (error) {
         console.error(error)
+        return false
       }
-      return user
     },
     //
     getApiKey: () => ({ appId: APP_ID, appKey: APP_KEY }),
