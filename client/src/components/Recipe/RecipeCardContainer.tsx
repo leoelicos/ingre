@@ -41,7 +41,7 @@ const RecipeCardContainer: FC<RecipeCardContainerProps> = ({
   loading,
   onSavedPage
 }) => {
-  const { data } = useQuery<GetUser>(GET_USER)
+  const { data } = useQuery<GetUser>(GET_USER) //TODO why is this needed? pro is already in Auth.profile()
 
   const pro = useMemo(() => {
     if (!data) return false
