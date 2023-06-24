@@ -1,10 +1,8 @@
 import { gql } from '@apollo/client'
 
-export const GET_USER_WITH_EMAIL = gql`
-  query GetUserWithEmail($email: String!) {
-    getUserWithEmail(email: $email) {
-      _id
-    }
+export const CHECK_EMAIL_ALREADY_EXISTS = gql`
+  query CheckEmailAlreadyExists($email: String!) {
+    checkEmailAlreadyExists(email: $email)
   }
 `
 
