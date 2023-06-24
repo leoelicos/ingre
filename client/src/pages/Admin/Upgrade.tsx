@@ -37,7 +37,7 @@ const Upgrade: FC = () => {
     data: userData,
     loading: userLoading,
     error: userError
-  } = useQuery(GET_USER)
+  } = useQuery(GET_USER) // TODO why is this needed? We already have this information from token
 
   const [pro, setPro] = useState(false)
 
