@@ -4,7 +4,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 /* data */
 import { useApolloClient, useMutation } from '@apollo/client'
-import { GET_USER_WITH_EMAIL } from '../../utils/apollo/queries.ts'
+import { CHECK_EMAIL_ALREADY_EXISTS } from '../../utils/apollo/queries.ts'
 import { ADD_USER } from '../../utils/apollo/mutations.ts'
 
 /* auth */
@@ -18,6 +18,20 @@ import { Button, Form, Input, Divider, Space, Row, Col, Alert } from 'antd'
 /* utils */
 import { changeTitle } from '../../utils/changeTitle.ts'
 
+const colWrapper = {
+  width: '100%',
+  display: 'flex',
+  flexFlow: 'column nowrap',
+  alignItems: 'center'
+}
+
+const formStyle = {
+  width: '100%',
+  marginTop: '1rem',
+  maxWidth: '600px',
+  border: '1px solid gray'
+}
+
 const Signup = () => {
   changeTitle('Sign up')
 
@@ -28,14 +42,13 @@ const Signup = () => {
 
   const client = useApolloClient()
 
-  const userExists = async (email) => {
-    // console.log(`[Signup] Validate ${email}`);
+  const emailAlreadyExists = async (email) => {
     const { data } = await client.query({
-      query: GET_USER_WITH_EMAIL,
+      query: CHECK_EMAIL_ALREADY_EXISTS,
       variables: { email }
     })
     // console.log('data = ', data);
-    if (data.getUserWithEmail)
+    if (data.checkEmailAlreadyExists)
       return Promise.reject(
         <Alert
           type="error"
@@ -57,7 +70,6 @@ const Signup = () => {
     const { firstName, lastName, email, password } = user
     const variables = { input: { email, password, firstName, lastName } }
     try {
-      // console.log('variables = ', variables);
       const res = await addUser({ variables })
       const token = res.data.addUser.token
       Auth.login(token)
@@ -76,17 +88,9 @@ const Signup = () => {
     if (password) form.setFieldsValue({ password })
   }
 
-  return Auth.loggedIn() ? (
-    <Navigate to="/" />
-  ) : (
-    <Col
-      style={{
-        width: '100%',
-        display: 'flex',
-        flexFlow: 'column nowrap',
-        alignItems: 'center'
-      }}
-    >
+  if (Auth.loggedIn()) return <Navigate to="/" />
+  return (
+    <Col style={colWrapper}>
       <Row>
         <ContentTitle>Sign up</ContentTitle>
       </Row>
@@ -98,53 +102,10 @@ const Signup = () => {
         colon={false}
         onValuesChange={handleChange}
         onFinish={handleFormSubmit}
-        style={{
-          width: '100%',
-          marginTop: '1rem',
-          maxWidth: '600px'
-        }}
+        scrollToFirstError={true}
+        style={formStyle}
       >
-        <Form.Item
-          name={['user', 'firstName']}
-          label="First name"
-          style={{
-            marginBottom: '12px'
-          }}
-          rules={[
-            {
-              required: true,
-              message: (
-                <Alert
-                  type="error"
-                  message="First name is required"
-                  showIcon
-                />
-              )
-            },
-            {
-              pattern: new RegExp(/^[^\s]+$/),
-              message: (
-                <Alert
-                  type="error"
-                  message="First name cannot contain spaces"
-                  showIcon
-                />
-              )
-            },
-            {
-              pattern: new RegExp(/^[^!";#$%&'()*+,./:;<=>?@[\]^_{|}~]+$/),
-              message: (
-                <Alert
-                  type="error"
-                  message="First name cannot contain symbols"
-                  showIcon
-                />
-              )
-            }
-          ]}
-        >
-          <Input />
-        </Form.Item>
+        <FirstName />
         <Form.Item
           name={['user', 'lastName']}
           label="Last name"
@@ -210,7 +171,7 @@ const Signup = () => {
                 />
               )
             },
-            { validator: (_, value) => userExists(value) }
+            { validator: (_, value) => emailAlreadyExists(value) }
           ]}
           style={{
             marginBottom: '12px'
@@ -297,3 +258,47 @@ const Signup = () => {
 }
 
 export default Signup
+
+const FirstName = () => (
+  <Form.Item
+    name={['user', 'firstName']}
+    label="First name"
+    style={{
+      marginBottom: '12px'
+    }}
+    rules={[
+      {
+        required: true,
+        message: (
+          <Alert
+            type="error"
+            message="First name is required"
+            showIcon
+          />
+        )
+      },
+      {
+        pattern: new RegExp(/^[^\s]+$/),
+        message: (
+          <Alert
+            type="error"
+            message="First name cannot contain spaces"
+            showIcon
+          />
+        )
+      },
+      {
+        pattern: new RegExp(/^[^!";#$%&'()*+,./:;<=>?@[\]^_{|}~]+$/),
+        message: (
+          <Alert
+            type="error"
+            message="First name cannot contain symbols"
+            showIcon
+          />
+        )
+      }
+    ]}
+  >
+    <Input />
+  </Form.Item>
+)
