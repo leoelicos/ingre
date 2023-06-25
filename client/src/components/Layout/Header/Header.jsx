@@ -12,6 +12,8 @@ import Auth from '../../../utils/auth/auth.ts'
 import { Col, Row, Button, Steps, Typography } from 'antd'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import LogoutLink from '../../Authentication/LogoutLink.tsx'
+import LoginLink from '../../Authentication/LoginLink.tsx'
 
 const Header = () => {
   const [state, dispatch] = useStoreContext()
@@ -23,13 +25,6 @@ const Header = () => {
   const { pathname } = useLocation()
   const getStep =
     pathname === '/tapoff' ? 2 : pathname === '/ingredients' ? 1 : 0
-  const navigate = useNavigate()
-
-  const logout = (event) => {
-    event.preventDefault()
-    Auth.logout()
-    navigate(0)
-  }
 
   return (
     <Row
@@ -177,37 +172,7 @@ const Header = () => {
         {/* Logout/Login/Signup */}
         <Col>
           <Row align="middle">
-            {Auth.loggedIn() ? (
-              <Button
-                type="link"
-                onClick={logout}
-                style={{
-                  color: 'var(--ingre-dark-brown)',
-                  fontSize: '1.2rem',
-                  margin: '0 1.2rem',
-                  padding: '0 8px',
-                  borderRadius: '1.2rem'
-                }}
-              >
-                Log out
-              </Button>
-            ) : (
-              <Link to="/login">
-                <Button
-                  type="link"
-                  style={{
-                    color: 'var(--ingre-dark-brown)',
-                    fontSize: '1.2rem',
-                    margin: '0 1.2rem',
-                    padding: '0 12px',
-                    borderRadius: '1.2rem'
-                  }}
-                  shape="round"
-                >
-                  Log in
-                </Button>
-              </Link>
-            )}
+            {Auth.loggedIn() ? <LogoutLink /> : <LoginLink />}
           </Row>
         </Col>
       </Row>
