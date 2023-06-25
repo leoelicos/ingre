@@ -1,5 +1,5 @@
 /* react */
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 /* components */
@@ -18,6 +18,7 @@ import {
 } from 'antd'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 
 /* data */
 import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries.ts'
@@ -36,84 +37,8 @@ import Auth from '../../utils/auth/auth.ts'
 
 /* utils */
 import { changeTitle } from '../../utils/changeTitle.ts'
-
-const EditableContext = React.createContext(null)
-
-const EditableRow = ({ index, ...props }) => {
-  const [form] = Form.useForm()
-  return (
-    <Form
-      form={form}
-      component={false}
-    >
-      <EditableContext.Provider value={form}>
-        <tr {...props} />
-      </EditableContext.Provider>
-    </Form>
-  )
-}
-
-const EditableCell = ({
-  title,
-  editable,
-  children,
-  dataIndex,
-  record,
-  handleSave,
-  ...restProps
-}) => {
-  const [editing, setEditing] = useState(false)
-  const inputRef = useRef(null)
-  const form = useContext(EditableContext)
-  useEffect(() => {
-    if (editing) {
-      inputRef.current.focus()
-    }
-  }, [editing])
-
-  const toggleEdit = () => {
-    setEditing(!editing)
-    form.setFieldsValue({
-      [dataIndex]: record[dataIndex]
-    })
-  }
-
-  const save = async () => {
-    try {
-      const values = await form.validateFields()
-      toggleEdit()
-      handleSave({ ...record, ...values })
-    } catch (e) {
-      console.error('Save failed:', e)
-    }
-  }
-
-  let childNode = children
-
-  if (editable) {
-    childNode = editing ? (
-      <Form.Item
-        name={dataIndex}
-        rules={[{ required: true, message: `${title} is required.` }]}
-      >
-        <Input
-          ref={inputRef}
-          onPressEnter={save}
-          onBlur={save}
-        />
-      </Form.Item>
-    ) : (
-      <div
-        className="editable-cell-value-wrap"
-        onClick={toggleEdit}
-      >
-        {children}
-      </div>
-    )
-  }
-
-  return <td {...restProps}>{childNode}</td>
-}
+import EditableRow from './EditableRow.tsx'
+import EditableCell from './EditableCell.tsx'
 
 const Ingredients = () => {
   changeTitle('Ingredients')
@@ -398,7 +323,12 @@ const Ingredients = () => {
                     style={{
                       width: '100%'
                     }}
-                    components={components}
+                    components={{
+                      body: {
+                        row: EditableRow,
+                        cell: EditableCell
+                      }
+                    }}
                     rowClassName={() => 'editable-row'}
                     bordered
                     dataSource={dataSource}
@@ -460,20 +390,7 @@ const Ingredients = () => {
             )}
           </>
         ) : (
-          <Empty>
-            <Divider />
-            <Row>You need to be logged in to see this page.</Row>
-            <Link to="/login">
-              <Button
-                type="primary"
-                style={{
-                  marginTop: '1rem'
-                }}
-              >
-                Log in
-              </Button>
-            </Link>
-          </Empty>
+          <NotLoggedIn />
         )}
       </Row>
     </Col>
