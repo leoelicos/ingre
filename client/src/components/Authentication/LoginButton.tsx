@@ -1,13 +1,11 @@
 import React, { FC } from 'react'
 
-import AuthButton from './AuthButton.tsx'
 import AuthLink from './AuthLink.tsx'
 
-const LoginButton: FC = () => {
-  return (
-    <AuthLink link={'/login'}>
-      <AuthButton>Log in</AuthButton>
-    </AuthLink>
-  )
-}
+const LoginButton: FC = () => (
+  <AuthLink
+    link={'/login'}
+    text="Log in"
+  />
+)
 export default LoginButton
