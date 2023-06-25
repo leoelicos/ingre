@@ -1,17 +1,13 @@
-/* react */
 import React, { FC } from 'react'
 
-/* ant */
-import { Button } from 'antd'
+import AuthButton from './AuthButton.tsx'
+import AuthLink from './AuthLink.tsx'
 
 const LoginButton: FC = () => {
   return (
-    <Button
-      type="primary"
-      style={{ marginTop: '1rem' }}
-    >
-      Log in
-    </Button>
+    <AuthLink link={'/login'}>
+      <AuthButton>Log in</AuthButton>
+    </AuthLink>
   )
 }
 export default LoginButton
