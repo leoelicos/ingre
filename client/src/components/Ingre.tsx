@@ -26,6 +26,7 @@ import Signup from '../pages/Admin/Signup.jsx'
 import NoMatch from '../pages/Admin/NoMatch.tsx'
 import Success from '../pages/Admin/Success.jsx'
 import Upgrade from '../pages/Admin/Upgrade.tsx'
+import Logout from '../pages/Admin/Logout.tsx'
 
 /* components */
 import Drawer from './Layout/Drawer.jsx'
@@ -103,6 +104,10 @@ const Ingre: FC = () => {
                   <Route
                     path="/login"
                     element={<Login />}
+                  />
+                  <Route
+                    path="/logout"
+                    element={<Logout />}
                   />
                   <Route
                     path="/signup"
