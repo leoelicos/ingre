@@ -2,10 +2,10 @@ import React, { FC } from 'react'
 
 import AuthLink from './AuthLink.tsx'
 
-const LogoutButton: FC = () => (
+const LogoutLink: FC = () => (
   <AuthLink
     link={'/logout'}
     text="Log out"
   />
 )
-export default LogoutButton
+export default LogoutLink
