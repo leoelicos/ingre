@@ -3,7 +3,7 @@ import React, { FC } from 'react'
 
 /* components */
 import { Divider, Empty, Row } from 'antd'
-import LoginLink from './LoginLink'
+import LoginLink from './LoginLink.tsx'
 
 const NotLoggedIn: FC = () => {
   return (
