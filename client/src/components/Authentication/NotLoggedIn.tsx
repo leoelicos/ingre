@@ -1,6 +1,9 @@
-import { Divider, Empty, Row } from 'antd'
+/* react */
 import React, { FC } from 'react'
-import LoginLink from './LoginLink.tsx'
+
+/* components */
+import { Divider, Empty, Row } from 'antd'
+import LoginLink from './LoginLink'
 
 const NotLoggedIn: FC = () => {
   return (
