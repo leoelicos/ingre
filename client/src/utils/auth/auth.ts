@@ -37,8 +37,13 @@ class AuthService {
     localStorage.setItem('id_token', idToken)
   }
 
-  logout(): void {
-    localStorage.removeItem('id_token')
+  logout(): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        localStorage.removeItem('id_token')
+        resolve()
+      }, 1000)
+    })
   }
 }
 
