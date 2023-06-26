@@ -1,5 +1,5 @@
 /* react */
-import { useState, useEffect, useMemo } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 /* components */
@@ -7,6 +7,7 @@ import { Button, Space, Row, Spin, Divider, Col } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
 /* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
@@ -26,20 +27,8 @@ import Auth from '../../utils/auth/auth.ts'
 /* hooks */
 import { changeTitle } from '../../utils/changeTitle.ts'
 
-const Home = () => {
+const Home: FC = () => {
   changeTitle('Recipes')
-
-  let noQuery = useMemo(
-    () => ({
-      q: ' ',
-      diet: [],
-      health: [],
-      cuisineType: [],
-      mealType: [],
-      dishType: []
-    }),
-    []
-  )
 
   const client = useApolloClient()
 
@@ -57,7 +46,7 @@ const Home = () => {
     return { appId, appKey }
   }
 
-  const handleRefresh = async (query) => {
+  const handleRefresh = async (query: string) => {
     try {
       // get credentials from backend
       const { appId, appKey } = await getAppCredentials()
@@ -103,7 +92,7 @@ const Home = () => {
         })
       } else {
         hits = await fetchEdamam({
-          search,
+          search: { q: 'yum' },
           appId,
           appKey
         })
@@ -168,7 +157,7 @@ const Home = () => {
           className="explore-buttons"
           wrap
         >
-          <Button onClick={() => handleRefresh()}>Random</Button>
+          <Button onClick={() => handleRefresh('yum')}>Random</Button>
           <Button onClick={() => handleRefresh('vegetarian')}>
             Vegetarian
           </Button>
@@ -180,7 +169,9 @@ const Home = () => {
           <Button type="primary">
             <Link to="/search">
               <Space>
-                <FontAwesomeIcon icon="fa-solid fa-magnifying-glass" />
+                <FontAwesomeIcon
+                  icon={'fa-solid fa-magnifying-glass' as IconProp}
+                />
                 Search
               </Space>
             </Link>
