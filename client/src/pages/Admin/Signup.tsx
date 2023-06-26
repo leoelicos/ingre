@@ -1,5 +1,5 @@
 /* react */
-import React, { useEffect } from 'react'
+import React, { FC } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 /* data */
@@ -17,6 +17,7 @@ import { Button, Form, Input, Divider, Space, Row, Col, Alert } from 'antd'
 
 /* utils */
 import { changeTitle } from '../../utils/changeTitle.ts'
+import LoginLink from '../../components/Authentication/LoginLink.tsx'
 
 const colWrapper = {
   width: '100%',
@@ -31,8 +32,17 @@ const formStyle = {
   maxWidth: '600px',
   border: '1px solid gray'
 }
+interface UserInterface {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+}
+interface SignupFormInterface {
+  user: UserInterface
+}
 
-const Signup = () => {
+const Signup: FC = () => {
   changeTitle('Sign up')
 
   const [addUser, { error }] = useMutation(ADD_USER)
@@ -42,7 +52,7 @@ const Signup = () => {
 
   const client = useApolloClient()
 
-  const emailAlreadyExists = async (email) => {
+  const emailAlreadyExists = async (email: string) => {
     const { data } = await client.query({
       query: CHECK_EMAIL_ALREADY_EXISTS,
       variables: { email }
@@ -65,7 +75,7 @@ const Signup = () => {
     return Promise.resolve()
   }
 
-  const handleFormSubmit = async (values) => {
+  const handleFormSubmit = async (values: SignupFormInterface) => {
     const { user } = values
     const { firstName, lastName, email, password } = user
     const variables = { input: { email, password, firstName, lastName } }
@@ -80,7 +90,7 @@ const Signup = () => {
     }
   }
 
-  const handleChange = (changedValues) => {
+  const handleChange = (changedValues: UserInterface) => {
     const { firstName, lastName, email, password } = changedValues
     if (firstName) form.setFieldsValue({ firstName })
     if (lastName) form.setFieldsValue({ lastName })
@@ -243,14 +253,7 @@ const Signup = () => {
         <Divider />
         <Form.Item label=" ">
           <ContentSubtitle>Have an account?</ContentSubtitle>
-          <Link to="/login">
-            <Button
-              type="ghost"
-              block={true}
-            >
-              Login
-            </Button>
-          </Link>
+          <LoginLink />
         </Form.Item>
       </Form>
     </Col>
