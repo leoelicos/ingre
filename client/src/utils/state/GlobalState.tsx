@@ -17,8 +17,6 @@ interface Store {
 
 type StoreContextType = [state: Store, dispatch: React.Dispatch<any>]
 
-const StoreContext = createContext<StoreContextType | null>(null)
-
 const initialState: Store = {
   modalVisible: false,
   leftSidebarCollapsed: false,
@@ -32,6 +30,8 @@ const initialState: Store = {
   ingredientsDidGenerate: false,
   tapOff: []
 }
+const StoreContext = createContext<StoreContextType>([initialState, () => {}])
+
 const StoreProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useGlobalReducer(initialState)
 
