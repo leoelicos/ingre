@@ -14,12 +14,12 @@ export interface IngreRecipe {
 }
 
 export interface SearchParams {
-  q: string
-  diet: string[]
-  health: string[]
-  cuisineType: string[]
-  mealType: string[]
-  dishType: string[]
+  q?: string
+  diet?: string[]
+  health?: string[]
+  cuisineType?: string[]
+  mealType?: string[]
+  dishType?: string[]
 }
 
 export interface FetchEdamamOptions {
