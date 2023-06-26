@@ -1,5 +1,5 @@
 // React
-import { useEffect } from 'react'
+import React, { FC, useEffect } from 'react'
 
 // React Router DOM
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
@@ -7,15 +7,16 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 // ApolloClient
 import { useMutation } from '@apollo/client'
 import { MAKE_USER_PRO } from '../../utils/apollo/mutations.ts'
-import { Alert, Button, Col, Divider, Empty, Row, Space, Timeline } from 'antd'
+import { Alert, Button, Col, Row, Space, Timeline } from 'antd'
 
 import Auth from '../../utils/auth/auth.ts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
-function Success() {
+const Success: FC = () => {
   const [makeUserPro] = useMutation(MAKE_USER_PRO)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -64,7 +65,7 @@ function Success() {
           >
             <Link to="/upgrade">
               <FontAwesomeIcon
-                icon="fa-solid fa-book-open"
+                icon={'fa-solid fa-book-open' as IconProp}
                 style={{
                   width: '19.19px'
                 }}
