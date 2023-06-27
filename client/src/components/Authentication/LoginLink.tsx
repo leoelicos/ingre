@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 
-import AuthLink from './AuthLink.tsx'
+import AuthLink from './AuthLink/AuthLink.tsx'
 
 const LoginLink: FC = () => (
   <AuthLink
