@@ -1,9 +1,9 @@
 /* react */
-import { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { FC, useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 /* components */
-import { Button, Form, Input, Col, Divider, Row, Alert, Empty } from 'antd'
+import { Button, Form, Input, Col, Divider, Row, Alert } from 'antd'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
@@ -24,7 +24,12 @@ import {
 /* auth */
 import Auth from '../../utils/auth/auth.ts'
 
-const Customise = () => {
+/* types */
+import './types.tsx'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import { Recipe } from './types.tsx'
+
+const Customise: FC = () => {
   const [state, dispatch] = useStoreContext()
   const [form] = Form.useForm(undefined)
   const [addCustomRecipe, { error: saveRecipeError }] = useMutation(
@@ -44,18 +49,7 @@ const Customise = () => {
 
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [init, setInit] = useState({
-    name: 'Tea',
-    portions: 2,
-    ingredients: [
-      {
-        name: 'p',
-        quantity: 2,
-        measure: 'unit',
-        category: 'tea'
-      }
-    ]
-  })
+  const [init, setInit] = useState({})
   const [cancel, setCancel] = useState(false)
 
   const client = useApolloClient()
@@ -71,11 +65,28 @@ const Customise = () => {
         query: GET_RECIPE,
         variables: { id: state.customiseRecipe._id }
       })
-      const data = JSON.parse(JSON.stringify(res.data.getRecipe))
+      const data: {
+        _id: string
+        name: string
+        portions: number
+        ingredients: {
+          _id: string
+          name: string
+          quantity: number
+          measure: string
+          category: {
+            _id: string
+            name: string
+          }
+        }[]
+        picture_url: string
+        edamamId: string
+        instructions: string
+      } = JSON.parse(JSON.stringify(res.data.getRecipe))
       // dispatch({ type: ADD_EDIT_RECIPE, data: custom });
 
       name = data.name || 'Recipe'
-      portions = parseInt(data.portions) || 1
+      portions = data.portions || 1
       ingredients =
         data.ingredients?.map((v) => {
           const ingredient = { ...v, category: v.category.name }
@@ -86,12 +97,12 @@ const Customise = () => {
       //* FROM FRONTEND
       console.log('FRONTEND')
       name = state?.customiseRecipe?.name || ''
-      portions = parseInt(state?.customiseRecipe?.portions) || ''
+      portions = state?.customiseRecipe?.portions || 2
       ingredients = state?.customiseRecipe?.ingredients?.map((v, i) => {
         const ingredient = {
           key: 'ingredient' + i,
           name: v.name || 'ingredient',
-          quantity: parseFloat(v.quantity || 1),
+          quantity: v.quantity > 0 ? v.quantity.toFixed(2) : '1',
           measure: v.measure || 'unit',
           category: v.category || 'Generic'
         }
@@ -110,21 +121,17 @@ const Customise = () => {
     setInit({ name, portions, ingredients })
   }, [client, state.customiseRecipe])
 
-  const onFinish = async (values) => {
+  const onFinish = async (values: Recipe) => {
     if (cancel) return
 
     try {
       console.log('onFinish', values)
       const input = {
         name: values.name || 'Custom recipe',
-        portions: isNaN(parseInt(values.portions))
-          ? 1
-          : parseInt(values.portions),
+        portions: Math.floor(values.portions) ? 1 : Math.floor(values.portions),
         ingredients: values.ingredients.map((i) => {
           const name = i.name || 'Ingredient'
-          const quantity = isNaN(parseFloat(i.quantity))
-            ? 1
-            : parseFloat(i.quantity)
+          const quantity = parseFloat(i.quantity.toFixed(2))
           const measure = i.measure || 'unit'
           const category = i.category || 'Generic'
           const ingredient = { name, quantity, measure, category }
@@ -239,7 +246,9 @@ const Customise = () => {
                               message="Required"
                               showIcon
                               icon={
-                                <FontAwesomeIcon icon="fa-solid fa-exclamation" />
+                                <FontAwesomeIcon
+                                  icon={'fa-solid fa-exclamation' as IconProp}
+                                />
                               }
                               //
                             />
@@ -271,7 +280,9 @@ const Customise = () => {
                               message="Required"
                               showIcon
                               icon={
-                                <FontAwesomeIcon icon="fa-solid fa-exclamation" />
+                                <FontAwesomeIcon
+                                  icon={'fa-solid fa-exclamation' as IconProp}
+                                />
                               }
                               //
                             />
@@ -399,7 +410,11 @@ const Customise = () => {
                                             message="Required"
                                             showIcon
                                             icon={
-                                              <FontAwesomeIcon icon="fa-solid fa-exclamation" />
+                                              <FontAwesomeIcon
+                                                icon={
+                                                  'fa-solid fa-exclamation' as IconProp
+                                                }
+                                              />
                                             }
                                             //
                                           />
@@ -444,7 +459,11 @@ const Customise = () => {
                                             message="Required"
                                             showIcon
                                             icon={
-                                              <FontAwesomeIcon icon="fa-solid fa-exclamation" />
+                                              <FontAwesomeIcon
+                                                icon={
+                                                  'fa-solid fa-exclamation' as IconProp
+                                                }
+                                              />
                                             }
                                             //
                                           />
@@ -484,7 +503,11 @@ const Customise = () => {
                                             message="Required"
                                             showIcon
                                             icon={
-                                              <FontAwesomeIcon icon="fa-solid fa-exclamation" />
+                                              <FontAwesomeIcon
+                                                icon={
+                                                  'fa-solid fa-exclamation' as IconProp
+                                                }
+                                              />
                                             }
                                             //
                                           />
@@ -524,7 +547,11 @@ const Customise = () => {
                                             message="Required"
                                             showIcon
                                             icon={
-                                              <FontAwesomeIcon icon="fa-solid fa-exclamation" />
+                                              <FontAwesomeIcon
+                                                icon={
+                                                  'fa-solid fa-exclamation' as IconProp
+                                                }
+                                              />
                                             }
                                             //
                                           />
@@ -577,7 +604,9 @@ const Customise = () => {
                                       }}
                                       shape="round"
                                       icon={
-                                        <FontAwesomeIcon icon="fa-solid fa-trash" />
+                                        <FontAwesomeIcon
+                                          icon={'fa-solid fa-trash' as IconProp}
+                                        />
                                       }
                                       //
                                     />
@@ -597,7 +626,7 @@ const Customise = () => {
                             block
                             icon={
                               <FontAwesomeIcon
-                                icon="fa-solid fa-plus"
+                                icon={'fa-solid fa-plus' as IconProp}
                                 style={{ marginRight: '4px' }}
                               />
                             }
@@ -621,7 +650,6 @@ const Customise = () => {
                     style={{
                       width: '100%',
                       marginTop: '0.3rem'
-                      //
                     }}
                     onClick={() => {
                       form.setFieldsValue({
@@ -634,7 +662,7 @@ const Customise = () => {
                     }}
                     icon={
                       <FontAwesomeIcon
-                        icon="fa-solid fa-eraser"
+                        icon={'fa-solid fa-eraser' as IconProp}
                         style={{ marginRight: '4px' }}
                       />
                     }
@@ -654,7 +682,7 @@ const Customise = () => {
                     }}
                     icon={
                       <FontAwesomeIcon
-                        icon="fa-solid fa-rotate-left"
+                        icon={'fa-solid fa-rotate-left' as IconProp}
                         style={{ marginRight: '4px' }}
                       />
                     }
@@ -672,12 +700,11 @@ const Customise = () => {
                     style={{ width: '100%', marginTop: '1rem' }}
                     icon={
                       <FontAwesomeIcon
-                        icon="fa-solid fa-floppy-disk"
+                        icon={'fa-solid fa-floppy-disk' as IconProp}
                         style={{ marginRight: '4px' }}
                       />
                     }
                     shape="round"
-                    //
                   >
                     {loading ? <>Saving…</> : saved ? <>Saved!</> : <>Save</>}
                   </Button>
@@ -695,7 +722,6 @@ const Customise = () => {
                       setCancel(true)
                       navigate(-1)
                     }}
-                    //
                   >
                     Go back
                   </Button>
