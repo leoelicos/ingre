@@ -37,7 +37,7 @@ import { Layout } from 'antd'
 import { Content } from 'antd/lib/layout/layout'
 
 // style
-import './Ingre.css'
+import './style/index.scss'
 
 /* utils */
 import { changeTitle } from '../utils/changeTitle.ts'
