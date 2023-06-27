@@ -10,10 +10,14 @@ import Auth from '../../../utils/auth/auth.ts'
 
 // components
 import { Col, Row, Button, Steps, Typography } from 'antd'
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import LogoutLink from '../../Authentication/LogoutLink.tsx'
 import LoginLink from '../../Authentication/LoginLink.tsx'
+
+/* style */
+
+import ToggleMenu from './Left/ToggleMenu.tsx'
 
 const Header = () => {
   const [state, dispatch] = useStoreContext()
@@ -28,6 +32,7 @@ const Header = () => {
 
   return (
     <Row
+      className="header-row"
       style={{
         width: '100%',
         borderBottom: '1px solid var(--ingre-grey)',
@@ -35,6 +40,7 @@ const Header = () => {
       }}
     >
       <Row
+        className="cols"
         style={{
           width: '100%',
           maxWidth: '1264px',
@@ -43,66 +49,23 @@ const Header = () => {
         }}
       >
         {/* Toggle menu */}
-        <Col>
-          <Row
-            align="middle"
-            style={{ marginTop: '-1px', paddingBottom: '2px' }}
-          >
-            {state.leftSidebarCollapsed ? (
-              <MenuUnfoldOutlined
-                onClick={handleMenuToggle}
-                style={{
-                  color: 'var(--ingre-dark-brown)',
-                  fontSize: '1.2rem',
-                  margin: '0 1.2rem'
-                }}
-              />
-            ) : (
-              <MenuFoldOutlined
-                onClick={handleMenuToggle}
-                style={{
-                  color: 'var(--ingre-dark-brown)',
-                  fontSize: '1.2rem',
-                  margin: '0 1.2rem'
-                }}
-              />
-            )}
-
-            <Link to="/">
-              <Typography.Title style={{ marginBottom: 0 }}>
-                <FontAwesomeIcon
-                  className="ingre-logo"
-                  icon="fa-solid fa-egg"
-                  style={{
-                    marginRight: '0.3rem',
-                    color: 'var(--ingre-eggshell)',
-                    fontSize: '1.8rem',
-                    paddingBottom: '2px'
-                  }}
-                />
-                <span
-                  style={{
-                    color: 'var(--ingre-dark-brown)',
-                    fontFamily: 'Poppins, sans-serif',
-                    fontSize: '36px',
-                    letterSpacing: -1,
-                    fontWeight: '800'
-                  }}
-                >
-                  ingré
-                </span>
-              </Typography.Title>
-            </Link>
-          </Row>
-        </Col>
+        <ToggleMenu
+          collapsed={state.leftSidebarCollapsed}
+          onClick={handleMenuToggle}
+        />
         {/* Step small */}
         <Col
+          className="col-steps-sm"
           span={0}
           sm={7}
           md={0}
         >
-          <Row align="middle">
+          <Row
+            className="header-row-row-col2-row"
+            align="middle"
+          >
             <Steps
+              className="header-row-row-col2-row-steps"
               size="small"
               current={getStep}
               responsive={false}
@@ -133,11 +96,16 @@ const Header = () => {
         </Col>
         {/* Step big */}
         <Col
+          className="col-steps-lg"
           span={0}
           md={11}
         >
-          <Row align="middle">
+          <Row
+            className="header-row-row-col2-row"
+            align="middle"
+          >
             <Steps
+              className="header-row-row-col2-row-steps"
               size="small"
               current={getStep}
               responsive={false}
@@ -170,8 +138,11 @@ const Header = () => {
           </Row>
         </Col>
         {/* Logout/Login/Signup */}
-        <Col>
-          <Row align="middle">
+        <Col className="col-auth">
+          <Row
+            className="header-row-row-col3"
+            align="middle"
+          >
             {Auth.loggedIn() ? <LogoutLink /> : <LoginLink />}
           </Row>
         </Col>
