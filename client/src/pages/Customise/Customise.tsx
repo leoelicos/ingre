@@ -25,7 +25,6 @@ import {
 import Auth from '../../utils/auth/auth.ts'
 
 /* types */
-import './types.tsx'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { Recipe } from './types.tsx'
 
