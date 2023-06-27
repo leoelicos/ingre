@@ -1,0 +1,96 @@
+@import '~antd/dist/antd.css';
+
+@import './menu.scss';
+@import './steps.scss';
+@import './drawer.scss';
+@import './form.scss';
+@import './card.scss';
+@import './table.scss';
+
+.ant-layout {
+  background: var(--ingre-white);
+}
+
+a {
+  color: inherit !important;
+}
+
+/* Random, Vegetarian, Vegan etc */
+.explore-buttons > * > button {
+  border-radius: 1rem;
+}
+.explore-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.ant-row {
+  width: 100%;
+  justify-content: center;
+}
+#q {
+  border-radius: 1rem 0 0 1rem !important;
+  border: 1px solid var(--ingre-blue) !important;
+  border-right: none;
+  font-size: 16px;
+  padding: 2px 1rem !important;
+  height: 40px !important;
+}
+
+.ant-image-mask {
+  border-radius: 1rem 1rem 0 0;
+}
+
+.ant-btn:hover,
+.ant-btn:focus {
+  border-color: var(--ingre-dark-brown);
+}
+.ant-btn:active {
+  color: var(--ingre-eggshell);
+  border-color: var(--ingre-eggshell);
+  background: #fff;
+}
+
+/* Back to top */
+.site-back-top-basic {
+  color: rgba(64, 64, 64, 0.6);
+}
+
+.ant-tag-checkable-checked {
+  background-color: var(--ingre-green) !important;
+  border-color: transparent !important;
+}
+.ant-tag-checkable-checked .ant-typography {
+  color: white !important;
+}
+
+.ant-space-vertical {
+  gap: 4px !important;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+.ant-checkbox-checked .ant-checkbox-inner::after {
+  position: absolute;
+  display: table;
+  border: 2px solid var(--ingre-green);
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(45deg) scale(1) translate(-50%, -50%);
+  opacity: 1;
+  transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) 0.1s;
+  content: ' ';
+}
+
+/* preview button */
+ul.ant-card-actions > li:first-child {
+  position: absolute;
+  bottom: 0;
+  left: 4px;
+}
+.button-tooltip {
+  display: flex;
+  align-items: center;
+}

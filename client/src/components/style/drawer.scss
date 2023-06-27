@@ -1,0 +1,16 @@
+.ant-modal-title {
+  color: var(--ingre-dark-brown) !important;
+}
+/* modal title  */
+.ant-drawer-header {
+  padding: 14.5px 24px;
+  font-size: 16px;
+  line-height: 22px;
+  border-bottom: 1px solid var(--ingre-grey);
+}
+.ant-drawer-close {
+  padding: 1px 0;
+}
+.ant-drawer-right .ant-drawer-content-wrapper {
+  width: calc(min(70%, 378px)) !important;
+}
