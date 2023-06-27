@@ -17,7 +17,7 @@ import { StoreProvider } from '../utils/state/GlobalState.tsx'
 /* pages */
 import Home from '../pages/Home/Home.tsx'
 import Search from '../pages/Search/Search.jsx'
-import Customise from '../pages/Customise/Customise.jsx'
+import Customise from '../pages/Customise/Customise.tsx'
 import Saved from '../pages/Saved/Saved.jsx'
 import Ingredients from '../pages/Ingredients/Ingredients.jsx'
 import TapOff from '../pages/TapOff/TapOff.jsx'
