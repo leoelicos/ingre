@@ -1,42 +1,31 @@
 // React hooks
+import React, { FC, useCallback, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
-// Ant
+// components
 import { Alert, Button, Drawer as AntDrawer, Space, Timeline } from 'antd'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
-// Global state
+// state
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import { HIDE_DRAWER } from '../../utils/state/actions.ts'
 
-// Font Awesome
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useQuery } from '@apollo/client'
-import { GET_USER } from '../../utils/apollo/queries.ts'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+// auth
+import Auth from '../../utils/auth/auth.ts'
 
+// components
 const { Item } = Timeline
 
-const Drawer = () => {
+const Drawer: FC = () => {
   const [state, dispatch] = useStoreContext()
   const handleOk = () => dispatch({ type: HIDE_DRAWER })
   const { pathname } = useLocation()
-  const {
-    data: userData,
-    loading: userLoading,
-    error: userError
-  } = useQuery(GET_USER) // TODO we already have this information from Auth.getProfile
-  const [pro, setPro] = useState(false)
-
-  useEffect(() => {
-    if (!userLoading && !userError && userData?.getUser) {
-      // console.log('userData', userData);
-      setPro(userData.getUser.pro)
-    }
-  }, [userLoading, userError, userData])
+  const pro = Auth.getProfile()?.data?.pro
 
   const memoPathName = useMemo(() => pathname, [pathname])
   const getDrawerText = useCallback(
-    (pathname) => {
+    (pathname: string) => {
       switch (pathname) {
         case '/':
           return (
@@ -51,8 +40,10 @@ const Drawer = () => {
                   or one of the popular options, or
                   <Button type="primary">
                     <Space>
-                      <FontAwesomeIcon icon="fa-solid fa-magnifying-glass" />{' '}
-                      Search
+                      <FontAwesomeIcon
+                        icon={'fa-solid fa-magnifying-glass' as IconProp}
+                      />
+                      &nbsp;Search
                     </Space>
                   </Button>
                   to find your own.
@@ -62,13 +53,13 @@ const Drawer = () => {
                 <Space direction="vertical">
                   Like a recipe? Save it!
                   <Button style={{ borderRadius: '50%', padding: '4px 8px' }}>
-                    <FontAwesomeIcon icon="fa-solid fa-pen" />
+                    <FontAwesomeIcon icon={'fa-solid fa-pen' as IconProp} />
                   </Button>
                 </Space>
               </Item>
               <Item>
                 Don&apos;t like it? Customise it{' '}
-                {<FontAwesomeIcon icon="fa-solid fa-pen" />} it!
+                {<FontAwesomeIcon icon={'fa-solid fa-pen' as IconProp} />} it!
               </Item>
             </Timeline>
           )
@@ -78,24 +69,34 @@ const Drawer = () => {
               <Item color="green">Search from 2 million tested recipes. </Item>
               <Item color="blue">
                 Enter a search term and click{' '}
-                {<FontAwesomeIcon icon="fa-solid fa-magnifying-glass" />} or
-                type Enter.{' '}
+                {
+                  <FontAwesomeIcon
+                    icon={'fa-solid fa-magnifying-glass' as IconProp}
+                  />
+                }{' '}
+                or type Enter.{' '}
               </Item>
               <Item color="red">
                 To clear search, click{' '}
-                {<FontAwesomeIcon icon="fa-solid fa-circle-xmark" />}.
+                {
+                  <FontAwesomeIcon
+                    icon={'fa-solid fa-circle-xmark' as IconProp}
+                  />
+                }
+                .
               </Item>
               <Item>
                 To narrow your search, select from our many filters available.
               </Item>
               <Item>
-                Like a recipe? Click{' '}
-                {<FontAwesomeIcon icon="fa-solid fa-save" />} to add it to your
-                Saved list.
+                Like a recipe? Click&nbsp;
+                <FontAwesomeIcon icon={'fa-solid fa-save' as IconProp} />
+                &nbsp;to add it to your Saved list.
               </Item>
               <Item>
-                You can also {<FontAwesomeIcon icon="fa-solid fa-pen" />}{' '}
-                customise them!
+                You can also&nbsp;
+                <FontAwesomeIcon icon={'fa-solid fa-pen' as IconProp} />
+                &nbsp;customise them!
               </Item>
             </Timeline>
           )
@@ -112,12 +113,13 @@ const Drawer = () => {
                 For servings and quantities, enter a number or a decimal.
               </Item>
               <Item color="blue">
-                To add a new ingredient, click on{' '}
-                {<FontAwesomeIcon icon="fa-solid fa-add" />}.
+                To add a new ingredient, click on&nbsp;
+                <FontAwesomeIcon icon={'fa-solid fa-add' as IconProp} />
+                &nbsp;.
               </Item>
               <Item color="red">
-                To delete an existing ingredient, click on{' '}
-                {<FontAwesomeIcon icon="fa-solid fa-trash" />}.
+                To delete an existing ingredient, click on&nbsp;
+                <FontAwesomeIcon icon={'fa-solid fa-trash' as IconProp} />.
               </Item>
             </Timeline>
           )
@@ -130,20 +132,23 @@ const Drawer = () => {
               </Item>
               <Item>All your recipes in one place!</Item>
               <Item color="blue">
-                Click {<FontAwesomeIcon icon="fa-solid fa-pen" />} to edit
-                recipes.
+                Click {<FontAwesomeIcon icon={'fa-solid fa-pen' as IconProp} />}{' '}
+                to edit recipes.
               </Item>
               <Item color="blue">
-                Click {<FontAwesomeIcon icon="fa-solid fa-trash" />} to remove
-                recipes.
+                Click{' '}
+                {<FontAwesomeIcon icon={'fa-solid fa-trash' as IconProp} />} to
+                remove recipes.
               </Item>
               <Item color="red">
                 Your recipes will be deleted after 24 hours.
               </Item>
               <Item color="blue">
-                Upgrade to{' '}
-                {<FontAwesomeIcon icon="fa-solid fa-cubes-stacked" />} PRO for
-                $5 to save recipes permanently.
+                Upgrade to&nbsp;
+                <FontAwesomeIcon
+                  icon={'fa-solid fa-cubes-stacked' as IconProp}
+                />{' '}
+                PRO for $5 to save recipes permanently.
               </Item>
             </Timeline>
           )
@@ -156,12 +161,14 @@ const Drawer = () => {
                 Have you checked your fridge? Is it in season? Edit away!
               </Item>
               <Item color="blue">
-                Click {<FontAwesomeIcon icon="fa-solid fa-add" />} to add a new
-                ingredient.
+                Click&nbsp;
+                <FontAwesomeIcon icon={'fa-solid fa-add' as IconProp} />
+                &nbsp;to add a new ingredient.
               </Item>
               <Item color="red">
-                Click {<FontAwesomeIcon icon="fa-solid fa-trash" />} to remove
-                an ingredient.
+                Click&nbsp;
+                <FontAwesomeIcon icon={'fa-solid fa-trash' as IconProp} />
+                &nbsp;to remove an ingredient.
               </Item>
               <Item>There is a Misc section for additional groceries!</Item>
             </Timeline>
@@ -171,7 +178,6 @@ const Drawer = () => {
           return (
             <Timeline>
               <Item color="green">
-                {' '}
                 Tap off each ingredient as you shop in the supermarket.
               </Item>
               <Item color="blue">
@@ -245,7 +251,6 @@ const Drawer = () => {
       visible={state.modalVisible}
       placement="right"
       onClose={handleOk}
-      centered={false}
       closable={true}
       maskStyle={{
         background: 'rgba(0,0,0,0.2)'
