@@ -1,6 +1,5 @@
 /* react */
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { FC, useEffect } from 'react'
 
 /* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
@@ -10,7 +9,7 @@ import {
 } from '../../utils/state/actions.ts'
 
 /* components */
-import { Col, Row, Divider, Spin, Button, Alert, Empty } from 'antd'
+import { Col, Row, Divider, Spin, Alert } from 'antd'
 import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
@@ -25,7 +24,7 @@ import Auth from '../../utils/auth/auth.ts'
 /* hooks */
 import { changeTitle } from '../../utils/changeTitle.ts'
 
-const Saved = () => {
+const Saved: FC = () => {
   changeTitle('Search')
 
   const [, { loading, error, data, refetch }] = useLazyQuery(GET_SAVED_RECIPES)
