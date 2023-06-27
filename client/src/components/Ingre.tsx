@@ -29,7 +29,7 @@ import Upgrade from '../pages/Admin/Upgrade.tsx'
 import Logout from '../pages/Admin/Logout.tsx'
 
 /* components */
-import Drawer from './Layout/Drawer.jsx'
+import Drawer from './Layout/Drawer.tsx'
 import Header from './Layout/Header/Header.jsx'
 import MainLayout from './Layout/MainLayout.tsx'
 import SiderLeft from './Layout/SiderLeft.jsx'
