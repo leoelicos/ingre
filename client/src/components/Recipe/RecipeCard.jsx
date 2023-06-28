@@ -63,7 +63,7 @@ const RecipeCard = ({ recipe, onSavedPage, pro }) => {
       const res = await client.query({ query, variables })
       data = res.data.getRecipe
     }
-    await dispatch({ type: ADD_EDIT_RECIPE, data: data })
+    dispatch({ type: ADD_EDIT_RECIPE, data: data })
   }
 
   const handleSave = async () => {
@@ -151,7 +151,8 @@ const RecipeCard = ({ recipe, onSavedPage, pro }) => {
         disabled={
           saveRecipeError ||
           saveRecipeLoading ||
-          state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)
+          (state.savedRecipes.length > 0 &&
+            state.savedRecipes.some((r) => r.edamamId === recipe.edamamId))
         }
         style={{
           borderRadius: '50%',
