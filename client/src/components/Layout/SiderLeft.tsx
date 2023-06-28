@@ -1,36 +1,28 @@
-// React
-import { useEffect, useState } from 'react'
-
-// React Router DOM
+// react
+import React, { FC, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
-// useContext
+// state
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-
-// useReducer
 import {
   SHOW_DRAWER,
   COLLAPSE_SIDEBAR,
   EXPAND_SIDEBAR
 } from '../../utils/state/actions.ts'
 
-// Apollo
+// data
 import { useQuery } from '@apollo/client'
 import { GET_NUM_SAVED_RECIPES } from '../../utils/apollo/queries.ts'
 
-// Font Awesome
+// components
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Button, Menu, Layout } from 'antd'
 
-// Ant
-import { Button, Layout, Menu } from 'antd'
-
-// Auth
+// authentication
 import Auth from '../../utils/auth/auth.ts'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
-// Ant subcomponent
-const { Sider } = Layout
-
-const SiderLeft = () => {
+const SiderLeft: FC = () => {
   const showDrawer = () => {
     dispatch({ type: SHOW_DRAWER })
   }
@@ -63,7 +55,7 @@ const SiderLeft = () => {
   }, [broken])
 
   return (
-    <Sider
+    <Layout.Sider
       breakpoint="md"
       onBreakpoint={(broken) => {
         setBroken(broken)
@@ -88,7 +80,7 @@ const SiderLeft = () => {
             icon: (
               <Link to="/">
                 <FontAwesomeIcon
-                  icon="fa-solid fa-cookie"
+                  icon={'fa-solid fa-cookie' as IconProp}
                   style={{
                     width: '19.19px'
                   }}
@@ -102,7 +94,7 @@ const SiderLeft = () => {
             icon: (
               <Link to="/search">
                 <FontAwesomeIcon
-                  icon="fa-solid fa-magnifying-glass"
+                  icon={'fa-solid fa-magnifying-glass' as IconProp}
                   style={{
                     width: '19.19px'
                   }}
@@ -116,7 +108,7 @@ const SiderLeft = () => {
             icon: (
               <Link to="/customise">
                 <FontAwesomeIcon
-                  icon="fa-solid fa-pen"
+                  icon={'fa-solid fa-pen' as IconProp}
                   style={{
                     width: '19.19px'
                   }}
@@ -158,7 +150,7 @@ const SiderLeft = () => {
                   transform: 'translateX(1px)'
                 }}
               >
-                <FontAwesomeIcon icon="fa-solid fa-egg" />
+                <FontAwesomeIcon icon={'fa-solid fa-egg' as IconProp} />
               </Link>
             ),
             label: <Link to="/ingredients">Ingredients</Link>
@@ -168,7 +160,7 @@ const SiderLeft = () => {
             icon: (
               <Link to="/tapoff">
                 <FontAwesomeIcon
-                  icon="fa-solid fa-square-check"
+                  icon={'fa-solid fa-square-check' as IconProp}
                   style={{
                     width: '19.19px'
                   }}
@@ -183,7 +175,7 @@ const SiderLeft = () => {
             icon: (
               <Link to="/upgrade">
                 <FontAwesomeIcon
-                  icon="fa-solid fa-book-open"
+                  icon={'fa-solid fa-book-open' as IconProp}
                   style={{
                     width: '19.19px'
                   }}
@@ -207,7 +199,7 @@ const SiderLeft = () => {
               >
                 <Link to="">
                   <FontAwesomeIcon
-                    icon="fa-solid fa-circle-info"
+                    icon={'fa-solid fa-circle-info' as IconProp}
                     style={{
                       width: '19.19px'
                     }}
@@ -244,7 +236,7 @@ const SiderLeft = () => {
           }
         ]}
       />
-    </Sider>
+    </Layout.Sider>
   )
 }
 
