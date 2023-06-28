@@ -7,9 +7,16 @@ import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
 import { SHOW_DRAWER, COLLAPSE_SIDEBAR } from '../../../utils/state/actions.ts'
 
 // components
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Menu, Layout } from 'antd'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import {
+  IngreIconCustomise,
+  IngreIconHelp,
+  IngreIconIngredients,
+  IngreIconPro,
+  IngreIconRecipe,
+  IngreIconSearch,
+  IngreIconTapOff
+} from '../../Icons/Icon.tsx'
 
 const SiderLeft: FC = () => {
   const showDrawer = () => {
@@ -55,12 +62,7 @@ const SiderLeft: FC = () => {
             key: 1,
             icon: (
               <Link to="/">
-                <FontAwesomeIcon
-                  icon={'fa-solid fa-cookie' as IconProp}
-                  style={{
-                    width: '19.19px'
-                  }}
-                />
+                <IngreIconRecipe />
               </Link>
             ),
             label: <Link to="/">Recipes</Link>
@@ -69,12 +71,7 @@ const SiderLeft: FC = () => {
             key: 2,
             icon: (
               <Link to="/search">
-                <FontAwesomeIcon
-                  icon={'fa-solid fa-magnifying-glass' as IconProp}
-                  style={{
-                    width: '19.19px'
-                  }}
-                />
+                <IngreIconSearch />
               </Link>
             ),
             label: <Link to="/search">Search</Link>
@@ -83,12 +80,7 @@ const SiderLeft: FC = () => {
             key: 3,
             icon: (
               <Link to="/customise">
-                <FontAwesomeIcon
-                  icon={'fa-solid fa-pen' as IconProp}
-                  style={{
-                    width: '19.19px'
-                  }}
-                />
+                <IngreIconCustomise />
               </Link>
             ),
             label: <Link to="/customise">Customise</Link>
@@ -117,14 +109,8 @@ const SiderLeft: FC = () => {
           {
             key: 5,
             icon: (
-              <Link
-                to="/ingredients"
-                style={{
-                  width: '19.19px',
-                  transform: 'translateX(1px)'
-                }}
-              >
-                <FontAwesomeIcon icon={'fa-solid fa-egg' as IconProp} />
+              <Link to="/ingredients">
+                <IngreIconIngredients />
               </Link>
             ),
             label: <Link to="/ingredients">Ingredients</Link>
@@ -133,12 +119,7 @@ const SiderLeft: FC = () => {
             key: 6,
             icon: (
               <Link to="/tapoff">
-                <FontAwesomeIcon
-                  icon={'fa-solid fa-square-check' as IconProp}
-                  style={{
-                    width: '19.19px'
-                  }}
-                />
+                <IngreIconTapOff />
               </Link>
             ),
             label: <Link to="/tapoff">Tap Off</Link>
@@ -148,12 +129,7 @@ const SiderLeft: FC = () => {
             key: 7,
             icon: (
               <Link to="/upgrade">
-                <FontAwesomeIcon
-                  icon={'fa-solid fa-book-open' as IconProp}
-                  style={{
-                    width: '19.19px'
-                  }}
-                />
+                <IngreIconPro />
               </Link>
             ),
             label: <Link to="/upgrade">PRO</Link>
@@ -174,12 +150,7 @@ const SiderLeft: FC = () => {
                   justifyContent: 'center'
                 }}
               >
-                <FontAwesomeIcon
-                  icon={'fa-solid fa-circle-info' as IconProp}
-                  style={{
-                    width: '19.19px'
-                  }}
-                />
+                <IngreIconHelp />
               </div>
             ),
             label: <div onClick={showDrawer}>Help</div>
