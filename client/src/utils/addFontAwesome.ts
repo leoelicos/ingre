@@ -2,6 +2,7 @@
 import { library } from '@fortawesome/fontawesome-svg-core'
 
 import {
+  faStar,
   faBars,
   faEgg,
   faCircleInfo,
@@ -15,7 +16,6 @@ import {
   faAdd,
   faFloppyDisk,
   faTrash,
-  faCubesStacked,
   faRightToBracket,
   faRightFromBracket,
   faUserPlus,
@@ -34,6 +34,7 @@ import {
 
 const addFontAwesome = () =>
   library.add(
+    faStar,
     faBars,
     faEgg,
     faCircleInfo,
@@ -47,7 +48,7 @@ const addFontAwesome = () =>
     faAdd,
     faFloppyDisk,
     faTrash,
-    faCubesStacked,
+
     faRightToBracket,
     faRightFromBracket,
     faUserPlus,
