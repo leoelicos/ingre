@@ -1,7 +1,7 @@
-import { CategoryType } from './CategoryType'
+import type { CategoryType } from './category.d.ts'
 
 export interface IngredientType {
-  _id: string
+  _id?: string
   name: string
   quantity: number
   measure: string
