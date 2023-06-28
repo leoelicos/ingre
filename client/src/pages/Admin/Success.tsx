@@ -10,11 +10,9 @@ import { MAKE_USER_PRO } from '../../utils/apollo/mutations.ts'
 import { Alert, Button, Col, Row, Space, Timeline } from 'antd'
 
 import Auth from '../../utils/auth/auth.ts'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { IngreIconPro } from '../../components/Icons/Icon.tsx'
 
 const Success: FC = () => {
