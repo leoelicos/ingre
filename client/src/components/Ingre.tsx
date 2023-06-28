@@ -30,7 +30,7 @@ import Logout from '../pages/Admin/Logout.tsx'
 
 /* components */
 import Drawer from './Layout/Drawer.tsx'
-import Header from './Layout/Header/Header.jsx'
+import Header from './Layout/Header/Header.tsx'
 import MainLayout from './Layout/MainLayout.tsx'
 import SiderLeft from './Layout/SiderLeft/SiderLeft.tsx'
 import { Layout } from 'antd'
