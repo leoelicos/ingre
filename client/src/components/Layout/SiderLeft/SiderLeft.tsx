@@ -1,25 +1,21 @@
 // react
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 // state
-import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-import {
-  SHOW_DRAWER,
-  COLLAPSE_SIDEBAR,
-  EXPAND_SIDEBAR
-} from '../../utils/state/actions.ts'
+import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
+import { SHOW_DRAWER, COLLAPSE_SIDEBAR } from '../../../utils/state/actions.ts'
 
 // data
 import { useQuery } from '@apollo/client'
-import { GET_NUM_SAVED_RECIPES } from '../../utils/apollo/queries.ts'
+import { GET_NUM_SAVED_RECIPES } from '../../../utils/apollo/queries.ts'
 
 // components
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Menu, Layout } from 'antd'
 
 // authentication
-import Auth from '../../utils/auth/auth.ts'
+import Auth from '../../../utils/auth/auth.ts'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
 const SiderLeft: FC = () => {
@@ -43,22 +39,15 @@ const SiderLeft: FC = () => {
     return '8'
   }
 
-  const [broken, setBroken] = useState(state.leftSidebarCollapsed)
   useEffect(() => {
     if (Auth.loggedIn()) refetch()
-  })
-
-  useEffect(() => {
-    if (broken === true) dispatch({ type: COLLAPSE_SIDEBAR })
-    else dispatch({ type: EXPAND_SIDEBAR })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [broken])
+  }, [Auth])
 
   return (
     <Layout.Sider
       breakpoint="md"
       onBreakpoint={(broken) => {
-        setBroken(broken)
+        if (broken) dispatch({ type: COLLAPSE_SIDEBAR })
       }}
       trigger={null}
       collapsible
@@ -187,52 +176,28 @@ const SiderLeft: FC = () => {
           {
             key: 8,
             icon: (
-              <Button
+              <div
                 onClick={showDrawer}
                 style={{
-                  padding: 0,
-                  margin: 0,
-                  border: 0,
-                  background: 'none',
-                  boxShadow: 'none'
-                }}
-              >
-                <Link to="">
-                  <FontAwesomeIcon
-                    icon={'fa-solid fa-circle-info' as IconProp}
-                    style={{
-                      width: '19.19px'
-                    }}
-                  />
-                </Link>
-              </Button>
-            ),
-            label: (
-              <Button
-                onClick={showDrawer}
-                style={{
-                  fontFamily: 'inherit',
-                  fontSize: 'inherit',
-                  padding: 0,
-                  margin: 0,
-                  border: 0,
-                  background: 'none',
-                  boxShadow: 'none',
+                  position: 'absolute',
+                  left: '0',
+                  right: '0',
+                  top: '0',
+                  bottom: '0',
                   display: 'flex',
                   alignItems: 'center',
-                  transition:
-                    'border-color 0.3s, background 0.3s, padding 0.1s cubic-bezier(0.215, 0.61, 0.355, 1)'
+                  justifyContent: 'center'
                 }}
-                block
               >
-                <Link
-                  to="#"
-                  className="ant-menu-title-content"
-                >
-                  Help
-                </Link>
-              </Button>
-            )
+                <FontAwesomeIcon
+                  icon={'fa-solid fa-circle-info' as IconProp}
+                  style={{
+                    width: '19.19px'
+                  }}
+                />
+              </div>
+            ),
+            label: <div onClick={showDrawer}>Help</div>
           }
         ]}
       />
