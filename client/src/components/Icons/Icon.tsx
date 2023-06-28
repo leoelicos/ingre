@@ -33,6 +33,18 @@ export const IngreIconHelp = () => <Icon icon="fa-solid fa-circle-info" />
 
 /* recipe, search */
 export const IngreIconSave = () => <Icon icon="fa-solid fa-save" />
+export const IngreIconSpin = () => <Icon icon="fa-solid fa-spinner" />
+
+export const IngreIconPortion = () => (
+  <FontAwesomeIcon
+    icon={'fa-solid fa-user-group' as IconProp}
+    style={{
+      borderRadius: '50%',
+      padding: '0 4px 0',
+      color: 'black'
+    }}
+  />
+)
 
 /* search */
 export const IngreIconClearSearch = () => (
@@ -42,6 +54,10 @@ export const IngreIconClearSearch = () => (
 /* customise */
 export const IngreIconAddIngredient = () => <Icon icon="fa-solid fa-add" />
 
-export const IngreIconRemoveIngredient = () => <Icon icon="fa-solid fa-trash" />
+export const IngreIconRemove = () => <Icon icon="fa-solid fa-trash" />
 
 export const IngreIconFormError = () => <Icon icon="fa-solid fa-exclamation" />
+
+export const IngreIconUndoCustom = () => <Icon icon="fa-solid fa-rotate-left" />
+
+export const IngreIconClearCustom = () => <Icon icon="fa-solid fa-eraser" />
