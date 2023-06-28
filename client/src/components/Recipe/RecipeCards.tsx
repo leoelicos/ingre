@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import RecipeCard from './RecipeCard.jsx'
+import RecipeCard from './RecipeCard.tsx'
 
 interface RecipeCardsProps {
   results: any
