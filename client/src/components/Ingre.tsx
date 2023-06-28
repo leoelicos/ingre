@@ -32,7 +32,7 @@ import Logout from '../pages/Admin/Logout.tsx'
 import Drawer from './Layout/Drawer.tsx'
 import Header from './Layout/Header/Header.jsx'
 import MainLayout from './Layout/MainLayout.tsx'
-import SiderLeft from './Layout/SiderLeft.jsx'
+import SiderLeft from './Layout/SiderLeft.tsx'
 import { Layout } from 'antd'
 import { Content } from 'antd/lib/layout/layout'
 
