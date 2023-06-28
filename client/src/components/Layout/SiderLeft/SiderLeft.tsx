@@ -1,29 +1,20 @@
 // react
-import React, { FC, useEffect } from 'react'
+import React, { FC } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 // state
 import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
 import { SHOW_DRAWER, COLLAPSE_SIDEBAR } from '../../../utils/state/actions.ts'
 
-// data
-import { useQuery } from '@apollo/client'
-import { GET_NUM_SAVED_RECIPES } from '../../../utils/apollo/queries.ts'
-
 // components
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Menu, Layout } from 'antd'
-
-// authentication
-import Auth from '../../../utils/auth/auth.ts'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
 const SiderLeft: FC = () => {
   const showDrawer = () => {
     dispatch({ type: SHOW_DRAWER })
   }
-
-  const { loading, error, data, refetch } = useQuery(GET_NUM_SAVED_RECIPES)
 
   const location = useLocation()
   const { pathname } = location
@@ -38,10 +29,6 @@ const SiderLeft: FC = () => {
     else if (pathname === '/upgrade') return '7'
     return '8'
   }
-
-  useEffect(() => {
-    if (Auth.loggedIn()) refetch()
-  }, [Auth])
 
   return (
     <Layout.Sider
@@ -121,9 +108,7 @@ const SiderLeft: FC = () => {
                     color: 'var(--ingre-dark-brown)'
                   }}
                 >
-                  {!Auth.loggedIn() || loading || error
-                    ? 0
-                    : data.getNumSavedRecipes}
+                  {state.savedRecipes.length}
                 </span>
               </Link>
             ),
