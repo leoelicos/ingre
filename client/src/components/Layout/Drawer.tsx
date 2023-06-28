@@ -4,8 +4,6 @@ import { useLocation } from 'react-router-dom'
 
 // components
 import { Alert, Button, Drawer as AntDrawer, Space, Timeline } from 'antd'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
 // state
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
@@ -13,6 +11,16 @@ import { HIDE_DRAWER } from '../../utils/state/actions.ts'
 
 // auth
 import Auth from '../../utils/auth/auth.ts'
+import {
+  IngreIconAddIngredient,
+  IngreIconClearSearch,
+  IngreIconCustomise,
+  IngreIconPro,
+  IngreIconRecipe,
+  IngreIconRemoveIngredient,
+  IngreIconSave,
+  IngreIconSearch
+} from '../Icons/Icon.tsx'
 
 // components
 const { Item } = Timeline
@@ -40,9 +48,7 @@ const Drawer: FC = () => {
                   or one of the popular options, or
                   <Button type="primary">
                     <Space>
-                      <FontAwesomeIcon
-                        icon={'fa-solid fa-magnifying-glass' as IconProp}
-                      />
+                      <IngreIconRecipe />
                       &nbsp;Search
                     </Space>
                   </Button>
@@ -53,13 +59,13 @@ const Drawer: FC = () => {
                 <Space direction="vertical">
                   Like a recipe? Save it!
                   <Button style={{ borderRadius: '50%', padding: '4px 8px' }}>
-                    <FontAwesomeIcon icon={'fa-solid fa-pen' as IconProp} />
+                    <IngreIconSave />
                   </Button>
                 </Space>
               </Item>
               <Item>
-                Don&apos;t like it? Customise it{' '}
-                {<FontAwesomeIcon icon={'fa-solid fa-pen' as IconProp} />} it!
+                Don&apos;t like it? Customise it
+                <IngreIconCustomise /> it!
               </Item>
             </Timeline>
           )
@@ -68,35 +74,20 @@ const Drawer: FC = () => {
             <Timeline>
               <Item color="green">Search from 2 million tested recipes. </Item>
               <Item color="blue">
-                Enter a search term and click{' '}
-                {
-                  <FontAwesomeIcon
-                    icon={'fa-solid fa-magnifying-glass' as IconProp}
-                  />
-                }{' '}
-                or type Enter.{' '}
+                Enter a search term and click <IngreIconSearch /> or type Enter.
               </Item>
               <Item color="red">
-                To clear search, click{' '}
-                {
-                  <FontAwesomeIcon
-                    icon={'fa-solid fa-circle-xmark' as IconProp}
-                  />
-                }
-                .
+                To clear search, click <IngreIconClearSearch />.
               </Item>
               <Item>
                 To narrow your search, select from our many filters available.
               </Item>
               <Item>
-                Like a recipe? Click&nbsp;
-                <FontAwesomeIcon icon={'fa-solid fa-save' as IconProp} />
-                &nbsp;to add it to your Saved list.
+                Like a recipe? Click <IngreIconSave /> to add it to your Saved
+                list.
               </Item>
               <Item>
-                You can also&nbsp;
-                <FontAwesomeIcon icon={'fa-solid fa-pen' as IconProp} />
-                &nbsp;customise them!
+                You can also <IngreIconCustomise /> customise them!
               </Item>
             </Timeline>
           )
@@ -113,13 +104,28 @@ const Drawer: FC = () => {
                 For servings and quantities, enter a number or a decimal.
               </Item>
               <Item color="blue">
-                To add a new ingredient, click on&nbsp;
-                <FontAwesomeIcon icon={'fa-solid fa-add' as IconProp} />
-                &nbsp;.
+                To add a new ingredient, click on{' '}
+                <Button
+                  type="primary"
+                  block
+                  icon={<IngreIconAddIngredient />}
+                  shape="round"
+                >
+                  <span style={{ marginLeft: '4px' }}>Ingredient</span>
+                </Button>
               </Item>
               <Item color="red">
-                To delete an existing ingredient, click on&nbsp;
-                <FontAwesomeIcon icon={'fa-solid fa-trash' as IconProp} />.
+                To delete an existing ingredient, click on{' '}
+                <Button
+                  type="default"
+                  block
+                  danger
+                  icon={<IngreIconRemoveIngredient />}
+                  shape="round"
+                >
+                  <span style={{ marginLeft: '4px' }}>Clear all</span>
+                </Button>
+                .
               </Item>
             </Timeline>
           )
@@ -132,23 +138,17 @@ const Drawer: FC = () => {
               </Item>
               <Item>All your recipes in one place!</Item>
               <Item color="blue">
-                Click {<FontAwesomeIcon icon={'fa-solid fa-pen' as IconProp} />}{' '}
-                to edit recipes.
+                Click <IngreIconCustomise /> to edit recipes.
               </Item>
               <Item color="blue">
-                Click{' '}
-                {<FontAwesomeIcon icon={'fa-solid fa-trash' as IconProp} />} to
-                remove recipes.
+                Click <IngreIconRemoveIngredient /> to remove recipes.
               </Item>
               <Item color="red">
                 Your recipes will be deleted after 24 hours.
               </Item>
               <Item color="blue">
-                Upgrade to&nbsp;
-                <FontAwesomeIcon
-                  icon={'fa-solid fa-cubes-stacked' as IconProp}
-                />{' '}
-                PRO for $5 to save recipes permanently.
+                Upgrade to <IngreIconPro /> PRO for $5 to save recipes
+                permanently.
               </Item>
             </Timeline>
           )
@@ -161,14 +161,19 @@ const Drawer: FC = () => {
                 Have you checked your fridge? Is it in season? Edit away!
               </Item>
               <Item color="blue">
-                Click&nbsp;
-                <FontAwesomeIcon icon={'fa-solid fa-add' as IconProp} />
-                &nbsp;to add a new ingredient.
+                Click{' '}
+                <Button
+                  type="primary"
+                  block
+                  icon={<IngreIconAddIngredient />}
+                  shape="round"
+                >
+                  <span style={{ marginLeft: '4px' }}>Ingredient</span>
+                </Button>{' '}
+                to add a new ingredient.
               </Item>
               <Item color="red">
-                Click&nbsp;
-                <FontAwesomeIcon icon={'fa-solid fa-trash' as IconProp} />
-                &nbsp;to remove an ingredient.
+                Click <IngreIconRemoveIngredient /> to remove an ingredient.
               </Item>
               <Item>There is a Misc section for additional groceries!</Item>
             </Timeline>
