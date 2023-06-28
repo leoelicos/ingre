@@ -26,6 +26,7 @@ import Auth from '../../utils/auth/auth.ts'
 
 /* hooks */
 import { changeTitle } from '../../utils/changeTitle.ts'
+import { IngreIconSearch } from '../../components/Icons/Icon.tsx'
 
 const Home: FC = () => {
   changeTitle('Recipes')
@@ -169,9 +170,7 @@ const Home: FC = () => {
           <Button type="primary">
             <Link to="/search">
               <Space>
-                <FontAwesomeIcon
-                  icon={'fa-solid fa-magnifying-glass' as IconProp}
-                />
+                <IngreIconSearch />
                 Search
               </Space>
             </Link>
