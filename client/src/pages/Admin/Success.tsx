@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import { IngreIconPro } from '../../components/Icons/Icon.tsx'
 
 const Success: FC = () => {
   const [makeUserPro] = useMutation(MAKE_USER_PRO)
@@ -64,12 +65,7 @@ const Success: FC = () => {
             block
           >
             <Link to="/upgrade">
-              <FontAwesomeIcon
-                icon={'fa-solid fa-book-open' as IconProp}
-                style={{
-                  width: '19.19px'
-                }}
-              />
+              <IngreIconPro />
               Try again?
             </Link>
           </Button>
