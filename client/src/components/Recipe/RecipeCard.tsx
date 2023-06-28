@@ -3,7 +3,6 @@ import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
 
 // components
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Card, Image, Button, Tooltip, Space, Typography } from 'antd'
 
 // state
@@ -26,6 +25,17 @@ import {
 // authentication
 import Auth from '../../utils/auth/auth.ts'
 
+/* types */
+import type { RecipeType } from '../../@types/recipe.d.ts'
+import {
+  IngreIconCustomise,
+  IngreIconPortion,
+  IngreIconPro,
+  IngreIconRemove,
+  IngreIconSave,
+  IngreIconSpin
+} from '../Icons/Icon.tsx'
+
 interface RecipeCardProps {
   recipe: RecipeType
   onSavedPage: boolean
@@ -40,7 +50,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
         { query: GET_NUM_SAVED_RECIPES }
       ]
     })
-
+  if (saveRecipeError) console.error({ saveRecipeError })
   const [
     removeRecipe,
     { loading: removeRecipeLoading, error: removeRecipeError }
@@ -50,6 +60,8 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
       { query: GET_NUM_SAVED_RECIPES }
     ]
   })
+
+  if (removeRecipeError) console.error({ removeRecipeError })
 
   const [state, dispatch] = useStoreContext()
   const client = useApolloClient()
@@ -71,10 +83,10 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
     try {
       const input = {
         name: recipe.name,
-        portions: parseInt(recipe.portions || 1),
+        portions: recipe.portions ? Math.floor(recipe.portions) : 1,
         ingredients: recipe.ingredients.map((i) => {
           const name = i.name || 'Ingredient'
-          const quantity = parseFloat(i.quantity) || 1
+          const quantity = i.quantity || 1
           const measure = i.measure || 'unit'
           const category = i.category || 'Generic'
           const ingredient = { name, quantity, measure, category }
@@ -90,7 +102,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
       if (!res) throw new Error('Could not save recipe')
 
       const saveData = res.data.saveRecipe
-      await dispatch({ type: ADD_SAVED_RECIPE, data: saveData })
+      dispatch({ type: ADD_SAVED_RECIPE, data: saveData })
     } catch (error) {
       console.error(error)
     }
@@ -107,13 +119,14 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
       const payload = { variables: { recipeId: _id } }
       const res = await removeRecipe(payload)
       if (!res) throw new Error('Could not save recipe')
-      await dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.edamamId }) // this won't work if it doesn't have edamamId
+      dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.edamamId }) // this won't work if it doesn't have edamamId
     } catch (error) {
       console.error(Error)
     }
   }
 
-  const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1)
+  const capitalize = (name: string) =>
+    name.charAt(0).toUpperCase() + name.slice(1)
 
   const editButton = (
     <Tooltip
@@ -130,10 +143,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
         }}
       >
         <Link to="/customise">
-          <FontAwesomeIcon
-            key="edit"
-            icon="fa-solid fa-pen"
-          />
+          <IngreIconCustomise />
         </Link>
       </Button>
     </Tooltip>
@@ -150,7 +160,6 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
         key="saveButton"
         onClick={handleSave}
         disabled={
-          saveRecipeError ||
           saveRecipeLoading ||
           (state.savedRecipes.length > 0 &&
             state.savedRecipes.some((r) => r.edamamId === recipe.edamamId))
@@ -160,14 +169,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           padding: '4px 8px'
         }}
       >
-        <FontAwesomeIcon
-          key="save"
-          icon={
-            saveRecipeLoading
-              ? 'fa-solid fa-spinner'
-              : 'fa-solid fa-floppy-disk'
-          }
-        />
+        {saveRecipeLoading ? <IngreIconSpin /> : <IngreIconSave />}
       </Button>
     </Tooltip>
   )
@@ -182,7 +184,6 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
       <Button
         key="removeButton"
         disabled={
-          removeRecipeError ||
           removeRecipeLoading ||
           !state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)
         }
@@ -192,12 +193,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           padding: '4px 8px'
         }}
       >
-        <FontAwesomeIcon
-          key="remove"
-          icon={
-            removeRecipeLoading ? 'fa-solid fa-spinner' : 'fas-solid fa-trash'
-          }
-        />
+        {removeRecipeLoading ? <IngreIconSpin /> : <IngreIconRemove />}
       </Button>
     </Tooltip>
   )
@@ -217,10 +213,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           padding: '4px 8px'
         }}
       >
-        <FontAwesomeIcon
-          key="edit"
-          icon="fa-solid fa-pen"
-        />
+        <IngreIconCustomise />
       </Button>
     </Tooltip>
   )
@@ -241,10 +234,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           padding: '4px 8px'
         }}
       >
-        <FontAwesomeIcon
-          key="edit"
-          icon="fa-solid fa-floppy-disk"
-        />
+        <IngreIconSave />
       </Button>
     </Tooltip>
   )
@@ -265,10 +255,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           padding: '4px 8px'
         }}
       >
-        <FontAwesomeIcon
-          key="edit"
-          icon="fa-solid fa-trash"
-        />
+        <IngreIconRemove />
       </Button>
     </Tooltip>
   )
@@ -280,14 +267,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
       title={'Serves ' + recipe.portions + ' people'}
       className="button-tooltip"
     >
-      <FontAwesomeIcon
-        icon="fa-solid fa-user-group"
-        style={{
-          borderRadius: '50%',
-          padding: '0 4px 0',
-          color: 'black'
-        }}
-      />
+      <IngreIconPortion />
       <Typography.Text>{recipe.portions}</Typography.Text>
     </Tooltip>
   )
@@ -312,13 +292,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <FontAwesomeIcon
-            icon="fa-solid fa-book-open"
-            style={{
-              borderRadius: '50%',
-              color: 'black'
-            }}
-          />
+          <IngreIconPro />
         </a>
       </Button>
     </Tooltip>
@@ -370,13 +344,13 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
             title={recipe.name}
             style={{ display: 'inline-block' }}
           >
-            {capitalize(recipe.name)}
+            {recipe.name ? capitalize(recipe.name) : ''}
           </Tooltip>
         }
         style={{
           display: 'inline-block',
           height: '50px',
-          whiteSpace: 'wrap'
+          whiteSpace: 'break-spaces'
         }}
       />
     </Card>
