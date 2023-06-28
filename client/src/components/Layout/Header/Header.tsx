@@ -11,15 +11,14 @@ import Auth from '../../../utils/auth/auth.ts'
 
 // components
 import { Col, Row, Steps } from 'antd'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import LogoutLink from '../../Authentication/LogoutLink.tsx'
 import LoginLink from '../../Authentication/LoginLink.tsx'
-
-/* style */
-
 import ToggleMenu from './Left/ToggleMenu.tsx'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import {
+  IngreIconIngredients,
+  IngreIconRecipe,
+  IngreIconTapOff
+} from '../../Icons/Icon.tsx'
 
 const Header: FC = () => {
   const [state, dispatch] = useStoreContext()
@@ -75,23 +74,21 @@ const Header: FC = () => {
               <Steps.Step
                 icon={
                   <Link to="/">
-                    <FontAwesomeIcon icon={'fa-solid fa-cookie' as IconProp} />
+                    <IngreIconRecipe />
                   </Link>
                 }
               />
               <Steps.Step
                 icon={
                   <Link to="/ingredients">
-                    <FontAwesomeIcon icon={'fa-solid fa-egg' as IconProp} />
+                    <IngreIconIngredients />
                   </Link>
                 }
               />
               <Steps.Step
                 icon={
                   <Link to="/tapoff">
-                    <FontAwesomeIcon
-                      icon={'fa-solid fa-square-check' as IconProp}
-                    />
+                    <IngreIconTapOff />
                   </Link>
                 }
               />
@@ -118,7 +115,7 @@ const Header: FC = () => {
                 title={<Link to="/">Recipes</Link>}
                 icon={
                   <Link to="/">
-                    <FontAwesomeIcon icon={'fa-solid fa-cookie' as IconProp} />
+                    <IngreIconRecipe />
                   </Link>
                 }
               />
@@ -126,7 +123,7 @@ const Header: FC = () => {
                 title={<Link to="/ingredients">Ingredients</Link>}
                 icon={
                   <Link to="/ingredients">
-                    <FontAwesomeIcon icon={'fa-solid fa-egg' as IconProp} />
+                    <IngreIconIngredients />
                   </Link>
                 }
               />
@@ -134,9 +131,7 @@ const Header: FC = () => {
                 title={<Link to="/tapoff">Tap Off</Link>}
                 icon={
                   <Link to="/tapoff">
-                    <FontAwesomeIcon
-                      icon={'fa-solid fa-square-check' as IconProp}
-                    />
+                    <IngreIconTapOff />
                   </Link>
                 }
               />
