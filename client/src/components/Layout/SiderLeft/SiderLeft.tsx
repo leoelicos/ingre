@@ -12,7 +12,7 @@ import { GET_NUM_SAVED_RECIPES } from '../../../utils/apollo/queries.ts'
 
 // components
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button, Menu, Layout } from 'antd'
+import { Menu, Layout } from 'antd'
 
 // authentication
 import Auth from '../../../utils/auth/auth.ts'
