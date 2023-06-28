@@ -1,10 +1,12 @@
-// React
+// react
+import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
 
-// Font Awesome
+// components
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Card, Image, Button, Tooltip, Space, Typography } from 'antd'
 
-// Global state
+// state
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import {
   ADD_SAVED_RECIPE,
@@ -12,10 +14,7 @@ import {
   ADD_EDIT_RECIPE
 } from '../../utils/state/actions.ts'
 
-// Ant Component
-import { Card, Image, Button, Tooltip, Space, Typography } from 'antd'
-
-// Apollo
+// data
 import { useMutation, useApolloClient } from '@apollo/client'
 import { SAVE_RECIPE, REMOVE_RECIPE } from '../../utils/apollo/mutations.ts'
 import {
@@ -24,14 +23,16 @@ import {
   GET_RECIPE
 } from '../../utils/apollo/queries.ts'
 
-// JWT Decode
+// authentication
 import Auth from '../../utils/auth/auth.ts'
 
-// Ant subcomponents
-const { Meta } = Card
-const { Text } = Typography
+interface RecipeCardProps {
+  recipe: RecipeType
+  onSavedPage: boolean
+  pro: boolean
+}
 
-const RecipeCard = ({ recipe, onSavedPage, pro }) => {
+const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
   const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] =
     useMutation(SAVE_RECIPE, {
       refetchQueries: [
@@ -287,7 +288,7 @@ const RecipeCard = ({ recipe, onSavedPage, pro }) => {
           color: 'black'
         }}
       />
-      <Text>{recipe.portions}</Text>
+      <Typography.Text>{recipe.portions}</Typography.Text>
     </Tooltip>
   )
 
@@ -363,7 +364,7 @@ const RecipeCard = ({ recipe, onSavedPage, pro }) => {
       cover={recipeImage}
       actions={getActions()}
     >
-      <Meta
+      <Card.Meta
         title={
           <Tooltip
             title={recipe.name}
