@@ -1,5 +1,6 @@
 // react
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import React, { FC } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 // state
 import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
@@ -9,7 +10,7 @@ import { TOGGLE_SIDEBAR } from '../../../utils/state/actions.ts'
 import Auth from '../../../utils/auth/auth.ts'
 
 // components
-import { Col, Row, Button, Steps, Typography } from 'antd'
+import { Col, Row, Steps } from 'antd'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import LogoutLink from '../../Authentication/LogoutLink.tsx'
@@ -18,8 +19,9 @@ import LoginLink from '../../Authentication/LoginLink.tsx'
 /* style */
 
 import ToggleMenu from './Left/ToggleMenu.tsx'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
-const Header = () => {
+const Header: FC = () => {
   const [state, dispatch] = useStoreContext()
 
   const handleMenuToggle = () => {
@@ -73,21 +75,23 @@ const Header = () => {
               <Steps.Step
                 icon={
                   <Link to="/">
-                    <FontAwesomeIcon icon="fa-solid fa-cookie" />
+                    <FontAwesomeIcon icon={'fa-solid fa-cookie' as IconProp} />
                   </Link>
                 }
               />
               <Steps.Step
                 icon={
                   <Link to="/ingredients">
-                    <FontAwesomeIcon icon="fa-solid fa-egg" />
+                    <FontAwesomeIcon icon={'fa-solid fa-egg' as IconProp} />
                   </Link>
                 }
               />
               <Steps.Step
                 icon={
                   <Link to="/tapoff">
-                    <FontAwesomeIcon icon="fa-solid fa-square-check" />
+                    <FontAwesomeIcon
+                      icon={'fa-solid fa-square-check' as IconProp}
+                    />
                   </Link>
                 }
               />
@@ -114,7 +118,7 @@ const Header = () => {
                 title={<Link to="/">Recipes</Link>}
                 icon={
                   <Link to="/">
-                    <FontAwesomeIcon icon="fa-solid fa-cookie" />
+                    <FontAwesomeIcon icon={'fa-solid fa-cookie' as IconProp} />
                   </Link>
                 }
               />
@@ -122,7 +126,7 @@ const Header = () => {
                 title={<Link to="/ingredients">Ingredients</Link>}
                 icon={
                   <Link to="/ingredients">
-                    <FontAwesomeIcon icon="fa-solid fa-egg" />
+                    <FontAwesomeIcon icon={'fa-solid fa-egg' as IconProp} />
                   </Link>
                 }
               />
@@ -130,7 +134,9 @@ const Header = () => {
                 title={<Link to="/tapoff">Tap Off</Link>}
                 icon={
                   <Link to="/tapoff">
-                    <FontAwesomeIcon icon="fa-solid fa-square-check" />
+                    <FontAwesomeIcon
+                      icon={'fa-solid fa-square-check' as IconProp}
+                    />
                   </Link>
                 }
               />
