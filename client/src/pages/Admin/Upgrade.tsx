@@ -14,12 +14,11 @@ import { CHECKOUT, GET_USER } from '../../utils/apollo/queries.ts'
 // Custom
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /* Auth */
 import Auth from '../../utils/auth/auth.ts'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import { IngreIconPro } from '../../components/Icons/Icon.tsx'
 
 // Stripe
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
@@ -107,13 +106,7 @@ const Upgrade: FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <FontAwesomeIcon
-                          icon={'fa-solid fa-book-open' as IconProp}
-                          style={{
-                            borderRadius: '50%',
-                            color: 'black'
-                          }}
-                        />
+                        <IngreIconPro />
                       </a>
                     </Button>
                   </Tooltip>
