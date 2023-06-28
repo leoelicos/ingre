@@ -3,14 +3,13 @@ export interface IngreRecipe {
   portions: number
   picture_url: string
   instructions: string
+  edamamId: string
   ingredients: {
     name: string
     quantity: number
     measure: string
     category: string
-    foodId: string
   }[]
-  edamamId: string
 }
 
 export interface SearchParams {
