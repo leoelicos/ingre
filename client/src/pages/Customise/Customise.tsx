@@ -7,6 +7,11 @@ import { Button, Form, Input, Col, Divider, Row, Alert } from 'antd'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
+import {
+  IngreIconAddIngredient,
+  IngreIconFormError,
+  IngreIconRemoveIngredient
+} from '../../components/Icons/Icon.tsx'
 
 /* data */
 import { useApolloClient, useMutation } from '@apollo/client'
@@ -27,6 +32,7 @@ import Auth from '../../utils/auth/auth.ts'
 /* types */
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { Recipe } from './types.tsx'
+import type { FormInstance } from 'antd'
 
 const Customise: FC = () => {
   const [state, dispatch] = useStoreContext()
@@ -244,12 +250,7 @@ const Customise: FC = () => {
                               type="error"
                               message="Required"
                               showIcon
-                              icon={
-                                <FontAwesomeIcon
-                                  icon={'fa-solid fa-exclamation' as IconProp}
-                                />
-                              }
-                              //
+                              icon={<IngreIconFormError />}
                             />
                           )
                         }
@@ -278,12 +279,7 @@ const Customise: FC = () => {
                               type="error"
                               message="Required"
                               showIcon
-                              icon={
-                                <FontAwesomeIcon
-                                  icon={'fa-solid fa-exclamation' as IconProp}
-                                />
-                              }
-                              //
+                              icon={<IngreIconFormError />}
                             />
                           )
                         }
@@ -602,12 +598,7 @@ const Customise: FC = () => {
                                         //
                                       }}
                                       shape="round"
-                                      icon={
-                                        <FontAwesomeIcon
-                                          icon={'fa-solid fa-trash' as IconProp}
-                                        />
-                                      }
-                                      //
+                                      icon={<IngreIconRemoveIngredient />}
                                     />
                                   </Form.Item>
                                 </Col>
@@ -623,16 +614,12 @@ const Customise: FC = () => {
                             type="primary"
                             onClick={() => add()}
                             block
-                            icon={
-                              <FontAwesomeIcon
-                                icon={'fa-solid fa-plus' as IconProp}
-                                style={{ marginRight: '4px' }}
-                              />
-                            }
+                            icon={<IngreIconAddIngredient />}
                             shape="round"
-                            //
                           >
-                            Ingredient
+                            <span style={{ marginLeft: '4px' }}>
+                              Ingredient
+                            </span>
                           </Button>
                         </Form.Item>
                       </Row>
@@ -643,33 +630,7 @@ const Customise: FC = () => {
             </Row>
             <Row style={{ marginTop: '1rem', paddingBottom: '10vh' }}>
               <Col span={24}>
-                <Form.Item>
-                  <Button
-                    danger
-                    style={{
-                      width: '100%',
-                      marginTop: '0.3rem'
-                    }}
-                    onClick={() => {
-                      form.setFieldsValue({
-                        name: '',
-                        portions: '',
-                        ingredients: [
-                          { name: '', quantity: '', unit: '', category: '' }
-                        ]
-                      })
-                    }}
-                    icon={
-                      <FontAwesomeIcon
-                        icon={'fa-solid fa-eraser' as IconProp}
-                        style={{ marginRight: '4px' }}
-                      />
-                    }
-                    shape="round"
-                  >
-                    Clear all
-                  </Button>
-                </Form.Item>
+                <ButtonClearAll form={form} />
 
                 <Form.Item>
                   <Button
@@ -734,3 +695,33 @@ const Customise: FC = () => {
   )
 }
 export default Customise
+
+const ButtonClearAll: FC<{ form: FormInstance<any> }> = ({ form }) => (
+  <Form.Item>
+    <Button
+      danger
+      style={{
+        width: '100%',
+        marginTop: '0.3rem'
+      }}
+      onClick={() => {
+        form.setFieldsValue({
+          name: '',
+          portions: '',
+          ingredients: [
+            {
+              name: '',
+              quantity: '',
+              unit: '',
+              category: ''
+            }
+          ]
+        })
+      }}
+      icon={<FontAwesomeIcon icon={'fa-solid fa-eraser' as IconProp} />}
+      shape="round"
+    >
+      <span style={{ marginLeft: '4px' }}>Clear all</span>
+    </Button>
+  </Form.Item>
+)
