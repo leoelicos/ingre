@@ -4,10 +4,8 @@ import { Link } from 'react-router-dom'
 
 /* components */
 import { Button, Space, Row, Spin, Divider, Col } from 'antd'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
 /* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
