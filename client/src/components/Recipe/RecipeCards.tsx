@@ -1,8 +1,9 @@
 import React, { FC } from 'react'
 import RecipeCard from './RecipeCard.tsx'
+import type { RecipeType } from '../../@types/recipe'
 
 interface RecipeCardsProps {
-  results: any
+  results: RecipeType[]
   pro: boolean
   onSavedPage: boolean
 }

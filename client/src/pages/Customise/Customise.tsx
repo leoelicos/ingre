@@ -5,12 +5,14 @@ import { useNavigate } from 'react-router-dom'
 /* components */
 import { Button, Form, Input, Col, Divider, Row, Alert } from 'antd'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 import {
   IngreIconAddIngredient,
+  IngreIconClearCustom,
   IngreIconFormError,
-  IngreIconRemoveIngredient
+  IngreIconRemove,
+  IngreIconSave,
+  IngreIconUndoCustom
 } from '../../components/Icons/Icon.tsx'
 
 /* data */
@@ -26,12 +28,11 @@ import {
   GET_RECIPE
 } from '../../utils/apollo/queries.ts'
 
-/* auth */
+/* authentication */
 import Auth from '../../utils/auth/auth.ts'
 
 /* types */
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
-import { Recipe } from './types.tsx'
+import type { RecipeType } from '../../@types/recipe.d.ts'
 import type { FormInstance } from 'antd'
 
 const Customise: FC = () => {
@@ -126,14 +127,14 @@ const Customise: FC = () => {
     setInit({ name, portions, ingredients })
   }, [client, state.customiseRecipe])
 
-  const onFinish = async (values: Recipe) => {
+  const onFinish = async (values: RecipeType) => {
     if (cancel) return
 
     try {
       console.log('onFinish', values)
       const input = {
         name: values.name || 'Custom recipe',
-        portions: Math.floor(values.portions) ? 1 : Math.floor(values.portions),
+        portions: values.portions ? Math.floor(values.portions) : 1,
         ingredients: values.ingredients.map((i) => {
           const name = i.name || 'Ingredient'
           const quantity = parseFloat(i.quantity.toFixed(2))
@@ -404,14 +405,7 @@ const Customise: FC = () => {
                                             type="error"
                                             message="Required"
                                             showIcon
-                                            icon={
-                                              <FontAwesomeIcon
-                                                icon={
-                                                  'fa-solid fa-exclamation' as IconProp
-                                                }
-                                              />
-                                            }
-                                            //
+                                            icon={<IngreIconFormError />}
                                           />
                                         )
                                       }
@@ -453,14 +447,7 @@ const Customise: FC = () => {
                                             type="error"
                                             message="Required"
                                             showIcon
-                                            icon={
-                                              <FontAwesomeIcon
-                                                icon={
-                                                  'fa-solid fa-exclamation' as IconProp
-                                                }
-                                              />
-                                            }
-                                            //
+                                            icon={<IngreIconFormError />}
                                           />
                                         )
                                       }
@@ -497,20 +484,12 @@ const Customise: FC = () => {
                                             type="error"
                                             message="Required"
                                             showIcon
-                                            icon={
-                                              <FontAwesomeIcon
-                                                icon={
-                                                  'fa-solid fa-exclamation' as IconProp
-                                                }
-                                              />
-                                            }
-                                            //
+                                            icon={<IngreIconFormError />}
                                           />
                                         )
                                       }
                                     ]}
                                     style={{ marginRight: '4px' }}
-                                    //
                                   >
                                     <Input.TextArea
                                       autoSize
@@ -541,14 +520,7 @@ const Customise: FC = () => {
                                             type="error"
                                             message="Required"
                                             showIcon
-                                            icon={
-                                              <FontAwesomeIcon
-                                                icon={
-                                                  'fa-solid fa-exclamation' as IconProp
-                                                }
-                                              />
-                                            }
-                                            //
+                                            icon={<IngreIconFormError />}
                                           />
                                         )
                                       }
@@ -598,7 +570,7 @@ const Customise: FC = () => {
                                         //
                                       }}
                                       shape="round"
-                                      icon={<IngreIconRemoveIngredient />}
+                                      icon={<IngreIconRemove />}
                                     />
                                   </Form.Item>
                                 </Col>
@@ -640,12 +612,7 @@ const Customise: FC = () => {
                     onClick={() => {
                       form.setFieldsValue(init)
                     }}
-                    icon={
-                      <FontAwesomeIcon
-                        icon={'fa-solid fa-rotate-left' as IconProp}
-                        style={{ marginRight: '4px' }}
-                      />
-                    }
+                    icon={<IngreIconUndoCustom />}
                     shape="round"
                   >
                     Undo all
@@ -658,12 +625,7 @@ const Customise: FC = () => {
                     type="primary"
                     htmlType="submit"
                     style={{ width: '100%', marginTop: '1rem' }}
-                    icon={
-                      <FontAwesomeIcon
-                        icon={'fa-solid fa-floppy-disk' as IconProp}
-                        style={{ marginRight: '4px' }}
-                      />
-                    }
+                    icon={<IngreIconSave />}
                     shape="round"
                   >
                     {loading ? <>Saving…</> : saved ? <>Saved!</> : <>Save</>}
@@ -718,7 +680,7 @@ const ButtonClearAll: FC<{ form: FormInstance<any> }> = ({ form }) => (
           ]
         })
       }}
-      icon={<FontAwesomeIcon icon={'fa-solid fa-eraser' as IconProp} />}
+      icon={<IngreIconClearCustom />}
       shape="round"
     >
       <span style={{ marginLeft: '4px' }}>Clear all</span>

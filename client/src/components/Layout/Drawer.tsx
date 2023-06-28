@@ -17,7 +17,7 @@ import {
   IngreIconCustomise,
   IngreIconPro,
   IngreIconRecipe,
-  IngreIconRemoveIngredient,
+  IngreIconRemove,
   IngreIconSave,
   IngreIconSearch
 } from '../Icons/Icon.tsx'
@@ -120,7 +120,7 @@ const Drawer: FC = () => {
                   type="default"
                   block
                   danger
-                  icon={<IngreIconRemoveIngredient />}
+                  icon={<IngreIconRemove />}
                   shape="round"
                 >
                   <span style={{ marginLeft: '4px' }}>Clear all</span>
@@ -141,7 +141,7 @@ const Drawer: FC = () => {
                 Click <IngreIconCustomise /> to edit recipes.
               </Item>
               <Item color="blue">
-                Click <IngreIconRemoveIngredient /> to remove recipes.
+                Click <IngreIconRemove /> to remove recipes.
               </Item>
               <Item color="red">
                 Your recipes will be deleted after 24 hours.
@@ -173,7 +173,7 @@ const Drawer: FC = () => {
                 to add a new ingredient.
               </Item>
               <Item color="red">
-                Click <IngreIconRemoveIngredient /> to remove an ingredient.
+                Click <IngreIconRemove /> to remove an ingredient.
               </Item>
               <Item>There is a Misc section for additional groceries!</Item>
             </Timeline>

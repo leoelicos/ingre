@@ -1,25 +1,4 @@
-export interface IngreRecipe {
-  name: string
-  portions: number
-  picture_url: string
-  instructions: string
-  edamamId: string
-  ingredients: {
-    name: string
-    quantity: number
-    measure: string
-    category: string
-  }[]
-}
-
-export interface SearchParams {
-  q?: string
-  diet?: string[]
-  health?: string[]
-  cuisineType?: string[]
-  mealType?: string[]
-  dishType?: string[]
-}
+import type { SearchParams } from './search.d.ts'
 
 export interface FetchEdamamOptions {
   search: SearchParams

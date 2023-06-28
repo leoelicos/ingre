@@ -1,12 +1,12 @@
 import axios from 'axios'
 
-import {
+import type {
   EdamamHit,
   EdamamRecipeSearchResponse,
-  FetchEdamamOptions,
-  IngreRecipe,
-  SearchParams
-} from './edamamTypes.ts'
+  FetchEdamamOptions
+} from '../../@types/edamam.d.ts'
+import type { RecipeType } from '../../@types/recipe.d.ts'
+import type { SearchParams } from '../../@types/search.d.ts'
 
 const encode = ({
   q,
@@ -22,33 +22,37 @@ const encode = ({
    * Parameter q is not required if any other parameter is specified
    */
 
-  if (
-    q.length === 0 &&
-    diet.length === 0 &&
-    health.length === 0 &&
-    cuisineType.length === 0 &&
-    mealType.length === 0 &&
-    dishType.length === 0
-  )
+  if (!q && !diet && !health && !cuisineType && !mealType && !dishType)
     return 'q=yum'
 
-  let arr1 = q.length > 0 ? [`q=${encodeURIComponent(q)}`] : []
-  let arr2 = [
-    ...diet.map((v: string) => `diet=${encodeURIComponent(v)}`),
-    ...health.map((v: string) => `health=${encodeURIComponent(v)}`),
-    ...mealType.map((v: string) => `mealType=${encodeURIComponent(v)}`),
-    ...dishType.map((v: string) => `dishType=${encodeURIComponent(v)}`),
-    ...cuisineType.map((v: string) => `cuisineType=${encodeURIComponent(v)}`)
-  ]
+  const qMap = !!q && q.length > 0 ? [`q=${encodeURIComponent(q)}`] : []
+  const dietMap =
+    diet?.map((v: string) => `diet=${encodeURIComponent(v)}`) || []
+  const healthMap =
+    health?.map((v: string) => `health=${encodeURIComponent(v)}`) || []
+  const mealTypeMap =
+    mealType?.map((v: string) => `mealType=${encodeURIComponent(v)}`) || []
+  const dishTypeMap =
+    dishType?.map((v: string) => `dishType=${encodeURIComponent(v)}`) || []
+  const cuisineTypeMap =
+    cuisineType?.map((v: string) => `cuisineType=${encodeURIComponent(v)}`) ||
+    []
 
-  return arr1.concat(arr2).join('&')
+  return [
+    ...qMap,
+    ...dietMap,
+    ...healthMap,
+    ...mealTypeMap,
+    ...dishTypeMap,
+    ...cuisineTypeMap
+  ].join('&')
 }
 
 const fetchEdamam = async ({
   search,
   appId,
   appKey
-}: FetchEdamamOptions): Promise<IngreRecipe[]> => {
+}: FetchEdamamOptions): Promise<RecipeType[]> => {
   try {
     const {
       q = '',
@@ -110,7 +114,7 @@ const fetchEdamam = async ({
 export default fetchEdamam
 
 const deserialize = (array: EdamamHit[]) =>
-  array.map((hit): IngreRecipe => {
+  array.map((hit): RecipeType => {
     const { recipe, _links } = hit
     const edamamId = _links.self.href
       .split('https://api.edamam.com/api/recipes/v2/')[1]
@@ -137,8 +141,7 @@ const deserialize = (array: EdamamHit[]) =>
           name: ingredient.food,
           quantity: ingredient.quantity,
           measure: ingredient.measure,
-          category: ingredient.foodCategory,
-          foodId: ingredient.foodId
+          category: { name: ingredient.foodCategory }
         }
       }),
       edamamId
