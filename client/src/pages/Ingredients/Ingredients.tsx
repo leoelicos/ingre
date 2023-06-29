@@ -1,5 +1,5 @@
 /* react */
-import React, { useEffect, useRef, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 /* components */
@@ -8,9 +8,7 @@ import {
   Button,
   Col,
   Divider,
-  Empty,
   Form,
-  Input,
   Popconfirm,
   Row,
   Spin,
@@ -19,6 +17,8 @@ import {
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
+import EditableRow from './EditableRow.tsx'
+import EditableCell from './EditableCell.tsx'
 
 /* data */
 import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries.ts'
@@ -37,8 +37,9 @@ import Auth from '../../utils/auth/auth.ts'
 
 /* utils */
 import { changeTitle } from '../../utils/changeTitle.ts'
-import EditableRow from './EditableRow.tsx'
-import EditableCell from './EditableCell.tsx'
+
+/* types */
+import type { RecipeType } from '../../@types/recipe'
 
 const Ingredients = () => {
   changeTitle('Ingredients')
@@ -76,7 +77,8 @@ const Ingredients = () => {
             query: GET_RECIPE,
             variables: { id: recipe._id }
           })
-          res.data.getRecipe.ingredients.forEach((ingredient) => {
+          const getRecipe: RecipeType = res.data.getRecipe
+          getRecipe.ingredients.forEach((ingredient) => {
             const { _id, name, quantity, measure, category } = ingredient
             const savedIngredient = {
               _id,
