@@ -4,6 +4,14 @@ import { Link } from 'react-router-dom'
 
 // components
 import { Card, Image, Button, Tooltip, Space, Typography } from 'antd'
+import {
+  IngreIconCustomise,
+  IngreIconPortion,
+  IngreIconPro,
+  IngreIconRemove,
+  IngreIconSave,
+  IngreIconSpin
+} from '../Icons/Icon.tsx'
 
 // state
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
@@ -27,14 +35,7 @@ import Auth from '../../utils/auth/auth.ts'
 
 /* types */
 import type { RecipeType } from '../../@types/recipe.d.ts'
-import {
-  IngreIconCustomise,
-  IngreIconPortion,
-  IngreIconPro,
-  IngreIconRemove,
-  IngreIconSave,
-  IngreIconSpin
-} from '../Icons/Icon.tsx'
+import type { SaveRecipePayloadType } from '../../@types/payloads.d.ts'
 
 interface RecipeCardProps {
   recipe: RecipeType
@@ -80,24 +81,25 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
   }
 
   const handleSave = async () => {
+    const placeholder =
+      'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc'
     try {
-      const input = {
-        name: recipe.name,
+      const input: SaveRecipePayloadType = {
+        name: recipe.name || 'Recipe',
         portions: recipe.portions ? Math.floor(recipe.portions) : 1,
-        ingredients: recipe.ingredients.map((i) => {
-          const name = i.name || 'Ingredient'
-          const quantity = i.quantity || 1
-          const measure = i.measure || 'unit'
-          const category = i.category || 'Generic'
-          const ingredient = { name, quantity, measure, category }
-          return ingredient
-        }),
-        picture_url: recipe.picture_url,
-        edamamId: recipe.edamamId,
-        instructions: recipe.shareAs
+        picture_url: recipe.picture_url || placeholder,
+        edamamId: recipe.edamamId || '',
+        instructions: recipe.shareAs || '',
+        ingredients: recipe.ingredients.map((i) => ({
+          name: i.name || 'Ingredient',
+          quantity: i.quantity || 1,
+          measure: i.measure || 'unit',
+          category: i.category.name || 'Generic'
+        }))
       }
       const variables = { input }
       const payload = { variables }
+      console.log({ payload })
       const res = await saveRecipe(payload)
       if (!res) throw new Error('Could not save recipe')
 
@@ -105,6 +107,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
       dispatch({ type: ADD_SAVED_RECIPE, data: saveData })
     } catch (error) {
       console.error(error)
+      console.log('error here')
     }
   }
 
