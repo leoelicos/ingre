@@ -14,8 +14,13 @@ import {
   Spin,
   Table
 } from 'antd'
+import {
+  IngreIconAddIngredient,
+  IngreIconClearCustom,
+  IngreIconRemove,
+  IngreIconSave
+} from '../../components/Icons/Icon.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 import EditableRow from './EditableRow.tsx'
 import EditableCell from './EditableCell.tsx'
@@ -39,9 +44,14 @@ import Auth from '../../utils/auth/auth.ts'
 import { changeTitle } from '../../utils/changeTitle.ts'
 
 /* types */
-import type { RecipeType } from '../../@types/recipe'
+import type { RecipeType } from '../../@types/recipe.ts'
+import type {
+  IngredientGeneratedType,
+  IngredientGeneratedTypeWithKey
+} from '../../@types/ingredientGenerated.ts'
+import { ColumnsType } from 'antd/lib/table/interface'
 
-const Ingredients = () => {
+const Ingredients: FC = () => {
   changeTitle('Ingredients')
 
   const [form] = Form.useForm()
@@ -50,13 +60,12 @@ const Ingredients = () => {
 
   // send asynchronous query to the server
   const [
-    ,
+    _,
     {
       loading: savedRecipeLoading,
       error: savedRecipeError,
       data: savedRecipeData,
       refetch
-      //
     }
   ] = useLazyQuery(GET_SAVED_RECIPES)
 
@@ -71,24 +80,27 @@ const Ingredients = () => {
     const getSavedIngredients = async () => {
       try {
         if (!savedRecipes) return
-        const savedIngredientArray = []
+        const savedIngredientArray: IngredientGeneratedTypeWithKey[] = []
         for (const recipe of savedRecipes) {
+          const recipeName = recipe.name
+          const recipeId = recipe._id.toString()
           const res = await client.query({
             query: GET_RECIPE,
             variables: { id: recipe._id }
           })
           const getRecipe: RecipeType = res.data.getRecipe
+          /* push serialized into savedIngredient[] */
           getRecipe.ingredients.forEach((ingredient) => {
             const { _id, name, quantity, measure, category } = ingredient
             const savedIngredient = {
-              _id,
+              _id: _id || '',
               name,
               quantity,
               measure,
               category: category.name,
-              recipe: recipe.name,
-              recipeId: recipe._id.toString(),
-              key: _id
+              recipe: recipeName,
+              recipeId,
+              key: _id || ''
             }
             savedIngredientArray.push(savedIngredient)
           })
@@ -142,7 +154,7 @@ const Ingredients = () => {
 
   const [count, setCount] = useState(2)
 
-  const handleDelete = (key) => {
+  const handleDelete = (key: string) => {
     const newData = dataSource.filter((item) => item.key !== key)
     setDataSource(newData)
     dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: newData })
@@ -154,7 +166,7 @@ const Ingredients = () => {
       title: 'Name',
       dataIndex: 'name',
       editable: true,
-      sorter: function (a, b) {
+      sorter: (a: IngredientGeneratedType, b: IngredientGeneratedType) => {
         return a.name.localeCompare(b.name)
       },
       sortDirections: ['ascend', 'descend']
@@ -164,8 +176,8 @@ const Ingredients = () => {
       title: 'Quantity',
       dataIndex: 'quantity',
       editable: true,
-      sorter: function (a, b) {
-        return parseFloat(a.quantity) - parseFloat(b.quantity)
+      sorter: (a: IngredientGeneratedType, b: IngredientGeneratedType) => {
+        return (a.quantity - b.quantity).toFixed(2)
       },
       sortDirections: ['ascend', 'descend']
     },
@@ -174,7 +186,10 @@ const Ingredients = () => {
       title: 'Measure',
       dataIndex: 'measure',
       editable: true,
-      sorter: function (a, b) {
+      sorter: function (
+        a: IngredientGeneratedType,
+        b: IngredientGeneratedType
+      ) {
         return a.measure.localeCompare(b.measure)
       },
       sortDirections: ['ascend', 'descend']
@@ -184,7 +199,10 @@ const Ingredients = () => {
       title: 'Category',
       dataIndex: 'category',
       editable: true,
-      sorter: function (a, b) {
+      sorter: function (
+        a: IngredientGeneratedType,
+        b: IngredientGeneratedType
+      ) {
         return a.category.localeCompare(b.category)
       },
       sortDirections: ['ascend', 'descend']
@@ -195,7 +213,10 @@ const Ingredients = () => {
       dataIndex: 'recipe',
       editable: true,
 
-      sorter: function (a, b) {
+      sorter: function (
+        a: IngredientGeneratedType,
+        b: IngredientGeneratedType
+      ) {
         return a.recipe.localeCompare(b.recipe)
       },
       sortDirections: ['ascend', 'descend']
@@ -203,7 +224,7 @@ const Ingredients = () => {
     {
       title: ' ',
       dataIndex: ' ',
-      render: (_, record) =>
+      render: (_: never, record: { key: string }) =>
         dataSource.length >= 1 ? (
           <Popconfirm
             placement="leftTop"
@@ -213,7 +234,7 @@ const Ingredients = () => {
           >
             <Button
               shape="circle"
-              icon={<FontAwesomeIcon icon="fa-solid fa-trash" />}
+              icon={<IngreIconRemove />}
             />
           </Popconfirm>
         ) : null
@@ -235,7 +256,7 @@ const Ingredients = () => {
     setCount(count + 1)
   }
 
-  const handleSave = (row) => {
+  const handleSave = (row: IngredientGeneratedTypeWithKey) => {
     const newData = [...dataSource]
     const index = newData.findIndex((item) => row.key === item.key)
     const item = newData[index]
@@ -244,12 +265,6 @@ const Ingredients = () => {
     dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: newData })
   }
 
-  const components = {
-    body: {
-      row: EditableRow,
-      cell: EditableCell
-    }
-  }
   const columns = defaultColumns.map((col) => {
     if (!col.editable) {
       return col
@@ -257,7 +272,7 @@ const Ingredients = () => {
 
     return {
       ...col,
-      onCell: (record) => ({
+      onCell: (record: any) => ({
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,
@@ -286,16 +301,9 @@ const Ingredients = () => {
                   type="primary"
                   onClick={() => reload()}
                   shape="round"
-                  icon={
-                    <FontAwesomeIcon
-                      icon="fa-solid fa-rotate-left"
-                      style={{
-                        marginRight: '4px'
-                      }}
-                    />
-                  }
+                  icon={<IngreIconClearCustom />}
                   style={{
-                    margin: '1rem 0'
+                    margin: '1rem 0 1rem 4px'
                   }}
                 >
                   Generate
@@ -334,7 +342,7 @@ const Ingredients = () => {
                     rowClassName={() => 'editable-row'}
                     bordered
                     dataSource={dataSource}
-                    columns={columns}
+                    columns={columns as ColumnsType<any>}
                     pagination={false}
                   />
                 ) : (
@@ -345,18 +353,11 @@ const Ingredients = () => {
                   <Button
                     onClick={handleAdd}
                     type="ghost"
-                    icon={
-                      <FontAwesomeIcon
-                        icon="fa-solid fa-add"
-                        style={{
-                          marginRight: '4px'
-                        }}
-                      />
-                    }
+                    icon={<IngreIconAddIngredient />}
                     shape="round"
                     block
                   >
-                    Ingredient
+                    <span style={{ marginLeft: '4px' }}>Ingredient</span>
                   </Button>
                 </Row>
 
@@ -372,14 +373,7 @@ const Ingredients = () => {
                     <Button
                       htmlType="submit"
                       type="primary"
-                      icon={
-                        <FontAwesomeIcon
-                          icon="fa-solid fa-floppy-disk"
-                          style={{
-                            marginRight: '4px'
-                          }}
-                        />
-                      }
+                      icon={<IngreIconSave />}
                       shape="round"
                       onClick={onFinish}
                       block
