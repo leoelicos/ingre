@@ -34,6 +34,7 @@ import Auth from '../../utils/auth/auth.ts'
 /* types */
 import type { RecipeType } from '../../@types/recipe.d.ts'
 import type { FormInstance } from 'antd'
+import type { IngredientCustomType } from '../../@types/ingredientCustom.ts'
 
 const Customise: FC = () => {
   const [state, dispatch] = useStoreContext()
@@ -60,71 +61,54 @@ const Customise: FC = () => {
 
   const client = useApolloClient()
 
+  /* initialize the Customise form
+      recipes from Saved Page are initialised from server data
+      recipes from Recipes Page are initialised from client data
+      recipes from Search Page are initialised from client data
+  */
   const initialize = useCallback(async () => {
-    let name, portions, ingredients
-    console.log('[Custom] initialize', state.customiseRecipe)
-    if (state?.customiseRecipe?._id) {
-      //* FROM BACKEND
-      console.log('BACKEND')
+    /* if it has an _id, it's from the backend */
+    const fromServer = state?.customiseRecipe?._id !== undefined
+    const fallbackIngredient: IngredientCustomType = {
+      key: 'Ingredient',
+      name: 'Name',
+      quantity: 'Quantity',
+      measure: 'Measure',
+      category: 'Category'
+    }
+    if (fromServer) {
+      console.log('[Customise] initialize from server', state.customiseRecipe)
 
       const res = await client.query({
         query: GET_RECIPE,
         variables: { id: state.customiseRecipe._id }
       })
-      const data: {
-        _id: string
-        name: string
-        portions: number
-        ingredients: {
-          _id: string
-          name: string
-          quantity: number
-          measure: string
-          category: {
-            _id: string
-            name: string
-          }
-        }[]
-        picture_url: string
-        edamamId: string
-        instructions: string
-      } = JSON.parse(JSON.stringify(res.data.getRecipe))
-      // dispatch({ type: ADD_EDIT_RECIPE, data: custom });
-
-      name = data.name || 'Recipe'
-      portions = data.portions || 1
-      ingredients =
-        data.ingredients?.map((v) => {
-          const ingredient = { ...v, category: v.category.name }
-          return ingredient
-        }) || []
+      const data: RecipeType = JSON.parse(JSON.stringify(res.data.getRecipe))
       // dispatch({ type: ADD_EDIT_RECIPE, data: data });
+      setInit({
+        name: data.name || 'Recipe',
+        portions: data.portions || 1,
+        ingredients:
+          data.ingredients?.map((v) => ({ ...v, category: v.category.name })) ||
+          []
+      })
     } else {
-      //* FROM FRONTEND
-      console.log('FRONTEND')
-      name = state?.customiseRecipe?.name || ''
-      portions = state?.customiseRecipe?.portions || 2
-      ingredients = state?.customiseRecipe?.ingredients?.map((v, i) => {
-        const ingredient = {
-          key: 'ingredient' + i,
-          name: v.name || 'ingredient',
-          quantity: v.quantity > 0 ? v.quantity.toFixed(2) : '1',
-          measure: v.measure || 'unit',
-          category: v.category || 'Generic'
-        }
-        return ingredient
-      }) || [
-        {
-          key: 'ingredient0',
-          name: '',
-          quantity: '',
-          measure: '',
-          category: ''
-        }
-      ]
+      console.log('[Customise] initialize from client', state.customiseRecipe)
+      setInit({
+        name: state?.customiseRecipe?.name || '',
+        portions: state?.customiseRecipe?.portions || 2,
+        ingredients: state?.customiseRecipe?.ingredients?.map((v, i) => {
+          const ingredient: IngredientCustomType = {
+            key: 'ingredient' + i,
+            name: v.name || 'ingredient',
+            quantity: v.quantity > 0 ? v.quantity.toFixed(2) : '1',
+            measure: v.measure || 'unit',
+            category: v.category.name || 'Generic'
+          }
+          return ingredient
+        }) || [fallbackIngredient]
+      })
     }
-    console.log('init = ', { name, portions, ingredients })
-    setInit({ name, portions, ingredients })
   }, [client, state.customiseRecipe])
 
   const onFinish = async (values: RecipeType) => {
@@ -152,9 +136,8 @@ const Customise: FC = () => {
 
       console.log('[onFinish] input = ', input)
 
-      //* SERVER
-
       if (state.customiseRecipe?._id) {
+        //* Already saved on server
         setLoading(true)
         const recipeId = state.customiseRecipe._id
         const payload = { variables: { input, recipeId } }
@@ -165,6 +148,7 @@ const Customise: FC = () => {
         console.log('[onFinish] Update - res', data)
         if (updateRecipeError) throw updateRecipeError
       } else {
+        //* Not yet saved on server
         setLoading(true)
         const payload = { variables: { input } }
         console.log('[onFinish] Create new recipe', payload)
