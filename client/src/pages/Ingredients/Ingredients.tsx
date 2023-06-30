@@ -54,6 +54,17 @@ const Ingredients: FC = () => {
 
   const [authState] = useAuthContext()
   const loggedIn = authState.loggedIn
+  if (!loggedIn)
+    return (
+      <Col span={24}>
+        <Row>
+          <ContentTitle>Ingredients</ContentTitle>
+        </Row>
+        <Row style={{ paddingBottom: '1rem' }}>
+          <NotLoggedIn />
+        </Row>
+      </Col>
+    )
 
   const [form] = Form.useForm()
   const [state, dispatch] = useStoreContext()
@@ -119,7 +130,7 @@ const Ingredients: FC = () => {
 
   // update global savedRecipes when local savedRecipes changes
   useEffect(() => {
-    if (loggedIn && updateRecipes && savedRecipes) {
+    if (updateRecipes && savedRecipes) {
       dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes })
       setUpdateRecipes(false)
     }
@@ -129,7 +140,6 @@ const Ingredients: FC = () => {
   // update local savedRecipes when getSavedRecipes is loaded from server
   useEffect(() => {
     if (
-      loggedIn &&
       !savedRecipeLoading &&
       !savedRecipeError &&
       savedRecipeData?.getSavedRecipes
@@ -141,7 +151,6 @@ const Ingredients: FC = () => {
 
   // run on first load
   useEffect(() => {
-    if (!loggedIn) return
     if (state.ingredientsDidGenerate) return
     const generateOnFirstLoad = async () => {
       dispatch({ type: FLAG_INGREDIENTS_GENERATED })
@@ -283,100 +292,94 @@ const Ingredients: FC = () => {
         <ContentTitle>Ingredients</ContentTitle>
       </Row>
       <Row style={{ paddingBottom: '1rem' }}>
-        {!loggedIn ? (
-          <NotLoggedIn />
-        ) : (
-          <>
-            <Col span={24}>
-              <Row>
-                <Button
-                  type="primary"
-                  onClick={() => reload()}
-                  shape="round"
-                  icon={<IngreIconClearCustom />}
-                  style={{
-                    margin: '1rem 0 1rem 4px'
-                  }}
-                >
-                  Generate
-                </Button>
-              </Row>
-            </Col>
+        <Col span={24}>
+          <Row>
+            <Button
+              type="primary"
+              onClick={() => reload()}
+              shape="round"
+              icon={<IngreIconClearCustom />}
+              style={{
+                margin: '1rem 0 1rem 4px'
+              }}
+            >
+              Generate
+            </Button>
+          </Row>
+        </Col>
 
-            {savedRecipeLoading ? (
-              <Divider>
-                <Spin tip="Loading saved ingredients"></Spin>
-              </Divider>
-            ) : savedRecipeError ? (
-              <Alert
-                type="error"
-                message="Couldn't load saved ingredients"
+        {savedRecipeLoading ? (
+          <Divider>
+            <Spin tip="Loading saved ingredients"></Spin>
+          </Divider>
+        ) : savedRecipeError ? (
+          <Alert
+            type="error"
+            message="Couldn't load saved ingredients"
+          />
+        ) : (
+          <Form
+            form={form}
+            component={false}
+            style={{
+              marginTop: '1rem'
+            }}
+          >
+            {dataSource.length ? (
+              <Table
+                style={{
+                  width: '100%'
+                }}
+                components={{
+                  body: {
+                    row: EditableRow,
+                    cell: EditableCell
+                  }
+                }}
+                rowClassName={() => 'editable-row'}
+                bordered
+                dataSource={dataSource}
+                columns={columns as ColumnsType<any>}
+                pagination={false}
               />
             ) : (
-              <Form
-                form={form}
-                component={false}
-                style={{
-                  marginTop: '1rem'
-                }}
-              >
-                {dataSource.length ? (
-                  <Table
-                    style={{
-                      width: '100%'
-                    }}
-                    components={{
-                      body: {
-                        row: EditableRow,
-                        cell: EditableCell
-                      }
-                    }}
-                    rowClassName={() => 'editable-row'}
-                    bordered
-                    dataSource={dataSource}
-                    columns={columns as ColumnsType<any>}
-                    pagination={false}
-                  />
-                ) : (
-                  <Alert message="Click the Generate button to make a new list" />
-                )}
-
-                <Row style={{ marginTop: '1rem' }}>
-                  <Button
-                    onClick={handleAdd}
-                    type="ghost"
-                    icon={<IngreIconAddIngredient />}
-                    shape="round"
-                    block
-                  >
-                    <span style={{ marginLeft: '4px' }}>Ingredient</span>
-                  </Button>
-                </Row>
-
-                <Row
-                  style={{
-                    marginTop: '1rem'
-                  }}
-                >
-                  <Link
-                    to="/tapoff"
-                    style={{ width: '100%' }}
-                  >
-                    <Button
-                      htmlType="submit"
-                      type="primary"
-                      icon={<IngreIconSave />}
-                      shape="round"
-                      onClick={onFinish}
-                      block
-                    >
-                      Tap Off
-                    </Button>
-                  </Link>
-                </Row>
-              </Form>
+              <Alert message="Click the Generate button to make a new list" />
             )}
-          </>
+
+            <Row style={{ marginTop: '1rem' }}>
+              <Button
+                onClick={handleAdd}
+                type="ghost"
+                icon={<IngreIconAddIngredient />}
+                shape="round"
+                block
+              >
+                <span style={{ marginLeft: '4px' }}>Ingredient</span>
+              </Button>
+            </Row>
+
+            <Row
+              style={{
+                marginTop: '1rem'
+              }}
+            >
+              <Link
+                to="/tapoff"
+                style={{ width: '100%' }}
+              >
+                <Button
+                  htmlType="submit"
+                  type="primary"
+                  icon={<IngreIconSave />}
+                  shape="round"
+                  onClick={onFinish}
+                  block
+                >
+                  Tap Off
+                </Button>
+              </Link>
+            </Row>
+          </Form>
         )}
       </Row>
     </Col>
