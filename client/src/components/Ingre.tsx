@@ -13,6 +13,7 @@ import { setContext } from '@apollo/client/link/context'
 
 /* state */
 import { StoreProvider } from '../utils/state/GlobalState.tsx'
+import { AuthProvider } from '../utils/auth/AuthContext.tsx'
 
 /* pages */
 import Home from '../pages/Home/Home.tsx'
@@ -68,69 +69,71 @@ const Ingre: FC = () => {
   return (
     <ApolloProvider client={client}>
       <Router>
-        <StoreProvider>
-          <Layout>
-            <Header />
-            <MainLayout>
-              <SiderLeft />
-              <Content style={contentStyle}>
-                <Routes>
-                  {/* pages */}
-                  <Route
-                    path="/"
-                    element={<Home />}
-                  />
-                  <Route
-                    path="/search"
-                    element={<Search />}
-                  />
-                  <Route
-                    path="/customise"
-                    element={<Customise />}
-                  />
-                  <Route
-                    path="/saved"
-                    element={<Saved />}
-                  />
-                  <Route
-                    path="/ingredients"
-                    element={<Ingredients />}
-                  />
-                  <Route
-                    path="/tapoff"
-                    element={<TapOff />}
-                  />
-                  {/* admin */}
-                  <Route
-                    path="/login"
-                    element={<Login />}
-                  />
-                  <Route
-                    path="/logout"
-                    element={<Logout />}
-                  />
-                  <Route
-                    path="/signup"
-                    element={<Signup />}
-                  />
-                  <Route
-                    path="/upgrade"
-                    element={<Upgrade />}
-                  />
-                  <Route
-                    path="/success"
-                    element={<Success />}
-                  />
-                  <Route
-                    path="*"
-                    element={<NoMatch />}
-                  />
-                </Routes>
-                <Drawer />
-              </Content>
-            </MainLayout>
-          </Layout>
-        </StoreProvider>
+        <AuthProvider>
+          <StoreProvider>
+            <Layout>
+              <Header />
+              <MainLayout>
+                <SiderLeft />
+                <Content style={contentStyle}>
+                  <Routes>
+                    {/* pages */}
+                    <Route
+                      path="/"
+                      element={<Home />}
+                    />
+                    <Route
+                      path="/search"
+                      element={<Search />}
+                    />
+                    <Route
+                      path="/customise"
+                      element={<Customise />}
+                    />
+                    <Route
+                      path="/saved"
+                      element={<Saved />}
+                    />
+                    <Route
+                      path="/ingredients"
+                      element={<Ingredients />}
+                    />
+                    <Route
+                      path="/tapoff"
+                      element={<TapOff />}
+                    />
+                    {/* admin */}
+                    <Route
+                      path="/login"
+                      element={<Login />}
+                    />
+                    <Route
+                      path="/logout"
+                      element={<Logout />}
+                    />
+                    <Route
+                      path="/signup"
+                      element={<Signup />}
+                    />
+                    <Route
+                      path="/upgrade"
+                      element={<Upgrade />}
+                    />
+                    <Route
+                      path="/success"
+                      element={<Success />}
+                    />
+                    <Route
+                      path="*"
+                      element={<NoMatch />}
+                    />
+                  </Routes>
+                  <Drawer />
+                </Content>
+              </MainLayout>
+            </Layout>
+          </StoreProvider>
+        </AuthProvider>
       </Router>
     </ApolloProvider>
   )
