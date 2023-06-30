@@ -1,4 +1,4 @@
-export interface SaveRecipePayloadType {
+export interface RecipeInput {
   name: string
   portions: number
   ingredients: IngredientInput[]
