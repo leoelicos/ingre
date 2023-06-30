@@ -14,7 +14,7 @@ const Logout: FC = () => {
   useEffect(() => {
     dispatch({ type: 'LOGOUT' })
     setM('You have been logged out.')
-  }, [])
+  }, [dispatch])
 
   return <div>{m}</div>
 }
