@@ -2,7 +2,9 @@ import Key from 'react'
 
 export type IngredientCustomType = {
   name: string
-  quantity: string
+  quantity: number
   measure: string
   category: string
-} & { key: Key }
+}
+
+export type IngredientCustomTypeWithKey = IngredientCustomType & { key: Key }
