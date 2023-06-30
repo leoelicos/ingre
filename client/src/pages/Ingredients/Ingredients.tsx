@@ -36,9 +36,7 @@ import {
   FLAG_INGREDIENTS_GENERATED,
   UPDATE_SAVED_INGREDIENTS
 } from '../../utils/state/actions.ts'
-
-/* auth */
-import Auth from '../../utils/auth/auth.ts'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* utils */
 import { changeTitle } from '../../utils/changeTitle.ts'
@@ -53,6 +51,9 @@ import { ColumnsType } from 'antd/lib/table/interface'
 
 const Ingredients: FC = () => {
   changeTitle('Ingredients')
+
+  const [authState] = useAuthContext()
+  const loggedIn = authState.loggedIn
 
   const [form] = Form.useForm()
   const [state, dispatch] = useStoreContext()
@@ -118,7 +119,7 @@ const Ingredients: FC = () => {
 
   // update global savedRecipes when local savedRecipes changes
   useEffect(() => {
-    if (Auth.loggedIn() && updateRecipes && savedRecipes) {
+    if (loggedIn && updateRecipes && savedRecipes) {
       dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes })
       setUpdateRecipes(false)
     }
@@ -128,7 +129,7 @@ const Ingredients: FC = () => {
   // update local savedRecipes when getSavedRecipes is loaded from server
   useEffect(() => {
     if (
-      Auth.loggedIn() &&
+      loggedIn &&
       !savedRecipeLoading &&
       !savedRecipeError &&
       savedRecipeData?.getSavedRecipes
@@ -140,7 +141,7 @@ const Ingredients: FC = () => {
 
   // run on first load
   useEffect(() => {
-    if (!Auth.loggedIn()) return
+    if (!loggedIn) return
     if (state.ingredientsDidGenerate) return
     const generateOnFirstLoad = async () => {
       dispatch({ type: FLAG_INGREDIENTS_GENERATED })
@@ -159,16 +160,22 @@ const Ingredients: FC = () => {
     setDataSource(newData)
     dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: newData })
   }
-
-  const defaultColumns = [
+  interface defaultColumnType {
+    key: string
+    title: string
+    dataIndex: string
+    editable?: boolean
+    sorter?: (a: IngredientGeneratedType, b: IngredientGeneratedType) => number
+    sortDirections?: ('ascend' | 'descend')[]
+    render?: (_: never, record: { key: string }) => React.JSX.Element | null
+  }
+  const defaultColumns: defaultColumnType[] = [
     {
       key: 'name',
       title: 'Name',
       dataIndex: 'name',
       editable: true,
-      sorter: (a: IngredientGeneratedType, b: IngredientGeneratedType) => {
-        return a.name.localeCompare(b.name)
-      },
+      sorter: (a, b) => a.name.localeCompare(b.name),
       sortDirections: ['ascend', 'descend']
     },
     {
@@ -176,9 +183,7 @@ const Ingredients: FC = () => {
       title: 'Quantity',
       dataIndex: 'quantity',
       editable: true,
-      sorter: (a: IngredientGeneratedType, b: IngredientGeneratedType) => {
-        return (a.quantity - b.quantity).toFixed(2)
-      },
+      sorter: (a, b) => a.quantity - b.quantity,
       sortDirections: ['ascend', 'descend']
     },
     {
@@ -186,12 +191,7 @@ const Ingredients: FC = () => {
       title: 'Measure',
       dataIndex: 'measure',
       editable: true,
-      sorter: function (
-        a: IngredientGeneratedType,
-        b: IngredientGeneratedType
-      ) {
-        return a.measure.localeCompare(b.measure)
-      },
+      sorter: (a, b) => a.measure.localeCompare(b.measure),
       sortDirections: ['ascend', 'descend']
     },
     {
@@ -199,12 +199,7 @@ const Ingredients: FC = () => {
       title: 'Category',
       dataIndex: 'category',
       editable: true,
-      sorter: function (
-        a: IngredientGeneratedType,
-        b: IngredientGeneratedType
-      ) {
-        return a.category.localeCompare(b.category)
-      },
+      sorter: (a, b) => a.category.localeCompare(b.category),
       sortDirections: ['ascend', 'descend']
     },
     {
@@ -213,15 +208,11 @@ const Ingredients: FC = () => {
       dataIndex: 'recipe',
       editable: true,
 
-      sorter: function (
-        a: IngredientGeneratedType,
-        b: IngredientGeneratedType
-      ) {
-        return a.recipe.localeCompare(b.recipe)
-      },
+      sorter: (a, b) => a.recipe.localeCompare(b.recipe),
       sortDirections: ['ascend', 'descend']
     },
     {
+      key: 'delete',
       title: ' ',
       dataIndex: ' ',
       render: (_: never, record: { key: string }) =>
@@ -256,7 +247,8 @@ const Ingredients: FC = () => {
     setCount(count + 1)
   }
 
-  const handleSave = (row: IngredientGeneratedTypeWithKey) => {
+  type HandleSaveType = (row: IngredientGeneratedTypeWithKey) => void
+  const handleSave: HandleSaveType = (row) => {
     const newData = [...dataSource]
     const index = newData.findIndex((item) => row.key === item.key)
     const item = newData[index]
@@ -266,9 +258,7 @@ const Ingredients: FC = () => {
   }
 
   const columns = defaultColumns.map((col) => {
-    if (!col.editable) {
-      return col
-    }
+    if (!Object.hasOwn(col, 'editable')) return col
 
     return {
       ...col,
@@ -293,7 +283,9 @@ const Ingredients: FC = () => {
         <ContentTitle>Ingredients</ContentTitle>
       </Row>
       <Row style={{ paddingBottom: '1rem' }}>
-        {Auth.loggedIn() ? (
+        {!loggedIn ? (
+          <NotLoggedIn />
+        ) : (
           <>
             <Col span={24}>
               <Row>
@@ -385,8 +377,6 @@ const Ingredients: FC = () => {
               </Form>
             )}
           </>
-        ) : (
-          <NotLoggedIn />
         )}
       </Row>
     </Col>

@@ -16,27 +16,29 @@ import {
 } from '../../components/Icons/Icon.tsx'
 
 /* data */
-import { useApolloClient, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { SAVE_RECIPE, UPDATE_RECIPE } from '../../utils/apollo/mutations.ts'
+import { getRecipeFromServer } from './getRecipeFromServer.ts'
 
 /* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import { ADD_SAVED_RECIPE } from '../../utils/state/actions.ts'
 import {
   GET_SAVED_RECIPES,
-  GET_NUM_SAVED_RECIPES,
-  GET_RECIPE
+  GET_NUM_SAVED_RECIPES
 } from '../../utils/apollo/queries.ts'
-
-/* authentication */
-import Auth from '../../utils/auth/auth.ts'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* types */
 import type { RecipeType } from '../../@types/recipe.d.ts'
 import type { FormInstance } from 'antd'
-import type { IngredientCustomType } from '../../@types/ingredientCustom.ts'
+import type { IngredientCustomTypeWithKey } from '../../@types/ingredientCustom.ts'
+import type { RecipeCustomTypeWithKey } from '../../@types/recipeCustom'
 
 const Customise: FC = () => {
+  const [authState] = useAuthContext()
+  const loggedIn = authState.loggedIn
+
   const [state, dispatch] = useStoreContext()
   const [form] = Form.useForm(undefined)
   const [addCustomRecipe, { error: saveRecipeError }] = useMutation(
@@ -59,8 +61,6 @@ const Customise: FC = () => {
   const [init, setInit] = useState({})
   const [cancel, setCancel] = useState(false)
 
-  const client = useApolloClient()
-
   /* initialize the Customise form
       recipes from Saved Page are initialised from server data
       recipes from Recipes Page are initialised from client data
@@ -69,39 +69,53 @@ const Customise: FC = () => {
   const initialize = useCallback(async () => {
     /* if it has an _id, it's from the backend */
     const fromServer = state?.customiseRecipe?._id !== undefined
-    const fallbackIngredient: IngredientCustomType = {
+    const fallbackIngredient: IngredientCustomTypeWithKey = {
       key: 'Ingredient',
       name: 'Name',
-      quantity: 'Quantity',
+      quantity: 1,
       measure: 'Measure',
       category: 'Category'
     }
     if (fromServer) {
       console.log('[Customise] initialize from server', state.customiseRecipe)
+      let id = state.customiseRecipe._id
+      if (id === undefined) throw 'no ID'
+      const recipeFromServer = await getRecipeFromServer(id)
+      let recipeCustom: RecipeCustomTypeWithKey
+      if (recipeFromServer === undefined) {
+        /* not found on server for some reason */
+        recipeCustom = {
+          key: 'Recipe',
+          name: 'Recipe',
+          portions: 1,
+          ingredients: [fallbackIngredient]
+        }
+      } else {
+        /* serialise  */
+        recipeCustom = {
+          key: recipeFromServer.name,
+          name: recipeFromServer.name,
+          portions: recipeFromServer.portions,
+          ingredients:
+            recipeFromServer.ingredients?.map((v) => ({
+              ...v,
+              category: v.category.name
+            })) || []
+        }
+      }
+      setInit(recipeCustom)
 
-      const res = await client.query({
-        query: GET_RECIPE,
-        variables: { id: state.customiseRecipe._id }
-      })
-      const data: RecipeType = JSON.parse(JSON.stringify(res.data.getRecipe))
       // dispatch({ type: ADD_EDIT_RECIPE, data: data });
-      setInit({
-        name: data.name || 'Recipe',
-        portions: data.portions || 1,
-        ingredients:
-          data.ingredients?.map((v) => ({ ...v, category: v.category.name })) ||
-          []
-      })
     } else {
       console.log('[Customise] initialize from client', state.customiseRecipe)
       setInit({
         name: state?.customiseRecipe?.name || '',
         portions: state?.customiseRecipe?.portions || 2,
         ingredients: state?.customiseRecipe?.ingredients?.map((v, i) => {
-          const ingredient: IngredientCustomType = {
+          const ingredient: IngredientCustomTypeWithKey = {
             key: 'ingredient' + i,
             name: v.name || 'ingredient',
-            quantity: v.quantity > 0 ? v.quantity.toFixed(2) : '1',
+            quantity: v.quantity > 0 ? Math.round(v.quantity * 100) / 100 : 1,
             measure: v.measure || 'unit',
             category: v.category.name || 'Generic'
           }
@@ -109,7 +123,7 @@ const Customise: FC = () => {
         }) || [fallbackIngredient]
       })
     }
-  }, [client, state.customiseRecipe])
+  }, [state.customiseRecipe])
 
   const onFinish = async (values: RecipeType) => {
     if (cancel) return
@@ -121,7 +135,7 @@ const Customise: FC = () => {
         portions: values.portions ? Math.floor(values.portions) : 1,
         ingredients: values.ingredients.map((i) => {
           const name = i.name || 'Ingredient'
-          const quantity = parseFloat(i.quantity.toFixed(2))
+          const quantity = Math.floor(i.quantity * 100) / 100
           const measure = i.measure || 'unit'
           const category = i.category || 'Generic'
           const ingredient = { name, quantity, measure, category }
@@ -186,7 +200,7 @@ const Customise: FC = () => {
       </Row>
 
       <Row>
-        {!Auth.loggedIn() ? (
+        {!loggedIn ? (
           <NotLoggedIn />
         ) : (
           <Form

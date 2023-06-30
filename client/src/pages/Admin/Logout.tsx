@@ -1,31 +1,22 @@
 /* react */
 import React, { FC, useEffect, useState } from 'react'
 
-/* auth */
-import Auth from '../../utils/auth/auth.ts'
+/* state */
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 const Logout: FC = () => {
-  const [logoutMessage, setLogoutMessage] = useState(() => {
-    if (!Auth.loggedIn()) {
-      return 'You are already logged out.'
-    }
-    return 'Logging out...'
-  })
+  const [state, dispatch] = useAuthContext()
+  const loggedIn = state.loggedIn
+  if (!loggedIn) return <div>You are already logged out.</div>
+
+  const [m, setM] = useState('Logging out…')
 
   useEffect(() => {
-    const init = async () => {
-      try {
-        await Auth.logout()
-        setLogoutMessage('You have been logged out.')
-      } catch (error) {
-        setLogoutMessage('Unable to log out. Please try again.')
-      }
-    }
-
-    init()
+    dispatch({ type: 'LOGOUT' })
+    setM('You have been logged out.')
   }, [])
 
-  return <div>{logoutMessage}</div>
+  return <div>{m}</div>
 }
 
 export default Logout

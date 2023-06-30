@@ -20,6 +20,7 @@ import {
   REMOVE_SAVED_RECIPE,
   ADD_EDIT_RECIPE
 } from '../../utils/state/actions.ts'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 // data
 import { useMutation, useApolloClient } from '@apollo/client'
@@ -30,12 +31,9 @@ import {
   GET_RECIPE
 } from '../../utils/apollo/queries.ts'
 
-// authentication
-import Auth from '../../utils/auth/auth.ts'
-
 /* types */
 import type { RecipeType } from '../../@types/recipe.d.ts'
-import type { SaveRecipePayloadType } from '../../@types/payloads.d.ts'
+import type { RecipeInput } from '../../@types/payloads.d.ts'
 
 interface RecipeCardProps {
   recipe: RecipeType
@@ -44,6 +42,9 @@ interface RecipeCardProps {
 }
 
 const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
+  const [authState] = useAuthContext()
+  const loggedIn = authState.loggedIn
+
   const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] =
     useMutation(SAVE_RECIPE, {
       refetchQueries: [
@@ -51,7 +52,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
         { query: GET_NUM_SAVED_RECIPES }
       ]
     })
-  if (saveRecipeError) console.error({ saveRecipeError })
+  if (saveRecipeError) console.error('saveRecipeError', { saveRecipeError })
   const [
     removeRecipe,
     { loading: removeRecipeLoading, error: removeRecipeError }
@@ -84,7 +85,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
     const placeholder =
       'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc'
     try {
-      const input: SaveRecipePayloadType = {
+      const input: RecipeInput = {
         name: recipe.name || 'Recipe',
         portions: recipe.portions ? Math.floor(recipe.portions) : 1,
         picture_url: recipe.picture_url || placeholder,
@@ -97,13 +98,14 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           category: i.category.name || 'Generic'
         }))
       }
+      console.log('handleSave', { input })
       const variables = { input }
       const payload = { variables }
-      console.log({ payload })
+      console.log({ payload }) // this is good
       const res = await saveRecipe(payload)
-      if (!res) throw new Error('Could not save recipe')
-
+      if (!res) throw 'Could not save recipe'
       const saveData = res.data.saveRecipe
+      console.log({ res }) // this is returning null
       dispatch({ type: ADD_SAVED_RECIPE, data: saveData })
     } catch (error) {
       console.error(error)
@@ -305,7 +307,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
     // Every page gets a portions button
     let actions = [portionsButton]
     // if not logged in, buttons are disabled
-    if (!Auth.loggedIn()) {
+    if (!loggedIn) {
       actions.push(disabledEditButton, disabledSaveButton, disabledTrashButton)
       return actions
     }

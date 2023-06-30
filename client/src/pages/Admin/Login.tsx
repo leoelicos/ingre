@@ -5,9 +5,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 /* data */
 import { useMutation } from '@apollo/client'
 import { LOGIN } from '../../utils/apollo/mutations.ts'
-
-/* auth */
-import Auth from '../../utils/auth/auth.ts'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* components */
 import { Button, Form, Input, Divider, Row, Col, Alert } from 'antd'
@@ -46,6 +44,9 @@ const Login: FC = () => {
   const [form] = Form.useForm()
   const navigate = useNavigate()
 
+  const [authState, dispatch] = useAuthContext()
+  const loggedIn = authState.loggedIn
+
   const handleFormSubmit = async (values: UserLoginForm) => {
     const { user } = values
     const { email, password } = user
@@ -56,7 +57,7 @@ const Login: FC = () => {
       const res = await login({ variables: payload })
       const token = res.data.login.token
       console.log('localstorage token', token)
-      Auth.login(token)
+      dispatch({ type: 'LOGIN', data: token })
 
       navigate(-1)
     } catch (e) {
@@ -70,7 +71,7 @@ const Login: FC = () => {
     if (password) form.setFieldsValue({ password })
   }
 
-  if (Auth.loggedIn()) return <Navigate to="/" />
+  if (loggedIn) return <Navigate to="/" />
 
   return (
     <Col style={colStyle}>

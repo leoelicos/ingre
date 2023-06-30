@@ -1,16 +1,9 @@
-// React hooks
+/* react */
 import React, { FC, useCallback, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
-// components
+/* components */
 import { Alert, Button, Drawer as AntDrawer, Space, Timeline } from 'antd'
-
-// state
-import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-import { HIDE_DRAWER } from '../../utils/state/actions.ts'
-
-// auth
-import Auth from '../../utils/auth/auth.ts'
 import {
   IngreIconAddIngredient,
   IngreIconClearSearch,
@@ -22,14 +15,21 @@ import {
   IngreIconSearch
 } from '../Icons/Icon.tsx'
 
-// components
+/* state */
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
+import { HIDE_DRAWER } from '../../utils/state/actions.ts'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
+
+/* components */
 const { Item } = Timeline
 
 const Drawer: FC = () => {
   const [state, dispatch] = useStoreContext()
   const handleOk = () => dispatch({ type: HIDE_DRAWER })
   const { pathname } = useLocation()
-  const pro = Auth.getProfile()?.data?.pro
+
+  const [authState] = useAuthContext()
+  const pro = authState.profile?.data.pro
 
   const memoPathName = useMemo(() => pathname, [pathname])
   const getDrawerText = useCallback(
