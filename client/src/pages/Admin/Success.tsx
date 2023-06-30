@@ -9,8 +9,10 @@ import { useMutation } from '@apollo/client'
 import { MAKE_USER_PRO } from '../../utils/apollo/mutations.ts'
 import { Alert, Button, Col, Row, Space, Timeline } from 'antd'
 
-import Auth from '../../utils/auth/auth.ts'
+/* state */
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
+/* components */
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 import { IngreIconPro } from '../../components/Icons/Icon.tsx'
@@ -19,6 +21,9 @@ const Success: FC = () => {
   const [makeUserPro] = useMutation(MAKE_USER_PRO)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+
+  const [authState] = useAuthContext()
+  const loggedIn = authState.loggedIn
 
   const Token = () => {
     const params = searchParams.get('session_id')
@@ -45,7 +50,7 @@ const Success: FC = () => {
     saveOrder()
   }, [makeUserPro, navigate])
 
-  if (!Auth.loggedIn()) return <NotLoggedIn />
+  if (!loggedIn) return <NotLoggedIn />
 
   if (!searchParams.get('session_id')) {
     return (

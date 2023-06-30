@@ -7,8 +7,8 @@ import { useApolloClient, useMutation } from '@apollo/client'
 import { CHECK_EMAIL_ALREADY_EXISTS } from '../../utils/apollo/queries.ts'
 import { ADD_USER } from '../../utils/apollo/mutations.ts'
 
-/* auth */
-import Auth from '../../utils/auth/auth.ts'
+/* state */
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* components */
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
@@ -52,6 +52,9 @@ const Signup: FC = () => {
 
   const client = useApolloClient()
 
+  const [state, dispatch] = useAuthContext()
+  const loggedIn = state.loggedIn
+
   const emailAlreadyExists = async (email: string) => {
     const { data } = await client.query({
       query: CHECK_EMAIL_ALREADY_EXISTS,
@@ -82,7 +85,7 @@ const Signup: FC = () => {
     try {
       const res = await addUser({ variables })
       const token = res.data.addUser.token
-      Auth.login(token)
+      dispatch({ type: 'LOGIN', data: token })
 
       navigate(-1)
     } catch (e) {
@@ -98,7 +101,7 @@ const Signup: FC = () => {
     if (password) form.setFieldsValue({ password })
   }
 
-  if (Auth.loggedIn()) return <Navigate to="/" />
+  if (!loggedIn) return <Navigate to="/" />
   return (
     <Col style={colWrapper}>
       <Row>

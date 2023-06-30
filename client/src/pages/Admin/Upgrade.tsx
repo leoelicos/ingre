@@ -1,24 +1,22 @@
-// React
+// react
 import React, { FC, useState, useEffect } from 'react'
-
-// Ant
-import { Row, Col, Button, List, Space, Tooltip, Alert } from 'antd'
 
 // Stripe
 import { loadStripe } from '@stripe/stripe-js'
 
-// Apollo
+// data
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { CHECKOUT, GET_USER } from '../../utils/apollo/queries.ts'
 
-// Custom
+// components
+import { Row, Col, Button, List, Space, Tooltip, Alert } from 'antd'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
-
-/* Auth */
-import Auth from '../../utils/auth/auth.ts'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 import { IngreIconPro } from '../../components/Icons/Icon.tsx'
+
+/* state */
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 // Stripe
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
@@ -31,6 +29,9 @@ const AlreadyPro = () => (
 )
 
 const Upgrade: FC = () => {
+  const [authState] = useAuthContext()
+  const loggedIn = authState.loggedIn
+
   const [getCheckout, { data }] = useLazyQuery(CHECKOUT)
   const {
     data: userData,
@@ -61,7 +62,7 @@ const Upgrade: FC = () => {
 
   if (pro) return <AlreadyPro />
 
-  if (!Auth.loggedIn())
+  if (!loggedIn)
     return (
       <Col span={24}>
         <Row>

@@ -13,14 +13,12 @@ import {
   UPDATE_HOME_RECIPES,
   FLAG_HOME_MOUNTED
 } from '../../utils/state/actions.ts'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* data */
 import { useApolloClient } from '@apollo/client'
 import { GET_API_KEY } from '../../utils/apollo/queries.ts'
 import fetchEdamam from '../../utils/api/edamam.ts'
-
-/* auth */
-import Auth from '../../utils/auth/auth.ts'
 
 /* hooks */
 import { changeTitle } from '../../utils/changeTitle.ts'
@@ -28,6 +26,10 @@ import { IngreIconSearch } from '../../components/Icons/Icon.tsx'
 
 const Home: FC = () => {
   changeTitle('Recipes')
+
+  const [authState] = useAuthContext()
+  const loggedIn = authState.loggedIn
+  const firstName = authState.profile?.data.firstName || 'chef'
 
   const client = useApolloClient()
 
@@ -144,10 +146,10 @@ const Home: FC = () => {
 
   return (
     <Col>
-      {Auth.loggedIn() && (
+      {loggedIn && (
         <Row>
           <ContentTitle>
-            <Space>Welcome {Auth.getProfile()?.data?.firstName}</Space>
+            <Space>Welcome {firstName}</Space>
           </ContentTitle>
         </Row>
       )}

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 /* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import { UPDATE_TAP_OFF } from '../../utils/state/actions.ts'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* components */
 import {
@@ -23,9 +24,6 @@ import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 import Masonry from 'react-masonry-css'
 
-/* auth */
-import Auth from '../../utils/auth/auth.ts'
-
 /* utils */
 import compress from '../../utils/compress.ts'
 import { changeTitle } from '../../utils/changeTitle.ts'
@@ -35,6 +33,9 @@ import './style.css'
 
 const TapOff = () => {
   changeTitle('tapoff')
+
+  const [authState] = useAuthContext()
+  const loggedIn = authState.loggedIn
 
   const handleChange = (ri, ii, checked) => {
     const x = JSON.parse(JSON.stringify(compressedRecipes))
@@ -65,7 +66,7 @@ const TapOff = () => {
         <ContentTitle>Tap Off</ContentTitle>
       </Row>
       <Row style={{ paddingBottom: '1rem', width: '100%' }}>
-        {!Auth.loggedIn() ? (
+        {!loggedIn ? (
           <NotLoggedIn />
         ) : (
           <Masonry

@@ -1,5 +1,5 @@
 /* react */
-import React, { FC, useMemo } from 'react'
+import React, { FC } from 'react'
 
 /* components */
 import { BackTop } from 'antd'
@@ -7,12 +7,8 @@ import RecipeCardContainerLoading from './RecipeCardContainerLoading.tsx'
 import RecipeCardContainerEmpty from './RecipeCardContainerEmpty.tsx'
 import RecipeCards from './RecipeCards.tsx'
 
-/* data */
-import { useQuery } from '@apollo/client'
-import { GET_USER } from '../../utils/apollo/queries.ts'
-
-/* auth */
-import Auth from '../../utils/auth/auth.ts'
+/* state */
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 interface RecipeCardContainerProps {
   results: any[]
@@ -29,27 +25,13 @@ const recipeCardContainerStyle = {
   columnGap: '1rem'
 }
 
-interface GetUser {
-  getUser: {
-    firstName: string
-    pro: string
-  }
-}
-
 const RecipeCardContainer: FC<RecipeCardContainerProps> = ({
   results,
   loading,
   onSavedPage
 }) => {
-  const { data } = useQuery<GetUser>(GET_USER) //TODO why is this needed? pro is already in Auth.profile()
-
-  const pro = useMemo(() => {
-    if (!data) return false
-    if (!data.getUser) return false
-    if (!data.getUser.pro) return false
-    if (!Auth.loggedIn()) return false
-    return true
-  }, [data])
+  const [authState] = useAuthContext()
+  const pro = authState.profile?.data.pro || false
 
   return (
     <div style={recipeCardContainerStyle}>
@@ -67,7 +49,7 @@ const RecipeCardContainer: FC<RecipeCardContainerProps> = ({
         />
       )}
       <BackTop />
-      {/* BackTop doesn't work */}
+      {/*   BackTop doesn't work */}
     </div>
   )
 }
