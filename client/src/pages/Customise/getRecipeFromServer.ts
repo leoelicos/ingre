@@ -1,6 +1,11 @@
+/* data */
 import { useApolloClient } from '@apollo/client'
+
+/* type */
 import type { RecipeType } from '../../@types/recipe.d.ts'
-import { GET_RECIPE } from '../../utils/apollo/queries'
+
+/* state */
+import { GET_RECIPE } from '../../utils/apollo/queries.ts'
 
 export const getRecipeFromServer: (
   id: string
