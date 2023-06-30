@@ -24,23 +24,22 @@ import { changeTitle } from '../../utils/changeTitle.ts'
 
 const Saved: FC = () => {
   changeTitle('Search')
-
   const [authState] = useAuthContext()
   const loggedIn = authState.loggedIn
+  if (!loggedIn) return <NotLoggedIn />
 
   const [, { loading, error, data, refetch }] = useLazyQuery(GET_SAVED_RECIPES)
   const [state, dispatch] = useStoreContext()
 
   // update local savedRecipes when getSavedRecipes is loaded from server
   useEffect(() => {
-    if (loggedIn && !loading && !error && data?.getSavedRecipes) {
+    if (!loading && !error && data?.getSavedRecipes) {
       dispatch({ type: UPDATE_SAVED_RECIPES, data: data.getSavedRecipes })
     }
   }, [loading, error, data, dispatch])
 
   // run on first load
   useEffect(() => {
-    if (!loggedIn) return
     const fetchOnFirstLoad = async () => {
       if (state.savedDidMount === false) {
         dispatch({ type: FLAG_SAVED_MOUNTED })
@@ -49,8 +48,6 @@ const Saved: FC = () => {
     }
     fetchOnFirstLoad()
   }, [state.savedDidMount, refetch, dispatch])
-
-  if (!loggedIn) return <NotLoggedIn />
 
   if (loading) return <SaveLoading />
 
