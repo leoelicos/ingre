@@ -8,7 +8,7 @@ interface Store {
   homeRecipes: any[]
   savedRecipes: any[]
   customiseRecipe: {
-    _id?: boolean
+    _id?: string
     name?: string
     portions?: number
     ingredients?: {
