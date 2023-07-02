@@ -1,3 +1,5 @@
+/* used in api */
+
 import type { SearchParams } from './search.d.ts'
 
 export interface FetchEdamamOptions {
