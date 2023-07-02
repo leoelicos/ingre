@@ -1,3 +1,4 @@
+/* from the search page */
 export interface SearchParams {
   q?: string
   diet?: string[]
