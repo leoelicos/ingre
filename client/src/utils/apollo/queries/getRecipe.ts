@@ -1,15 +1,13 @@
 /* data */
 import { useApolloClient } from '@apollo/client'
+import { GET_RECIPE } from '../queries.ts'
 
 /* type */
-import type { RecipeType } from '../../@types/recipe.d.ts'
+import type { RecipeType } from '../../../@types/recipe'
 
-/* state */
-import { GET_RECIPE } from '../../utils/apollo/queries.ts'
+type getRecipeType = (id: string) => Promise<RecipeType | undefined>
 
-export const getRecipeFromServer: (
-  id: string
-) => Promise<RecipeType | undefined> = async (id) => {
+const getRecipe: getRecipeType = async (id) => {
   try {
     const client = useApolloClient()
 
@@ -20,9 +18,10 @@ export const getRecipeFromServer: (
     if (!res) return undefined
     if (!res.data) return undefined
     if (!res.data.getRecipe) return undefined
-    const data: RecipeType = res.data.getRecipe
-    return data
+    return res.data.getRecipe
   } catch (error) {
     console.error(error)
   }
 }
+
+export default getRecipe
