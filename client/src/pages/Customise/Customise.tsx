@@ -18,7 +18,7 @@ import {
 /* data */
 import { useMutation } from '@apollo/client'
 import { SAVE_RECIPE, UPDATE_RECIPE } from '../../utils/apollo/mutations.ts'
-import { getRecipeFromServer } from './getRecipeFromServer.ts'
+import getRecipe from '../../utils/apollo/queries/getRecipe.ts'
 
 /* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
@@ -80,7 +80,7 @@ const Customise: FC = () => {
       console.log('[Customise] initialize from server', state.customiseRecipe)
       let id = state.customiseRecipe._id
       if (id === undefined) throw 'no ID'
-      const recipeFromServer = await getRecipeFromServer(id)
+      const recipeFromServer = await getRecipe(id)
       let recipeCustom: RecipeCustomTypeWithKey
       if (recipeFromServer === undefined) {
         /* not found on server for some reason */
