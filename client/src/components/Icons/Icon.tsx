@@ -1,63 +1,153 @@
-import React, { FC } from 'react'
+import React, { CSSProperties, FC } from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 
-const Icon: FC<{ icon: string }> = ({ icon }) => {
+const Icon: FC<{ icon: string; extraStyle?: any; small?: boolean }> = ({
+  icon,
+  extraStyle,
+  small
+}) => {
+  let style: CSSProperties = {}
+  if (small) style.width = '19.91px'
+  if (extraStyle) style = { ...style, ...extraStyle }
   return (
     <FontAwesomeIcon
       icon={icon as IconProp}
-      style={{
-        width: '19.19px'
-      }}
+      style={style}
     />
   )
 }
 
-/* sidebar */
-export const IngreIconRecipe = () => <Icon icon="fa-solid fa-cookie" />
-
-export const IngreIconSearch = () => (
-  <Icon icon="fa-solid fa-magnifying-glass" />
+/* header */
+export const IngreIconLogoEgg = () => (
+  <Icon
+    icon="fa-solid fa-egg"
+    extraStyle={{
+      marginRight: '0.3rem',
+      color: 'var(--ingre-eggshell)',
+      fontSize: '1.8rem',
+      paddingBottom: '2px'
+    }}
+  />
 )
 
-export const IngreIconCustomise = () => <Icon icon="fa-solid fa-pen" />
+/* sidebar */
+export const IngreIconRecipe = () => (
+  <Icon
+    icon="fa-solid fa-cookie"
+    small={true}
+  />
+)
 
-export const IngreIconIngredients = () => <Icon icon="fa-solid fa-egg" />
+export const IngreIconSearch = () => (
+  <Icon
+    icon="fa-solid fa-magnifying-glass"
+    small={true}
+  />
+)
 
-export const IngreIconTapOff = () => <Icon icon="fa-solid fa-square-check" />
+export const IngreIconCustomise = () => (
+  <Icon
+    icon="fa-solid fa-pen"
+    small={true}
+  />
+)
 
-export const IngreIconPro = () => <Icon icon="fa-solid fa-star" />
+export const IngreIconIngredients = () => (
+  <Icon
+    icon="fa-solid fa-egg"
+    small={true}
+  />
+)
 
-export const IngreIconHelp = () => <Icon icon="fa-solid fa-circle-info" />
+export const IngreIconTapOff = () => (
+  <Icon
+    icon="fa-solid fa-square-check"
+    small={true}
+  />
+)
+
+export const IngreIconPro = () => (
+  <Icon
+    icon="fa-solid fa-star"
+    small={true}
+  />
+)
+
+export const IngreIconHelp = () => (
+  <Icon
+    icon="fa-solid fa-circle-info"
+    small={true}
+  />
+)
 
 /* recipe, search */
-export const IngreIconSave = () => <Icon icon="fa-solid fa-save" />
-export const IngreIconSpin = () => <Icon icon="fa-solid fa-spinner" />
+export const IngreIconSave = () => (
+  <Icon
+    icon="fa-solid fa-save"
+    small={true}
+  />
+)
+export const IngreIconSpin = () => (
+  <Icon
+    icon="fa-solid fa-spinner"
+    small={true}
+  />
+)
 
 export const IngreIconPortion = () => (
-  <FontAwesomeIcon
-    icon={'fa-solid fa-user-group' as IconProp}
-    style={{
+  <Icon
+    icon="fa-solid fa-user-group"
+    extraStyle={{
       borderRadius: '50%',
       padding: '0 4px 0',
       color: 'black'
     }}
+    small={true}
   />
 )
 
 /* search */
 export const IngreIconClearSearch = () => (
-  <Icon icon="fa-solid fa-circle-xmark" />
+  <Icon
+    icon="fa-solid fa-circle-xmark"
+    small={true}
+  />
 )
 
 /* customise */
-export const IngreIconAddIngredient = () => <Icon icon="fa-solid fa-add" />
+export const IngreIconAddIngredient = () => (
+  <Icon
+    icon="fa-solid fa-add"
+    small={true}
+  />
+)
 
-export const IngreIconRemove = () => <Icon icon="fa-solid fa-trash" />
+export const IngreIconRemove = () => (
+  <Icon
+    icon="fa-solid fa-trash"
+    small={true}
+  />
+)
 
-export const IngreIconFormError = () => <Icon icon="fa-solid fa-exclamation" />
+export const IngreIconFormError = () => (
+  <Icon
+    icon="fa-solid fa-exclamation"
+    small={true}
+  />
+)
 
-export const IngreIconUndoCustom = () => <Icon icon="fa-solid fa-rotate-left" />
+export const IngreIconUndoCustom = () => (
+  <Icon
+    icon="fa-solid fa-rotate-left"
+    small={true}
+  />
+)
 
-export const IngreIconClearCustom = () => <Icon icon="fa-solid fa-eraser" />
+export const IngreIconClearCustom = () => (
+  <Icon
+    icon="fa-solid fa-eraser"
+    small={true}
+  />
+)
