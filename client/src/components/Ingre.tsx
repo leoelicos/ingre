@@ -17,7 +17,7 @@ import { AuthProvider } from '../utils/auth/AuthContext.tsx'
 
 /* pages */
 import Home from '../pages/Home/Home.tsx'
-import Search from '../pages/Search/Search.jsx'
+import Search from '../pages/Search/Search.tsx'
 import Customise from '../pages/Customise/Customise.tsx'
 import Saved from '../pages/Saved/Saved.tsx'
 import Ingredients from '../pages/Ingredients/Ingredients.tsx'
