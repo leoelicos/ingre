@@ -1,5 +1,5 @@
 /* react */
-import React, { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 /* state */
@@ -26,28 +26,41 @@ import Masonry from 'react-masonry-css'
 
 /* utils */
 import compress from '../../utils/compress.ts'
+import type { compressedCategoriesType } from '../../utils/compress.ts'
 import { changeTitle } from '../../utils/changeTitle.ts'
 
 /* style */
 import './style.css'
 
-const TapOff = () => {
+const TapOff: FC = () => {
   changeTitle('tapoff')
 
   const [authState] = useAuthContext()
   const loggedIn = authState.loggedIn
 
-  const handleChange = (ri, ii, checked) => {
+  const [state, dispatch] = useStoreContext()
+  const { savedIngredients } = state
+  const [compressedRecipes, setCompressedRecipes] =
+    useState<compressedCategoriesType>(() => {
+      const initialState = [
+        {
+          items: [
+            {
+              description: 'Loading',
+              checked: false
+            }
+          ],
+          category: 'Loading'
+        }
+      ]
+      return initialState
+    })
+
+  const handleChange = (ri: number, ii: number, checked: boolean) => {
     const x = JSON.parse(JSON.stringify(compressedRecipes))
     x[ri].items[ii].checked = checked
     setCompressedRecipes(x)
   }
-
-  const [state, dispatch] = useStoreContext()
-  const { savedIngredients } = state
-  const [compressedRecipes, setCompressedRecipes] = useState([
-    { items: ['Loading'], category: 'Loading' }
-  ])
 
   useEffect(() => {
     const compressed = compress(savedIngredients)
