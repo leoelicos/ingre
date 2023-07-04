@@ -27,13 +27,15 @@ type categoryType = {
   category: string
 }
 
-type uniqueCategoryType = {
+export type compressedCategoryType = {
   category: string
   items: {
     description: string
     checked: boolean
   }[]
 }
+
+export type compressedCategoriesType = compressedCategoryType[]
 
 const clean = (str: string): string =>
   singular(
@@ -100,8 +102,8 @@ const qualifyDescriptions = (arr: aggregatedIngredientType[]): categoryType[] =>
     return { description: `${name} (${quantityMeasuresString})`, category }
   })
 
-const categorize = (arr: categoryType[]): uniqueCategoryType[] => {
-  const uniqueCategories: uniqueCategoryType[] = Array.from(
+const categorize = (arr: categoryType[]): compressedCategoriesType => {
+  const uniqueCategories: compressedCategoriesType = Array.from(
     new Set(arr.map((i) => i.category))
   ).map((i) => ({ category: i, items: [] }))
 
@@ -116,8 +118,8 @@ const categorize = (arr: categoryType[]): uniqueCategoryType[] => {
 }
 
 const sortCategoriesAndItems = (
-  arr: uniqueCategoryType[]
-): uniqueCategoryType[] => {
+  arr: compressedCategoriesType
+): compressedCategoriesType => {
   return arr
     .sort((a, b) => a.category.localeCompare(b.category))
     .map((category) => ({
@@ -128,7 +130,7 @@ const sortCategoriesAndItems = (
     }))
 }
 
-const compress = (arr: savedIngredientType[]): uniqueCategoryType[] => {
+const compress = (arr: savedIngredientType[]): compressedCategoriesType => {
   const aggregated = aggregateQuantities(arr)
   const qualified = qualifyDescriptions(aggregated)
   const categorized = categorize(qualified)
