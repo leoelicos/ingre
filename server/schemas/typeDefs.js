@@ -103,7 +103,6 @@ const typeDefs = gql`
     getUser: User
     getRecipe(_id: ID!): Recipe
     getSavedRecipes: [Recipe]
-    getNumSavedRecipes: Int
     checkout: Checkout
   }
 
