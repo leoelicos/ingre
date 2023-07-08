@@ -8,7 +8,7 @@ import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 /* data */
 import fetchEdamam from '../../utils/api/edamam.ts'
-import { GET_API_KEY } from '../../utils/apollo/queries.ts'
+import { GET_API_KEY } from '../../lib/apolloClient/graphQL/queries.ts'
 import { useApolloClient } from '@apollo/client'
 
 /* state */
