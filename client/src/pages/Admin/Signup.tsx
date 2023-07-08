@@ -2,11 +2,6 @@
 import React, { FC } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 
-/* data */
-import { useApolloClient, useMutation } from '@apollo/client'
-import { CHECK_EMAIL_ALREADY_EXISTS } from '../../utils/apollo/queries.ts'
-import { ADD_USER } from '../../utils/apollo/mutations.ts'
-
 /* state */
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
@@ -18,6 +13,23 @@ import { Button, Form, Input, Divider, Space, Row, Col, Alert } from 'antd'
 /* utils */
 import { changeTitle } from '../../utils/changeTitle.ts'
 import LoginLink from '../../components/Authentication/LoginLink.tsx'
+
+/* data */
+import { useMutation } from '@apollo/client'
+
+import { ADD_USER } from '../../lib/apolloClient/graphQL/mutations.ts'
+import { checkEmailAlreadyExists } from '../../lib/apolloClient/useApolloClient/index.jsx'
+
+/* types */
+interface UserInterface {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+}
+interface SignupFormInterface {
+  user: UserInterface
+}
 
 const colWrapper = {
   width: '100%',
@@ -32,15 +44,6 @@ const formStyle = {
   maxWidth: '600px',
   border: '1px solid gray'
 }
-interface UserInterface {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-}
-interface SignupFormInterface {
-  user: UserInterface
-}
 
 const Signup: FC = () => {
   changeTitle('Sign up')
@@ -50,19 +53,13 @@ const Signup: FC = () => {
 
   const navigate = useNavigate()
 
-  const client = useApolloClient()
-
   const [state, dispatch] = useAuthContext()
   const loggedIn = state.loggedIn
 
-  const emailAlreadyExists = async (email: string) => {
-    const { data } = await client.query({
-      query: CHECK_EMAIL_ALREADY_EXISTS,
-      variables: { email }
-    })
-    // console.log('data = ', data);
-    if (data.checkEmailAlreadyExists)
-      return Promise.reject(
+  const emailAlreadyExists = async (e: string) => {
+    let result = await checkEmailAlreadyExists(e)
+    if (result === true)
+      return (
         <Alert
           type="error"
           message={
@@ -75,7 +72,7 @@ const Signup: FC = () => {
           }
         />
       )
-    return Promise.resolve()
+    else return false
   }
 
   const handleFormSubmit = async (values: SignupFormInterface) => {
@@ -184,7 +181,9 @@ const Signup: FC = () => {
                 />
               )
             },
-            { validator: (_, value) => emailAlreadyExists(value) }
+            {
+              validator: (_: any, value: any) => emailAlreadyExists(value)
+            }
           ]}
           style={{
             marginBottom: '12px'
