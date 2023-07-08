@@ -6,7 +6,7 @@ import { loadStripe } from '@stripe/stripe-js'
 
 // data
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { CHECKOUT, GET_USER } from '../../utils/apollo/queries.ts'
+import { CHECKOUT, GET_USER } from '../../lib/apolloClient/graphQL/queries.ts'
 
 // components
 import { Row, Col, Button, List, Space, Tooltip, Alert } from 'antd'

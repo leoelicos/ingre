@@ -17,7 +17,7 @@ import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* data */
 import { useApolloClient } from '@apollo/client'
-import { GET_API_KEY } from '../../utils/apollo/queries.ts'
+import { GET_API_KEY } from '../../lib/apolloClient/graphQL/queries.ts'
 import fetchEdamam from '../../utils/api/edamam.ts'
 
 /* hooks */

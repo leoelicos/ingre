@@ -26,7 +26,10 @@ import EditableRow from './EditableRow.tsx'
 import EditableCell from './EditableCell.tsx'
 
 /* data */
-import { GET_SAVED_RECIPES, GET_RECIPE } from '../../utils/apollo/queries.ts'
+import {
+  GET_SAVED_RECIPES,
+  GET_RECIPE
+} from '../../lib/apolloClient/graphQL/queries.ts'
 import { useApolloClient, useLazyQuery } from '@apollo/client'
 
 /* state */

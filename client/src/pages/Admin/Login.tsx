@@ -4,7 +4,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 /* data */
 import { useMutation } from '@apollo/client'
-import { LOGIN } from '../../utils/apollo/mutations.ts'
+import { LOGIN } from '../../lib/apolloClient/graphQL/mutations.ts'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* components */

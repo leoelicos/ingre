@@ -17,16 +17,16 @@ import {
 
 /* data */
 import { useMutation } from '@apollo/client'
-import { SAVE_RECIPE, UPDATE_RECIPE } from '../../utils/apollo/mutations.ts'
-import getRecipe from '../../utils/apollo/queries/getRecipe.ts'
+import {
+  SAVE_RECIPE,
+  UPDATE_RECIPE
+} from '../../lib/apolloClient/graphQL/mutations.ts'
+import { getRecipe } from '../../lib/apolloClient/useApolloClient/index.jsx'
 
 /* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import { ADD_SAVED_RECIPE } from '../../utils/state/actions.ts'
-import {
-  GET_SAVED_RECIPES,
-  GET_NUM_SAVED_RECIPES
-} from '../../utils/apollo/queries.ts'
+import { GET_SAVED_RECIPES } from '../../lib/apolloClient/graphQL/queries.ts'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* types */
@@ -44,10 +44,7 @@ const Customise: FC = () => {
   const [addCustomRecipe, { error: saveRecipeError }] = useMutation(
     SAVE_RECIPE,
     {
-      refetchQueries: [
-        { query: GET_SAVED_RECIPES },
-        { query: GET_NUM_SAVED_RECIPES }
-      ]
+      refetchQueries: [{ query: GET_SAVED_RECIPES }]
     }
   )
 
@@ -97,7 +94,7 @@ const Customise: FC = () => {
           name: recipeFromServer.name,
           portions: recipeFromServer.portions,
           ingredients:
-            recipeFromServer.ingredients?.map((v) => ({
+            recipeFromServer.ingredients?.map((v: any) => ({
               ...v,
               category: v.category.name
             })) || []

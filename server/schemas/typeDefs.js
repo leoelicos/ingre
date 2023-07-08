@@ -102,6 +102,7 @@ const typeDefs = gql`
     getApiKey: EdamamCredentials
     getUser: User
     getRecipe(_id: ID!): Recipe
+    getNumSavedRecipes: Int
     getSavedRecipes: [Recipe]
     checkout: Checkout
   }

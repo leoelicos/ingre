@@ -24,12 +24,14 @@ import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 // data
 import { useMutation, useApolloClient } from '@apollo/client'
-import { SAVE_RECIPE, REMOVE_RECIPE } from '../../utils/apollo/mutations.ts'
+import {
+  SAVE_RECIPE,
+  REMOVE_RECIPE
+} from '../../lib/apolloClient/graphQL/mutations.ts'
 import {
   GET_SAVED_RECIPES,
-  GET_NUM_SAVED_RECIPES,
   GET_RECIPE
-} from '../../utils/apollo/queries.ts'
+} from '../../lib/apolloClient/graphQL/queries.ts'
 
 /* types */
 import type { RecipeType } from '../../@types/recipe.d.ts'
@@ -47,20 +49,14 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
 
   const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] =
     useMutation(SAVE_RECIPE, {
-      refetchQueries: [
-        { query: GET_SAVED_RECIPES },
-        { query: GET_NUM_SAVED_RECIPES }
-      ]
+      refetchQueries: [{ query: GET_SAVED_RECIPES }]
     })
   if (saveRecipeError) console.error('saveRecipeError', { saveRecipeError })
   const [
     removeRecipe,
     { loading: removeRecipeLoading, error: removeRecipeError }
   ] = useMutation(REMOVE_RECIPE, {
-    refetchQueries: [
-      { query: GET_SAVED_RECIPES },
-      { query: GET_NUM_SAVED_RECIPES }
-    ]
+    refetchQueries: [{ query: GET_SAVED_RECIPES }]
   })
 
   if (removeRecipeError) console.error({ removeRecipeError })
