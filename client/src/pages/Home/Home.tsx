@@ -17,7 +17,7 @@ import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* data */
 import { useApolloClient } from '@apollo/client'
-import { GET_API_KEY } from '../../lib/apolloClient/graphQL/queries.ts'
+import { GET_APP_CREDENTIALS } from '../../lib/apollo/graphQL/queries.ts'
 import fetchEdamam from '../../utils/api/edamam.ts'
 
 /* hooks */
@@ -40,8 +40,8 @@ const Home: FC = () => {
 
   const getAppCredentials = async () => {
     // get credentials from backend
-    const res = await client.query({ query: GET_API_KEY })
-    if (!res) throw new Error('[handleRefresh] GET_API_KEY error')
+    const res = await client.query({ query: GET_APP_CREDENTIALS })
+    if (!res) throw new Error('[handleRefresh] GET_APP_CREDENTIALS error')
     const appId = res.data.getApiKey.appId
     const appKey = res.data.getApiKey.appKey
     return { appId, appKey }
