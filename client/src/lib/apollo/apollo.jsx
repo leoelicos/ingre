@@ -3,7 +3,7 @@
 import { Link } from 'react-router-dom'
 import { Alert, Button, Space } from 'antd'
 
-import { useApolloClient, useMutation } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 
 import {
   CHECK_EMAIL_ALREADY_EXISTS,
