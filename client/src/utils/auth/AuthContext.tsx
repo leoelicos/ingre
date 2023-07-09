@@ -54,7 +54,7 @@ const useAuthReducer = (initialState: any) => {
 
 type reducerType = (state: any, action: { type: string; data: any }) => any
 const reducer: reducerType = (state, action) => {
-  console.log(`AUTH\t[${action.type}]`, action.data)
+  // console.log(`AUTH\t[${action.type}]`, action.data)
 
   switch (action.type) {
     case 'UPDATE':
