@@ -17,8 +17,8 @@ import LoginLink from '../../components/Authentication/LoginLink.tsx'
 /* data */
 import { useMutation } from '@apollo/client'
 
-import { ADD_USER } from '../../lib/apolloClient/graphQL/mutations.ts'
-import { checkEmailAlreadyExists } from '../../lib/apolloClient/useApolloClient/index.jsx'
+import { ADD_USER } from '../../lib/apollo/graphQL/mutations.ts'
+import useApollo from '../../lib/apollo/apollo.jsx'
 
 /* types */
 interface UserInterface {
@@ -47,6 +47,8 @@ const formStyle = {
 
 const Signup: FC = () => {
   changeTitle('Sign up')
+
+  const { checkEmailAlreadyExists } = useApollo()
 
   const [addUser, { error }] = useMutation(ADD_USER)
   const [form] = Form.useForm()

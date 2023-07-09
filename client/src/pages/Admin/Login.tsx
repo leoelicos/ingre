@@ -4,7 +4,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 /* data */
 import { useMutation } from '@apollo/client'
-import { LOGIN } from '../../lib/apolloClient/graphQL/mutations.ts'
+import { LOGIN } from '../../lib/apollo/graphQL/mutations.ts'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* components */
@@ -56,7 +56,7 @@ const Login: FC = () => {
       console.log('payload = ', payload)
       const res = await login({ variables: payload })
       const token = res.data.login.token
-      console.log('localstorage token', token)
+      // console.log('localstorage token', token)
       dispatch({ type: 'LOGIN', data: token })
 
       navigate(-1)

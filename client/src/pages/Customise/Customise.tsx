@@ -20,13 +20,13 @@ import { useMutation } from '@apollo/client'
 import {
   SAVE_RECIPE,
   UPDATE_RECIPE
-} from '../../lib/apolloClient/graphQL/mutations.ts'
-import { getRecipe } from '../../lib/apolloClient/useApolloClient/index.jsx'
+} from '../../lib/apollo/graphQL/mutations.ts'
+import useApollo from '../../lib/apollo/apollo.jsx'
 
 /* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import { ADD_SAVED_RECIPE } from '../../utils/state/actions.ts'
-import { GET_SAVED_RECIPES } from '../../lib/apolloClient/graphQL/queries.ts'
+import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries.ts'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* types */
@@ -38,6 +38,8 @@ import type { RecipeCustomTypeWithKey } from '../../@types/recipeCustom'
 const Customise: FC = () => {
   const [authState] = useAuthContext()
   const loggedIn = authState.loggedIn
+
+  const { getRecipe } = useApollo()
 
   const [state, dispatch] = useStoreContext()
   const [form] = Form.useForm(undefined)

@@ -29,7 +29,7 @@ import EditableCell from './EditableCell.tsx'
 import {
   GET_SAVED_RECIPES,
   GET_RECIPE
-} from '../../lib/apolloClient/graphQL/queries.ts'
+} from '../../lib/apollo/graphQL/queries.ts'
 import { useApolloClient, useLazyQuery } from '@apollo/client'
 
 /* state */
@@ -97,6 +97,7 @@ const Ingredients: FC = () => {
         if (!savedRecipes) return
         const savedIngredientArray: IngredientGeneratedTypeWithKey[] = []
         for (const recipe of savedRecipes) {
+          /* //TODO this is promise chaining - it should be replaced by getSavedIngredients */
           const recipeName = recipe.name
           const recipeId = recipe._id.toString()
           const res = await client.query({

@@ -27,11 +27,11 @@ import { useMutation, useApolloClient } from '@apollo/client'
 import {
   SAVE_RECIPE,
   REMOVE_RECIPE
-} from '../../lib/apolloClient/graphQL/mutations.ts'
+} from '../../lib/apollo/graphQL/mutations.ts'
 import {
   GET_SAVED_RECIPES,
   GET_RECIPE
-} from '../../lib/apolloClient/graphQL/queries.ts'
+} from '../../lib/apollo/graphQL/queries.ts'
 
 /* types */
 import type { RecipeType } from '../../@types/recipe.d.ts'

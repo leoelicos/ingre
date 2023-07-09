@@ -8,7 +8,7 @@ import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 /* data */
 import fetchEdamam from '../../utils/api/edamam.ts'
-import { GET_API_KEY } from '../../lib/apolloClient/graphQL/queries.ts'
+import { GET_APP_CREDENTIALS } from '../../lib/apollo/graphQL/queries.ts'
 import { useApolloClient } from '@apollo/client'
 
 /* state */
@@ -75,8 +75,8 @@ const Search: FC = () => {
       setLoadingEdamam(true)
 
       // Apollo Query to get Edamam API credentials
-      const res = await client.query({ query: GET_API_KEY })
-      if (!res) throw new Error('[handleRefresh] GET_API_KEY error')
+      const res = await client.query({ query: GET_APP_CREDENTIALS })
+      if (!res) throw new Error('[handleRefresh] GET_APP_CREDENTIALS error')
 
       // Call API
       const search = { ...formState, q }

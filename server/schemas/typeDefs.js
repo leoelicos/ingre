@@ -37,12 +37,12 @@ const typeDefs = gql`
   }
 
   input RecipeInput {
-    name: String
-    portions: Int
-    ingredients: [IngredientInput]
-    picture_url: String
+    name: String!
+    portions: Int!
+    ingredients: [IngredientInput!]
+    picture_url: String!
     edamamId: String
-    instructions: String
+    instructions: String!
   }
   type Ingredient {
     _id: ID
@@ -53,10 +53,10 @@ const typeDefs = gql`
   }
 
   input IngredientInput {
-    name: String
-    quantity: Float
-    measure: String
-    category: String
+    name: String!
+    quantity: Float!
+    measure: String!
+    category: String!
   }
 
   type IngredientListItem {

@@ -17,7 +17,7 @@ import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 
 /* data */
 import { useLazyQuery } from '@apollo/client'
-import { GET_SAVED_RECIPES } from '../../lib/apolloClient/graphQL/queries.ts'
+import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries.ts'
 
 /* hooks */
 import { changeTitle } from '../../utils/changeTitle.ts'

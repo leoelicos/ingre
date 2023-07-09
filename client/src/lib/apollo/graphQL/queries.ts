@@ -6,7 +6,7 @@ export const CHECK_EMAIL_ALREADY_EXISTS = gql`
   }
 `
 
-export const GET_API_KEY = gql`
+export const GET_APP_CREDENTIALS = gql`
   query GetApiKey {
     getApiKey {
       appId
