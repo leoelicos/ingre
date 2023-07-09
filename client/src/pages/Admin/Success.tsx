@@ -6,7 +6,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 // ApolloClient
 import { useMutation } from '@apollo/client'
-import { MAKE_USER_PRO } from '../../lib/apolloClient/graphQL/mutations.ts'
+import { MAKE_USER_PRO } from '../../lib/apollo/graphQL/mutations.ts'
 import { Alert, Button, Col, Row, Space, Timeline } from 'antd'
 
 /* state */
