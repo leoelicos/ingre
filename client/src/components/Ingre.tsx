@@ -58,7 +58,7 @@ const uri =
   process.env.NODE_ENV === 'production'
     ? 'https://ingre-backend.onrender.com/graphql'
     : '/graphql'
-console.log({ uri })
+// console.log({ uri })
 const httpLink = createHttpLink({ uri })
 const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
