@@ -24,6 +24,12 @@ export const GET_USER = gql`
   }
 `
 
+export const GET_NUM_SAVED_RECIPES = gql`
+  query GetNumSavedRecipes {
+    getNumSavedRecipes
+  }
+`
+
 export const GET_SAVED_RECIPES = gql`
   query GetSavedRecipes {
     getSavedRecipes {
