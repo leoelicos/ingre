@@ -18,7 +18,7 @@ import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import {
   ADD_SAVED_RECIPE,
   REMOVE_SAVED_RECIPE,
-  ADD_EDIT_RECIPE
+  SET_EDIT_RECIPE
 } from '../../utils/state/actions.ts'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
@@ -74,7 +74,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
       const res = await client.query({ query, variables })
       data = res.data.getRecipe
     }
-    dispatch({ type: ADD_EDIT_RECIPE, data: data })
+    dispatch({ type: SET_EDIT_RECIPE, data: data })
   }
 
   const handleSave = async () => {
