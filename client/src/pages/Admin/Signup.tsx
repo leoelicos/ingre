@@ -15,10 +15,10 @@ import { changeTitle } from '../../utils/changeTitle.ts'
 import LoginLink from '../../components/Authentication/LoginLink.tsx'
 
 /* data */
-import { useMutation } from '@apollo/client'
+import { useMutation, useLazyQuery } from '@apollo/client'
 
 import { ADD_USER } from '../../lib/apollo/graphQL/mutations.ts'
-import useApollo from '../../lib/apollo/apollo.jsx'
+import { CHECK_EMAIL_ALREADY_EXISTS } from '../../lib/apollo/graphQL/queries.ts'
 
 /* types */
 interface UserInterface {
@@ -48,9 +48,19 @@ const formStyle = {
 const Signup: FC = () => {
   changeTitle('Sign up')
 
-  const { checkEmailAlreadyExists } = useApollo()
+  const [
+    checkEmailAlreadyExists,
+    {
+      data: checkEmailData,
+      loading: checkEmailLoading,
+      error: checkEmailError //
+    }
+  ] = useLazyQuery(CHECK_EMAIL_ALREADY_EXISTS, {
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-first'
+  })
 
-  const [addUser, { error }] = useMutation(ADD_USER)
+  const [addUser, { error: addUserError }] = useMutation(ADD_USER)
   const [form] = Form.useForm()
 
   const navigate = useNavigate()
@@ -59,22 +69,8 @@ const Signup: FC = () => {
   const loggedIn = state.loggedIn
 
   const emailAlreadyExists = async (e: string) => {
-    let result = await checkEmailAlreadyExists(e)
-    if (result === true)
-      return (
-        <Alert
-          type="error"
-          message={
-            <Space direction="vertical">
-              A user with this email already exists!
-              <Link to="/login">
-                <Button block={true}>Log in?</Button>
-              </Link>
-            </Space>
-          }
-        />
-      )
-    else return false
+    await checkEmailAlreadyExists({ variables: { email: e } })
+    return checkEmailData
   }
 
   const handleFormSubmit = async (values: SignupFormInterface) => {
@@ -184,7 +180,32 @@ const Signup: FC = () => {
               )
             },
             {
-              validator: (_: any, value: any) => emailAlreadyExists(value)
+              validator: (_: any, value: any) => emailAlreadyExists(value),
+              message: checkEmailLoading ? (
+                <Alert
+                  type="info"
+                  message={<Space direction="vertical">Checking email</Space>}
+                />
+              ) : checkEmailError ? (
+                <Alert
+                  type="info"
+                  message={
+                    <Space direction="vertical">Check email error</Space>
+                  }
+                />
+              ) : (
+                <Alert
+                  type="error"
+                  message={
+                    <Space direction="vertical">
+                      A user with this email already exists!
+                      <Link to="/login">
+                        <Button block={true}>Log in?</Button>
+                      </Link>
+                    </Space>
+                  }
+                />
+              )
             }
           ]}
           style={{
@@ -235,7 +256,7 @@ const Signup: FC = () => {
           <Input.Password />
         </Form.Item>
 
-        {error && (
+        {addUserError && (
           <Form.Item label=" ">
             <Alert
               type="error"
