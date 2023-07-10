@@ -1,6 +1,5 @@
 /* react */
-import React, { FC, useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { FC, useEffect, useState } from 'react'
 
 /* components */
 import { Button, Form, Input, Col, Divider, Row, Alert } from 'antd'
@@ -8,11 +7,8 @@ import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
 import {
   IngreIconAddIngredient,
-  IngreIconClearCustom,
   IngreIconFormError,
-  IngreIconRemove,
-  IngreIconSave,
-  IngreIconUndoCustom
+  IngreIconRemove
 } from '../../components/Icons/Icon.tsx'
 
 /* data */
@@ -21,108 +17,48 @@ import {
   SAVE_RECIPE,
   UPDATE_RECIPE
 } from '../../lib/apollo/graphQL/mutations.ts'
-import useApollo from '../../lib/apollo/apollo.jsx'
 
 /* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-import { ADD_SAVED_RECIPE } from '../../utils/state/actions.ts'
-import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries.ts'
+import { ADD_SAVED_RECIPE, SET_EDIT_RECIPE } from '../../utils/state/actions.ts'
+import {
+  GET_RECIPE,
+  GET_SAVED_RECIPES
+} from '../../lib/apollo/graphQL/queries.ts'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* types */
-import type { RecipeType } from '../../@types/recipe.d.ts'
-import type { FormInstance } from 'antd'
-import type { IngredientCustomTypeWithKey } from '../../@types/ingredientCustom.ts'
-import type { RecipeCustomTypeWithKey } from '../../@types/recipeCustom'
+import type { RecipeType } from '../../@types/recipe'
+import ButtonClearAll from './components/ButtonClearAll.tsx'
+import ButtonUndoAll from './components/ButtonUndoAll.tsx'
+import initialize from './initialize.js'
+import ButtonSave from './components/ButtonSave.tsx'
+import ButtonBack from './components/ButtonBack.tsx'
 
 const Customise: FC = () => {
   const [authState] = useAuthContext()
   const loggedIn = authState.loggedIn
 
-  const { getRecipe } = useApollo()
-
   const [state, dispatch] = useStoreContext()
   const [form] = Form.useForm(undefined)
   const [addCustomRecipe, { error: saveRecipeError }] = useMutation(
     SAVE_RECIPE,
-    {
-      refetchQueries: [{ query: GET_SAVED_RECIPES }]
-    }
-  )
-
-  const [updateRecipe, { error: updateRecipeError }] = useMutation(
-    UPDATE_RECIPE,
     { refetchQueries: [{ query: GET_SAVED_RECIPES }] }
   )
 
+  const [updateRecipe, { error: updateRecipeError }] =
+    useMutation(UPDATE_RECIPE)
+
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [init, setInit] = useState({})
+
   const [cancel, setCancel] = useState(false)
 
   /* initialize the Customise form
-      recipes from Saved Page are initialised from server data
       recipes from Recipes Page are initialised from client data
+      recipes from Saved Page are initialised from server data
       recipes from Search Page are initialised from client data
   */
-  const initialize = useCallback(async () => {
-    /* if it has an _id, it's from the backend */
-    const fromServer = state?.customiseRecipe?._id !== undefined
-    const fallbackIngredient: IngredientCustomTypeWithKey = {
-      key: 'Ingredient',
-      name: 'Name',
-      quantity: 1,
-      measure: 'Measure',
-      category: 'Category'
-    }
-    if (fromServer) {
-      console.log('[Customise] initialize from server', state.customiseRecipe)
-      let id = state.customiseRecipe._id
-      if (id === undefined) throw 'no ID'
-      const recipeFromServer = await getRecipe(id)
-      let recipeCustom: RecipeCustomTypeWithKey
-      if (recipeFromServer === undefined) {
-        /* not found on server for some reason */
-        recipeCustom = {
-          key: 'Recipe',
-          name: 'Recipe',
-          portions: 1,
-          ingredients: [fallbackIngredient]
-        }
-      } else {
-        /* serialise  */
-        recipeCustom = {
-          key: recipeFromServer.name,
-          name: recipeFromServer.name,
-          portions: recipeFromServer.portions,
-          ingredients:
-            recipeFromServer.ingredients?.map((v: any) => ({
-              ...v,
-              category: v.category.name
-            })) || []
-        }
-      }
-      setInit(recipeCustom)
-
-      // dispatch({ type: ADD_EDIT_RECIPE, data: data });
-    } else {
-      console.log('[Customise] initialize from client', state.customiseRecipe)
-      setInit({
-        name: state?.customiseRecipe?.name || '',
-        portions: state?.customiseRecipe?.portions || 2,
-        ingredients: state?.customiseRecipe?.ingredients?.map((v, i) => {
-          const ingredient: IngredientCustomTypeWithKey = {
-            key: 'ingredient' + i,
-            name: v.name || 'ingredient',
-            quantity: v.quantity > 0 ? Math.round(v.quantity * 100) / 100 : 1,
-            measure: v.measure || 'unit',
-            category: v.category.name || 'Generic'
-          }
-          return ingredient
-        }) || [fallbackIngredient]
-      })
-    }
-  }, [state.customiseRecipe])
 
   const onFinish = async (values: RecipeType) => {
     if (cancel) return
@@ -150,7 +86,7 @@ const Customise: FC = () => {
       console.log('[onFinish] input = ', input)
 
       if (state.customiseRecipe?._id) {
-        //* Already saved on server
+        //* Already saved on server - need to update
         setLoading(true)
         const recipeId = state.customiseRecipe._id
         const payload = { variables: { input, recipeId } }
@@ -184,14 +120,10 @@ const Customise: FC = () => {
   }
 
   useEffect(() => {
-    form.setFieldsValue(init)
-  }, [form, init])
-
-  useEffect(() => {
-    initialize()
+    const initialize = async () => {}
+    initialize().then((init) => form.setFieldsValue(init))
   }, [initialize])
 
-  const navigate = useNavigate()
   return (
     <Col style={{ width: '100%' }}>
       <Row>
@@ -601,50 +533,20 @@ const Customise: FC = () => {
               <Col span={24}>
                 <ButtonClearAll form={form} />
 
-                <Form.Item>
-                  <Button
-                    danger
-                    type="dashed"
-                    style={{ width: '100%', marginTop: '1rem' }}
-                    onClick={() => {
-                      form.setFieldsValue(init)
-                    }}
-                    icon={<IngreIconUndoCustom />}
-                    shape="round"
-                  >
-                    Undo all
-                  </Button>
-                </Form.Item>
+                <ButtonUndoAll
+                  form={form}
+                  init={init}
+                />
 
-                <Form.Item>
-                  <Button
-                    disabled={saved}
-                    type="primary"
-                    htmlType="submit"
-                    style={{ width: '100%', marginTop: '1rem' }}
-                    icon={<IngreIconSave />}
-                    shape="round"
-                  >
-                    {loading ? <>Saving…</> : saved ? <>Saved!</> : <>Save</>}
-                  </Button>
-                </Form.Item>
+                <ButtonSave
+                  loading={loading}
+                  saved={saved}
+                />
 
-                <Form.Item>
-                  <Button
-                    danger
-                    disabled={saved}
-                    type="primary"
-                    htmlType="submit"
-                    style={{ width: '100%', marginTop: '1rem' }}
-                    shape="round"
-                    onClick={() => {
-                      setCancel(true)
-                      navigate(-1)
-                    }}
-                  >
-                    Go back
-                  </Button>
-                </Form.Item>
+                <ButtonBack
+                  saved={saved}
+                  setCancel={setCancel}
+                />
               </Col>
             </Row>
           </Form>
@@ -654,33 +556,3 @@ const Customise: FC = () => {
   )
 }
 export default Customise
-
-const ButtonClearAll: FC<{ form: FormInstance<any> }> = ({ form }) => (
-  <Form.Item>
-    <Button
-      danger
-      style={{
-        width: '100%',
-        marginTop: '0.3rem'
-      }}
-      onClick={() => {
-        form.setFieldsValue({
-          name: '',
-          portions: '',
-          ingredients: [
-            {
-              name: '',
-              quantity: '',
-              unit: '',
-              category: ''
-            }
-          ]
-        })
-      }}
-      icon={<IngreIconClearCustom />}
-      shape="round"
-    >
-      <span style={{ marginLeft: '4px' }}>Clear all</span>
-    </Button>
-  </Form.Item>
-)
