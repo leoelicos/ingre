@@ -13,7 +13,7 @@ import {
   UPDATE_TAP_OFF,
   ADD_SAVED_RECIPE,
   REMOVE_SAVED_RECIPE,
-  ADD_EDIT_RECIPE,
+  SET_EDIT_RECIPE,
   CLEAR_EDIT_RECIPE,
   FLAG_HOME_MOUNTED,
   FLAG_SAVED_MOUNTED,
@@ -85,7 +85,7 @@ export const reducer: (
       // console.log('filteredCopyOfRecipes', filteredCopyOfRecipes);
       return { ...state, savedRecipes: filteredCopyOfRecipes }
 
-    case ADD_EDIT_RECIPE:
+    case SET_EDIT_RECIPE:
       const newEditRecipe = action.data
       return { ...state, customiseRecipe: newEditRecipe }
 
