@@ -24,7 +24,7 @@ export const UPDATE_SEARCH_RECIPES = 'UPDATE_SEARCH_RECIPES'
 
 //? Customise page
 //* set the recipe on this page
-export const ADD_EDIT_RECIPE = 'ADD_EDIT_RECIPE'
+export const SET_EDIT_RECIPE = 'SET_EDIT_RECIPE'
 //* reset
 export const CLEAR_EDIT_RECIPE = 'CLEAR_EDIT_RECIPE'
 
