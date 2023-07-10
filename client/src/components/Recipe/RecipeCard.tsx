@@ -1,17 +1,8 @@
 // react
 import React, { FC } from 'react'
-import { Link } from 'react-router-dom'
 
 // components
-import { Card, Image, Button, Tooltip, Space, Typography } from 'antd'
-import {
-  IngreIconCustomise,
-  IngreIconPortion,
-  IngreIconPro,
-  IngreIconRemove,
-  IngreIconSave,
-  IngreIconSpin
-} from '../Icons/Icon.tsx'
+import { Card, Tooltip } from 'antd'
 
 // state
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
@@ -23,7 +14,7 @@ import {
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 // data
-import { useMutation, useApolloClient } from '@apollo/client'
+import { useMutation, useLazyQuery } from '@apollo/client'
 import {
   SAVE_RECIPE,
   REMOVE_RECIPE
@@ -34,8 +25,17 @@ import {
 } from '../../lib/apollo/graphQL/queries.ts'
 
 /* types */
-import type { RecipeType } from '../../@types/recipe.d.ts'
-import type { RecipeInput } from '../../@types/payloads.d.ts'
+import type { RecipeType } from '../../@types/recipe'
+import type { RecipeInput } from '../../@types/payloads'
+import PortionsButton from './components/PortionsButton.tsx'
+import DisabledEditButton from './components/DisabledEditButton.tsx'
+import DisabledSaveButton from './components/DisabledSaveButton.tsx'
+import DisabledTrashButton from './components/DisabledTrashButton.tsx'
+import InstructionsButton from './components/InstructionsButton.tsx'
+import SaveButton from './components/SaveButton.tsx'
+import TrashButton from './components/TrashButton.tsx'
+import EditButton from './components/EditButton.tsx'
+import RecipeImage from './RecipeImage.tsx'
 
 interface RecipeCardProps {
   recipe: RecipeType
@@ -62,7 +62,9 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
   if (removeRecipeError) console.error({ removeRecipeError })
 
   const [state, dispatch] = useStoreContext()
-  const client = useApolloClient()
+
+  const [getRecipe, { loading: getRecipeLoading, error: getRecipeError }] =
+    useLazyQuery(GET_RECIPE)
 
   const handleEdit = async () => {
     let data = recipe
@@ -71,7 +73,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
       // saved on backend so need to GET ingredients
       const query = GET_RECIPE
       const variables = { id: recipe._id }
-      const res = await client.query({ query, variables })
+      const res = await getRecipe({ query, variables })
       data = res.data.getRecipe
     }
     dispatch({ type: SET_EDIT_RECIPE, data: data })
@@ -129,215 +131,54 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
   const capitalize = (name: string) =>
     name.charAt(0).toUpperCase() + name.slice(1)
 
-  const editButton = (
-    <Tooltip
-      color="var(--ingre-dark-brown)"
-      placement="top"
-      title="Edit"
-      className="button-tooltip"
-    >
-      <Button
-        onClick={handleEdit}
-        style={{
-          borderRadius: '50%',
-          padding: '4px 8px'
-        }}
-      >
-        <Link to="/customise">
-          <IngreIconCustomise />
-        </Link>
-      </Button>
-    </Tooltip>
-  )
-
-  const saveButton = (
-    <Tooltip
-      color="var(--ingre-dark-brown)"
-      placement="top"
-      title="Save"
-      className="button-tooltip"
-    >
-      <Button
-        key="saveButton"
-        onClick={handleSave}
-        disabled={
-          saveRecipeLoading ||
-          (state.savedRecipes.length > 0 &&
-            state.savedRecipes.some((r) => r.edamamId === recipe.edamamId))
-        }
-        style={{
-          borderRadius: '50%',
-          padding: '4px 8px'
-        }}
-      >
-        {saveRecipeLoading ? <IngreIconSpin /> : <IngreIconSave />}
-      </Button>
-    </Tooltip>
-  )
-
-  const removeButton = (
-    <Tooltip
-      color="var(--ingre-dark-brown)"
-      placement="top"
-      title="Unsave"
-      className="button-tooltip"
-    >
-      <Button
-        key="removeButton"
-        disabled={
-          removeRecipeLoading ||
-          !state.savedRecipes.some((r) => r.edamamId === recipe.edamamId)
-        }
-        onClick={handleRemove}
-        style={{
-          borderRadius: '50%',
-          padding: '4px 8px'
-        }}
-      >
-        {removeRecipeLoading ? <IngreIconSpin /> : <IngreIconRemove />}
-      </Button>
-    </Tooltip>
-  )
-  const disabledEditButton = (
-    <Tooltip
-      placement="top"
-      title={
-        <Link to="/login">
-          <Button type="primary">Log in</Button>
-        </Link>
-      }
-    >
-      <Button
-        disabled
-        style={{
-          borderRadius: '50%',
-          padding: '4px 8px'
-        }}
-      >
-        <IngreIconCustomise />
-      </Button>
-    </Tooltip>
-  )
-
-  const disabledSaveButton = (
-    <Tooltip
-      placement="top"
-      title={
-        <Link to="/login">
-          <Button type="primary">Log in</Button>
-        </Link>
-      }
-    >
-      <Button
-        disabled
-        style={{
-          borderRadius: '50%',
-          padding: '4px 8px'
-        }}
-      >
-        <IngreIconSave />
-      </Button>
-    </Tooltip>
-  )
-
-  const disabledTrashButton = (
-    <Tooltip
-      placement="top"
-      title={
-        <Link to="/login">
-          <Button type="primary">Log in</Button>
-        </Link>
-      }
-    >
-      <Button
-        disabled
-        style={{
-          borderRadius: '50%',
-          padding: '4px 8px'
-        }}
-      >
-        <IngreIconRemove />
-      </Button>
-    </Tooltip>
-  )
-
-  const portionsButton = (
-    <Tooltip
-      color="var(--ingre-dark-brown)"
-      placement="top"
-      title={'Serves ' + recipe.portions + ' people'}
-      className="button-tooltip"
-    >
-      <IngreIconPortion />
-      <Typography.Text>{recipe.portions}</Typography.Text>
-    </Tooltip>
-  )
-
-  const instructionsButton = (
-    <Tooltip
-      color="var(--ingre-dark-brown)"
-      placement="top"
-      title={<Space size="small">Cooking instructions</Space>}
-    >
-      <Button
-        key="removeButton"
-        onClick={handleRemove}
-        style={{
-          borderRadius: '50%',
-          padding: '4px 7px'
-        }}
-        shape="circle"
-      >
-        <a
-          href={recipe.instructions}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <IngreIconPro />
-        </a>
-      </Button>
-    </Tooltip>
-  )
-
-  const getActions = () => {
-    // Every page gets a portions button
-    let actions = [portionsButton]
-    // if not logged in, buttons are disabled
-    if (!loggedIn) {
-      actions.push(disabledEditButton, disabledSaveButton, disabledTrashButton)
-      return actions
-    }
-    // if user is pro, instructions button
-    if (pro) actions.push(instructionsButton)
-    // everyone gets an edit button
-    actions.push(editButton)
-    // everyone except saved page gets a save button
-    if (!onSavedPage) actions.push(saveButton)
-    // everyone gets a remove button
-    actions.push(removeButton)
-    return actions
-  }
-
-  const recipeImage = (
-    <Image
-      width={'100%'}
-      height={150}
-      style={{
-        objectFit: 'cover',
-        borderTopLeftRadius: '1rem',
-        borderTopRightRadius: '1rem'
-      }}
-      alt={recipe.name}
-      src={recipe.picture_url}
-      placeholder={true}
-      fallback="https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc"
-    />
-  )
+  const actions = [
+    <PortionsButton portions={recipe.portions || 0} />,
+    loggedIn && pro ? (
+      <InstructionsButton
+        handleRemove={handleRemove}
+        instructions={recipe.instructions}
+      />
+    ) : null,
+    loggedIn ? (
+      <EditButton
+        getRecipeError={getRecipeError}
+        getRecipeLoading={getRecipeLoading}
+        handleEdit={handleEdit}
+      />
+    ) : (
+      <DisabledEditButton />
+    ),
+    !onSavedPage ? null : !loggedIn ? (
+      <DisabledSaveButton />
+    ) : (
+      <SaveButton
+        handleSave={handleSave}
+        savedRecipes={state.savedRecipes}
+        saveRecipeLoading={saveRecipeLoading}
+        edamamId={recipe.edamamId}
+      />
+    ),
+    loggedIn ? (
+      <TrashButton
+        removeRecipeLoading={removeRecipeLoading}
+        handleRemove={handleRemove}
+        savedRecipes={state.savedRecipes}
+        edamamId={recipe.edamamId}
+      />
+    ) : (
+      <DisabledTrashButton />
+    )
+  ].filter((n) => n !== null)
 
   return (
     <Card
-      cover={recipeImage}
-      actions={getActions()}
+      cover={
+        <RecipeImage
+          name={recipe.name}
+          picture_url={recipe.picture_url}
+        />
+      }
+      actions={actions}
     >
       <Card.Meta
         title={
