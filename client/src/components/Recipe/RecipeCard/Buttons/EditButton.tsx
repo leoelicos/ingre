@@ -1,7 +1,7 @@
 import { Button, Tooltip } from 'antd'
 import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { IngreIconCustomise } from '../../Icons/Icon.tsx'
+import { IngreIconCustomise } from '../../../Icons/Icon.tsx'
 
 const EditButton: FC<{
   getRecipeLoading: boolean // load from server

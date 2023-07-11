@@ -1,9 +1,9 @@
 import { Button, Tooltip } from 'antd'
 import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { IngreIconRemove } from '../../Icons/Icon.tsx'
+import { IngreIconCustomise } from '../../../Icons/Icon.tsx'
 
-const DisabledTrashButton: FC = () => (
+const DisabledEditButton: FC = () => (
   <Tooltip
     placement="top"
     title={
@@ -19,8 +19,8 @@ const DisabledTrashButton: FC = () => (
         padding: '4px 8px'
       }}
     >
-      <IngreIconRemove />
+      <IngreIconCustomise />
     </Button>
   </Tooltip>
 )
-export default DisabledTrashButton
+export default DisabledEditButton

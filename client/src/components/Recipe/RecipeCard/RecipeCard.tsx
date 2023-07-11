@@ -3,39 +3,39 @@ import React, { FC } from 'react'
 
 // components
 import { Card, Tooltip } from 'antd'
+import PortionsButton from './Buttons/PortionsButton.tsx'
+import DisabledEditButton from './Buttons/DisabledEditButton.tsx'
+import DisabledSaveButton from './Buttons/DisabledSaveButton.tsx'
+import DisabledTrashButton from './Buttons/DisabledTrashButton.tsx'
+import InstructionsButton from './Buttons/InstructionsButton.tsx'
+import SaveButton from './Buttons/SaveButton.tsx'
+import TrashButton from './Buttons/TrashButton.tsx'
+import EditButton from './Buttons/EditButton.tsx'
+import RecipeImage from './RecipeImage.tsx'
 
 // state
-import { useStoreContext } from '../../utils/state/GlobalState.tsx'
+import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
 import {
   ADD_SAVED_RECIPE,
   REMOVE_SAVED_RECIPE,
   SET_EDIT_RECIPE
-} from '../../utils/state/actions.ts'
-import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
+} from '../../../utils/state/actions.ts'
+import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
 
 // data
 import { useMutation, useLazyQuery } from '@apollo/client'
 import {
   SAVE_RECIPE,
   REMOVE_RECIPE
-} from '../../lib/apollo/graphQL/mutations.ts'
+} from '../../../lib/apollo/graphQL/mutations.ts'
 import {
   GET_SAVED_RECIPES,
   GET_RECIPE
-} from '../../lib/apollo/graphQL/queries.ts'
+} from '../../../lib/apollo/graphQL/queries.ts'
 
 /* types */
-import type { RecipeType } from '../../@types/recipe'
-import type { RecipeInput } from '../../@types/payloads'
-import PortionsButton from './components/PortionsButton.tsx'
-import DisabledEditButton from './components/DisabledEditButton.tsx'
-import DisabledSaveButton from './components/DisabledSaveButton.tsx'
-import DisabledTrashButton from './components/DisabledTrashButton.tsx'
-import InstructionsButton from './components/InstructionsButton.tsx'
-import SaveButton from './components/SaveButton.tsx'
-import TrashButton from './components/TrashButton.tsx'
-import EditButton from './components/EditButton.tsx'
-import RecipeImage from './RecipeImage.tsx'
+import type { RecipeType } from '../../../@types/recipe.d.ts'
+import type { RecipeInput } from '../../../@types/payloads.d.ts'
 
 interface RecipeCardProps {
   recipe: RecipeType

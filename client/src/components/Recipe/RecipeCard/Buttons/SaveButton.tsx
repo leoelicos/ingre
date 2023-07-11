@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { Button, Tooltip } from 'antd'
-import { IngreIconSave, IngreIconSpin } from '../../Icons/Icon.tsx'
+import { IngreIconSave, IngreIconSpin } from '../../../Icons/Icon.tsx'
 
 const SaveButton: FC<{
   handleSave: any

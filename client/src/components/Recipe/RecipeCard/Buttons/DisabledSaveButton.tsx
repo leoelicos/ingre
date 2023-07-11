@@ -1,9 +1,9 @@
 import { Button, Tooltip } from 'antd'
 import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { IngreIconCustomise } from '../../Icons/Icon.tsx'
+import { IngreIconSave } from '../../../Icons/Icon.tsx'
 
-const DisabledEditButton: FC = () => (
+const DisabledSaveButton: FC = () => (
   <Tooltip
     placement="top"
     title={
@@ -19,8 +19,8 @@ const DisabledEditButton: FC = () => (
         padding: '4px 8px'
       }}
     >
-      <IngreIconCustomise />
+      <IngreIconSave />
     </Button>
   </Tooltip>
 )
-export default DisabledEditButton
+export default DisabledSaveButton

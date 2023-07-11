@@ -1,6 +1,6 @@
 import { Typography, Tooltip } from 'antd'
 import React, { FC } from 'react'
-import { IngreIconPortion } from '../../Icons/Icon.tsx'
+import { IngreIconPortion } from '../../../Icons/Icon.tsx'
 
 const PortionsButton: FC<{ portions: number }> = ({ portions }) => (
   <Tooltip

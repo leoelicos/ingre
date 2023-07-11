@@ -1,6 +1,6 @@
 import { Button, Space, Tooltip } from 'antd'
 import React, { FC } from 'react'
-import { IngreIconPro } from '../../Icons/Icon.tsx'
+import { IngreIconPro } from '../../../Icons/Icon.tsx'
 
 const InstructionsButton: FC<{ handleRemove: any; instructions: any }> = ({
   handleRemove,

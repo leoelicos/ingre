@@ -1,6 +1,6 @@
 import { Button, Tooltip } from 'antd'
 import React, { FC } from 'react'
-import { IngreIconRemove, IngreIconSpin } from '../../Icons/Icon.tsx'
+import { IngreIconRemove, IngreIconSpin } from '../../../Icons/Icon.tsx'
 
 const TrashButton: FC<{
   removeRecipeLoading: any
