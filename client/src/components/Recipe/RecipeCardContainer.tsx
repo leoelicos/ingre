@@ -5,10 +5,10 @@ import React, { FC } from 'react'
 import { BackTop } from 'antd'
 import RecipeCardContainerLoading from './RecipeCardContainerLoading.tsx'
 import RecipeCardContainerEmpty from './RecipeCardContainerEmpty.tsx'
-import RecipeCards from './RecipeCards.tsx'
 
 /* state */
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
+import RecipeCard from './RecipeCard/RecipeCard.tsx'
 
 interface RecipeCardContainerProps {
   results: any[]
@@ -42,11 +42,16 @@ const RecipeCardContainer: FC<RecipeCardContainerProps> = ({
       ) : !results.length ? (
         <RecipeCardContainerEmpty />
       ) : (
-        <RecipeCards
-          results={results}
-          pro={pro}
-          onSavedPage={onSavedPage}
-        />
+        results?.map((recipe, idx) => {
+          return (
+            <RecipeCard
+              key={idx}
+              recipe={recipe}
+              onSavedPage={onSavedPage}
+              pro={pro}
+            />
+          )
+        })
       )}
       <BackTop />
       {/*   BackTop doesn't work */}

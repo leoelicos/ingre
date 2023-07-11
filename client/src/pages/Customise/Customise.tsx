@@ -20,11 +20,8 @@ import {
 
 /* state */
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-import { ADD_SAVED_RECIPE, SET_EDIT_RECIPE } from '../../utils/state/actions.ts'
-import {
-  GET_RECIPE,
-  GET_SAVED_RECIPES
-} from '../../lib/apollo/graphQL/queries.ts'
+import { ADD_SAVED_RECIPE } from '../../utils/state/actions.ts'
+import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries.ts'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* types */
@@ -535,7 +532,7 @@ const Customise: FC = () => {
 
                 <ButtonUndoAll
                   form={form}
-                  init={init}
+                  init={state.customiseRecipe}
                 />
 
                 <ButtonSave
