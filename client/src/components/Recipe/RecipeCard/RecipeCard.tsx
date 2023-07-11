@@ -131,44 +131,50 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
   const capitalize = (name: string) =>
     name.charAt(0).toUpperCase() + name.slice(1)
 
-  const actions = [
-    <PortionsButton portions={recipe.portions || 0} />,
-    loggedIn && pro ? (
-      <InstructionsButton
-        handleRemove={handleRemove}
-        instructions={recipe.instructions}
-      />
-    ) : null,
-    loggedIn ? (
-      <EditButton
-        getRecipeError={getRecipeError}
-        getRecipeLoading={getRecipeLoading}
-        handleEdit={handleEdit}
-      />
-    ) : (
-      <DisabledEditButton />
-    ),
-    !onSavedPage ? null : !loggedIn ? (
-      <DisabledSaveButton />
-    ) : (
-      <SaveButton
-        handleSave={handleSave}
-        savedRecipes={state.savedRecipes}
-        saveRecipeLoading={saveRecipeLoading}
-        edamamId={recipe.edamamId}
-      />
-    ),
-    loggedIn ? (
-      <TrashButton
-        removeRecipeLoading={removeRecipeLoading}
-        handleRemove={handleRemove}
-        savedRecipes={state.savedRecipes}
-        edamamId={recipe.edamamId}
-      />
-    ) : (
-      <DisabledTrashButton />
-    )
-  ].filter((n) => n !== null)
+  const actions = loggedIn
+    ? [
+        <PortionsButton
+          key="portions"
+          portions={recipe.portions || 0}
+        />,
+        pro ? (
+          <InstructionsButton
+            key="instructions"
+            handleRemove={handleRemove}
+            instructions={recipe.instructions}
+          />
+        ) : null,
+
+        <EditButton
+          key="edit"
+          getRecipeError={getRecipeError}
+          getRecipeLoading={getRecipeLoading}
+          handleEdit={handleEdit}
+        />,
+        <SaveButton
+          key="save"
+          handleSave={handleSave}
+          savedRecipes={state.savedRecipes}
+          saveRecipeLoading={saveRecipeLoading}
+          edamamId={recipe.edamamId}
+        />,
+        <TrashButton
+          key="trash"
+          removeRecipeLoading={removeRecipeLoading}
+          handleRemove={handleRemove}
+          savedRecipes={state.savedRecipes}
+          edamamId={recipe.edamamId}
+        />
+      ].filter((n) => n !== null)
+    : [
+        <PortionsButton
+          key="portions"
+          portions={recipe.portions || 0}
+        />,
+        <DisabledEditButton key="edit" />,
+        <DisabledSaveButton key="save" />,
+        <DisabledTrashButton key="trash" />
+      ]
 
   return (
     <Card
