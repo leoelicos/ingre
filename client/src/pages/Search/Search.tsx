@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'
 
 /* components */
 import { Form, Input, Cascader, Row, Spin, Divider, Col } from 'antd'
-import RecipeCardContainer from '../../components/Recipe/components/RecipeCardContainer/RecipeCardContainer.tsx'
+import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 /* data */
