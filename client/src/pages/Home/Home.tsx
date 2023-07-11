@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 /* components */
 import { Button, Space, Row, Spin, Divider, Col } from 'antd'
-import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx' 
+import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 /* state */
