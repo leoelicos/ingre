@@ -28,7 +28,6 @@ import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 import type { RecipeType } from '../../@types/recipe'
 import ButtonClearAll from './components/ButtonClearAll.tsx'
 import ButtonUndoAll from './components/ButtonUndoAll.tsx'
-import initialize from './initialize.js'
 import ButtonSave from './components/ButtonSave.tsx'
 import ButtonBack from './components/ButtonBack.tsx'
 
@@ -117,9 +116,8 @@ const Customise: FC = () => {
   }
 
   useEffect(() => {
-    const initialize = async () => {}
-    initialize().then((init) => form.setFieldsValue(init))
-  }, [initialize])
+    form.setFieldsValue(state.customiseRecipe)
+  }, [])
 
   return (
     <Col style={{ width: '100%' }}>
