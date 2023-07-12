@@ -1,52 +1,12 @@
 import axios from 'axios'
 
 import type {
-  EdamamHit,
   EdamamRecipeSearchResponse,
   FetchEdamamOptions
 } from '../../@types/edamam.d.ts'
 import type { RecipeType } from '../../@types/recipe.d.ts'
-import type { SearchParams } from '../../@types/search.d.ts'
-
-const encode = ({
-  q,
-  diet,
-  health,
-  cuisineType,
-  mealType,
-  dishType
-}: SearchParams): string => {
-  /*
-   * From the Edamam Docs for Recipe API:
-   * Parameter q is required if no other parameter is specified
-   * Parameter q is not required if any other parameter is specified
-   */
-
-  if (!q && !diet && !health && !cuisineType && !mealType && !dishType)
-    return 'q=yum'
-
-  const qMap = !!q && q.length > 0 ? [`q=${encodeURIComponent(q)}`] : []
-  const dietMap =
-    diet?.map((v: string) => `diet=${encodeURIComponent(v)}`) || []
-  const healthMap =
-    health?.map((v: string) => `health=${encodeURIComponent(v)}`) || []
-  const mealTypeMap =
-    mealType?.map((v: string) => `mealType=${encodeURIComponent(v)}`) || []
-  const dishTypeMap =
-    dishType?.map((v: string) => `dishType=${encodeURIComponent(v)}`) || []
-  const cuisineTypeMap =
-    cuisineType?.map((v: string) => `cuisineType=${encodeURIComponent(v)}`) ||
-    []
-
-  return [
-    ...qMap,
-    ...dietMap,
-    ...healthMap,
-    ...mealTypeMap,
-    ...dishTypeMap,
-    ...cuisineTypeMap
-  ].join('&')
-}
+import encode from './encode.ts'
+import deserialize from './deserialize.ts'
 
 const fetchEdamam = async ({
   search,
@@ -112,38 +72,3 @@ const fetchEdamam = async ({
 }
 
 export default fetchEdamam
-
-const deserialize = (array: EdamamHit[]) =>
-  array.map((hit): RecipeType => {
-    const { recipe, _links } = hit
-    const edamamId = _links.self.href
-      .split('https://api.edamam.com/api/recipes/v2/')[1]
-      .split('?')[0]
-
-    const image = recipe.images.LARGE.url
-    const placeholder =
-      'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc'
-    const edamamPlaceholders = [
-      'fe91e54771717b4aed8e279237b46b11',
-      '323e10a433ca706efb4b22b9d8c2814e'
-    ]
-    const isEdamamPlaceholder = edamamPlaceholders.some((string) =>
-      image.includes(string)
-    )
-
-    return {
-      name: recipe.label?.trim() || '_',
-      portions: recipe.yield || 1,
-      picture_url: !image || isEdamamPlaceholder ? placeholder : image,
-      instructions: recipe.shareAs,
-      ingredients: recipe.ingredients.map((ingredient) => {
-        return {
-          name: ingredient.food,
-          quantity: ingredient.quantity,
-          measure: ingredient.measure,
-          category: { name: ingredient.foodCategory }
-        }
-      }),
-      edamamId
-    }
-  })
