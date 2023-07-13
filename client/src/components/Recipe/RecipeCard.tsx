@@ -3,6 +3,15 @@ import React, { FC } from 'react'
 
 // components
 import { Card, Tooltip } from 'antd'
+import PortionsButton from './components/PortionsButton.tsx'
+import DisabledEditButton from './components/DisabledEditButton.tsx'
+import DisabledSaveButton from './components/DisabledSaveButton.tsx'
+import DisabledTrashButton from './components/DisabledTrashButton.tsx'
+import InstructionsButton from './components/InstructionsButton.tsx'
+import SaveButton from './components/SaveButton.tsx'
+import TrashButton from './components/TrashButton.tsx'
+import EditButton from './components/EditButton.tsx'
+import RecipeImage from './RecipeImage.tsx'
 
 // state
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
@@ -25,17 +34,8 @@ import {
 } from '../../lib/apollo/graphQL/queries.ts'
 
 /* types */
-import type { ClientRecipe } from '../../@types/client'
-import type { RecipeInput } from '../../@types/payloads'
-import PortionsButton from './components/PortionsButton.tsx'
-import DisabledEditButton from './components/DisabledEditButton.tsx'
-import DisabledSaveButton from './components/DisabledSaveButton.tsx'
-import DisabledTrashButton from './components/DisabledTrashButton.tsx'
-import InstructionsButton from './components/InstructionsButton.tsx'
-import SaveButton from './components/SaveButton.tsx'
-import TrashButton from './components/TrashButton.tsx'
-import EditButton from './components/EditButton.tsx'
-import RecipeImage from './RecipeImage.tsx'
+import type { ClientRecipe } from '../../@types/client.d.ts'
+import type { RecipeInput } from '../../@types/payloads.d.ts'
 
 interface RecipeCardProps {
   recipe: ClientRecipe
