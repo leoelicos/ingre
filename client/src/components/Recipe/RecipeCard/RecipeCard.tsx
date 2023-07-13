@@ -34,7 +34,7 @@ import {
 } from '../../../lib/apollo/graphQL/queries.ts'
 
 /* types */
-import type { RecipeType } from '../../../@types/recipe.d.ts'
+import type { RecipeType } from '../../../@types/client'
 import type { RecipeInput } from '../../../@types/payloads.d.ts'
 
 interface RecipeCardProps {
