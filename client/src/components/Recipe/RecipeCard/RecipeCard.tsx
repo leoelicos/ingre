@@ -34,11 +34,11 @@ import {
 } from '../../../lib/apollo/graphQL/queries.ts'
 
 /* types */
-import type { RecipeType } from '../../../@types/client'
+import type { ClientRecipe } from '../../../@types/client'
 import type { RecipeInput } from '../../../@types/payloads.d.ts'
 
 interface RecipeCardProps {
-  recipe: RecipeType
+  recipe: ClientRecipe
   onSavedPage: boolean
   pro: boolean
 }
@@ -88,12 +88,12 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
         portions: recipe.portions ? Math.floor(recipe.portions) : 1,
         picture_url: recipe.picture_url || placeholder,
         edamamId: recipe.edamamId || '',
-        instructions: recipe.shareAs || '',
+        instructions: recipe.instructions || '',
         ingredients: recipe.ingredients.map((i) => ({
           name: i.name || 'Ingredient',
           quantity: i.quantity || 1,
           measure: i.measure || 'unit',
-          category: i.category.name || 'Generic'
+          category: i.category || 'Generic'
         }))
       }
       console.log('handleSave', { input })
