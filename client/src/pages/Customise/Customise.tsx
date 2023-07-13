@@ -25,7 +25,7 @@ import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries.ts'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* types */
-import type { RecipeType } from '../../@types/recipe'
+import type { ClientRecipe } from '../../@types/client'
 import ButtonClearAll from './components/ButtonClearAll.tsx'
 import ButtonUndoAll from './components/ButtonUndoAll.tsx'
 import ButtonSave from './components/ButtonSave.tsx'
@@ -56,7 +56,7 @@ const Customise: FC = () => {
       recipes from Search Page are initialised from client data
   */
 
-  const onFinish = async (values: RecipeType) => {
+  const onFinish = async (values: ClientRecipe) => {
     if (cancel) return
 
     try {
