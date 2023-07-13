@@ -45,7 +45,7 @@ import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 import { changeTitle } from '../../utils/changeTitle.ts'
 
 /* types */
-import type { RecipeType } from '../../@types/recipe.ts'
+import type { RecipeType } from '../../@types/client'
 import type {
   IngredientGeneratedType,
   IngredientGeneratedTypeWithKey
