@@ -1,6 +1,13 @@
-/* used in api */
+/* used in Edamam API */
 
-import type { SearchParams } from './search.d.ts'
+export interface SearchParams {
+  q?: string
+  diet?: string[]
+  health?: string[]
+  cuisineType?: string[]
+  mealType?: string[]
+  dishType?: string[]
+}
 
 export interface FetchEdamamOptions {
   search: SearchParams
