@@ -4,7 +4,7 @@ import type {
   EdamamRecipeSearchResponse,
   FetchEdamamOptions
 } from '../../@types/edamam.d.ts'
-import type { RecipeType } from '../../@types/recipe.d.ts'
+import type { ClientRecipe } from '../../@types/client'
 import encode from './encode.ts'
 import deserialize from './deserialize.ts'
 
@@ -12,7 +12,7 @@ const fetchEdamam = async ({
   search,
   appId,
   appKey
-}: FetchEdamamOptions): Promise<RecipeType[]> => {
+}: FetchEdamamOptions): Promise<ClientRecipe[]> => {
   try {
     const {
       q = '',
@@ -41,6 +41,7 @@ const fetchEdamam = async ({
         `app_key=${appKey}`,
         'imageSize=LARGE',
         'random=true',
+        'field=uri',
         'field=label',
         'field=images',
         'field=yield',
