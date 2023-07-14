@@ -36,6 +36,8 @@ import {
 /* types */
 import type { ClientRecipe } from '../../../@types/client'
 import type { RecipeInput } from '../../../@types/payloads.d.ts'
+import defaultRecipe from '../../../@defaults/defaultRecipe.ts'
+import defaultIngredient from '../../../@defaults/defaultIngredient.ts'
 
 interface RecipeCardProps {
   recipe: ClientRecipe
@@ -80,27 +82,38 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
   }
 
   const handleSave = async () => {
-    const placeholder =
-      'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc'
     try {
-      const input: RecipeInput = {
-        name: recipe.name || 'Recipe',
-        portions: recipe.portions ? Math.floor(recipe.portions) : 1,
-        picture_url: recipe.picture_url || placeholder,
-        edamamId: recipe.edamamId || '',
-        instructions: recipe.instructions || '',
-        ingredients: recipe.ingredients.map((i) => ({
-          name: i.name || 'Ingredient',
-          quantity: i.quantity || 1,
-          measure: i.measure || 'unit',
-          category: i.category || 'Generic'
-        }))
-      }
-      console.log('handleSave', { input })
-      const variables = { input }
-      const payload = { variables }
-      console.log({ payload }) // this is good
-      const res = await saveRecipe(payload)
+      const res = await saveRecipe({
+        variables: {
+          input: {
+            name: recipe.name.length > 0 ? recipe.name : defaultRecipe.name,
+            portions:
+              recipe.portions > 0 ? recipe.portions : defaultRecipe.portions,
+            picture_url:
+              recipe.picture_url.length > 0
+                ? recipe.picture_url
+                : defaultRecipe.picture_url,
+            edamamId:
+              recipe.edamamId !== undefined
+                ? recipe.edamamId
+                : defaultRecipe.edamamId,
+            instructions:
+              recipe.instructions === undefined ||
+              recipe.instructions.length === 0
+                ? defaultRecipe.instructions
+                : recipe.instructions,
+            ingredients: recipe.ingredients.map((i) => ({
+              name: i.name.length > 0 ? i.name : defaultIngredient.name,
+              quantity:
+                i.quantity > 0 ? i.quantity : defaultIngredient.quantity,
+              measure:
+                i.measure.length > 0 ? i.measure : defaultIngredient.measure,
+              category:
+                i.category.length > 0 ? i.category : defaultIngredient.category
+            }))
+          }
+        }
+      })
       if (!res) throw 'Could not save recipe'
       const saveData = res.data.saveRecipe
       console.log({ res }) // this is returning null

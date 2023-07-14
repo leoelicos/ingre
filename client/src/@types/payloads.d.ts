@@ -3,7 +3,7 @@ export interface RecipeInput {
   portions: number
   ingredients: IngredientInput[]
   picture_url: string
-  edamamId: string
+  edamamId: string | undefined // will be undefined if user-generated
   instructions: string
 }
 
