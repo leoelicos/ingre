@@ -5,8 +5,8 @@ export interface ClientRecipe {
   name: string
   portions: number
   picture_url: string
-  instructions: string
-  edamamId: string
+  instructions: string | undefined // will not have one if not from server
+  edamamId: string | undefined
   ingredients: ClientIngredient[]
 }
 
