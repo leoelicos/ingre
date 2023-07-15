@@ -8,21 +8,15 @@ import type { ClientRecipe } from '../../@types/client'
 import encode from './encode.ts'
 import deserialize from './deserialize.ts'
 
-const fetchEdamam = async ({
+type FetchEdamamType = ({
   search,
   appId,
   appKey
-}: FetchEdamamOptions): Promise<ClientRecipe[]> => {
-  try {
-    const {
-      q = '',
-      diet = [],
-      health = [],
-      cuisineType = [],
-      mealType = [],
-      dishType = []
-    } = search
+}: FetchEdamamOptions) => Promise<ClientRecipe[]>
 
+const fetchEdamam: FetchEdamamType = async ({ search, appId, appKey }) => {
+  const { q, diet, health, cuisineType, mealType, dishType } = search
+  try {
     let searchString = encode({
       q,
       diet,
