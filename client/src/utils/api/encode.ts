@@ -1,4 +1,4 @@
-import type { SearchParams } from '../../@types/search.d.ts'
+import type { SearchParams } from '../../@types/edamam.d.ts'
 
 const encode = ({
   q,
@@ -14,7 +14,14 @@ const encode = ({
    * Parameter q is not required if any other parameter is specified
    */
 
-  if (!q && !diet && !health && !cuisineType && !mealType && !dishType)
+  if (
+    q === undefined &&
+    diet === undefined &&
+    health === undefined &&
+    cuisineType === undefined &&
+    mealType === undefined &&
+    dishType === undefined
+  )
     return 'q=yum'
 
   const qMap = !!q && q.length > 0 ? [`q=${encodeURIComponent(q)}`] : []
