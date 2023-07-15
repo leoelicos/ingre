@@ -1,5 +1,5 @@
-import { ClientRecipe } from '../@types/client'
-import defaultIngredient from './defaultIngredient'
+import type { ClientRecipe } from '../@types/client.d.ts'
+import defaultIngredient from './defaultIngredient.ts'
 
 const defaultRecipe: ClientRecipe = {
   _id: undefined,
