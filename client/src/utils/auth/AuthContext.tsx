@@ -4,6 +4,7 @@ import React, {
   ReactNode,
   createContext,
   useContext,
+  useEffect,
   useReducer
 } from 'react'
 
@@ -32,13 +33,19 @@ type AuthContextType = [state: AuthType, dispatch: React.Dispatch<any>]
 const initialState: AuthType = {
   profile: null,
   token: null,
-  loggedIn: false
+  loggedIn:
+    localStorage.getItem('id_token') === null
+      ? false
+      : isJwtExpired(localStorage.getItem('id_token') as string)
 }
 
 const AuthContext = createContext<AuthContextType>([initialState, () => {}])
 
 const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useAuthReducer(initialState)
+
+  /* update from local storage the first time */
+  useEffect(() => {}, [])
   return (
     <AuthContext.Provider value={[state, dispatch]}>
       {children}
