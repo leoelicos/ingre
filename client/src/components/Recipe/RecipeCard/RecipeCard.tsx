@@ -35,7 +35,7 @@ import {
 
 /* types */
 import type { ClientRecipe } from '../../../@types/client'
-import type { RecipeInput } from '../../../@types/payloads.d.ts'
+
 import defaultRecipe from '../../../@defaults/defaultRecipe.ts'
 import defaultIngredient from '../../../@defaults/defaultIngredient.ts'
 
