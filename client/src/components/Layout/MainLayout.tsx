@@ -1,7 +1,4 @@
-// React
 import React, { FC, ReactNode, useCallback } from 'react'
-
-// Ant
 import { Layout, Row } from 'antd'
 
 const layoutStyle = {
