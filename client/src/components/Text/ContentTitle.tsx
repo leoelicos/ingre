@@ -1,7 +1,4 @@
-/* react */
 import React, { CSSProperties, FC, ReactNode } from 'react'
-
-/* ant */
 import { Typography } from 'antd'
 
 const style: CSSProperties = {
@@ -14,13 +11,11 @@ const style: CSSProperties = {
   textAlign: 'center'
 }
 
-const ContentTitle: FC<{ children: ReactNode }> = ({ children }) => (
+const ContentTitle: FC<{ children: ReactNode }> = () => (
   <Typography.Title
     level={1}
     style={style}
-  >
-    {children}
-  </Typography.Title>
+  />
 )
 
 export default ContentTitle
