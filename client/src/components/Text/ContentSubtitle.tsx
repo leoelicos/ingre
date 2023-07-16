@@ -1,5 +1,4 @@
 import React, { FC, ReactNode } from 'react'
-// Ant
 import { Typography } from 'antd'
 
 const titleStyle = {
