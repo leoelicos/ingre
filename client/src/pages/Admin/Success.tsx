@@ -14,8 +14,8 @@ import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* components */
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
-import { IngreIconPro } from '../../components/Icons/Icon.tsx'
+import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
+import { IngreIconPro } from '../../lib/icon/Icon.tsx'
 
 const Success: FC = () => {
   const [makeUserPro] = useMutation(MAKE_USER_PRO)
