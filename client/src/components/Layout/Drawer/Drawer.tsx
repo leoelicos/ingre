@@ -9,16 +9,15 @@ import {
   IngreIconClearSearch,
   IngreIconCustomise,
   IngreIconPro,
-  IngreIconRecipe,
   IngreIconRemove,
   IngreIconSave,
   IngreIconSearch
-} from '../Icons/Icon.tsx'
+} from '../../../lib/icon/Icon.tsx'
 
 /* state */
-import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-import { HIDE_DRAWER } from '../../utils/state/actions.ts'
-import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
+import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
+import { HIDE_DRAWER } from '../../../utils/state/actions.ts'
+import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
 
 /* components */
 const { Item } = Timeline
@@ -48,7 +47,7 @@ const Drawer: FC = () => {
                   or one of the popular options, or
                   <Button type="primary">
                     <Space>
-                      <IngreIconRecipe />
+                      <IngreIconSearch />
                       &nbsp;Search
                     </Space>
                   </Button>
