@@ -12,7 +12,7 @@ import { Button, Form, Input, Divider, Space, Row, Col, Alert } from 'antd'
 
 /* utils */
 import { changeTitle } from '../../utils/changeTitle.ts'
-import LoginLink from '../../components/Authentication/LoginLink.tsx'
+import LoginLink from '../../components/Links/LoginLink.tsx'
 
 /* data */
 import { useMutation, useLazyQuery } from '@apollo/client'
