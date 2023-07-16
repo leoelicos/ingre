@@ -12,28 +12,28 @@ import {
 import { setContext } from '@apollo/client/link/context'
 
 /* state */
-import { StoreProvider } from '../utils/state/GlobalState.tsx'
-import { AuthProvider } from '../utils/auth/AuthContext.tsx'
+import { StoreProvider } from './utils/state/GlobalState.tsx'
+import { AuthProvider } from './utils/auth/AuthContext.tsx'
 
 /* pages */
-import Home from '../pages/Home/Home.tsx'
-import Search from '../pages/Search/Search.tsx'
-import Customise from '../pages/Customise/Customise.tsx'
-import Saved from '../pages/Saved/Saved.tsx'
-import Ingredients from '../pages/Ingredients/Ingredients.tsx'
-import TapOff from '../pages/TapOff/TapOff.tsx'
-import Login from '../pages/Admin/Login.tsx'
-import Signup from '../pages/Admin/Signup.tsx'
-import NoMatch from '../pages/Admin/NoMatch.tsx'
-import Success from '../pages/Admin/Success.tsx'
-import Upgrade from '../pages/Admin/Upgrade.tsx'
-import Logout from '../pages/Admin/Logout.tsx'
+import Home from './pages/Home/Home.tsx'
+import Search from './pages/Search/Search.tsx'
+import Customise from './pages/Customise/Customise.tsx'
+import Saved from './pages/Saved/Saved.tsx'
+import Ingredients from './pages/Ingredients/Ingredients.tsx'
+import TapOff from './pages/TapOff/TapOff.tsx'
+import Login from './pages/Admin/Login.tsx'
+import Signup from './pages/Admin/Signup.tsx'
+import NoMatch from './pages/Admin/NoMatch.tsx'
+import Success from './pages/Admin/Success.tsx'
+import Upgrade from './pages/Admin/Upgrade.tsx'
+import Logout from './pages/Admin/Logout.tsx'
 
 /* components */
-import Drawer from './Layout/Drawer.tsx'
-import Header from './Layout/Header/Header.tsx'
-import MainLayout from './Layout/MainLayout.tsx'
-import SiderLeft from './Layout/SiderLeft/SiderLeft.tsx'
+import Drawer from './components/Layout/Drawer/Drawer.tsx'
+import Header from './components/Layout/Header/Header.tsx'
+import MainLayout from './components/Layout/MainLayout.tsx'
+import SiderLeft from './components/Layout/SiderLeft/SiderLeft.tsx'
 import { Layout } from 'antd'
 import { Content } from 'antd/lib/layout/layout'
 
@@ -41,8 +41,8 @@ import { Content } from 'antd/lib/layout/layout'
 import './style/index.scss'
 
 /* utils */
-import { changeTitle } from '../utils/changeTitle.ts'
-import addFontAwesome from '../utils/addFontAwesome.ts'
+import { changeTitle } from './utils/changeTitle.ts'
+import addFontAwesome from './utils/addFontAwesome.ts'
 
 addFontAwesome()
 
