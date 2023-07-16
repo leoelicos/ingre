@@ -20,23 +20,23 @@ interface ProfileType {
 
 interface AuthType {
   profile: ProfileType | null
-  token: string | null
   loggedIn: boolean
 }
 
 const isJwtExpired = (token: string) =>
   jwtDecode<ProfileType>(token).exp < Date.now() / 1000
 
-/*   context */
 type AuthContextType = [state: AuthType, dispatch: React.Dispatch<any>]
 
+const initialToken = localStorage.getItem('id_token')
 const initialState: AuthType = {
   profile: null,
-  token: null,
   loggedIn:
-    localStorage.getItem('id_token') === null
+    initialToken === null
       ? false
-      : isJwtExpired(localStorage.getItem('id_token') as string)
+      : isJwtExpired(initialToken as string)
+      ? false
+      : true
 }
 
 const AuthContext = createContext<AuthContextType>([initialState, () => {}])
@@ -65,28 +65,39 @@ const reducer: reducerType = (state, action) => {
 
   switch (action.type) {
     case 'UPDATE':
-      const localStorageToken = localStorage.getItem('id_token')
-      if (
-        state.token === null &&
-        (!localStorageToken || isJwtExpired(localStorageToken))
-      )
-        return { ...state, loggedIn: false }
-      else if (isJwtExpired(state.token)) return { ...state, loggedIn: false }
-      else return state
+      const token = localStorage.getItem('id_token')
+      if (token === null) {
+        return {
+          ...state,
+          loggedIn: false
+        }
+      } else if (isJwtExpired(token)) {
+        localStorage.removeItem('id_token')
+        return {
+          ...state,
+          loggedIn: false
+        }
+      } else {
+        /* token is valid */
+        return {
+          ...state,
+          profile: jwtDecode(token),
+          loggedIn: true
+        }
+      }
 
     case 'LOGIN':
       const serverToken = action.data
       localStorage.setItem('id_token', serverToken)
       return {
         ...state,
-        token: serverToken,
         profile: jwtDecode(serverToken),
         loggedIn: true
       }
 
     case 'LOGOUT':
       localStorage.removeItem('id_token')
-      return { ...state, token: null, profile: null, loggedIn: false }
+      return { ...state, profile: null, loggedIn: false }
 
     default:
       return state
