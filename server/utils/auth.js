@@ -8,7 +8,8 @@
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const secret = process.env.HEROKU_JWT_SECRET || process.env.JWT_SECRET
-const expiration = '24h'
+// const expiration = '24h'
+const expiration = '1m'
 
 module.exports = {
   authMiddleware: function ({ req }) {
