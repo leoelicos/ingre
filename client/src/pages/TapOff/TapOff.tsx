@@ -21,7 +21,7 @@ import {
 } from 'antd'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
-import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
+import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
 import Masonry from 'react-masonry-css'
 
 /* utils */

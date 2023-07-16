@@ -11,9 +11,9 @@ import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 /* components */
 import { Col, Row, Divider, Spin, Alert } from 'antd'
-import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
+import RecipeCardContainer from '../../components/RecipeCardContainer/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
+import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
 
 /* data */
 import { useLazyQuery } from '@apollo/client'

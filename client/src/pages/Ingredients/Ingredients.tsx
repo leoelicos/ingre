@@ -19,9 +19,9 @@ import {
   IngreIconClearCustom,
   IngreIconRemove,
   IngreIconSave
-} from '../../components/Icons/Icon.tsx'
+} from '../../lib/icon/Icon.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
+import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
 import EditableRow from './EditableRow.tsx'
 import EditableCell from './EditableCell.tsx'
 
