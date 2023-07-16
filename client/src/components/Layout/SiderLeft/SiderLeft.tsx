@@ -16,7 +16,7 @@ import {
   IngreIconRecipe,
   IngreIconSearch,
   IngreIconTapOff
-} from '../../Icons/Icon.tsx'
+} from '../../../lib/icon/Icon.tsx'
 
 const SiderLeft: FC = () => {
   const showDrawer = () => {
