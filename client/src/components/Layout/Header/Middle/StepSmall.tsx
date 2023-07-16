@@ -8,7 +8,7 @@ import {
   IngreIconIngredients,
   IngreIconRecipe,
   IngreIconTapOff
-} from '../../../Icons/Icon.tsx'
+} from '../../../../lib/icon/Icon.tsx'
 
 const StepSmall: FC<{ pathname: string }> = ({ pathname }) => {
   const getStep =
