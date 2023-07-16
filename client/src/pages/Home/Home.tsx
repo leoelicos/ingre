@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 /* components */
 import { Button, Space, Row, Spin, Divider, Col } from 'antd'
-import RecipeCardContainer from '../../components/Recipe/RecipeCardContainer.tsx'
+import RecipeCardContainer from '../../components/RecipeCardContainer/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 
 /* state */
@@ -22,7 +22,7 @@ import fetchEdamam from '../../utils/api/edamam.ts'
 
 /* hooks */
 import { changeTitle } from '../../utils/changeTitle.ts'
-import { IngreIconSearch } from '../../components/Icons/Icon.tsx'
+import { IngreIconSearch } from '../../lib/icon/Icon.tsx'
 
 const Home: FC = () => {
   changeTitle('Recipes')

@@ -12,8 +12,8 @@ import { CHECKOUT, GET_USER } from '../../lib/apollo/graphQL/queries.ts'
 import { Row, Col, Button, List, Space, Tooltip, Alert } from 'antd'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
-import NotLoggedIn from '../../components/Authentication/NotLoggedIn.tsx'
-import { IngreIconPro } from '../../components/Icons/Icon.tsx'
+import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
+import { IngreIconPro } from '../../lib/icon/Icon.tsx'
 
 /* state */
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
