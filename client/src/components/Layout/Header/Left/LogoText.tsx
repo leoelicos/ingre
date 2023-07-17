@@ -1,6 +1,6 @@
 import React, { CSSProperties, FC } from 'react'
 
-const LogoText: FC = () => {
+const LogoText: FC<{ children: React.ReactNode }> = ({ children }) => {
   const LogoTextStyle: CSSProperties = {
     color: 'var(--ingre-dark-brown)',
     fontFamily: 'Poppins, sans-serif',
@@ -12,7 +12,9 @@ const LogoText: FC = () => {
     <span
       className="ingre-log-text"
       style={LogoTextStyle}
-    />
+    >
+      {children}
+    </span>
   )
 }
 
