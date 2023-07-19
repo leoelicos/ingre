@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 const LoginLink: FC = () => {
   const style: CSSProperties = {
-    backgroundColor: 'blue',
+    backgroundColor: 'hotpink',
     color: 'white !important'
   }
   return (
