@@ -48,7 +48,7 @@ const Header: FC = () => {
           onClick={handleMenuToggle}
         />
 
-        {/* Middle */}
+        {/* Middle - one with responsive display none  */}
         <StepSmall pathname={pathname} />
         <StepBig pathname={pathname} />
 
