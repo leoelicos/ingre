@@ -10,9 +10,8 @@ A home cooking utility app for home cooks who love meal kit subscriptions but no
 
 ![mongoose](https://img.shields.io/badge/-Mongoose-blue) ![express](https://img.shields.io/badge/-Express.js-blue) ![node](https://img.shields.io/badge/-Node.js-blue) ![apollo-server-express](https://img.shields.io/badge/-Apollo_Server_Express-blueviolet) ![graphql](https://img.shields.io/badge/-GraphQL-blueviolet) ![stripe](https://img.shields.io/badge/-Stripe-blueviolet) ![JWT](https://img.shields.io/badge/-JWT-success) ![bcrypt](https://img.shields.io/badge/-bcrypt-lightgrey) ![dotenv](https://img.shields.io/badge/-dotenv-lightgrey)
 
-## Rationale 
-
-ingré was built in Node.js over a MERN stack and was the final Project of my bootcamp course. I made this app in order to learn about React in a MERN setup.
+## Rationale
+Free alternative to expensive home kits - buy it yourself using an organisation application. Ingre is recipe-first and time-first with a top-down approach, focusing less on ingredient budgeting.
 
 ## Usage
 
