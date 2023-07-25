@@ -1,6 +1,6 @@
 # ingré 
 
-A home cooking utility app for home cooks who love meal kit subscriptions but not the price. Find recipes and generate fun tappable shopping lists sorted by category.
+A cooking app that connects Edamam API to everyday home cooks. Find recipes and generate tappable lists.
 
 ### Front end
 
