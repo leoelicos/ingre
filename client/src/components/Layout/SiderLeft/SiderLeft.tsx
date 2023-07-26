@@ -44,7 +44,7 @@ const SiderLeft: FC = () => {
         if (broken) dispatch({ type: COLLAPSE_SIDEBAR })
       }}
       trigger={null}
-      collapsible
+      collapsible={true}
       collapsed={state.leftSidebarCollapsed}
       collapsedWidth="60px"
       style={{
