@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom'
 
 /* components */
 import { Col, Row } from 'antd'
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import Logo from './Logo.tsx'
+import ExpandedMenuIcon from './MenuIconExpanded.tsx'
+import MenuIconCollapsed from './MenuIconCollapsed.tsx'
 
 /* types */
 interface ToggleMenuProps {
@@ -21,23 +22,9 @@ const ToggleMenu: FC<ToggleMenuProps> = ({ collapsed, onClick }) => (
       style={{ marginTop: '-1px', paddingBottom: '2px' }}
     >
       {collapsed ? (
-        <MenuUnfoldOutlined
-          onClick={onClick}
-          style={{
-            color: 'var(--ingre-dark-brown)',
-            fontSize: '1.2rem',
-            margin: '0 1.2rem'
-          }}
-        />
+        <ExpandedMenuIcon onClick={onClick} />
       ) : (
-        <MenuFoldOutlined
-          onClick={onClick}
-          style={{
-            color: 'var(--ingre-dark-brown)',
-            fontSize: '1.2rem',
-            margin: '0 1.2rem'
-          }}
-        />
+        <MenuIconCollapsed onClick={onClick} />
       )}
 
       <Link to="/">
