@@ -1,14 +1,11 @@
 /* react */
 import React, { FC } from 'react'
-import { Link } from 'react-router-dom'
 
 /* components */
 import { Col, Row, Steps } from 'antd'
-import {
-  IngreIconIngredients,
-  IngreIconRecipe,
-  IngreIconTapOff
-} from '../../../../lib/icon/Icon.tsx'
+import StepTapOff from './StepTapOff.tsx'
+import StepIngredients from './StepIngredients.tsx'
+import StepRecipes from './StepRecipes.tsx'
 
 const StepSmall: FC<{ pathname: string }> = ({ pathname }) => {
   const getStep =
@@ -31,27 +28,9 @@ const StepSmall: FC<{ pathname: string }> = ({ pathname }) => {
           current={getStep}
           responsive={false}
         >
-          <Steps.Step
-            icon={
-              <Link to="/">
-                <IngreIconRecipe />
-              </Link>
-            }
-          />
-          <Steps.Step
-            icon={
-              <Link to="/ingredients">
-                <IngreIconIngredients />
-              </Link>
-            }
-          />
-          <Steps.Step
-            icon={
-              <Link to="/tapoff">
-                <IngreIconTapOff />
-              </Link>
-            }
-          />
+          <StepRecipes />
+          <StepIngredients />
+          <StepTapOff />
         </Steps>
       </Row>
     </Col>

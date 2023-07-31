@@ -1,14 +1,11 @@
 /* react */
 import React, { FC } from 'react'
-import { Link } from 'react-router-dom'
 
 /* components */
 import { Col, Row, Steps } from 'antd'
-import {
-  IngreIconIngredients,
-  IngreIconRecipe,
-  IngreIconTapOff
-} from '../../../../lib/icon/Icon.tsx'
+import StepIngredients from './StepIngredients.tsx'
+import StepTapOff from './StepTapOff.tsx'
+import StepRecipes from './StepRecipes.tsx'
 
 const StepBig: FC<{ pathname: string }> = ({ pathname }) => {
   const getStep =
@@ -30,30 +27,9 @@ const StepBig: FC<{ pathname: string }> = ({ pathname }) => {
           current={getStep}
           responsive={false}
         >
-          <Steps.Step
-            title={<Link to="/">Recipes</Link>}
-            icon={
-              <Link to="/">
-                <IngreIconRecipe />
-              </Link>
-            }
-          />
-          <Steps.Step
-            title={<Link to="/ingredients">Ingredients</Link>}
-            icon={
-              <Link to="/ingredients">
-                <IngreIconIngredients />
-              </Link>
-            }
-          />
-          <Steps.Step
-            title={<Link to="/tapoff">Tap Off</Link>}
-            icon={
-              <Link to="/tapoff">
-                <IngreIconTapOff />
-              </Link>
-            }
-          />
+          <StepRecipes />
+          <StepIngredients />
+          <StepTapOff />
         </Steps>
       </Row>
     </Col>
