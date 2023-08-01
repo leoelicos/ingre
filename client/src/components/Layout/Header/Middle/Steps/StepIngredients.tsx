@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { Steps } from 'antd'
 import { Link } from 'react-router-dom'
-import { IngreIconIngredients } from '../../../../lib/icon/Icon'
+import { IngreIconIngredients } from '../../../../../lib/icon/Icon'
 
 const StepIngredients: FC = () => {
   return (

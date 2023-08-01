@@ -2,10 +2,8 @@
 import React, { FC } from 'react'
 
 /* components */
-import { Col, Row, Steps } from 'antd'
-import StepTapOff from './StepTapOff.tsx'
-import StepIngredients from './StepIngredients.tsx'
-import StepRecipes from './StepRecipes.tsx'
+import { Col, Row } from 'antd'
+import Steps from './Steps/Steps.tsx'
 
 const StepSmall: FC<{ pathname: string }> = ({ pathname }) => {
   const getStep =
@@ -22,16 +20,7 @@ const StepSmall: FC<{ pathname: string }> = ({ pathname }) => {
         className="header-row-row-col2-row"
         align="middle"
       >
-        <Steps
-          className="header-row-row-col2-row-steps"
-          size="small"
-          current={getStep}
-          responsive={false}
-        >
-          <StepRecipes />
-          <StepIngredients />
-          <StepTapOff />
-        </Steps>
+        <Steps step={getStep} />
       </Row>
     </Col>
   )
