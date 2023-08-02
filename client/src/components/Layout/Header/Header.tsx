@@ -10,9 +10,9 @@ import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
 // components
 import { Row } from 'antd'
 import ToggleMenu from './Left/ToggleMenu.tsx'
-import StepSmall from './Middle/StepSmall.tsx'
-import StepBig from './Middle/StepBig.tsx'
 import AuthButton from './Right/AuthButton.tsx'
+import { stepDict } from './Middle/stepDict.ts'
+import ResponsiveSteps from './Middle/ResponsiveSteps.tsx'
 
 const Header: FC = () => {
   const [state, dispatch] = useStoreContext()
@@ -22,6 +22,7 @@ const Header: FC = () => {
   }
 
   const { pathname } = useLocation()
+  const step = stepDict[pathname] === undefined ? 0 : stepDict[pathname]
   const [authState] = useAuthContext()
   const loggedIn = authState.loggedIn
   return (
@@ -49,8 +50,7 @@ const Header: FC = () => {
         />
 
         {/* Middle - one with responsive display none  */}
-        <StepSmall pathname={pathname} />
-        <StepBig pathname={pathname} />
+        <ResponsiveSteps step={step} />
 
         {/* Right */}
         <AuthButton loggedIn={loggedIn} />
