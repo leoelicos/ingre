@@ -1,6 +1,8 @@
 # ingré 
 
-A cooking app that connects home cooks to a rich recipe database. Find recipes and generate a shopping list.
+A cooking app that connects home cooks to a rich recipe database.
+
+## Tech stack 
 
 ### Front end
 
