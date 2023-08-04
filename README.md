@@ -1,6 +1,6 @@
 # ingré 
 
-A cooking app that connects Edamam API to everyday home cooks. Find recipes and generate tappable lists.
+A cooking app that connects Edamam API to everyday home cooks. Find recipes and generate a shopping list.
 
 ### Front end
 
