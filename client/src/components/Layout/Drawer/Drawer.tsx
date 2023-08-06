@@ -1,14 +1,14 @@
 /* react */
-import React, { FC, ReactNode, useMemo } from 'react'
+import React, { FC, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
-
-/* components */
-import { Drawer as AntDrawer } from 'antd'
 
 /* state */
 import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
 import { HIDE_DRAWER } from '../../../utils/state/actions.ts'
 import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
+
+/* components */
+import { Drawer } from 'antd'
 import TimelineRoot from './Timelines/TimelineRoot.tsx'
 import TimelineSearch from './Timelines/TimelineSearch.tsx'
 import TimelineCustomise from './Timelines/TimelineCustomise.tsx'
@@ -20,31 +20,13 @@ import TimelineSignup from './Timelines/TimelineSignup.tsx'
 import TimelineUpgrade from './Timelines/TimelineUpgrade.tsx'
 import TimelineInvalid from './Timelines/TimelineInvalid.tsx'
 
-const CustomAntDrawer: FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useStoreContext()
-  const handleOk = () => dispatch({ type: HIDE_DRAWER })
-  return (
-    <AntDrawer
-      visible={state.modalVisible}
-      placement="right"
-      onClose={handleOk}
-      closable={true}
-      maskStyle={{
-        background: 'rgba(0,0,0,0.2)'
-      }}
-    >
-      {children}
-    </AntDrawer>
-  )
-}
-
-const DrawerChildren: FC = () => {
+const Timeline: FC = () => {
   const { pathname } = useLocation()
 
   const [authState] = useAuthContext()
   const pro = !!authState.profile?.data.pro
 
-  const text = useMemo(
+  const TimelineCompnent = useMemo(
     () =>
       pathname === '/' ? (
         <TimelineRoot />
@@ -69,9 +51,25 @@ const DrawerChildren: FC = () => {
       ),
     [pathname, pro]
   )
-  return text
+  return TimelineCompnent
 }
 
-const Drawer = () => <CustomAntDrawer children={<DrawerChildren />} />
+const HelpDrawer = () => {
+  const [state, dispatch] = useStoreContext()
+  const handleOk = () => dispatch({ type: HIDE_DRAWER })
+  return (
+    <Drawer
+      visible={state.modalVisible}
+      placement="right"
+      onClose={handleOk}
+      closable={true}
+      maskStyle={{
+        background: 'rgba(0,0,0,0.2)'
+      }}
+    >
+      <Timeline />
+    </Drawer>
+  )
+}
 
-export default Drawer
+export default HelpDrawer
