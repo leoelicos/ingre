@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useCallback } from 'react'
+import React, { FC, ReactNode } from 'react'
 import { Layout, Row } from 'antd'
 
 const layoutStyle = {
@@ -14,14 +14,11 @@ const rowStyle = {
 }
 
 const MainLayout: FC<{ children: ReactNode }> = (props) => {
-  const x = useCallback((props: { children: ReactNode }) => {
-    return (
-      <Layout style={layoutStyle}>
-        <Row style={rowStyle}>{props.children}</Row>
-      </Layout>
-    )
-  }, [])
-  return x(props)
+  return (
+    <Layout style={layoutStyle}>
+      <Row style={rowStyle}>{props.children}</Row>
+    </Layout>
+  )
 }
 
 export default MainLayout
