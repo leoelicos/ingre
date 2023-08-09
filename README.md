@@ -10,6 +10,8 @@ Recipes have traditionally been based on what ingredients are available, and wor
 
 https://ingre.herokuapp.com/
 
+https://ingre.vercel.app
+
 ## stack
 
 ### Front end
