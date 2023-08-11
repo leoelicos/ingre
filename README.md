@@ -4,7 +4,7 @@ A cooking app that connects home cooks to a rich recipe database.
 
 ## rationale
 
-Recipes are traditionally based on ingredients. ingre takes the opposite approach - choose a recipe and follow the shopping list.
+Recipes are traditionally based on ingredients. ingre takes the opposite approach - choose recipes and immediately shop for ingredients.
 
 ## app
 
