@@ -18,7 +18,7 @@ https://ingre.herokuapp.com/
 
 ### Back end
 
-![mongoose](https://img.shields.io/badge/-Mongoose-blue) ![express](https://img.shields.io/badge/-Express.js-blue) ![node](https://img.shields.io/badge/-Node.js-blue) ![apollo-server-express](https://img.shields.io/badge/-Apollo_Server_Express-blueviolet) ![graphql](https://img.shields.io/badge/-GraphQL-blueviolet) ![stripe](https://img.shields.io/badge/-Stripe-blueviolet) ![JWT](https://img.shields.io/badge/-JWT-success)
+![mongoose](https://img.shields.io/badge/-Mongoose-blue) ![express](https://img.shields.io/badge/-Express.js-blue) ![apollo-server-express](https://img.shields.io/badge/-Apollo_Server_Express-blueviolet) ![graphql](https://img.shields.io/badge/-GraphQL-blueviolet) ![stripe](https://img.shields.io/badge/-Stripe-blueviolet) ![JWT](https://img.shields.io/badge/-JWT-success)
 
 ## License
 
