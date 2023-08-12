@@ -14,7 +14,7 @@ https://ingre.herokuapp.com/
 
 ### Front end
 
-![typescript](https://img.shields.io/badge/-Typescript-blue) ![react](https://img.shields.io/badge/-React-blue) ![reactrouterdom](https://img.shields.io/badge/-React_Router_DOM-blue) ![edamam](https://img.shields.io/badge/-Edamam_API-blueviolet) ![apolloclient](https://img.shields.io/badge/-Apollo_Client-blueviolet) ![antdesign](https://img.shields.io/badge/-Ant_Design-success) ![JWTDecode](https://img.shields.io/badge/-JWT_decode-success) ![reactmasonrycss](https://img.shields.io/badge/-React_Masonry_CSS-lightgrey) ![pluralize](https://img.shields.io/badge/-pluralize-lightgrey) ![axios](https://img.shields.io/badge/-Axios-lightgrey)
+![typescript](https://img.shields.io/badge/-Typescript-blue) ![react](https://img.shields.io/badge/-React-blue) ![reactrouterdom](https://img.shields.io/badge/-React_Router_DOM-blue) ![edamam](https://img.shields.io/badge/-Edamam_API-blueviolet) ![apolloclient](https://img.shields.io/badge/-Apollo_Client-blueviolet) ![antdesign](https://img.shields.io/badge/-Ant_Design-success) 
 
 ### Back end
 
