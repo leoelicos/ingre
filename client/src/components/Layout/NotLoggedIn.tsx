@@ -1,7 +1,4 @@
-/* react */
 import React, { FC } from 'react'
-
-/* components */
 import { Divider, Empty, Row } from 'antd'
 import LoginLink from '../Links/LoginLink.tsx'
 
