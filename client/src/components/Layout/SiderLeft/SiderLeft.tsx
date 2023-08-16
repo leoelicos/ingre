@@ -18,6 +18,17 @@ import {
   IngreIconTapOff
 } from '../../../lib/icon/Icon.tsx'
 
+const getKey = (pathname: string) => {
+  if (pathname === '/') return '1'
+  if (pathname === '/search') return '2'
+  else if (pathname === '/customise') return '3'
+  else if (pathname === '/saved') return '4'
+  else if (pathname === '/ingredients') return '5'
+  else if (pathname === '/tapoff') return '6'
+  else if (pathname === '/upgrade') return '7'
+  return '8'
+}
+
 const SiderLeft: FC = () => {
   const showDrawer = () => {
     dispatch({ type: SHOW_DRAWER })
@@ -26,16 +37,7 @@ const SiderLeft: FC = () => {
   const location = useLocation()
   const { pathname } = location
   const [state, dispatch] = useStoreContext()
-  const getKey = () => {
-    if (pathname === '/') return '1'
-    if (pathname === '/search') return '2'
-    else if (pathname === '/customise') return '3'
-    else if (pathname === '/saved') return '4'
-    else if (pathname === '/ingredients') return '5'
-    else if (pathname === '/tapoff') return '6'
-    else if (pathname === '/upgrade') return '7'
-    return '8'
-  }
+  const key: string = getKey(pathname)
 
   return (
     <Layout.Sider
@@ -56,7 +58,7 @@ const SiderLeft: FC = () => {
         theme="light"
         mode="inline"
         defaultSelectedKeys={['1']}
-        selectedKeys={[getKey()]}
+        selectedKeys={[key]}
         items={[
           {
             key: 1,
