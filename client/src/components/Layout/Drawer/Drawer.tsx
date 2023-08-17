@@ -9,16 +9,18 @@ import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
 
 /* components */
 import { Drawer } from 'antd'
-import TimelineRoot from './Timelines/TimelineRoot.tsx'
-import TimelineSearch from './Timelines/TimelineSearch.tsx'
-import TimelineCustomise from './Timelines/TimelineCustomise.tsx'
-import TimelineSaved from './Timelines/TimelineSaved.tsx'
-import TimelineIngredients from './Timelines/TimelineIngredients.tsx'
-import TimelineTapoff from './Timelines/TimelineTapoff.tsx'
-import TimelineLogin from './Timelines/TimelineLogin.tsx'
-import TimelineSignup from './Timelines/TimelineSignup.tsx'
-import TimelineUpgrade from './Timelines/TimelineUpgrade.tsx'
-import TimelineInvalid from './Timelines/TimelineInvalid.tsx'
+import {
+  TimelineRoot,
+  TimelineSearch,
+  TimelineCustomise,
+  TimelineSaved,
+  TimelineIngredients,
+  TimelineTapoff,
+  TimelineLogin,
+  TimelineSignup,
+  TimelineUpgrade,
+  TimelineInvalid
+} from './Timelines/index.tsx'
 
 const Timeline: FC = () => {
   const { pathname } = useLocation()
