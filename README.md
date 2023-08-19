@@ -1,4 +1,4 @@
-# ingre 🥚
+# ingre 🍅
 
 A cooking app that connects home cooks to a rich recipe database.
 
