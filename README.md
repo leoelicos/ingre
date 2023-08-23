@@ -1,4 +1,4 @@
-# ingre 🍅
+# ingre
 
 Connecting home cooks to a rich recipe database.
 
