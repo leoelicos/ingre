@@ -2,7 +2,7 @@
 
 Connecting home cooks to a rich recipe database.
 
-## rationale
+## why ingre 
 
 Recipes are traditionally based on ingredients. ingre takes the opposite approach - choose recipes and immediately shop for ingredients.
 
