@@ -1,6 +1,6 @@
 # ingre
 
-Connecting cooks to recipes.
+Connecting cooks to recipes
 
 ## why ingre 
 
