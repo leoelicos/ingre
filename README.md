@@ -1,6 +1,6 @@
 # ingre
 
-Connecting home cooks to a rich recipe database.
+Connecting cooks to recipes.
 
 ## why ingre 
 
