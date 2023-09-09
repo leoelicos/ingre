@@ -2,13 +2,13 @@
 
 Connecting cooks to recipes
 
-## why ingre 
-
-Recipes are traditionally based on ingredients. ingre takes the opposite approach - choose recipes and immediately shop for ingredients.
-
 ## app
 
 https://ingre.herokuapp.com/
+
+## why ingre 
+
+Recipes are traditionally based on ingredients. ingre takes the opposite approach - choose recipes and immediately shop for ingredients.
 
 ## stack
 
