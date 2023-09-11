@@ -1,6 +1,6 @@
 # ingre
 
-Connecting cooks to recipes
+From recipe to ingredient 
 
 ## app
 
