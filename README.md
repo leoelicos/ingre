@@ -1,6 +1,6 @@
 # ingre
 
-From recipe to ingredient 
+_From recipe to ingredient_ 
 
 ## app
 
