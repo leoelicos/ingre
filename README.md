@@ -3,7 +3,8 @@
 https://ingre.herokuapp.com/
 
 Recipes are traditionally based on ingredients.
-ingre takes the opposite - ingredients are based on recipes.
+
+We take the opposite approach: ingredients are based on recipes.
 
 ## tech
 
