@@ -17,6 +17,4 @@ We take the opposite approach: ingredients are based on recipes.
 | Server framework | ![https://expressjs.com+](https://img.shields.io/badge/-Express-blue) |
 | Authentication | ![https://jwt.io](https://img.shields.io/badge/-JWT_Token-blue) |
 
-## Legal
-
-[MIT License](./LICENSE).
+[MIT License](./LICENSE)
