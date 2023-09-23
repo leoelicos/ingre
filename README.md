@@ -6,7 +6,7 @@ Recipes are traditionally based on ingredients.
 
 We take the opposite approach: ingredients are based on recipes.
 
-| Feature| Tech |
+| Features | Technology |
 | - | - |
 | Recipe API | ![https://developer.edamam.com](https://img.shields.io/badge/-Edamam-white) |
 | Payment Handling | ![https://stripe.com/docs/api](https://img.shields.io/badge/-Stripe-gold) |
