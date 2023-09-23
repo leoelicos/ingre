@@ -6,11 +6,16 @@ Recipes are traditionally based on ingredients.
 
 We take the opposite approach: ingredients are based on recipes.
 
-## tech
-
-![typescript](https://img.shields.io/badge/-Typescript-blue) ![react](https://img.shields.io/badge/-React-blue) ![edamam](https://img.shields.io/badge/-Edamam_API-blueviolet) ![apolloclient](https://img.shields.io/badge/-Apollo_Client-blueviolet) ![antdesign](https://img.shields.io/badge/-Ant_Design-success) 
-
-![mongoose](https://img.shields.io/badge/-Mongoose-blue) ![express](https://img.shields.io/badge/-Express.js-blue) ![apollo-server-express](https://img.shields.io/badge/-Apollo_Server_Express-blueviolet) ![graphql](https://img.shields.io/badge/-GraphQL-blueviolet) ![stripe](https://img.shields.io/badge/-Stripe-blueviolet) ![JWT](https://img.shields.io/badge/-JWT-success)
+| Feature| Tech |
+| - | - |
+| Recipe API | ![https://developer.edamam.com](https://img.shields.io/badge/-Edamam-white) |
+| Payment Handling | ![https://stripe.com/docs/api](https://img.shields.io/badge/-Stripe-gold) |
+| Front end framework | ![https://react.dev](https://img.shields.io/badge/-React-blueviolet) |
+| Component libary | ![https://ant.design](https://img.shields.io/badge/-Ant_Design-blueviolet) |
+| GraphQL client | ![https://www.apollographql.com](https://img.shields.io/badge/-Apollo_GraphQL-blueviolet) |
+| Database | ![https://mongoosejs.com/docs](https://img.shields.io/badge/-Mongoose-blue) |
+| Server framework | ![https://expressjs.com+](https://img.shields.io/badge/-Express-blue) |
+| Authentication | ![https://jwt.io](https://img.shields.io/badge/-JWT_Token-blue) |
 
 ## Legal
 
