@@ -1,10 +1,9 @@
 # ingre
 
-_From recipe to ingredient_ 
-
 https://ingre.herokuapp.com/
 
-Recipes are traditionally based on ingredients. ingre takes the opposite approach - choose recipes and immediately shop for ingredients.
+Recipes are traditionally based on ingredients.
+ingre takes the opposite - ingredients are based on recipes.
 
 ## tech
 
