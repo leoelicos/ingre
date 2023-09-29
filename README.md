@@ -3,4 +3,4 @@
 
 _Recipes are traditionally based on ingredients. We take the opposite approach and make ingredients from recipes._
 
-[Visit us today!](https://ingre.herokuapp.com/)
+[Website](https://ingre.herokuapp.com/)
