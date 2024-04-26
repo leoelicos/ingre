@@ -13,12 +13,12 @@ import {
 import { ColumnsType } from 'antd/lib/table/interface'
 import React, { FC, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { RecipeType } from '../../@types/client'
+import type { ClientRecipe } from '../../@types/client'
 import type {
   IngredientGeneratedType,
   IngredientGeneratedTypeWithKey
-} from '../../@types/ingredientGenerated.ts'
-import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
+} from '../../@types/ingredientGenerated'
+import NotLoggedIn from '../../components/Layout/NotLoggedIn'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import {
   GET_RECIPE,
@@ -44,19 +44,7 @@ import EditableRow from './EditableRow.tsx'
 const Ingredients: FC = () => {
   changeTitle('Ingredients')
 
-  const [authState] = useAuthContext()
-  const loggedIn = authState.loggedIn
-  if (!loggedIn)
-    return (
-      <Col span={24}>
-        <Row>
-          <ContentTitle>Ingredients</ContentTitle>
-        </Row>
-        <Row style={{ paddingBottom: '1rem' }}>
-          <NotLoggedIn />
-        </Row>
-      </Col>
-    )
+  const [auth] = useAuthContext()
 
   const [form] = Form.useForm()
   const [state, dispatch] = useStoreContext()
@@ -93,7 +81,7 @@ const Ingredients: FC = () => {
             query: GET_RECIPE,
             variables: { id: recipe._id }
           })
-          const getRecipe: RecipeType = res.data.getRecipe
+          const getRecipe: ClientRecipe = res.data.getRecipe
           /* push serialized into savedIngredient[] */
           getRecipe.ingredients.forEach((ingredient) => {
             const { _id, name, quantity, measure, category } = ingredient
@@ -156,6 +144,18 @@ const Ingredients: FC = () => {
   }, [refetch, reload, state.ingredientsDidGenerate])
 
   const [count, setCount] = useState(2)
+
+  if (!auth.loggedIn)
+    return (
+      <Col span={24}>
+        <Row>
+          <ContentTitle>Ingredients</ContentTitle>
+        </Row>
+        <Row style={{ paddingBottom: '1rem' }}>
+          <NotLoggedIn />
+        </Row>
+      </Col>
+    )
 
   const handleDelete = (key: string) => {
     const newData = dataSource.filter((item) => item.key !== key)

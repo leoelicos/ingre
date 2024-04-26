@@ -22,6 +22,15 @@
     "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statement
     "allowImportingTsExtensions": true
   },
-  "include": ["src/*", "src/**/*", "src/**/**/*", "src/**/**/**/*"],
+  "include": [
+    "./src/*.ts",
+    "./src/*.tsx",
+    "./src/*.d.ts",
+    "./src/*.d.tsx",
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./src/**/*.d.ts",
+    "./src/**/*.d.tsx"
+  ],
   "exclude": ["node_modules", "build"] // *** The files to not type check ***
 }

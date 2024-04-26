@@ -3,15 +3,7 @@ import LoginLink from '../../components/Links/LoginLink.tsx'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 const Logout: FC = () => {
-  const [state, dispatch] = useAuthContext()
-  const loggedIn = state.loggedIn
-  if (!loggedIn)
-    return (
-      <div>
-        <div>You are logged out.</div>
-        <LoginLink />
-      </div>
-    )
+  const [auth, dispatch] = useAuthContext()
 
   const [m, setM] = useState('Logging out…')
 
@@ -19,6 +11,14 @@ const Logout: FC = () => {
     dispatch({ type: 'LOGOUT' })
     setM('You have been logged out.')
   }, [dispatch])
+
+  if (!auth.loggedIn)
+    return (
+      <div>
+        <div>You are logged out.</div>
+        <LoginLink />
+      </div>
+    )
 
   return <div>{m}</div>
 }

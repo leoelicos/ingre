@@ -31,12 +31,7 @@ type AuthContextType = [state: AuthType, dispatch: React.Dispatch<any>]
 const initialToken = localStorage.getItem('id_token')
 const initialState: AuthType = {
   profile: null,
-  loggedIn:
-    initialToken === null
-      ? false
-      : isJwtExpired(initialToken as string)
-      ? false
-      : true
+  loggedIn: initialToken !== null && !isJwtExpired(initialToken as string)
 }
 
 const AuthContext = createContext<AuthContextType>([initialState, () => {}])
@@ -61,39 +56,22 @@ const useAuthReducer = (initialState: any) => {
 
 type reducerType = (state: any, action: { type: string; data: any }) => any
 const reducer: reducerType = (state, action) => {
-  // console.log(`AUTH\t[${action.type}]`, action.data)
-
   switch (action.type) {
     case 'UPDATE':
       const token = localStorage.getItem('id_token')
       if (token === null) {
-        return {
-          ...state,
-          loggedIn: false
-        }
+        return { ...state, loggedIn: false }
       } else if (isJwtExpired(token)) {
         localStorage.removeItem('id_token')
-        return {
-          ...state,
-          loggedIn: false
-        }
+        return { ...state, loggedIn: false }
       } else {
-        /* token is valid */
-        return {
-          ...state,
-          profile: jwtDecode(token),
-          loggedIn: true
-        }
+        return { ...state, profile: jwtDecode(token), loggedIn: true }
       }
 
     case 'LOGIN':
       const serverToken = action.data
       localStorage.setItem('id_token', serverToken)
-      return {
-        ...state,
-        profile: jwtDecode(serverToken),
-        loggedIn: true
-      }
+      return { ...state, profile: jwtDecode(serverToken), loggedIn: true }
 
     case 'LOGOUT':
       localStorage.removeItem('id_token')
