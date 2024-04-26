@@ -1,5 +1,4 @@
 import React, { CSSProperties, FC } from 'react'
-
 import { Link } from 'react-router-dom'
 
 const LoginLink: FC = () => {

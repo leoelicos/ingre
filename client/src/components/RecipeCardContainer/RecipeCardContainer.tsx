@@ -1,10 +1,5 @@
-/* react */
-import React, { CSSProperties, FC } from 'react'
-
-/* components */
 import { BackTop, Divider, Empty, Spin } from 'antd'
-
-/* state */
+import React, { CSSProperties, FC } from 'react'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 import RecipeCard from './RecipeCard/RecipeCard.tsx'
 

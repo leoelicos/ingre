@@ -6,13 +6,6 @@ export interface filterTypes {
   dishType: dishType[]
 }
 
-/* export type filterType =
-  | dietFilterType
-  | healthFilterType
-  | cuisineFilterType
-  | mealFilterType
-  | dishFilterType */
-
 type dietFilterType = ['diet', dietType]
 type dietType =
   | 'balanced'

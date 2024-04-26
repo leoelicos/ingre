@@ -1,18 +1,11 @@
-/* react */
+import { useMutation } from '@apollo/client'
+import { Alert, Button, Col, Divider, Form, Input, Row } from 'antd'
 import React, { FC } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-
-/* data */
-import { useMutation } from '@apollo/client'
+import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import { LOGIN } from '../../lib/apollo/graphQL/mutations.ts'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
-
-/* components */
-import { Button, Form, Input, Divider, Row, Col, Alert } from 'antd'
-import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
-
-/* utils */
 import { changeTitle } from '../../utils/changeTitle.ts'
 
 const colStyle = {

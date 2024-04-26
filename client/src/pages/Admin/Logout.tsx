@@ -1,9 +1,6 @@
-/* react */
 import React, { FC, useEffect, useState } from 'react'
-
-/* state */
-import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 import LoginLink from '../../components/Links/LoginLink.tsx'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 const Logout: FC = () => {
   const [state, dispatch] = useAuthContext()

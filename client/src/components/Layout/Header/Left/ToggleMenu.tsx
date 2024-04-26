@@ -1,14 +1,10 @@
-/* react */
+import { Col, Row } from 'antd'
 import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
-
-/* components */
-import { Col, Row } from 'antd'
 import Logo from './Logo.tsx'
-import ExpandedMenuIcon from './MenuIconExpanded.tsx'
 import MenuIconCollapsed from './MenuIconCollapsed.tsx'
+import ExpandedMenuIcon from './MenuIconExpanded.tsx'
 
-/* types */
 interface ToggleMenuProps {
   collapsed: boolean
   onClick: () => void

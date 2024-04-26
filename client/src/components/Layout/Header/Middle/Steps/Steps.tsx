@@ -1,8 +1,9 @@
-import React, { FC } from 'react'
 import { Steps as AntSteps } from 'antd'
-import StepRecipes from './StepRecipes.tsx'
+import React, { FC } from 'react'
 import StepIngredients from './StepIngredients.tsx'
+import StepRecipes from './StepRecipes.tsx'
 import StepTapOff from './StepTapOff.tsx'
+
 const Steps: FC<{ step: number }> = ({ step }) => {
   return (
     <AntSteps

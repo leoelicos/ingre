@@ -1,5 +1,5 @@
-import React, { FC } from 'react'
 import { MenuFoldOutlined } from '@ant-design/icons'
+import React, { FC } from 'react'
 
 const MenuIconCollapsed: FC<{ onClick: any }> = ({ onClick }) => {
   return (

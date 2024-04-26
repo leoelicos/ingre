@@ -1,11 +1,6 @@
-/* react */
+import { Button, Empty, Space } from 'antd'
 import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
-
-/* components */
-import { Button, Empty, Space } from 'antd'
-
-/* utils */
 import { changeTitle } from '../../utils/changeTitle.ts'
 
 const NoMatch: FC = () => {

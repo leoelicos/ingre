@@ -1,5 +1,6 @@
-import React, { FC } from 'react'
 import { MenuUnfoldOutlined } from '@ant-design/icons'
+import React, { FC } from 'react'
+
 const ExpandedMenuIcon: FC<{ onClick: any }> = ({ onClick }) => {
   return (
     <MenuUnfoldOutlined

@@ -1,5 +1,5 @@
-import React, { FC, ReactNode } from 'react'
 import { Typography } from 'antd'
+import React, { FC, ReactNode } from 'react'
 
 const titleStyle = {
   color: 'var(--ingre-blue)',

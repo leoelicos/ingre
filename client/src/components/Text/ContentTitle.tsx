@@ -1,5 +1,5 @@
-import React, { CSSProperties, FC, ReactNode } from 'react'
 import { Typography } from 'antd'
+import React, { CSSProperties, FC, ReactNode } from 'react'
 
 const style: CSSProperties = {
   color: 'var(--ingre-dark-brown)',

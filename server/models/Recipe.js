@@ -1,13 +1,6 @@
-/*
- * ingre
- * server/models/Recipe.js
- * This script contains the necessary code to define the Recipe entity
- * Copyright 2022 Leo Wong
- */
+const mongoose = require('mongoose')
 
-const mongoose = require('mongoose');
-
-const { Schema } = mongoose;
+const { Schema } = mongoose
 
 const recipeSchema = new Schema({
   name: {
@@ -40,8 +33,8 @@ const recipeSchema = new Schema({
   instructions: {
     type: String
   }
-});
+})
 
-const Recipe = mongoose.model('Recipe', recipeSchema);
+const Recipe = mongoose.model('Recipe', recipeSchema)
 
-module.exports = Recipe;
+module.exports = Recipe

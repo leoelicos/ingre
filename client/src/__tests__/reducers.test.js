@@ -1,8 +1,5 @@
-import { reducer } from '../utils/state/reducers'
 import {
-  //
-  SHOW_DRAWER,
-  HIDE_DRAWER
+  HIDE_DRAWER,
   /*   TOGGLE_SIDEBAR,
   EXPAND_SIDEBAR,
   COLLAPSE_SIDEBAR,
@@ -18,7 +15,10 @@ import {
   FLAG_HOME_MOUNTED,
   FLAG_SAVED_MOUNTED,
   FLAG_INGREDIENTS_GENERATED */
+  //
+  SHOW_DRAWER
 } from '../../utils/state/actions.ts'
+import { reducer } from '../utils/state/reducers'
 
 const initialState = {
   modalVisible: false,

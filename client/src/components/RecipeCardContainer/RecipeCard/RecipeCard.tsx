@@ -1,46 +1,35 @@
-// react
-import React, { FC } from 'react'
-
-// components
+import { useLazyQuery, useMutation } from '@apollo/client'
 import { Card, Tooltip } from 'antd'
+import React, { FC } from 'react'
+import defaultIngredient from '../../../@defaults/defaultIngredient.ts'
+import defaultRecipe from '../../../@defaults/defaultRecipe.ts'
+import type { ClientRecipe } from '../../../@types/client'
 import {
-  PortionsButton,
-  DisabledEditButton,
-  DisabledSaveButton,
-  DisabledTrashButton,
-  InstructionsButton,
-  SaveButton,
-  TrashButton,
-  EditButton
-} from './RecipeCardButtons.tsx'
-
-import RecipeImage from './RecipeImage.tsx'
-
-// state
+  REMOVE_RECIPE,
+  SAVE_RECIPE
+} from '../../../lib/apollo/graphQL/mutations.ts'
+import {
+  GET_RECIPE,
+  GET_SAVED_RECIPES
+} from '../../../lib/apollo/graphQL/queries.ts'
+import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
 import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
 import {
   ADD_SAVED_RECIPE,
   REMOVE_SAVED_RECIPE,
   SET_EDIT_RECIPE
 } from '../../../utils/state/actions.ts'
-import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
-
-// data
-import { useMutation, useLazyQuery } from '@apollo/client'
 import {
-  SAVE_RECIPE,
-  REMOVE_RECIPE
-} from '../../../lib/apollo/graphQL/mutations.ts'
-import {
-  GET_SAVED_RECIPES,
-  GET_RECIPE
-} from '../../../lib/apollo/graphQL/queries.ts'
-
-/* types */
-import type { ClientRecipe } from '../../../@types/client'
-
-import defaultRecipe from '../../../@defaults/defaultRecipe.ts'
-import defaultIngredient from '../../../@defaults/defaultIngredient.ts'
+  DisabledEditButton,
+  DisabledSaveButton,
+  DisabledTrashButton,
+  EditButton,
+  InstructionsButton,
+  PortionsButton,
+  SaveButton,
+  TrashButton
+} from './RecipeCardButtons.tsx'
+import RecipeImage from './RecipeImage.tsx'
 
 interface RecipeCardProps {
   recipe: ClientRecipe
@@ -111,8 +100,9 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
                 i.quantity > 0 ? i.quantity : defaultIngredient.quantity,
               measure:
                 i.measure.length > 0 ? i.measure : defaultIngredient.measure,
-              category:
-                i.category.length > 0 ? i.category : defaultIngredient.category
+              category: i.category.name
+                ? i.category
+                : defaultIngredient.category
             }))
           }
         }

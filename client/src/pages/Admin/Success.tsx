@@ -1,21 +1,12 @@
-// React
-import React, { FC, useEffect } from 'react'
-
-// React Router DOM
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-
-// ApolloClient
 import { useMutation } from '@apollo/client'
-import { MAKE_USER_PRO } from '../../lib/apollo/graphQL/mutations.ts'
 import { Alert, Button, Col, Row, Space, Timeline } from 'antd'
-
-/* state */
-import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
-
-/* components */
-import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import React, { FC, useEffect } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import { MAKE_USER_PRO } from '../../lib/apollo/graphQL/mutations.ts'
 import { IngreIconPro } from '../../lib/icon/Icon.tsx'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
 const Success: FC = () => {
   const [makeUserPro] = useMutation(MAKE_USER_PRO)

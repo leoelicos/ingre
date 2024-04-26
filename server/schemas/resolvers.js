@@ -1,16 +1,12 @@
-/*
- * ingre
- * server/schemas/resolvers.js
- * This script contains resolvers for graphQL schema
- * Copyright 2022 Leo Wong
- */
 require('dotenv').config({ path: '../.env' })
+
 const { User, Recipe, Ingredient, Category } = require('../models')
 const { signToken } = require('../utils/auth')
 const stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc')
 const APP_KEY = process.env.HEROKU_EDAMAM_APP_KEY || process.env.PRODUCTION_EDAMAM_APP_KEY
 const APP_ID = process.env.HEROKU_EDAMAM_APP_ID || process.env.PRODUCTION_EDAMAM_APP_ID
 let payload
+
 const resolvers = {
   Query: {
     checkEmailAlreadyExists: async (_, args) => {

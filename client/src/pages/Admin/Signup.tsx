@@ -1,24 +1,14 @@
-/* react */
+import { useLazyQuery, useMutation } from '@apollo/client'
+import { Alert, Button, Col, Divider, Form, Input, Row, Space } from 'antd'
 import React, { FC } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-
-/* state */
-import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
-
-/* components */
-import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
-import { Button, Form, Input, Divider, Space, Row, Col, Alert } from 'antd'
-
-/* utils */
-import { changeTitle } from '../../utils/changeTitle.ts'
 import LoginLink from '../../components/Links/LoginLink.tsx'
-
-/* data */
-import { useMutation, useLazyQuery } from '@apollo/client'
-
+import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import { ADD_USER } from '../../lib/apollo/graphQL/mutations.ts'
 import { CHECK_EMAIL_ALREADY_EXISTS } from '../../lib/apollo/graphQL/queries.ts'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
+import { changeTitle } from '../../utils/changeTitle.ts'
 
 /* types */
 interface UserInterface {

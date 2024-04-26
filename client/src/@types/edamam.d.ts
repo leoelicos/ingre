@@ -1,5 +1,3 @@
-/* used in Edamam API */
-
 export interface SearchParams {
   q?: string
   diet?: string[]

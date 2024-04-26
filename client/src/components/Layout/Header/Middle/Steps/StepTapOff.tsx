@@ -1,7 +1,7 @@
-import React, { FC } from 'react'
 import { Steps } from 'antd'
+import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { IngreIconTapOff } from '../../../../lib/icon/Icon'
+import { IngreIconTapOff } from '../../../../../lib/icon/Icon'
 
 const StepTapOff: FC = () => {
   return (
