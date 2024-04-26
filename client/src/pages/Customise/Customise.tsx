@@ -6,8 +6,8 @@ import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 import CustomiseForm from './CustomiseForm/CustomiseForm.tsx'
 
 const Customise: FC = () => {
-  const [authState] = useAuthContext()
-  const loggedIn = authState.loggedIn
+  const [auth] = useAuthContext()
+  const loggedIn = auth.loggedIn
 
   return (
     <Col style={{ width: '100%' }}>

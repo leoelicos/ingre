@@ -18,8 +18,8 @@ const Header: FC = () => {
 
   const { pathname } = useLocation()
   const step = stepDict[pathname] === undefined ? 0 : stepDict[pathname]
-  const [authState] = useAuthContext()
-  const loggedIn = authState.loggedIn
+  const [auth] = useAuthContext()
+  const loggedIn = auth.loggedIn
   return (
     <Row
       className="header-row"

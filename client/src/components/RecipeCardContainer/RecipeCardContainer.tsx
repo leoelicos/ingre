@@ -14,8 +14,8 @@ const RecipeCardContainer: RecipeCardContainerType = ({
   loading,
   onSavedPage
 }) => {
-  const [authState] = useAuthContext()
-  const pro = authState.profile?.data.pro || false
+  const [auth] = useAuthContext()
+  const pro = auth.profile?.data.pro || false
 
   const recipeCardContainerStyle: CSSProperties = {
     display: 'flex',

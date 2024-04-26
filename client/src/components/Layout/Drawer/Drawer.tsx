@@ -20,8 +20,8 @@ import {
 const Timeline: FC = () => {
   const { pathname } = useLocation()
 
-  const [authState] = useAuthContext()
-  const pro = !!authState.profile?.data.pro
+  const [auth] = useAuthContext()
+  const pro = !!auth.profile?.data.pro
 
   const TimelineCompnent = useMemo(
     () =>
