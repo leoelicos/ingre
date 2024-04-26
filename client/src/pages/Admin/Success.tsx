@@ -13,8 +13,8 @@ const Success: FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
-  const [authState] = useAuthContext()
-  const loggedIn = authState.loggedIn
+  const [auth] = useAuthContext()
+  const loggedIn = auth.loggedIn
 
   const Token = () => {
     const params = searchParams.get('session_id')

@@ -26,8 +26,8 @@ import './style.css'
 const TapOff: FC = () => {
   changeTitle('tapoff')
 
-  const [authState] = useAuthContext()
-  const loggedIn = authState.loggedIn
+  const [auth] = useAuthContext()
+  const loggedIn = auth.loggedIn
 
   const [state, dispatch] = useStoreContext()
   const { savedIngredients } = state

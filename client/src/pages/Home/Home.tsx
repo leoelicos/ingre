@@ -18,9 +18,9 @@ import {
 const Home: FC = () => {
   changeTitle('Recipes')
 
-  const [authState] = useAuthContext()
-  const loggedIn = authState.loggedIn
-  const firstName = authState.profile?.data.firstName || 'chef'
+  const [auth] = useAuthContext()
+  const loggedIn = auth.loggedIn
+  const firstName = auth.profile?.data.firstName || 'chef'
 
   const client = useApolloClient()
 

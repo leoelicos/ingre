@@ -19,8 +19,8 @@ const AlreadyPro = () => (
 )
 
 const Upgrade: FC = () => {
-  const [authState] = useAuthContext()
-  const loggedIn = authState.loggedIn
+  const [auth] = useAuthContext()
+  const loggedIn = auth.loggedIn
 
   const [getCheckout, { data }] = useLazyQuery(CHECKOUT)
   const {

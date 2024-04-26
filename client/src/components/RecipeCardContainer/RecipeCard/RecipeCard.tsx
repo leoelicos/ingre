@@ -38,8 +38,8 @@ interface RecipeCardProps {
 }
 
 const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
-  const [authState] = useAuthContext()
-  const loggedIn = authState.loggedIn
+  const [auth] = useAuthContext()
+  const loggedIn = auth.loggedIn
 
   const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] =
     useMutation(SAVE_RECIPE, {

@@ -37,8 +37,8 @@ const Login: FC = () => {
   const [form] = Form.useForm()
   const navigate = useNavigate()
 
-  const [authState, dispatch] = useAuthContext()
-  const loggedIn = authState.loggedIn
+  const [auth, dispatch] = useAuthContext()
+  const loggedIn = auth.loggedIn
 
   const handleFormSubmit = async (values: UserLoginForm) => {
     const { user } = values
