@@ -15,9 +15,7 @@ import {
 
 const Saved: FC = () => {
   changeTitle('Search')
-  const [authState] = useAuthContext()
-  const loggedIn = authState.loggedIn
-  if (!loggedIn) return <NotLoggedIn />
+  const [auth] = useAuthContext()
 
   const [, { loading, error, data, refetch }] = useLazyQuery(GET_SAVED_RECIPES)
   const [state, dispatch] = useStoreContext()
@@ -39,6 +37,8 @@ const Saved: FC = () => {
     }
     fetchOnFirstLoad()
   }, [state.savedDidMount, refetch, dispatch])
+
+  if (!auth.loggedIn) return <NotLoggedIn />
 
   if (loading) return <SaveLoading />
 
