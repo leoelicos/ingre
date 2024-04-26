@@ -1,8 +1,5 @@
-/* react */
-import React, { FC } from 'react'
-
-/* components */
 import { Col, Row } from 'antd'
+import React, { FC } from 'react'
 import Steps from './Steps/Steps.tsx'
 
 const ResponsiveSteps: FC<{ step: number }> = ({ step }) => {

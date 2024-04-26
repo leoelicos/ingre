@@ -1,5 +1,5 @@
-import React, { FC } from 'react'
 import { Timeline } from 'antd'
+import React, { FC } from 'react'
 import {
   IngreIconClearSearch,
   IngreIconCustomise,

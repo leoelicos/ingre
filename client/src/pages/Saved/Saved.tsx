@@ -1,26 +1,17 @@
-/* react */
+import { useLazyQuery } from '@apollo/client'
+import { Alert, Col, Divider, Row, Spin } from 'antd'
 import React, { FC, useEffect } from 'react'
-
-/* state */
+import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
+import RecipeCardContainer from '../../components/RecipeCardContainer/RecipeCardContainer.tsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries.ts'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
+import { changeTitle } from '../../utils/changeTitle.ts'
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import {
   FLAG_SAVED_MOUNTED,
   UPDATE_SAVED_RECIPES
 } from '../../utils/state/actions.ts'
-import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
-
-/* components */
-import { Col, Row, Divider, Spin, Alert } from 'antd'
-import RecipeCardContainer from '../../components/RecipeCardContainer/RecipeCardContainer.tsx'
-import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
-
-/* data */
-import { useLazyQuery } from '@apollo/client'
-import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries.ts'
-
-/* hooks */
-import { changeTitle } from '../../utils/changeTitle.ts'
 
 const Saved: FC = () => {
   changeTitle('Search')

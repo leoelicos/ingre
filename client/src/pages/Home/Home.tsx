@@ -1,28 +1,19 @@
-/* react */
-import React, { FC, useState, useEffect } from 'react'
+import { useApolloClient } from '@apollo/client'
+import { Button, Col, Divider, Row, Space, Spin } from 'antd'
+import React, { FC, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
-/* components */
-import { Button, Space, Row, Spin, Divider, Col } from 'antd'
 import RecipeCardContainer from '../../components/RecipeCardContainer/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
-
-/* state */
+import { GET_APP_CREDENTIALS } from '../../lib/apollo/graphQL/queries.ts'
+import { IngreIconSearch } from '../../lib/icon/Icon.tsx'
+import fetchEdamam from '../../utils/api/edamam.ts'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
+import { changeTitle } from '../../utils/changeTitle.ts'
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import {
-  UPDATE_HOME_RECIPES,
-  FLAG_HOME_MOUNTED
+  FLAG_HOME_MOUNTED,
+  UPDATE_HOME_RECIPES
 } from '../../utils/state/actions.ts'
-import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
-
-/* data */
-import { useApolloClient } from '@apollo/client'
-import { GET_APP_CREDENTIALS } from '../../lib/apollo/graphQL/queries.ts'
-import fetchEdamam from '../../utils/api/edamam.ts'
-
-/* hooks */
-import { changeTitle } from '../../utils/changeTitle.ts'
-import { IngreIconSearch } from '../../lib/icon/Icon.tsx'
 
 const Home: FC = () => {
   changeTitle('Recipes')

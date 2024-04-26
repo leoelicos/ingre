@@ -1,18 +1,13 @@
-// react
+import { Row } from 'antd'
 import React, { FC } from 'react'
 import { useLocation } from 'react-router-dom'
-
-// state
+import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
 import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
 import { TOGGLE_SIDEBAR } from '../../../utils/state/actions.ts'
-import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
-
-// components
-import { Row } from 'antd'
 import ToggleMenu from './Left/ToggleMenu.tsx'
-import AuthButton from './Right/AuthButton.tsx'
-import { stepDict } from './Middle/stepDict.ts'
 import ResponsiveSteps from './Middle/ResponsiveSteps.tsx'
+import { stepDict } from './Middle/stepDict.ts'
+import AuthButton from './Right/AuthButton.tsx'
 
 const Header: FC = () => {
   const [state, dispatch] = useStoreContext()

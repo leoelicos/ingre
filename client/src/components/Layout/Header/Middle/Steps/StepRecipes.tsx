@@ -1,7 +1,7 @@
-import React, { FC } from 'react'
 import { Steps } from 'antd'
+import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { IngreIconRecipe } from '../../../../lib/icon/Icon'
+import { IngreIconRecipe } from '../../../../../lib/icon/Icon'
 
 const StepRecipes: FC = () => {
   return (

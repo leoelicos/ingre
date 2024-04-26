@@ -1,25 +1,20 @@
-/* react */
+import { Drawer } from 'antd'
 import React, { FC, useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
-
-/* state */
+import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
 import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
 import { HIDE_DRAWER } from '../../../utils/state/actions.ts'
-import { useAuthContext } from '../../../utils/auth/AuthContext.tsx'
-
-/* components */
-import { Drawer } from 'antd'
 import {
-  TimelineRoot,
-  TimelineSearch,
   TimelineCustomise,
-  TimelineSaved,
   TimelineIngredients,
-  TimelineTapoff,
+  TimelineInvalid,
   TimelineLogin,
+  TimelineRoot,
+  TimelineSaved,
+  TimelineSearch,
   TimelineSignup,
-  TimelineUpgrade,
-  TimelineInvalid
+  TimelineTapoff,
+  TimelineUpgrade
 } from './Timelines/index.tsx'
 
 const Timeline: FC = () => {

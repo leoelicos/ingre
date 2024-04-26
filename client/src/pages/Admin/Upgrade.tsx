@@ -1,24 +1,14 @@
-// react
-import React, { FC, useState, useEffect } from 'react'
-
-// Stripe
-import { loadStripe } from '@stripe/stripe-js'
-
-// data
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { CHECKOUT, GET_USER } from '../../lib/apollo/graphQL/queries.ts'
-
-// components
-import { Row, Col, Button, List, Space, Tooltip, Alert } from 'antd'
-import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
+import { loadStripe } from '@stripe/stripe-js'
+import { Alert, Button, Col, List, Row, Space, Tooltip } from 'antd'
+import React, { FC, useEffect, useState } from 'react'
 import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
+import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import { CHECKOUT, GET_USER } from '../../lib/apollo/graphQL/queries.ts'
 import { IngreIconPro } from '../../lib/icon/Icon.tsx'
-
-/* state */
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 
-// Stripe
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
 
 const AlreadyPro = () => (

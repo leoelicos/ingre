@@ -1,5 +1,3 @@
-// types used in Client
-
 export interface ClientRecipe {
   _id: string | undefined // will not have one if not from server
   name: string
@@ -15,5 +13,5 @@ export interface ClientIngredient {
   name: string
   quantity: number
   measure: string
-  category: string
+  category: { name: string }
 }

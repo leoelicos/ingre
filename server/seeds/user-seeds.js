@@ -1,11 +1,4 @@
-/*
- * ingre
- * seeds/user-seeds.js
- * This script seeds two Users
- * Copyright 2022 Leo Wong
- */
-
-const { User } = require('../models');
+const { User } = require('../models')
 
 const seedUsers = async () => {
   await Promise.all([
@@ -25,7 +18,7 @@ const seedUsers = async () => {
       pro: false,
       savedRecipes: []
     })
-  ]);
-};
+  ])
+}
 
-module.exports = seedUsers;
+module.exports = seedUsers

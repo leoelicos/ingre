@@ -1,4 +1,4 @@
-import Key from 'react'
+import type { Key } from 'react'
 
 export type IngredientCustomType = {
   name: string
@@ -7,4 +7,6 @@ export type IngredientCustomType = {
   category: string
 }
 
-export type IngredientCustomTypeWithKey = IngredientCustomType & { key: Key }
+export type IngredientCustomTypeWithKey = IngredientCustomType & {
+  key: Key
+}

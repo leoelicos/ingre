@@ -1,7 +1,6 @@
-import React, { CSSProperties, FC } from 'react'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React, { CSSProperties, FC } from 'react'
 
 const Icon: FC<{ icon: string; extraStyle?: any; small?: boolean }> = ({
   icon,

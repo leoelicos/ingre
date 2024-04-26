@@ -1,5 +1,5 @@
-import React, { FC } from 'react'
 import { Button, Timeline } from 'antd'
+import React, { FC } from 'react'
 import {
   IngreIconAddIngredient,
   IngreIconRemove

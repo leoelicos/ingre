@@ -1,13 +1,6 @@
-/*
- * ingre
- * server/models/Ingredient.js
- * This script contains the necessary code to define the Ingredient entity
- * Copyright 2022 Leo Wong
- */
+const mongoose = require('mongoose')
 
-const mongoose = require('mongoose');
-
-const { Schema } = mongoose;
+const { Schema } = mongoose
 
 const ingredientSchema = new Schema({
   name: {
@@ -32,8 +25,8 @@ const ingredientSchema = new Schema({
     ref: 'Category',
     required: true
   }
-});
+})
 
-const Ingredient = mongoose.model('Ingredient', ingredientSchema);
+const Ingredient = mongoose.model('Ingredient', ingredientSchema)
 
-module.exports = Ingredient;
+module.exports = Ingredient

@@ -1,5 +1,5 @@
-import React, { FC, ReactNode } from 'react'
 import { Layout, Row } from 'antd'
+import React, { FC, ReactNode } from 'react'
 
 const layoutStyle = {
   width: '100%',

@@ -1,10 +1,3 @@
-/*
- * ingre
- * server/schemas/typeDefs.js
- * This script contains typeDefs for graphQL schema
- * Copyright 2022 Leo Wong
- */
-
 const { gql } = require('apollo-server-express')
 
 const typeDefs = gql`

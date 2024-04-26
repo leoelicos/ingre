@@ -1,9 +1,7 @@
-/* looks like a button but is actually a link */
-
-import React, { FC } from 'react'
 import { Col, Row } from 'antd'
-import LogoutLink from '../../../Links/LogoutLink.tsx'
+import React, { FC } from 'react'
 import LoginLink from '../../../Links/LoginLink.tsx'
+import LogoutLink from '../../../Links/LogoutLink.tsx'
 
 type AuthButtonType = FC<{ loggedIn: boolean }>
 

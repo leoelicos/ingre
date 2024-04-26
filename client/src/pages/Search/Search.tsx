@@ -1,24 +1,13 @@
-/* react */
+import { useApolloClient } from '@apollo/client'
+import { Cascader, Col, Divider, Form, Input, Row, Spin } from 'antd'
 import React, { FC, useEffect, useState } from 'react'
-
-/* components */
-import { Form, Input, Cascader, Row, Spin, Divider, Col } from 'antd'
 import RecipeCardContainer from '../../components/RecipeCardContainer/RecipeCardContainer.tsx'
 import ContentTitle from '../../components/Text/ContentTitle.tsx'
-
-/* data */
-import fetchEdamam from '../../utils/api/edamam.ts'
 import { GET_APP_CREDENTIALS } from '../../lib/apollo/graphQL/queries.ts'
-import { useApolloClient } from '@apollo/client'
-
-/* state */
+import fetchEdamam from '../../utils/api/edamam.ts'
+import { changeTitle } from '../../utils/changeTitle.ts'
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import { UPDATE_SEARCH_RECIPES } from '../../utils/state/actions.ts'
-
-/* hooks */
-import { changeTitle } from '../../utils/changeTitle.ts'
-
-/* types */
 import type {
   cuisineType,
   dietType,

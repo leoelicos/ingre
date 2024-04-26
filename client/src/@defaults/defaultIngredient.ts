@@ -5,6 +5,6 @@ const defaultIngredient: ClientIngredient = {
   name: 'Ingredient',
   quantity: 1,
   measure: 'unit',
-  category: 'Generic'
+  category: { name: 'Generic' }
 }
 export default defaultIngredient

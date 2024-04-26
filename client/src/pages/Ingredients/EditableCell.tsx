@@ -1,4 +1,5 @@
-/* react */
+import type { InputRef } from 'antd'
+import { Form, Input } from 'antd'
 import React, {
   FC,
   ReactNode,
@@ -7,8 +8,6 @@ import React, {
   useRef,
   useState
 } from 'react'
-
-/* state */
 import { EditableContext } from './EditableRow.tsx'
 
 interface Item {
@@ -18,10 +17,6 @@ interface Item {
   category: string
   fromRecipe: string
 }
-
-/* components */
-import { Form, Input } from 'antd'
-import type { InputRef } from 'antd'
 
 /* types */
 interface EditableCellProps {

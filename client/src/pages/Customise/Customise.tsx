@@ -1,15 +1,8 @@
-/* react */
-import React, { FC } from 'react'
-
-/* components */
 import { Col, Row } from 'antd'
-import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import React, { FC } from 'react'
 import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
-
-/* state */
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
 import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
-
-/* types */
 import CustomiseForm from './CustomiseForm/CustomiseForm.tsx'
 
 const Customise: FC = () => {

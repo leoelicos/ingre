@@ -1,35 +1,26 @@
-/* react */
-import React, { FC, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-
-/* state */
-import { useStoreContext } from '../../utils/state/GlobalState.tsx'
-import { UPDATE_TAP_OFF } from '../../utils/state/actions.ts'
-import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
-
-/* components */
 import {
-  Col,
+  Alert,
+  Button,
   Card,
-  Tag,
+  Checkbox,
+  Col,
   Row,
   Space,
-  Checkbox,
-  Typography,
-  Button,
-  Alert
+  Tag,
+  Typography
 } from 'antd'
-import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
-import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
+import React, { FC, useEffect, useState } from 'react'
 import Masonry from 'react-masonry-css'
-
-/* utils */
-import compress from '../../utils/compress.ts'
-import type { compressedCategoriesType } from '../../utils/compress.ts'
+import { Link } from 'react-router-dom'
+import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
+import ContentSubtitle from '../../components/Text/ContentSubtitle.tsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
 import { changeTitle } from '../../utils/changeTitle.ts'
-
-/* style */
+import type { compressedCategoriesType } from '../../utils/compress.ts'
+import compress from '../../utils/compress.ts'
+import { useStoreContext } from '../../utils/state/GlobalState.tsx'
+import { UPDATE_TAP_OFF } from '../../utils/state/actions.ts'
 import './style.css'
 
 const TapOff: FC = () => {

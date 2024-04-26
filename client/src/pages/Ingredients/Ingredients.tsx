@@ -1,8 +1,4 @@
-/* react */
-import React, { FC, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-
-/* components */
+import { useApolloClient, useLazyQuery } from '@apollo/client'
 import {
   Alert,
   Button,
@@ -14,43 +10,36 @@ import {
   Spin,
   Table
 } from 'antd'
+import { ColumnsType } from 'antd/lib/table/interface'
+import React, { FC, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import type { RecipeType } from '../../@types/client'
+import type {
+  IngredientGeneratedType,
+  IngredientGeneratedTypeWithKey
+} from '../../@types/ingredientGenerated.ts'
+import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
+import ContentTitle from '../../components/Text/ContentTitle.tsx'
+import {
+  GET_RECIPE,
+  GET_SAVED_RECIPES
+} from '../../lib/apollo/graphQL/queries.ts'
 import {
   IngreIconAddIngredient,
   IngreIconClearCustom,
   IngreIconRemove,
   IngreIconSave
 } from '../../lib/icon/Icon.tsx'
-import ContentTitle from '../../components/Text/ContentTitle.tsx'
-import NotLoggedIn from '../../components/Layout/NotLoggedIn.tsx'
-import EditableRow from './EditableRow.tsx'
-import EditableCell from './EditableCell.tsx'
-
-/* data */
-import {
-  GET_SAVED_RECIPES,
-  GET_RECIPE
-} from '../../lib/apollo/graphQL/queries.ts'
-import { useApolloClient, useLazyQuery } from '@apollo/client'
-
-/* state */
+import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
+import { changeTitle } from '../../utils/changeTitle.ts'
 import { useStoreContext } from '../../utils/state/GlobalState.tsx'
 import {
-  UPDATE_SAVED_RECIPES,
   FLAG_INGREDIENTS_GENERATED,
-  UPDATE_SAVED_INGREDIENTS
+  UPDATE_SAVED_INGREDIENTS,
+  UPDATE_SAVED_RECIPES
 } from '../../utils/state/actions.ts'
-import { useAuthContext } from '../../utils/auth/AuthContext.tsx'
-
-/* utils */
-import { changeTitle } from '../../utils/changeTitle.ts'
-
-/* types */
-import type { RecipeType } from '../../@types/client'
-import type {
-  IngredientGeneratedType,
-  IngredientGeneratedTypeWithKey
-} from '../../@types/ingredientGenerated.ts'
-import { ColumnsType } from 'antd/lib/table/interface'
+import EditableCell from './EditableCell.tsx'
+import EditableRow from './EditableRow.tsx'
 
 const Ingredients: FC = () => {
   changeTitle('Ingredients')

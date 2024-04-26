@@ -1,13 +1,6 @@
-// react
+import { Layout, Menu } from 'antd'
 import React, { FC } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-
-// state
-import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
-import { SHOW_DRAWER, COLLAPSE_SIDEBAR } from '../../../utils/state/actions.ts'
-
-// components
-import { Menu, Layout } from 'antd'
 import {
   IngreIconCustomise,
   IngreIconHelp,
@@ -17,6 +10,8 @@ import {
   IngreIconSearch,
   IngreIconTapOff
 } from '../../../lib/icon/Icon.tsx'
+import { useStoreContext } from '../../../utils/state/GlobalState.tsx'
+import { COLLAPSE_SIDEBAR, SHOW_DRAWER } from '../../../utils/state/actions.ts'
 
 const getKey = (pathname: string) => {
   if (pathname === '/') return '1'

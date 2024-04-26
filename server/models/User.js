@@ -1,14 +1,7 @@
-/*
- * ingre
- * server/models/User.js
- * This script contains the necessary code to define the User entity
- * Copyright 2022 Leo Wong
- */
+const mongoose = require('mongoose')
 
-const mongoose = require('mongoose');
-
-const { Schema } = mongoose;
-const bcrypt = require('bcrypt');
+const { Schema } = mongoose
+const bcrypt = require('bcrypt')
 
 const userSchema = new Schema({
   firstName: {
@@ -43,27 +36,27 @@ const userSchema = new Schema({
     type: Boolean,
     default: false
   }
-});
+})
 
 // set up pre-save middleware to create password
 userSchema.pre('save', async function (next) {
   if (this.isNew || this.isModified('password')) {
-    const saltRounds = 10;
-    this.password = await bcrypt.hash(this.password, saltRounds);
+    const saltRounds = 10
+    this.password = await bcrypt.hash(this.password, saltRounds)
   }
 
-  next();
-});
+  next()
+})
 
 // compare the incoming password with the hashed password
 userSchema.methods.isCorrectPassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
+  return await bcrypt.compare(password, this.password)
+}
 
 userSchema.virtual('numSavedRecipes').get(function () {
-  return this.savedRecipes.length;
-});
+  return this.savedRecipes.length
+})
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema)
 
-module.exports = User;
+module.exports = User
