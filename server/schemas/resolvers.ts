@@ -91,9 +91,6 @@ const resolvers = {
       try {
         const url = new URL(context.headers.referer).origin
 
-        // array to store product metadata in Stripe
-        const line_items = []
-
         const product = await stripe.products.create({
           name: 'ingré PRO',
           description: 'Access instructions to cook each recipe',
@@ -106,19 +103,18 @@ const resolvers = {
           currency: 'usd'
         })
 
-        line_items.push({ price: price.id, quantity: 1 })
-        ;({ id } = await stripe.checkout.sessions.create({
+        const { id } = await stripe.checkout.sessions.create({
           payment_method_types: ['card'],
-          line_items,
+          line_items: [{ price: price.id, quantity: 1 }],
           mode: 'payment',
           success_url: `${url}/success?session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${url}/`
-        }))
+        })
+        return { session: id, error }
       } catch (e) {
         error = e
         console.error(e)
       }
-      return { session: id, error }
     }
   },
   Mutation: {
@@ -149,7 +145,6 @@ const resolvers = {
           .findByIdAndUpdate(context.user._id, { $set: { pro: true } }, { new: true })
           .select('pro')
         if (!user) throw 'User not found, please log in'
-        pro = true
       } catch (error) {
         console.error(error)
       }
@@ -158,6 +153,7 @@ const resolvers = {
 
     // saves a recipe to the database
     saveRecipe: async (_, args, context) => {
+      console.log({ args })
       console.log('saveRecipe')
       try {
         console.log('[saveRecipe]')
@@ -170,12 +166,12 @@ const resolvers = {
           .select('-_id name')
           .then((categories) => categories.map((c) => c.name))
 
-        const createdIngredients = []
+        const createdIngredients: Array<string> = []
         for (let { name, quantity, measure, category } of ingredients) {
           if (!name) name = 'Generic'
           if (!quantity) quantity = 1
           if (!measure) measure = 'unit'
-          if (!category) category = 'Generic'
+          if (!category.name) category = 'Generic'
 
           // find or create category
           let categoryId
@@ -191,11 +187,10 @@ const resolvers = {
           }
 
           // create ingredient
-          let ingredient = await Ingredient.create({ name, quantity, measure, category: categoryId })
+          let ingredient = await Ingredient.create({ name, quantity, measure, category: { _id: categoryId } })
           ingredient.save()
-          const ingredientId = ingredient._id
 
-          createdIngredients.push(ingredientId)
+          createdIngredients.push(ingredient._id)
         }
         // create recipe
         const createdImage = 'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc'
@@ -246,7 +241,7 @@ const resolvers = {
           .select('-_id name')
           .then((categories) => categories.map((c) => c.name))
 
-        const createdIngredients = []
+        const createdIngredients: Array<string> = []
         for (let { name, quantity, measure, category } of ingredients) {
           if (!name) name = 'Generic'
           if (!quantity) quantity = 1
@@ -283,7 +278,7 @@ const resolvers = {
         dbRecipe.populate({ path: 'ingredients', populate: 'category' })
 
         // clean up categories
-        const usedCategories = []
+        const usedCategories: Array<string> = []
         await Recipe.find()
           .populate({ path: 'ingredients', populate: 'category' })
           .select('ingredients')
@@ -326,7 +321,7 @@ const resolvers = {
         const delRecipe = await Recipe.findByIdAndDelete(recipeId)
 
         // clean up categories
-        const usedCategories = []
+        const usedCategories: Array<string> = []
         await Recipe.find()
           .populate({ path: 'ingredients', populate: 'category' })
           .select('ingredients')

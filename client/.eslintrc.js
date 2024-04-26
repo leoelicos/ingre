@@ -9,7 +9,7 @@ module.exports = {
     'import/extensions': [
       'error',
       'ignorePackages',
-      { '': 'never', js: 'never', jsx: 'never', ts: 'never', tsx: 'never' }
+      { '': 'never', ts: 'never', tsx: 'never' }
     ]
   },
   settings: {

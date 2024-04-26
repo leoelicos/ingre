@@ -46,7 +46,7 @@ export type IngredientInput = {
   name: string
   quantity: number
   measure: string
-  category: string
+  category: Category
 }
 
 export type IngredientListItem = {
@@ -54,7 +54,7 @@ export type IngredientListItem = {
   name: string
   quantity: number
   measure: string
-  category: string
+  category: Category
   recipe: string
   recipeId: string
 }

@@ -90,7 +90,7 @@ const Ingredients: FC = () => {
               name,
               quantity,
               measure,
-              category: category.name,
+              category: { name: category.name },
               recipe: recipeName,
               recipeId,
               key: _id || ''
@@ -201,7 +201,7 @@ const Ingredients: FC = () => {
       title: 'Category',
       dataIndex: 'category',
       editable: true,
-      sorter: (a, b) => a.category.localeCompare(b.category),
+      sorter: (a, b) => a.category.name.localeCompare(b.category.name),
       sortDirections: ['ascend', 'descend']
     },
     {

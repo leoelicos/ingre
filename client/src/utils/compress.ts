@@ -2,14 +2,14 @@
    aggregateQuantities() returns an array of unique ingredients
    where duplicate ingredients have their quantities added together */
 
-import { singular, plural } from 'pluralize'
+import { plural, singular } from 'pluralize'
 
 type savedIngredientType = {
   _id: string
   name: string
   quantity: string
   measure: string
-  category: string
+  category: { name: string }
   recipe: string
   recipeId: string
 }
@@ -19,16 +19,16 @@ type aggregatedIngredientType = {
   name: string
 
   quantityMeasures: { quantity: string; measure: string }[]
-  category: string
+  category: { name: string }
 }
 
 type categoryType = {
   description: string
-  category: string
+  category: { name: string }
 }
 
 export type compressedCategoryType = {
-  category: string
+  category: { name: string }
   items: {
     description: string
     checked: boolean
@@ -55,7 +55,7 @@ const aggregateQuantities = (
     const key = name
     quantity = parseFloat(quantity).toString()
     measure = clean(measure)
-    category = clean(category)
+    category = { ...category, name: clean(category.name) }
 
     const foundIdx = prev.findIndex(
       (r) => r.name === name && r.category === category
@@ -85,7 +85,8 @@ const qualifyDescriptions = (arr: aggregatedIngredientType[]): categoryType[] =>
   arr.map((i) => {
     let { name, quantityMeasures, category } = i
     name = name.slice(0, 1).toLocaleUpperCase() + name.slice(1)
-    category = category.slice(0, 1).toLocaleUpperCase() + category.slice(1)
+    category.name =
+      category.name.slice(0, 1).toLocaleUpperCase() + category.name.slice(1)
 
     const quantityMeasuresString = quantityMeasures
       // sort measures alphabetically, e.g. cups, grams, tablespoons, units
@@ -104,13 +105,15 @@ const qualifyDescriptions = (arr: aggregatedIngredientType[]): categoryType[] =>
 
 const categorize = (arr: categoryType[]): compressedCategoriesType => {
   const uniqueCategories: compressedCategoriesType = Array.from(
-    new Set(arr.map((i) => i.category))
-  ).map((i) => ({ category: i, items: [] }))
+    new Set(arr.map((i) => i.category.name))
+  ).map((i) => ({ category: { name: i }, items: [] }))
 
   /* iterate through arr to populate each category's empty items array */
   arr.forEach((v) => {
     const { description, category } = v
-    const j = uniqueCategories.findIndex((i) => i.category === category)
+    const j = uniqueCategories.findIndex(
+      (i) => i.category.name === category.name
+    )
     uniqueCategories[j].items.push({ description, checked: false })
   })
 
@@ -121,7 +124,7 @@ const sortCategoriesAndItems = (
   arr: compressedCategoriesType
 ): compressedCategoriesType => {
   return arr
-    .sort((a, b) => a.category.localeCompare(b.category))
+    .sort((a, b) => a.category.name.localeCompare(b.category.name))
     .map((category) => ({
       ...category,
       items: category.items.sort((a, b) =>

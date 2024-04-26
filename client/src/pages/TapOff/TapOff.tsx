@@ -41,7 +41,7 @@ const TapOff: FC = () => {
               checked: false
             }
           ],
-          category: 'Loading'
+          category: { name: 'Loading' }
         }
       ]
       return initialState
@@ -55,7 +55,6 @@ const TapOff: FC = () => {
 
   useEffect(() => {
     const compressed = compress(savedIngredients)
-    // console.table(compressed);
     setCompressedRecipes(compressed)
     dispatch({ type: UPDATE_TAP_OFF, data: compressed })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,7 +85,7 @@ const TapOff: FC = () => {
             {compressedRecipes?.length ? (
               compressedRecipes.map((r, ri) => (
                 <Card
-                  key={r.category}
+                  key={r.category.name}
                   style={{
                     borderRadius: '0 1rem 0 0 ',
                     boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px',
@@ -100,7 +99,7 @@ const TapOff: FC = () => {
                     justify="center"
                     style={{ width: '100%', textAlign: 'center' }}
                   >
-                    <ContentSubtitle>{r.category}</ContentSubtitle>
+                    <ContentSubtitle>{r.category.name}</ContentSubtitle>
                   </Row>
                   <Space
                     direction="vertical"
