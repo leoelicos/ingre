@@ -1,8 +1,8 @@
-const { gql } = require('apollo-server-express')
+import { gql } from 'apollo-server-express';
 
-const typeDefs = gql`
+export const typeDefs = gql`
   type User {
-    _id: ID!
+    _id: ID
     firstName: String
     lastName: String
     email: String
@@ -30,12 +30,12 @@ const typeDefs = gql`
   }
 
   input RecipeInput {
-    name: String!
-    portions: Int!
-    ingredients: [IngredientInput!]
-    picture_url: String!
+    name: String
+    portions: Int
+    ingredients: [IngredientInput]
+    picture_url: String
     edamamId: String
-    instructions: String!
+    instructions: String
   }
   type Ingredient {
     _id: ID
@@ -46,10 +46,10 @@ const typeDefs = gql`
   }
 
   input IngredientInput {
-    name: String!
-    quantity: Float!
-    measure: String!
-    category: String!
+    name: String
+    quantity: Float
+    measure: String
+    category: String
   }
 
   type IngredientListItem {
@@ -77,7 +77,7 @@ const typeDefs = gql`
   }
 
   type Checkout {
-    session: ID
+    session: String
   }
 
   type Auth {
@@ -91,23 +91,21 @@ const typeDefs = gql`
   }
 
   type Query {
-    checkEmailAlreadyExists(email: String!): Boolean
+    checkEmailAlreadyExists(email: String): Boolean
     getApiKey: EdamamCredentials
     getUser: User
-    getRecipe(_id: ID!): Recipe
+    getRecipe(_id: ID): Recipe
     getNumSavedRecipes: Int
     getSavedRecipes: [Recipe]
     checkout: Checkout
   }
 
   type Mutation {
-    addUser(input: UserInput!): Auth
+    addUser(input: UserInput): Auth
     makeUserPro: User
-    saveRecipe(input: RecipeInput!): Recipe
-    updateRecipe(recipeId: ID!, input: RecipeInput!): Recipe
-    removeRecipe(recipeId: ID!): Boolean
-    login(email: String!, password: String!): Auth
+    saveRecipe(input: RecipeInput): Recipe
+    updateRecipe(recipeId: ID, input: RecipeInput): Recipe
+    removeRecipe(recipeId: ID): Boolean
+    login(email: String, password: String): Auth
   }
-`
-
-module.exports = typeDefs
+`;
