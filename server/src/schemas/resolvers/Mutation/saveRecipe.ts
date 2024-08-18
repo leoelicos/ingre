@@ -1,7 +1,9 @@
-import { Recipe, User, Category, Ingredient } from 'models';
+import { Category } from 'models/Category';
+import { Ingredient } from 'models/Ingredient';
+import { Recipe, RecipeSchema } from 'models/Recipe';
+import { User } from 'models/User';
 import { getUniqueCategoryNames } from 'schemas/resolvers/mongoose/getUniqueCategoryNames';
 import { RecipeInput } from 'schemas/types';
-import { RecipeSchema } from 'models/Recipe';
 
 export const getCreatedIngredients = async ({ ingredients, uniqueCategories }: { ingredients: any; uniqueCategories: any }): Promise<Array<string>> => {
   try {

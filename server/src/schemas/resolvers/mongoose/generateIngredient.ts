@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { Ingredient } from 'models';
-import { updateUniqueCategoryName } from './updateUniqueCategoryName';
+import { Ingredient } from 'models/Ingredient';
 import { IngredientInput } from 'schemas/types';
+import { updateUniqueCategoryName } from './updateUniqueCategoryName';
 
 const defaultIngredientName = 'Generic';
 const defaultIngredientQuantity = 1;

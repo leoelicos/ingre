@@ -1,5 +1,4 @@
-import { User } from 'models/User';
-import { UserMethods, UserSchema } from 'models/User';
+import { User, UserMethods, UserSchema } from 'models/User';
 import { signToken } from 'utils/auth';
 
 export const login = async (_: any, { email, password }: { email: string; password: string }) => {

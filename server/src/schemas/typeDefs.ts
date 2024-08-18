@@ -12,11 +12,10 @@ export const typeDefs = gql`
   }
 
   input UserInput {
-    firstName: String
-    lastName: String
-    email: String
-    password: String
-    pro: Boolean
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
   }
 
   type Recipe {

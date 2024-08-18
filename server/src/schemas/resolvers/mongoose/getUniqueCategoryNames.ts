@@ -1,4 +1,4 @@
-import { Category } from 'models';
+import { Category } from 'models/Category';
 
 type GetUniqueCategoryNames = () => Promise<Array<string>>;
 

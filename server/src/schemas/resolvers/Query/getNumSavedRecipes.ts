@@ -1,4 +1,4 @@
-import { User } from 'models';
+import { User } from 'models/User';
 
 export const getNumSavedRecipes = async (_parent: any, _args: any, context: any): Promise<number> => {
   try {

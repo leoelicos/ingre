@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { getRecipe } from '../src/schemas/resolvers/Query/getRecipe';
-import { Recipe } from '../src/models';
+import { getRecipe } from './getRecipe';
+import { Recipe } from 'models/Recipe';
 
 describe('getRecipe', () => {
   let findByIdMock: any = undefined;

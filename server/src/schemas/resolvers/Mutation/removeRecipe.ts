@@ -1,6 +1,8 @@
 import type { Document } from 'mongoose';
-import { Category, Ingredient, Recipe, User } from 'models';
-import { RecipeSchema } from 'models/Recipe';
+import { Category } from 'models/Category';
+import { Ingredient } from 'models/Ingredient';
+import { Recipe, RecipeSchema } from 'models/Recipe';
+import { User } from 'models/User';
 import { Ingredient as IngredientType } from 'schemas/types';
 
 // removes a recipe from the database

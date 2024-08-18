@@ -15,7 +15,6 @@ export type UserInput = {
   lastName: string;
   email: string;
   password: string;
-  pro: boolean;
 };
 
 export type Recipe = {

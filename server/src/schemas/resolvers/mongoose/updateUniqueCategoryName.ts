@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Category } from 'models';
+import { Category } from 'models/Category';
 
 type UpdateUniqueCategoryName = (props: {
   uniqueCategories: Array<string>;

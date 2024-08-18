@@ -1,5 +1,5 @@
 import { User as UserType } from 'schemas/types';
-import { User } from 'models';
+import { User } from 'models/User';
 
 // makes a user pro
 export const makeUserPro = async (_parent: any, _args: any, context: any): Promise<UserType> => {

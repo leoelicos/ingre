@@ -1,4 +1,4 @@
-import { User } from 'models';
+import { User } from 'models/User';
 
 export const checkEmailAlreadyExists = async (_parent: any, email: string): Promise<boolean> => {
   try {

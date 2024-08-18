@@ -1,23 +1,23 @@
 {
   "compilerOptions": {
     "target": "ES6",
-    "lib": ["ES6"],
+    "lib": ["es6", "es5", "es7", "dom"],
     "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
+    "module": "ES6",
     "moduleResolution": "node",
     "outDir": "./build",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "baseUrl": "src"
+    "baseUrl": "./src",
+    "paths": {
+      "models/*": ["models/*"],
+      "utils/*": ["utils/*"],
+      "schemas/*": ["schemas/*"]
+    }
   },
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
-  },
-  "include": ["./server.ts", "./*.ts", "./*.d.ts", "./**/*.ts", "./**/*.d.ts", "./jest.config.ts"],
   "exclude": ["node_modules", "build"]
 }

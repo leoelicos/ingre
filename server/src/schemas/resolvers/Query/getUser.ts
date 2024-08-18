@@ -1,6 +1,5 @@
 import { User as UserType } from 'schemas/types';
-import { User } from 'models';
-import { UserMethods, UserSchema } from 'models/User';
+import { User, UserMethods, UserSchema } from 'models/User';
 
 export const getUser = async (_: any, __: any, context: any): Promise<UserType> => {
   try {

@@ -1,5 +1,5 @@
-import { User } from 'models';
 import mongoose from 'mongoose';
+import { User } from 'models/User';
 
 export const getSavedRecipes = async (_parent: any, _args: any, context: { user: { _id: any } }): Promise<Array<mongoose.Types.ObjectId>> => {
   try {

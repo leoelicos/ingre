@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { EdamamCredentials } from 'schemas/types';
 
-dotenv.config({ path: '../.env' });
+dotenv.config({ path: '../../../../.env' });
 
 const APP_KEY = process.env.HEROKU_EDAMAM_APP_KEY || process.env.PRODUCTION_EDAMAM_APP_KEY;
 const APP_ID = process.env.HEROKU_EDAMAM_APP_ID || process.env.PRODUCTION_EDAMAM_APP_ID;

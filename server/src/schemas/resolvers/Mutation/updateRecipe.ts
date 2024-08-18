@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 import type { Document } from 'mongoose';
-import { Category, Ingredient, Recipe } from 'models';
+import { Category } from 'models/Category';
+import { Ingredient } from 'models/Ingredient';
+import { Recipe, RecipeSchema } from 'models/Recipe';
 import { RecipeInput, Ingredient as IngredientType } from 'schemas/types';
 import { generateIngredients } from 'schemas/resolvers/mongoose/generateIngredients';
 import { getUniqueCategoryNames } from 'schemas/resolvers/mongoose/getUniqueCategoryNames';
-import { RecipeSchema } from 'models/Recipe';
 
 export const updateRecipe = async (_parent: any, recipeId: mongoose.Types.ObjectId, input: RecipeInput, context: any) => {
   try {
