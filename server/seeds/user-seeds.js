@@ -1,4 +1,4 @@
-const { User } = require('../models')
+const { User } = require('models')
 
 const seedUsers = async () => {
   await Promise.all([

@@ -1,17 +1,20 @@
-import { checkEmailAlreadyExists } from './resolvers/Query/checkEmailAlreadyExists';
-import { getApiKey } from './resolvers/Query/getApiKey';
-import { getUser } from './resolvers/Query/getUser';
-import { getRecipe } from './resolvers/Query/getRecipe';
-import { getNumSavedRecipes } from './resolvers/Query/getNumSavedRecipes';
-import { getSavedRecipes } from './resolvers/Query/getSavedRecipes';
-import { checkout } from './resolvers/Query/checkout';
+// recipe
+import { getRecipe } from './resolvers/recipe/getRecipe'
 
-import { addUser } from './resolvers/Mutation/addUser';
-import { makeUserPro } from './resolvers/Mutation/makeUserPro';
-import { saveRecipe } from './resolvers/Mutation/saveRecipe';
-import { updateRecipe } from './resolvers/Mutation/updateRecipe';
-import { removeRecipe } from './resolvers/Mutation/removeRecipe';
-import { login } from './resolvers/Mutation/login';
+// user
+import { getUser } from './resolvers/user/getUser'
+import { checkEmailAlreadyExists } from './resolvers/user/checkEmailAlreadyExists'
+import { getApiKey } from './resolvers/session/getApiKey'
+import { getNumSavedRecipes } from './resolvers/user/getNumSavedRecipes'
+import { getSavedRecipes } from './resolvers/recipe/getSavedRecipes'
+import { checkout } from './resolvers/session/checkout'
+
+import { addUser } from './resolvers/user/addUser'
+import { makeUserPro } from './resolvers/user/makeUserPro'
+import { saveRecipe } from './resolvers/recipe/saveRecipe'
+import { updateRecipe } from './resolvers/recipe/updateRecipe'
+import { removeRecipe } from './resolvers/recipe/removeRecipe'
+import { login } from './resolvers/session/login'
 
 export const resolvers = {
   Query: {
@@ -31,4 +34,4 @@ export const resolvers = {
     removeRecipe,
     login
   }
-};
+}

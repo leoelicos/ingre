@@ -1,69 +1,65 @@
-import bcrypt from 'bcrypt';
-
-import mongoose from 'mongoose';
-import type { Document } from 'mongoose';
+import bcrypt from 'bcrypt'
+import {
+  CallbackWithoutResultAndOptionalError,
+  Document,
+  Schema,
+  Types,
+  model
+} from 'mongoose'
+import { RecipeSchema } from './Recipe'
 
 export interface UserSchema extends Document {
-  _id: mongoose.Types.ObjectId;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  pro: boolean;
-  savedRecipes: Array<mongoose.Types.ObjectId>;
-  numSavedRecipes: number; // virtual
-  allCategoryNames: Array<string>;
+  _id: Types.ObjectId
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  pro: boolean
+  savedRecipes: Array<Types.Subdocument & RecipeSchema>
+  numSavedRecipes: number // virtual
 }
 
 export interface UserMethods {
-  isCorrectPassword(password: string): Promise<boolean>;
+  isCorrectPassword(password: string): Promise<boolean>
 }
 export interface UserVirtuals {
-  numSavedRecipes: number;
-  allCategoryNames: Promise<Array<string>>;
+  numSavedRecipes: number
 }
-const userSchema = new mongoose.Schema<UserSchema, {}, UserMethods, UserVirtuals>(
+const userSchema = new Schema<UserSchema, {}, UserMethods, UserVirtuals>(
   {
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlength: 5 },
-    savedRecipes: [{ type: mongoose.Types.ObjectId, ref: 'Recipe', required: true }],
+    savedRecipes: [{ type: Types.ObjectId, ref: 'Recipe', required: true }],
     pro: { type: Boolean, default: false }
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
   }
-);
+)
 
 userSchema.virtual('numSavedRecipes').get(function (this: UserSchema) {
-  return this.savedRecipes.length;
-});
+  return this.savedRecipes.length
+})
 
-userSchema.virtual('allCategoryNames').get(async function (this: UserSchema) {
-  await this.populate({ path: 'savedRecipes', populate: 'ingredients.category' });
-  const categoryNames: Set<string> = new Set();
-
-  this.savedRecipes.forEach((savedRecipe: any) => {
-    savedRecipe.ingredients.forEach((ingredient: any) => {
-      categoryNames.add(ingredient.category.name);
-    });
-  });
-
-  return Array.from(categoryNames);
-});
-
-userSchema.pre('save', async function (next: mongoose.CallbackWithoutResultAndOptionalError) {
-  if (this.isNew || this.isModified('password')) {
-    const saltRounds = 10;
-    this.password = await bcrypt.hash(this.password, saltRounds);
+userSchema.pre(
+  'save',
+  async function (next: CallbackWithoutResultAndOptionalError) {
+    if (
+      this.isNew
+      // || this.isModified('password') // we have not allowed a user to reset their password at this stage
+    ) {
+      const saltRounds = 10
+      this.password = await bcrypt.hash(this.password, saltRounds)
+    }
+    next()
   }
-  next();
-});
+)
 
 userSchema.method('isCorrectPassword', function (password: string) {
-  return bcrypt.compare(password, this.password);
-});
+  return bcrypt.compare(password, this.password)
+})
 
-export const User = mongoose.model('User', userSchema);
+export const User = model('User', userSchema)

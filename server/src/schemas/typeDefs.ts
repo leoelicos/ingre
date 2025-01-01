@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-express';
+import { gql } from 'graphql-tag'
 
 export const typeDefs = gql`
   type User {
@@ -89,22 +89,37 @@ export const typeDefs = gql`
     appKey: String
   }
 
+  # recipe
   type Query {
-    checkEmailAlreadyExists(email: String): Boolean
+    getRecipe(_id: ID!): Recipe
+  }
+
+  type Mutation {
+    saveRecipe(input: RecipeInput!): Recipe
+    updateRecipe(recipeId: ID!, input: RecipeInput!): Recipe
+    removeRecipe(recipeId: ID!): Boolean
+  }
+
+  # session
+  type Query {
     getApiKey: EdamamCredentials
-    getUser: User
-    getRecipe(_id: ID): Recipe
-    getNumSavedRecipes: Int
-    getSavedRecipes: [Recipe]
     checkout: Checkout
   }
 
   type Mutation {
-    addUser(input: UserInput): Auth
-    makeUserPro: User
-    saveRecipe(input: RecipeInput): Recipe
-    updateRecipe(recipeId: ID, input: RecipeInput): Recipe
-    removeRecipe(recipeId: ID): Boolean
-    login(email: String, password: String): Auth
+    login(email: String!, password: String!): Auth
   }
-`;
+
+  # user
+  type Query {
+    getUser: User
+    getSavedRecipes: [Recipe]
+    getNumSavedRecipes: Int
+    checkEmailAlreadyExists(email: String!): Boolean
+  }
+
+  type Mutation {
+    addUser(input: UserInput!): Auth
+    makeUserPro: User
+  }
+`

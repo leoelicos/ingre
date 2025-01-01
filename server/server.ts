@@ -1,31 +1,41 @@
-import path from 'path';
-import express, { json, urlencoded } from 'express';
-import { ApolloServer } from 'apollo-server-express';
-import { resolvers } from 'schemas/resolvers';
-import { typeDefs } from 'schemas/typeDefs';
-import { authMiddleware } from './src/utils/auth';
-import connection from './config/connection';
+import express, { json, urlencoded } from 'express'
+import cors from 'cors'
+import { ApolloServer } from '@apollo/server'
+import { expressMiddleware } from '@apollo/server/express4'
+import { createDataSources } from 'datasources'
+import { resolvers } from 'schemas/resolvers'
+import { typeDefs } from 'schemas/typeDefs'
+import { authMiddleware } from 'utils/auth'
+import connection from './config/connection'
+import { AuthenticatedRequest, MyContext } from 'schemas/types'
 
-const PORT = process.env.PORT || 3001;
-const app = express();
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  context: authMiddleware
-});
+const PORT = process.env.PORT || 3001
+const app = express()
 
-app.use(json({ limit: '13MB' }));
-app.use(urlencoded({ limit: '13MB', extended: true }));
+const server = new ApolloServer<MyContext>({ typeDefs, resolvers })
 
 const startApolloServer = async () => {
-  await server.start();
-  server.applyMiddleware({ app });
+  await server.start()
+  app.use(
+    '/graphql',
+    cors<cors.CorsRequest>(),
+    json({ limit: '13MB' }),
+    urlencoded({ limit: '13MB', extended: true }),
+    expressMiddleware(server, {
+      context: async ({ req }) => {
+        const authReq = req as AuthenticatedRequest
+        authReq.dataSources = createDataSources()
+        return { ...authMiddleware({ req: authReq }), headers: req.headers }
+      }
+    })
+  )
+
   connection.once('open', () => {
     app.listen(PORT, () => {
-      console.log(`API server running on port ${PORT}!`);
-      console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
-    });
-  });
-};
+      console.log(`API server running on port ${PORT}!`)
+      console.log(`Use GraphQL at http://localhost:${PORT}/graphql`)
+    })
+  })
+}
 
-startApolloServer();
+startApolloServer()

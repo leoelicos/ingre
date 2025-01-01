@@ -1,37 +1,47 @@
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import { Request } from 'express';
-import { User } from 'schemas/types';
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+import { AuthenticatedRequest, MyContext } from 'schemas/types'
+import { Types } from 'mongoose'
+import { UserSchema } from 'models/User'
 
-dotenv.config();
+dotenv.config()
+const expiration = '1h'
 
-const secret = process.env.HEROKU_JWT_SECRET || process.env.JWT_SECRET;
-const expiration = '1h';
+export const authMiddleware = ({
+  req
+}: {
+  req: AuthenticatedRequest
+}): MyContext => {
+  try {
+    const secret = process.env.HEROKU_JWT_SECRET || process.env.JWT_SECRET
+    if (!secret) throw new Error('Secret key is missing!')
 
-interface AuthenticatedRequest extends Request {
-  user?: Partial<User>;
+    const token = req.headers.authorization
+    if (!token) throw new Error('No token was found!')
+    const tokenWithoutBearer = token.split('Bearer ')[1]
+
+    const { data } = jwt.verify(tokenWithoutBearer, secret, {
+      maxAge: expiration
+    }) as jwt.JwtPayload
+    req.user = data
+  } catch (error: any) {
+    req.user = undefined
+  }
+  return req
 }
 
-export const authMiddleware = ({ req }: { req: AuthenticatedRequest }): AuthenticatedRequest => {
+export const signToken = (
+  user: UserSchema &
+    Required<{
+      _id: Types.ObjectId
+    }>
+) => {
   try {
-    if (!req) throw 'No request object found!';
-    const token: string | undefined = req.body?.token || req.query?.token || req.headers?.authorization?.split(' ').pop()?.trim();
-    if (!token) throw new Error('No token was found!');
-    if (!secret) throw new Error('Secret key is missing!');
-    const { data } = jwt.verify(token, secret, { maxAge: expiration }) as jwt.JwtPayload;
-    req.user = data;
-  } catch (error: any) {
-    req.user = undefined;
-  }
-  return req;
-};
-
-export const signToken = async (user: AuthenticatedRequest['user']): Promise<string> => {
-  try {
-    if (!secret) throw 'no secret';
-    const token = jwt.sign({ data: user }, secret, { expiresIn: expiration });
-    return token;
+    const secret = process.env.HEROKU_JWT_SECRET || process.env.JWT_SECRET
+    if (!secret) throw new Error('no secret')
+    const token = jwt.sign({ data: user }, secret, { expiresIn: expiration })
+    return token
   } catch (error) {
-    throw error;
+    throw error
   }
-};
+}

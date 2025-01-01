@@ -1,17 +1,18 @@
-import mongoose from 'mongoose';
-import type { Document } from 'mongoose';
+import { Types, Schema, model } from 'mongoose'
+import type { Document } from 'mongoose'
+import { IngredientSchema } from './Ingredient'
 
 export interface RecipeSchema extends Document {
-  _id: mongoose.Types.ObjectId;
-  name: string;
-  portions: number;
-  ingredients: Array<mongoose.Types.ObjectId>; // Array of ObjectId references to Ingredients
-  picture_url: string;
-  edamamId?: string;
-  instructions?: string;
+  _id: Types.ObjectId
+  name: string
+  portions: number
+  ingredients: Array<Types.Subdocument & IngredientSchema> // before population
+  picture_url: string
+  edamamId?: string
+  instructions?: string
 }
 
-const recipeSchema = new mongoose.Schema<RecipeSchema>({
+const recipeSchema = new Schema<RecipeSchema>({
   name: {
     type: String,
     required: true,
@@ -26,7 +27,7 @@ const recipeSchema = new mongoose.Schema<RecipeSchema>({
 
   ingredients: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Ingredient',
       required: true
     }
@@ -43,6 +44,6 @@ const recipeSchema = new mongoose.Schema<RecipeSchema>({
     type: String,
     default: null
   }
-});
+})
 
-export const Recipe = mongoose.model<RecipeSchema>('Recipe', recipeSchema);
+export const Recipe = model<RecipeSchema>('Recipe', recipeSchema)

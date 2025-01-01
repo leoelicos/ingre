@@ -7,7 +7,7 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "ES6",
+    "module": "es2020",
     "moduleResolution": "node",
     "outDir": "./build",
     "resolveJsonModule": true,
@@ -16,8 +16,11 @@
     "paths": {
       "models/*": ["models/*"],
       "utils/*": ["utils/*"],
-      "schemas/*": ["schemas/*"]
-    }
+      "schemas/*": ["schemas/*"],
+      "datasources/*": ["datasources/*"]
+    },
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "exclude": ["node_modules", "build"]
 }

@@ -1,14 +1,14 @@
-import mongoose from 'mongoose';
-import type { Document } from 'mongoose';
-import { CategorySchema } from './Category';
+import mongoose from 'mongoose'
+import type { Document } from 'mongoose'
+import { CategorySchema } from './Category'
 
 export interface IngredientSchema extends Document {
-  _id: mongoose.Types.ObjectId;
-  name: string;
-  quantity: number;
-  measure: string;
-  text: string;
-  category: CategorySchema;
+  _id: mongoose.Types.ObjectId
+  name: string
+  quantity: number
+  measure: string
+  text: string
+  category: CategorySchema
 }
 
 const ingredientSchema = new mongoose.Schema<IngredientSchema>({
@@ -34,6 +34,6 @@ const ingredientSchema = new mongoose.Schema<IngredientSchema>({
     ref: 'Category',
     required: true
   }
-});
+})
 
-export const Ingredient = mongoose.model('Ingredient', ingredientSchema);
+export const Ingredient = mongoose.model('Ingredient', ingredientSchema)
