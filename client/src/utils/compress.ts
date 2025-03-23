@@ -37,14 +37,16 @@ export type compressedCategoryType = {
 
 export type compressedCategoriesType = compressedCategoryType[]
 
-const clean = (str: string): string =>
-  singular(
+const clean = (str: string): string => {
+  console.log({ str })
+  return singular(
     str
       .toLocaleLowerCase()
       .replace(/[^a-zA-Z0-9 ]/g, '')
       .replace(/[  ]/g, ' ')
       .trim()
   )
+}
 
 const aggregateQuantities = (
   arr: savedIngredientType[]

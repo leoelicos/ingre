@@ -49,7 +49,7 @@ export type IngredientInput = {
   category: Category
 }
 
-export type IngredientListItem = {
+/* export type IngredientListItem = {
   _id: string
   name: string
   quantity: number
@@ -57,7 +57,7 @@ export type IngredientListItem = {
   category: Category
   recipe: string
   recipeId: string
-}
+} */
 
 export type Category = {
   _id: string

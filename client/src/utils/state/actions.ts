@@ -1,17 +1,3 @@
-//? Drawer component: the help menu on the right
-//* show
-export const SHOW_DRAWER = 'SHOW_DRAWER'
-//* hide
-export const HIDE_DRAWER = 'HIDE_DRAWER'
-
-//? Sidebar component: the nav menu on the left
-//* toggle expanded/collapsed
-export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR'
-//* expand
-export const EXPAND_SIDEBAR = 'EXPAND_SIDEBAR'
-//* collapse
-export const COLLAPSE_SIDEBAR = 'COLLAPSE_SIDEBAR'
-
 //? Home page
 //* update home page recipes
 export const UPDATE_HOME_RECIPES = 'UPDATE_HOME_RECIPES'

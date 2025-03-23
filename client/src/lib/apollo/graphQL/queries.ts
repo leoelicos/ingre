@@ -16,16 +16,21 @@ export const GET_APP_CREDENTIALS = gql`
 `
 
 export const GET_USER = gql`
-  query GetUser {
-    getUser {
+  query GetUser($includeSavedRecipes: Boolean) {
+    getUser(includeSavedRecipes: $includeSavedRecipes) {
+      _id
+      email
       firstName
+      lastName
+      numSavedRecipes
       pro
     }
   }
 `
 
+// not being used
 export const GET_NUM_SAVED_RECIPES = gql`
-  query GetNumSavedRecipes {
+  query getNumSavedRecipes {
     getNumSavedRecipes
   }
 `
@@ -54,10 +59,7 @@ export const GET_RECIPE = gql`
         name
         quantity
         measure
-        category {
-          _id
-          name
-        }
+        category
       }
       picture_url
       edamamId

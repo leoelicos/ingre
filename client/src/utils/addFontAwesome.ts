@@ -32,7 +32,7 @@ import {
   faBookOpen
 } from '@fortawesome/free-solid-svg-icons'
 
-const addFontAwesome = () =>
+export const addFontAwesome = () =>
   library.add(
     faStar,
     faBars,
@@ -64,4 +64,3 @@ const addFontAwesome = () =>
     faSpinner,
     faBookOpen
   )
-export default addFontAwesome

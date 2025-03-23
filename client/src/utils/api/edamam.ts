@@ -3,10 +3,11 @@ import axios from 'axios'
 import type {
   EdamamRecipeSearchResponse,
   FetchEdamamOptions
-} from '../../@types/edamam.d.ts'
-import type { ClientRecipe } from '../../@types/client'
-import encode from './encode.ts'
-import deserialize from './deserialize.ts'
+} from 'types/edamam'
+import type { ClientRecipe } from 'types/client'
+import encode from './encode'
+import deserialize from './deserialize'
+import { mockResponse } from './mockResponse'
 
 type FetchEdamamType = ({
   search,
@@ -37,6 +38,7 @@ const fetchEdamam: FetchEdamamType = async ({ search, appId, appKey }) => {
         'random=true',
         'field=uri',
         'field=label',
+        'field=image',
         'field=images',
         'field=yield',
         'field=ingredients',
@@ -44,20 +46,19 @@ const fetchEdamam: FetchEdamamType = async ({ search, appId, appKey }) => {
         searchString
       ].join('&')
 
-    const response: { status: number; data: EdamamRecipeSearchResponse } =
-      await axios.get(uri)
-
-    if (!response) throw 'Error: 404 Edamam no response'
+    // const response: { status: number; data: EdamamRecipeSearchResponse } = await axios.get(uri)
+    const response = { status: 200, data: mockResponse }
+    if (!response) throw new Error('Error: 404 Edamam no response')
 
     /* from the docs: https://developer.edamam.com/edamam-docs-recipe-api */
-    if (response.status === 400) throw 'Error: 400 Edamam error'
-    if (response.status === 403) throw 'Error: 403 Edamam error'
+    if (response.status === 400) throw new Error('Error: 400 Edamam error')
+    if (response.status === 403) throw new Error('Error: 403 Edamam error')
     if (response.status !== 200)
       console.info('Error: Unknown Edamam error', response.status)
 
-    if (!response.data) throw 'Error: 404 Edamam no data'
+    if (!response.data) throw new Error('Error: 404 Edamam no data')
 
-    if (!response.data.hits) throw 'Error: 404 Edamam no hits'
+    if (!response.data.hits) throw new Error('Error: 404 Edamam no hits')
 
     return deserialize(response.data.hits)
   } catch (err) {

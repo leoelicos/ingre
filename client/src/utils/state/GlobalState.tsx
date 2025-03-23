@@ -8,21 +8,19 @@ interface Store {
   homeRecipes: any[]
   savedRecipes: any[]
   customiseRecipe: {
-    _id?: string
-    name?: string
-    portions?: number
-    ingredients?: {
+    _id: string
+    name: string
+    portions: string
+    ingredients: Array<{
       _id: string
       name: string
       quantity: number
       measure: string
-      category: {
-        name: string
-      }
-    }[]
-    picture_url?: string
-    edamamId?: string
-    instructions?: string
+      category: string
+    }>
+    picture_url: string
+    edamamId: string
+    instructions: string
   }
   homeDidMount: boolean
   savedIngredients: any[]
@@ -39,7 +37,15 @@ const initialState: Store = {
   searchRecipes: [],
   homeRecipes: [],
   savedRecipes: [],
-  customiseRecipe: {},
+  customiseRecipe: {
+    _id: '',
+    name: '',
+    portions: '',
+    ingredients: [],
+    picture_url: '',
+    edamamId: '',
+    instructions: ''
+  },
   homeDidMount: false,
   savedIngredients: [],
   savedDidMount: false,

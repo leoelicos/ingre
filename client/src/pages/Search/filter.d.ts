@@ -6,7 +6,6 @@ export interface filterTypes {
   dishType: dishType[]
 }
 
-type dietFilterType = ['diet', dietType]
 type dietType =
   | 'balanced'
   | 'high-fiber'
@@ -15,7 +14,6 @@ type dietType =
   | 'low-fat'
   | 'low-sodium'
 
-type healthFilterType = ['health', healthType]
 type healthType =
   | 'dairy-free'
   | 'egg-free'
@@ -43,7 +41,6 @@ type healthType =
   | 'vegetarian'
   | 'wheat-free'
 
-type cuisineFilterType = ['cuisine-type', cuisineType]
 type cuisineType =
   | 'American'
   | 'Asian'
@@ -63,10 +60,8 @@ type cuisineType =
   | 'South American'
   | 'South East Asian'
 
-type mealFilterType = ['meal-type', mealType]
 type mealType = 'Breakfast' | 'Dinner' | 'Lunch' | 'Snack'
 
-type dishFilterType = ['dish-type', dishType]
 type dishType =
   | 'Biscuits-and-cookies'
   | 'Bread'

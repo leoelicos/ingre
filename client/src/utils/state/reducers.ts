@@ -1,11 +1,6 @@
 import { useReducer } from 'react'
 
 import {
-  SHOW_DRAWER,
-  HIDE_DRAWER,
-  TOGGLE_SIDEBAR,
-  EXPAND_SIDEBAR,
-  COLLAPSE_SIDEBAR,
   UPDATE_SEARCH_RECIPES,
   UPDATE_HOME_RECIPES,
   UPDATE_SAVED_RECIPES,
@@ -25,23 +20,7 @@ export const reducer: (
   state: any,
   action: { type: string; data: any }
 ) => any = (state, action) => {
-  // console.log(action.type);
-  console.log(`REDUCER\t[${action.type}]`, action.data)
-
   switch (action.type) {
-    case SHOW_DRAWER:
-      return { ...state, modalVisible: true }
-    case HIDE_DRAWER:
-      return { ...state, modalVisible: false }
-
-    case TOGGLE_SIDEBAR:
-      return { ...state, leftSidebarCollapsed: !state.leftSidebarCollapsed }
-
-    case EXPAND_SIDEBAR:
-      return { ...state, leftSidebarCollapsed: false }
-    case COLLAPSE_SIDEBAR:
-      return { ...state, leftSidebarCollapsed: true }
-
     case UPDATE_SEARCH_RECIPES:
       return { ...state, searchRecipes: action.data }
 
@@ -62,7 +41,6 @@ export const reducer: (
     }
 
     case ADD_SAVED_RECIPE:
-      // console.log('state.savedRecipes before', state.savedRecipes);
       if (
         state.savedRecipes.find(
           (r: { edamamId: string }) => r.edamamId === action.data.edamamId
@@ -71,18 +49,15 @@ export const reducer: (
         return { ...state }
       let newSavedRecipes = JSON.parse(JSON.stringify(state.savedRecipes))
       newSavedRecipes.push(action.data)
-      // console.log('state.savedRecipes after', newSavedRecipes);
       return { ...state, savedRecipes: newSavedRecipes }
 
     case REMOVE_SAVED_RECIPE:
       const copyOfRecipes: { edamamId: string }[] = JSON.parse(
         JSON.stringify(state.savedRecipes)
       )
-      // console.log('copyOfRecipes', copyOfRecipes);
       const filteredCopyOfRecipes = copyOfRecipes.filter(
         (r) => r.edamamId !== action.data
       )
-      // console.log('filteredCopyOfRecipes', filteredCopyOfRecipes);
       return { ...state, savedRecipes: filteredCopyOfRecipes }
 
     case SET_EDIT_RECIPE:

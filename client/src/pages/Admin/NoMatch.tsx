@@ -1,21 +1,16 @@
-import { Button, Empty, Space } from 'antd'
 import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { changeTitle } from '../../utils/changeTitle.ts'
+import { changeTitle } from 'utils/changeTitle'
 
-const NoMatch: FC = () => {
+export const NoMatch: FC = () => {
   changeTitle('ingré')
 
   return (
-    <Empty>
-      <Space direction="vertical">
-        Page Not Found
-        <Link to="/">
-          <Button type="primary">Go home</Button>
-        </Link>
-      </Space>
-    </Empty>
+    <div>
+      <p>Page Not Found</p>
+      <Link to="/">
+        <button>Go home</button>
+      </Link>
+    </div>
   )
 }
-
-export default NoMatch

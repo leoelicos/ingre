@@ -2,13 +2,13 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { CSSProperties, FC } from 'react'
 
-const Icon: FC<{ icon: string; extraStyle?: any; small?: boolean }> = ({
+export const Icon: FC<{ icon: string; extraStyle?: any; small?: boolean }> = ({
   icon,
   extraStyle,
   small
 }) => {
   let style: CSSProperties = {}
-  if (small) style.width = '19.91px'
+  if (small) style.width = '22px'
   if (extraStyle) style = { ...style, ...extraStyle }
   return (
     <FontAwesomeIcon
@@ -31,10 +31,18 @@ export const IngreIconLogoEgg = () => (
   />
 )
 
+export const IngreIconLogoMenuCollapsed = () => <Icon icon="fa-solid fa-bars" />
+export const IngreIconChevronDown = () => (
+  <Icon
+    icon="fa-solid fa-chevron-down"
+    small={true}
+  />
+)
+
 /* sidebar */
 export const IngreIconRecipe = () => (
   <Icon
-    icon="fa-solid fa-cookie"
+    icon="fa-classic fa-cookie"
     small={true}
   />
 )

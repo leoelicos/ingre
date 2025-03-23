@@ -1,4 +1,4 @@
-import type { SearchParams } from '../../@types/edamam.d.ts'
+import type { SearchParams } from 'types/edamam'
 
 const encode = ({
   q,

@@ -32,10 +32,7 @@ export const SAVE_RECIPE = gql`
         name
         quantity
         measure
-        category {
-          _id
-          name
-        }
+        category
       }
       picture_url
       edamamId
