@@ -5,7 +5,7 @@ export interface IngredientGeneratedType {
   name: string
   quantity: number
   measure: string
-  category: string
+  category: { name: string }
   recipe: string
   recipeId: string
 }

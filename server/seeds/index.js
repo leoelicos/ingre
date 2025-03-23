@@ -1,5 +1,5 @@
-const db = require('../config/connection')
-const { User, Recipe, Ingredient, Category } = require('../models')
+import db from 'config/connection'
+import { User, Recipe, Ingredient, Category } from 'src/models'
 
 const seedUsers = require('./user-seeds')
 

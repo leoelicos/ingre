@@ -1,8 +1,6 @@
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { Card, Tooltip } from 'antd'
 import React, { FC } from 'react'
-import defaultIngredient from '../../../@defaults/defaultIngredient.ts'
-import defaultRecipe from '../../../@defaults/defaultRecipe.ts'
 import type { ClientRecipe } from '../../../@types/client'
 import {
   REMOVE_RECIPE,
@@ -75,6 +73,24 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
 
   const handleSave = async () => {
     try {
+      const defaultIngredient = {
+        _id: undefined,
+        name: 'Ingredient',
+        quantity: 1,
+        measure: 'unit',
+        category: { name: 'Generic' }
+      }
+      const defaultRecipe: ClientRecipe = {
+        _id: undefined,
+        name: 'Untitled Recipe',
+        portions: 1,
+        picture_url:
+          'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc',
+        edamamId: undefined,
+        instructions: undefined,
+        ingredients: [defaultIngredient]
+      }
+
       const res = await saveRecipe({
         variables: {
           input: {
@@ -98,11 +114,12 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
               name: i.name.length > 0 ? i.name : defaultIngredient.name,
               quantity:
                 i.quantity > 0 ? i.quantity : defaultIngredient.quantity,
-              measure:
-                i.measure.length > 0 ? i.measure : defaultIngredient.measure,
-              category: i.category.name
-                ? i.category
-                : defaultIngredient.category
+              measure: i.measure || defaultIngredient.measure,
+              category: {
+                name: i.category.name
+                  ? i.category.name
+                  : defaultIngredient.category.name
+              }
             }))
           }
         }
