@@ -55,7 +55,7 @@ export const useIngredients = () => {
             name,
             quantity,
             measure,
-            category,
+            category: { name: category },
             recipe: recipeName,
             recipeId,
             key: _id || ''
@@ -63,7 +63,6 @@ export const useIngredients = () => {
           savedIngredientArray.push(savedIngredient)
         })
       }
-      // console.log('savedIngredientArray', savedIngredientArray);
       setDataSource(savedIngredientArray)
       dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: savedIngredientArray })
     } catch (error) {
@@ -86,7 +85,6 @@ export const useIngredients = () => {
   }
 
   const onFinish = () => {
-    // console.log('[Ingredients] onFinish()');
     dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: dataSource })
   }
   useEffect(() => {

@@ -72,7 +72,6 @@ export const useHome = () => {
           appKey
         })
       }
-      // console.log('hits = ', hits);
       setEdamamRecipes(hits)
       setLoadingEdamam(false)
 

@@ -80,6 +80,15 @@ export const saveRecipe = async (
   { user, dataSources }: MyContext
 ): Promise<RecipePopulated | undefined> => {
   try {
+    console.log({
+      user,
+      name,
+      portions,
+      ingredients,
+      picture_url,
+      edamamId,
+      instructions
+    })
     if (!user) throw new Error('Not logged in!')
 
     const createdIngredients = await createSaveIngredients({

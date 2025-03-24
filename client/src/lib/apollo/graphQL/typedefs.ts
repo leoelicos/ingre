@@ -46,7 +46,7 @@ export type IngredientInput = {
   name: string
   quantity: number
   measure: string
-  category: Category
+  category: string
 }
 
 /* export type IngredientListItem = {
@@ -87,6 +87,7 @@ export type EdamamCredentials = {
   appKey: string
 }
 
+// not being used
 export type Query = {
   checkEmailAlreadyExists: (email: string) => Promise<boolean | undefined>
   getApiKey: () => Promise<EdamamCredentials | undefined>
@@ -97,6 +98,7 @@ export type Query = {
   checkout: () => Promise<Checkout | undefined>
 }
 
+// not being used
 export type Mutation = {
   addUser: (input: UserInput) => Promise<Auth | undefined>
   makeUserPro: () => Promise<User | undefined>

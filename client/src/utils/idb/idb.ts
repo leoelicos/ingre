@@ -19,7 +19,7 @@ const idbPromise: (params: IdbPromiseType) => Promise<any> = (params) => {
     }
 
     request.onerror = function (e) {
-      console.log('There was an error')
+      console.error('There was an error')
     }
 
     request.onsuccess = function (e) {
@@ -28,7 +28,7 @@ const idbPromise: (params: IdbPromiseType) => Promise<any> = (params) => {
       const store = tx.objectStore(storeName)
 
       db.onerror = function (e) {
-        console.log('error', e)
+        console.error('error', e)
       }
 
       switch (method) {
@@ -46,7 +46,7 @@ const idbPromise: (params: IdbPromiseType) => Promise<any> = (params) => {
           store.delete(object._id)
           break
         default:
-          console.log('No valid method')
+          console.error('No valid method')
           break
       }
 

@@ -14,8 +14,6 @@ export const useSuccess = () => {
 
   const Token = () => {
     const params = searchParams.get('session_id')
-
-    console.log('params', params)
     return null
   }
 

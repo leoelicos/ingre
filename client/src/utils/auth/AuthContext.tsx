@@ -1,4 +1,3 @@
-import jwtDecode from 'jwt-decode'
 import React, {
   FC,
   ReactNode,
@@ -7,6 +6,7 @@ import React, {
   useEffect,
   useReducer
 } from 'react'
+import jwtDecode from 'jwt-decode'
 
 interface ProfileType {
   data: {
@@ -38,8 +38,6 @@ const AuthContext = createContext<AuthContextType>([initialState, () => {}])
 
 const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useAuthReducer(initialState)
-
-  /* update from local storage the first time */
   useEffect(() => {}, [])
   return (
     <AuthContext.Provider value={[state, dispatch]}>

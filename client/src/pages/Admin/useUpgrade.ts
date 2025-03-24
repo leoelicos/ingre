@@ -35,7 +35,6 @@ export const useUpgrade = () => {
 
   useEffect(() => {
     if (!userLoading && !userError && userData?.getUser) {
-      // console.log('userData', userData);
       setPro(userData.getUser.pro)
     }
   }, [userLoading, userError, userData])

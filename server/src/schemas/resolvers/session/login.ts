@@ -11,6 +11,7 @@ export const login = async (
       email,
       password
     })
+    console.log({ user })
     if (!user) throw new Error('Incorrect credentials')
     return { token: signToken(user), user }
   } catch (e) {

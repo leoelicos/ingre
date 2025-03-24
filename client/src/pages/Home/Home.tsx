@@ -8,8 +8,7 @@ const HomeComponent: FC<{
   loadingEdamam: boolean
   edamamRecipes: Array<any>
   handleRefresh: any
-}> = ({ loggedIn, firstName, loadingEdamam, edamamRecipes }) => {
-  // handleRefresh not used
+}> = ({ loggedIn, firstName, loadingEdamam, edamamRecipes, handleRefresh }) => {
   return (
     <div className="container">
       {loggedIn && <p>Welcome {firstName}</p>}

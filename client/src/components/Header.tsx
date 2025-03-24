@@ -1,9 +1,8 @@
 import React, { FC } from 'react'
 import { Link } from 'react-router-dom'
+import { Container, Nav, Navbar } from 'react-bootstrap'
 import { useAuthContext } from 'utils/auth/AuthContext'
-import AuthButton from './AuthButton.tsx'
 import { IngreIconLogoEgg, IngreIconLogoMenuCollapsed } from 'lib/icon/Icon'
-import LogoText from './LogoText.tsx'
 import {
   IngreIconCustomise,
   IngreIconIngredients,
@@ -12,7 +11,8 @@ import {
   IngreIconSearch,
   IngreIconTapOff
 } from 'lib/icon/Icon'
-import { Container, Nav, Navbar } from 'react-bootstrap'
+import { AuthButton } from './AuthButton.tsx'
+import { LogoText } from './LogoText.tsx'
 
 const links = [
   { to: '/search', icon: <IngreIconSearch />, label: 'Search' },
@@ -44,7 +44,7 @@ export const Header: FC = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
             {links.map(({ to, label }) => (
-              <Navbar.Text key="label">
+              <Navbar.Text key={to}>
                 <Link
                   to={to}
                   className="me-3"

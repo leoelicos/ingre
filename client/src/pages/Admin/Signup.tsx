@@ -1,6 +1,5 @@
 import React, { FC } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import LoginLink from 'components/LoginLink'
 import { useSignup } from './useSignup'
 
 export const Signup: FC = () => {
@@ -55,7 +54,7 @@ export const Signup: FC = () => {
         <button type="submit">Submit</button>
         <div>
           <p>Already have an account?</p>
-          <LoginLink />
+          <Link to="/login">Log&nbsp;in</Link>
         </div>
       </form>
     </div>

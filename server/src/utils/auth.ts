@@ -14,10 +14,16 @@ export const authMiddleware = ({
 }): MyContext => {
   try {
     const secret = process.env.HEROKU_JWT_SECRET || process.env.JWT_SECRET
-    if (!secret) throw new Error('Secret key is missing!')
+    if (!secret) {
+      console.log('secret key is missing')
+      throw new Error('Secret key is missing!')
+    }
 
     const token = req.headers.authorization
-    if (!token) throw new Error('No token was found!')
+    if (!token) {
+      console.log('no token found')
+      throw new Error('No token was found!')
+    }
     const tokenWithoutBearer = token.split('Bearer ')[1]
 
     const { data } = jwt.verify(tokenWithoutBearer, secret, {

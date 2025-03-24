@@ -21,48 +21,6 @@ export const MAKE_USER_PRO = gql`
   }
 `
 
-export const SAVE_RECIPE = gql`
-  mutation SaveRecipe($input: RecipeInput!) {
-    saveRecipe(input: $input) {
-      _id
-      name
-      portions
-      ingredients {
-        _id
-        name
-        quantity
-        measure
-        category
-      }
-      picture_url
-      edamamId
-      instructions
-    }
-  }
-`
-
-export const UPDATE_RECIPE = gql`
-  mutation UpdateRecipe($input: RecipeInput!, $recipeId: ID!) {
-    updateRecipe(input: $input, recipeId: $recipeId) {
-      _id
-      name
-      portions
-      ingredients {
-        _id
-        name
-        quantity
-        measure
-        category {
-          _id
-          name
-        }
-      }
-      picture_url
-      edamamId
-    }
-  }
-`
-
 export const REMOVE_RECIPE = gql`
   mutation RemoveRecipe($recipeId: ID!) {
     removeRecipe(recipeId: $recipeId)
@@ -75,6 +33,11 @@ export const LOGIN = gql`
       token
       user {
         _id
+        email
+        firstName
+        lastName
+        numSavedRecipes
+        pro
       }
     }
   }

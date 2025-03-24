@@ -41,6 +41,16 @@ export const GET_SAVED_RECIPES = gql`
       _id
       name
       portions
+      ingredients {
+        _id
+        name
+        quantity
+        measure
+        category {
+          _id
+          name
+        }
+      }
       picture_url
       edamamId
       instructions

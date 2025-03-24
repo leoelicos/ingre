@@ -1,11 +1,11 @@
 import React, { FC } from 'react'
-import LoginLink from './LoginLink.tsx'
+import { Link } from 'react-router-dom'
 
 const NotLoggedIn: FC = () => {
   return (
     <div>
       <div>You need to be logged in to see this page.</div>
-      <LoginLink />
+      <Link to="/login">Log&nbsp;in</Link>
     </div>
   )
 }

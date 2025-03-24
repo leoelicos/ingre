@@ -38,7 +38,6 @@ export type compressedCategoryType = {
 export type compressedCategoriesType = compressedCategoryType[]
 
 const clean = (str: string): string => {
-  console.log({ str })
   return singular(
     str
       .toLocaleLowerCase()

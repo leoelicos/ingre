@@ -11,5 +11,5 @@ interface IngredientInput {
   name: string
   quantity: number
   measure: string
-  category: { name: string }
+  category: string
 }

@@ -1,0 +1,13 @@
+.customise-ingredient-container {
+  display: flex;
+  border: 1px solid red;
+  width: 300px;
+  padding: 1rem;
+  border-radius: 0.6rem;
+  background-color: orange;
+  flex-direction: column;
+  align-items: flex-end;
+  div {
+    display: flex;
+  }
+}

@@ -48,7 +48,6 @@ export const useSignup = () => {
   const handleFormSubmit: React.FormEventHandler<HTMLFormElement> = async (
     e
   ) => {
-    console.log({ e })
     const { firstName, lastName, email, password } = fields
     const variables = { input: { email, password, firstName, lastName } }
     try {

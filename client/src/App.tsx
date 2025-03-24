@@ -9,7 +9,6 @@ import React, { FC } from 'react'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { Header } from 'components/Header'
 import { Login } from 'pages/Admin/Login'
-import { Logout } from 'pages/Admin/Logout'
 import { NoMatch } from 'pages/Admin/NoMatch'
 import { Signup } from 'pages/Admin/Signup'
 import { Success } from 'pages/Admin/Success'
@@ -38,7 +37,7 @@ const authLink = setContext((_, { headers: oldHeaders }) => {
 const uri =
   process.env.NODE_ENV === 'production'
     ? 'https://ingre-backend.onrender.com/graphql'
-    : '/graphql'
+    : 'http://localhost:3001/graphql'
 const httpLink = createHttpLink({ uri })
 const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
@@ -81,10 +80,6 @@ export const Ingre: FC = () => {
               <Route
                 path="/login"
                 element={<Login />}
-              />
-              <Route
-                path="/logout"
-                element={<Logout />}
               />
               <Route
                 path="/signup"

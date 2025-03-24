@@ -49,9 +49,6 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
       fetchPolicy: 'network-only'
       // nextFetchPolicy: 'cache-first'
     })
-  useEffect(() => {
-    if (getRecipeLoading) console.log({ getRecipeLoading, getRecipeError })
-  }, [getRecipeLoading, getRecipeError])
   const handleEdit = async () => {
     let data = recipe
     if (recipe._id) {
@@ -62,7 +59,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           dispatch({ type: SET_EDIT_RECIPE, data: data })
         }
       } catch (error) {
-        console.log(error)
+        console.error(error)
       }
     }
   }
@@ -118,11 +115,9 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
       })
       if (!res) throw new Error('Could not save recipe')
       const saveData = res.data.saveRecipe
-      console.log({ res }) // this is returning null
       dispatch({ type: ADD_SAVED_RECIPE, data: saveData })
     } catch (error) {
       console.error(error)
-      console.log('error here')
     }
   }
 

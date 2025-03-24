@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import type { ClientRecipe } from 'types/client'
-import { REMOVE_RECIPE, SAVE_RECIPE } from 'lib/apollo/graphQL/mutations'
+import { REMOVE_RECIPE } from 'lib/apollo/graphQL/mutations'
 import { GET_RECIPE, GET_SAVED_RECIPES } from 'lib/apollo/graphQL/queries'
+import { SAVE_RECIPE } from 'lib/apollo/graphQL/useSaveRecipe'
 import { useStoreContext } from 'utils/state/GlobalState'
 import {
   ADD_SAVED_RECIPE,
@@ -38,9 +38,6 @@ export const useRecipeCard = ({
       fetchPolicy: 'network-only'
       // nextFetchPolicy: 'cache-first'
     })
-  useEffect(() => {
-    if (getRecipeLoading) console.log({ getRecipeLoading, getRecipeError })
-  }, [getRecipeLoading, getRecipeError])
   const handleEdit = async () => {
     let data = recipe
     if (recipe._id) {
@@ -51,7 +48,7 @@ export const useRecipeCard = ({
           dispatch({ type: SET_EDIT_RECIPE, data: data })
         }
       } catch (error) {
-        console.log(error)
+        console.error(error)
       }
     }
   }
@@ -107,11 +104,9 @@ export const useRecipeCard = ({
       })
       if (!res) throw new Error('Could not save recipe')
       const saveData = res.data.saveRecipe
-      console.log({ res }) // this is returning null
       dispatch({ type: ADD_SAVED_RECIPE, data: saveData })
     } catch (error) {
       console.error(error)
-      console.log('error here')
     }
   }
 

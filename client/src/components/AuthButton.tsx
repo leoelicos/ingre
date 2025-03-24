@@ -1,10 +1,12 @@
-import React, { FC } from 'react'
-import LoginLink from './LoginLink.tsx'
-import LogoutLink from './LogoutLink.tsx'
+import React from 'react'
+import { Link } from 'react-router-dom'
+import { useAuth } from 'hooks/useAuth'
 
-type AuthButtonType = FC<{ loggedIn: boolean }>
-
-const AuthButton: AuthButtonType = ({ loggedIn }) => {
-  return loggedIn ? <LogoutLink /> : <LoginLink />
+export const AuthButton = ({ loggedIn }: { loggedIn: boolean }) => {
+  const { handleLogout } = useAuth()
+  return loggedIn ? (
+    <button onClick={handleLogout}>Log&nbsp;out</button>
+  ) : (
+    <Link to="/login">Log&nbsp;in</Link>
+  )
 }
-export default AuthButton

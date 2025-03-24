@@ -18,7 +18,7 @@ const startApolloServer = async () => {
   await server.start()
   app.use(
     '/graphql',
-    cors<cors.CorsRequest>(),
+    cors<cors.CorsRequest>({ origin: '*' }),
     json({ limit: '13MB' }),
     urlencoded({ limit: '13MB', extended: true }),
     expressMiddleware(server, {
@@ -32,8 +32,7 @@ const startApolloServer = async () => {
 
   connection.once('open', () => {
     app.listen(PORT, () => {
-      console.log(`API server running on port ${PORT}!`)
-      console.log(`Use GraphQL at http://localhost:${PORT}/graphql`)
+      console.log(`API server running at http://localhost:${PORT}/graphql`)
     })
   })
 }

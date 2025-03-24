@@ -119,11 +119,18 @@ export class UserApi {
     email: string
     password: string
   }) {
-    const user = await User.findOne<UserSchema & UserMethods>({ email })
-    if (!user) return null
-    const result = await user.isCorrectPassword(password)
-    if (result) return user
-    else return null
+    try {
+      const user = await User.findOne<UserSchema & UserMethods>({ email })
+      if (!user) return null
+      const result = await user.isCorrectPassword(password)
+      if (result) {
+        return user
+      } else {
+        return null
+      }
+    } catch (error) {
+      throw new Error('checkUserPassword error')
+    }
   }
 
   public async makeUserPro({ _id }: { _id: Types.ObjectId }) {
