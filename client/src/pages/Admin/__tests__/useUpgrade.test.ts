@@ -1,8 +1,10 @@
 import { renderHook } from '@testing-library/react'
 import { useUpgrade } from '../useUpgrade'
 
+const mockGetCheckout = jest.fn()
+
 jest.mock('@apollo/client', () => ({
-  useLazyQuery: () => [jest.fn(), { loading: false, data: null }],
+  useLazyQuery: () => [mockGetCheckout, { loading: false, data: null }],
   useQuery: () => ({ loading: false, data: null, error: null }),
   gql: (s: TemplateStringsArray) => s
 }))
@@ -17,5 +19,11 @@ describe('useUpgrade', () => {
     expect(result.current.loggedIn).toBe(true)
     expect(result.current.pro).toBe(false)
     expect(typeof result.current.getCheckout).toBe('function')
+  })
+
+  it('getCheckout calls query', () => {
+    const { result } = renderHook(() => useUpgrade())
+    result.current.getCheckout()
+    expect(mockGetCheckout).toHaveBeenCalled()
   })
 })
