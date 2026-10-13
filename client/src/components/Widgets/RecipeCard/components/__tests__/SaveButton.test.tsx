@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { SaveButton } from '../SaveButton'
 
+const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn()
+  useNavigate: () => mockNavigate
 }))
 
 jest.mock('../../../../../lib/icon/Icon', () => ({
@@ -20,6 +21,10 @@ describe('SaveButton', () => {
     edamamId: 'ed1',
     loggedIn: true
   }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
 
   it('renders save button when not loading and not saved', () => {
     render(
@@ -47,5 +52,16 @@ describe('SaveButton', () => {
       </MemoryRouter>
     )
     expect(screen.getByRole('button')).toBeDisabled()
+  })
+
+  it('navigates to login when not logged in and clicked', () => {
+    render(
+      <MemoryRouter>
+        <SaveButton {...defaultProps} loggedIn={false} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByRole('button'))
+    expect(mockNavigate).toHaveBeenCalledWith('/login')
+    expect(defaultProps.handleSave).not.toHaveBeenCalled()
   })
 })
