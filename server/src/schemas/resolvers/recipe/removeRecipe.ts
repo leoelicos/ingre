@@ -1,8 +1,8 @@
 import { Types } from 'mongoose'
-import { MyContext } from 'schemas/types'
+import { MyContext } from '../../types'
 
 export const removeRecipe = async (
-  _: any,
+  _: unknown,
   { recipeId }: { recipeId: Types.ObjectId },
   { user, dataSources }: MyContext
 ) => {

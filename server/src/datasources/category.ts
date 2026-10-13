@@ -1,4 +1,4 @@
-import { Category } from 'models/Category'
+import { Category } from '../models/Category'
 
 export class CategoryApi {
   public createCategory = async (name: string) => {

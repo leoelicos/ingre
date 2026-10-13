@@ -1,5 +1,5 @@
-import { signToken } from 'utils/auth'
-import { MyContext } from 'schemas/types'
+import { signToken } from '../../../utils/auth'
+import { MyContext } from '../../types'
 
 export const login = async (
   _parent: unknown,

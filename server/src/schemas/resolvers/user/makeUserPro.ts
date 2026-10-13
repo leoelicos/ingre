@@ -1,4 +1,4 @@
-import { MyContext } from 'schemas/types'
+import { MyContext } from '../../types'
 
 export const makeUserPro = async (
   _parent: unknown,

@@ -1,8 +1,9 @@
+import type { User } from '../../../schemas/types'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
-import { typeDefs } from 'schemas/typeDefs'
-import { resolvers } from 'schemas/resolvers'
-import 'utils/auth'
+import { typeDefs } from '../../typeDefs'
+import { resolvers } from '../../resolvers'
+import '../../../utils/auth'
 
 const mockUpdateRecipe = jest.fn()
 const mockUser = {
@@ -53,9 +54,9 @@ const UPDATE_RECIPE = gql`
 `
 
 interface ContextValue {
-  headers: any
-  dataSources: { userApi: any }
-  user: any
+  headers: Record<string, string>
+  dataSources: any
+  user: User
 }
 
 const createTestServer = () =>
@@ -89,7 +90,7 @@ const contextValue = {
     categoryApi: {},
     ingredientApi: {},
     recipeApi: {
-      updateRecipe: (e: any) => mockUpdateRecipe(e)
+      updateRecipe: (e: unknown) => mockUpdateRecipe(e)
     }
   },
   user: mockUser
@@ -105,12 +106,12 @@ describe('updateRecipe', () => {
   it('updates a recipe', async () => {
     const result = await testServer.executeOperation(
       { query: UPDATE_RECIPE, variables: mockUpdateRecipeInput },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
-    const response2: { errors: any | undefined; data: any | undefined } =
+    const response2: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
       JSON.parse(JSON.stringify(result.body))['singleResult']
     expect(response2.errors).toBeUndefined()
-    expect(response2.data.updateRecipe).toStrictEqual(mockUpdatedRecipe)
+    expect(response2.data!.updateRecipe).toStrictEqual(mockUpdatedRecipe)
   })
 
   it('handles updateRecipe error', async () => {
@@ -119,9 +120,9 @@ describe('updateRecipe', () => {
     })
     const result = await testServer.executeOperation(
       { query: UPDATE_RECIPE, variables: mockUpdateRecipeInput },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
-    const response2: { errors: any | undefined; data: any | undefined } =
+    const response2: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
       JSON.parse(JSON.stringify(result.body))['singleResult']
     expect(response2.errors).toStrictEqual([
       {
@@ -131,16 +132,16 @@ describe('updateRecipe', () => {
         path: ['updateRecipe']
       }
     ])
-    expect(response2.data.updateRecipe).toBeNull()
+    expect(response2.data!.updateRecipe).toBeNull()
   })
 
   it('should throw an error if context user is null', async () => {
     const result = await testServer.executeOperation(
       { query: UPDATE_RECIPE, variables: mockUpdateRecipeInput },
-      { contextValue: { ...contextValue, user: null } }
+      { contextValue: { ...contextValue, user: undefined as unknown as User } }
     )
-    const { errors }: { errors: any | undefined; data: any | undefined } =
+    const { errors }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
       JSON.parse(JSON.stringify(result.body))['singleResult']
-    expect(errors[0].message).toBe('Not logged in!')
+    expect((errors as { message: string }[])[0].message).toBe('Not logged in!')
   })
 })

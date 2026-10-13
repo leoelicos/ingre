@@ -1,4 +1,4 @@
-import { Ingredient, IngredientSchema } from 'models/Ingredient'
+import { Ingredient, IngredientSchema } from '../models/Ingredient'
 import { Types } from 'mongoose'
 
 export type CreatedIngredient = IngredientSchema &

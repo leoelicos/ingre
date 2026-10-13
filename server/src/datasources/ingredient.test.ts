@@ -1,9 +1,9 @@
+import { UserApi } from './user'
 import mongoose from 'mongoose'
 import { CategoryApi } from './category'
 import { IngredientApi } from './ingredient'
 import { RecipeApi } from './recipe'
-import { UserApi } from './user'
-import { Ingredient } from 'models/Ingredient'
+import { Ingredient } from '../models/Ingredient'
 
 const categoryApi = new CategoryApi()
 const ingredientApi = new IngredientApi()
@@ -12,7 +12,7 @@ const userApi = new UserApi()
 jest.setTimeout(60000)
 
 describe('ingredientApi', () => {
-  beforeEach(async (done) => {
+  beforeEach(async () => {
     mongoose.set('strictQuery', false)
     await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_ingredient')
     await categoryApi.deleteAllCategories()
@@ -21,12 +21,10 @@ describe('ingredientApi', () => {
     await userApi.deleteAllUsers()
     jest.resetAllMocks()
     jest.clearAllMocks()
-    done()
   })
-  afterEach(async (done) => {
+  afterEach(async () => {
     await mongoose.connection.dropDatabase()
     await mongoose.disconnect()
-    done()
   })
 
   it('createIngredient returns a new ingredient', async () => {

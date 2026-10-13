@@ -1,5 +1,5 @@
 import { Types } from 'mongoose'
-import { MyContext, RecipePopulated } from 'schemas/types'
+import { MyContext, RecipePopulated } from '../../types'
 
 export const getRecipe = async (
   _parent: unknown,

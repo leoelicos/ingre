@@ -1,4 +1,4 @@
-import typescriptEslint from "eslint-plugin-typescript-eslint";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,8 +14,9 @@ const compat = new FlatCompat({
 });
 
 export default [...compat.extends("prettier"), {
+    files: ["src/**/*.ts"],
     plugins: {
-        "typescript-eslint": typescriptEslint,
+        "@typescript-eslint": tsPlugin,
     },
 
     languageOptions: {
@@ -29,5 +30,6 @@ export default [...compat.extends("prettier"), {
         "object-literal-sort-keys": 0,
         "no-trailing-whitespace": 0,
         "max-classes-per-file": [2, 15],
+        "@typescript-eslint/no-explicit-any": "error",
     },
 }];

@@ -1,7 +1,7 @@
 //! security issue - graphql passing to UI frontend
 import dotenv from 'dotenv'
 import { resolve } from 'path'
-import { EdamamCredentials } from 'schemas/types'
+import { EdamamCredentials } from '../../types'
 
 dotenv.config({ path: resolve(__dirname, '../../../../.env') })
 

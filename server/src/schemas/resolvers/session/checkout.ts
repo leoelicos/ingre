@@ -1,4 +1,4 @@
-import { MyContext } from 'schemas/types'
+import { MyContext } from '../../types'
 
 export const getRootEndpointFromHeaders = ({
   headers
@@ -7,8 +7,8 @@ export const getRootEndpointFromHeaders = ({
 }) => (headers?.referer ? new URL(headers.referer).origin : '')
 
 export const checkout = async (
-  _parent: any,
-  _args: any,
+  _parent: unknown,
+  _args: unknown,
   { headers, dataSources }: MyContext
 ) => {
   //! TODO: throw if unauthenticated
@@ -24,7 +24,7 @@ export const checkout = async (
       rootEndpoint: getRootEndpointFromHeaders({ headers })
     })
     return { session: response.id }
-  } catch (e: any) {
+  } catch (e: unknown) {
     throw new Error('could not create stripe response')
   }
 }

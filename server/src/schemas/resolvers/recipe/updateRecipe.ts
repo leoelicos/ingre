@@ -1,10 +1,10 @@
 import mongoose from 'mongoose'
-import { RecipeSchema } from 'models/Recipe'
-import { RecipeInput } from 'schemas/types'
-import { MyContext } from 'schemas/types'
+import { RecipeSchema } from '../../../models/Recipe'
+import { RecipeInput } from '../../types'
+import { MyContext } from '../../types'
 
 export const updateRecipe = async (
-  _parent: any,
+  _parent: unknown,
   {
     recipeId,
     input

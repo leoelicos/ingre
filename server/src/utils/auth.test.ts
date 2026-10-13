@@ -1,15 +1,15 @@
+import { UserApi } from '../datasources/user'
 delete process.env.JWT_SECRET
 process.env.JWT_SECRET = 'mock_secret'
 
 import jwt from 'jsonwebtoken'
 import { authMiddleware, signToken } from './auth'
 import mongoose from 'mongoose'
-import { User } from 'models/User'
-import { AuthenticatedRequest } from 'schemas/types'
-import { CategoryApi } from 'datasources/category'
-import { IngredientApi } from 'datasources/ingredient'
-import { RecipeApi } from 'datasources/recipe'
-import { UserApi } from 'datasources/user'
+import { User } from '../models/User'
+import { AuthenticatedRequest } from '../schemas/types'
+import { CategoryApi } from '../datasources/category'
+import { IngredientApi } from '../datasources/ingredient'
+import { RecipeApi } from '../datasources/recipe'
 
 const categoryApi = new CategoryApi()
 const ingredientApi = new IngredientApi()
@@ -27,7 +27,7 @@ const mockExpiration = '1h'
 
 describe('signToken', () => {
   const ORIGINAL_ENV = process.env
-  beforeEach(async (done) => {
+  beforeEach(async () => {
     mongoose.set('strictQuery', false)
     await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_category')
     await categoryApi.deleteAllCategories()
@@ -37,20 +37,18 @@ describe('signToken', () => {
     jest.resetAllMocks()
     jest.clearAllMocks()
     process.env = { ...ORIGINAL_ENV }
-    done()
   })
-  afterEach(async (done) => {
+  afterEach(async () => {
     await mongoose.connection.dropDatabase()
     await mongoose.disconnect()
     process.env = ORIGINAL_ENV
-    done()
   })
   it('should generate a valid JWT token', async () => {
     const user = await User.create(mockUser)
     const token = signToken(user)
     const decoded = jwt.verify(token, mockSecret)
     expect(decoded).toHaveProperty('data')
-    expect((<any>decoded).data).toMatchObject({
+    expect((decoded as { data: unknown }).data).toMatchObject({
       _id: user._id.toString(),
       firstName: user.firstName,
       lastName: user.lastName,
@@ -91,7 +89,7 @@ describe('signToken', () => {
 
 describe('authMiddleware', () => {
   const ORIGINAL_ENV = process.env
-  beforeEach(async (done) => {
+  beforeEach(async () => {
     mongoose.set('strictQuery', false)
     await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_category')
     await categoryApi.deleteAllCategories()
@@ -101,13 +99,11 @@ describe('authMiddleware', () => {
     jest.resetAllMocks()
     jest.clearAllMocks()
     process.env = { ...ORIGINAL_ENV }
-    done()
   })
-  afterEach(async (done) => {
+  afterEach(async () => {
     await mongoose.connection.dropDatabase()
     await mongoose.disconnect()
     process.env = ORIGINAL_ENV
-    done()
   })
   it('should populate req.user with decoded token data when token is valid', async () => {
     const user = await userApi.createUser(mockUser)

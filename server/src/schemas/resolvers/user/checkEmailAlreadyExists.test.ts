@@ -1,8 +1,8 @@
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
-import { typeDefs } from 'schemas/typeDefs'
-import { resolvers } from 'schemas/resolvers'
-import 'utils/auth'
+import { typeDefs } from '../../typeDefs'
+import { resolvers } from '../../resolvers'
+import '../../../utils/auth'
 
 const mockFindOneUser = jest.fn()
 
@@ -21,8 +21,8 @@ export const CHECK_EMAIL_ALREADY_EXISTS = gql`
 `
 
 interface ContextValue {
-  headers: any
-  dataSources: { userApi: any }
+  headers: Record<string, string>
+  dataSources: any
 }
 
 const createTestServer = () =>
@@ -34,7 +34,7 @@ const contextValue = {
   headers: {},
   dataSources: {
     userApi: {
-      findOneUser: (e: any) => mockFindOneUser(e)
+      findOneUser: (e: unknown) => mockFindOneUser(e)
     }
   }
 }
@@ -53,18 +53,18 @@ describe('getUser', () => {
         query: CHECK_EMAIL_ALREADY_EXISTS,
         variables: { email: mockUser.email }
       },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
 
     const {
       errors,
       data = {}
-    }: { errors: any | undefined; data: any | undefined } = JSON.parse(
+    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
     expect(errors).toBeUndefined()
-    expect(data.checkEmailAlreadyExists).toBe(true)
+    expect( data.checkEmailAlreadyExists).toBe(true)
   })
 
   it('should return false if findOneUser returns null', async () => {
@@ -75,13 +75,13 @@ describe('getUser', () => {
         query: CHECK_EMAIL_ALREADY_EXISTS,
         variables: { email: mockUser.email }
       },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
 
-    const { data = {} }: { errors: any | undefined; data: any | undefined } =
+    const { data = {} }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
       JSON.parse(JSON.stringify(result.body))['singleResult']
 
-    expect(data.checkEmailAlreadyExists).toBe(false)
+    expect( data.checkEmailAlreadyExists).toBe(false)
   })
 
   it('should throw if findOneUser throws', async () => {
@@ -92,17 +92,17 @@ describe('getUser', () => {
         query: CHECK_EMAIL_ALREADY_EXISTS,
         variables: { email: mockUser.email }
       },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
 
     const {
       errors,
       data = {}
-    }: { errors: any | undefined; data: any | undefined } = JSON.parse(
+    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
-    expect(errors[0].message).toBe('uh-oh')
-    expect(data.checkEmailAlreadyExists).toBeNull()
+    expect((errors as { message: string }[])[0].message).toBe('uh-oh')
+    expect( data.checkEmailAlreadyExists).toBeNull()
   })
 })

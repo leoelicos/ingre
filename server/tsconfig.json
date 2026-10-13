@@ -1,26 +1,28 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "lib": ["es6", "es5", "es7", "dom"],
+    "target": "ES2022",
+    "lib": [
+      "ES2022"
+    ],
     "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "es2020",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "outDir": "./build",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "baseUrl": "./src",
-    "paths": {
-      "models/*": ["models/*"],
-      "utils/*": ["utils/*"],
-      "schemas/*": ["schemas/*"],
-      "datasources/*": ["datasources/*"]
-    },
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "types": [
+      "jest",
+      "node"
+    ]
   },
-  "exclude": ["node_modules", "build"]
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
 }

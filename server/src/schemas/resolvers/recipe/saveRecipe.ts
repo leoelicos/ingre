@@ -1,8 +1,8 @@
-import { CategoryApi } from 'datasources/category'
-import { IngredientApi } from 'datasources/ingredient'
-import { IngredientSchema } from 'models/Ingredient'
-import { IngredientInput, RecipeInput, RecipePopulated } from 'schemas/types'
-import { MyContext } from 'schemas/types'
+import { CategoryApi } from '../../../datasources/category'
+import { IngredientApi } from '../../../datasources/ingredient'
+import { IngredientSchema } from '../../../models/Ingredient'
+import { IngredientInput, RecipeInput, RecipePopulated } from '../../types'
+import { MyContext } from '../../types'
 
 export const createSaveIngredient = async ({
   ingredientInput,
@@ -73,7 +73,7 @@ export const createSaveIngredients = async ({
 
 // saves a recipe to the database
 export const saveRecipe = async (
-  _: any,
+  _: unknown,
   {
     input: { name, portions, ingredients, picture_url, edamamId, instructions }
   }: { input: RecipeInput },

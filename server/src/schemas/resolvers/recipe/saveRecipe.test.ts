@@ -1,8 +1,9 @@
+import type { User } from '../../../schemas/types'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
-import { typeDefs } from 'schemas/typeDefs'
-import { resolvers } from 'schemas/resolvers'
-import 'utils/auth'
+import { typeDefs } from '../../typeDefs'
+import { resolvers } from '../../resolvers'
+import '../../../utils/auth'
 import * as saveRecipeMethods from './saveRecipe'
 const { createSaveIngredient, createSaveIngredients } = saveRecipeMethods
 
@@ -92,9 +93,9 @@ export const SAVE_RECIPE = gql`
 `
 
 interface ContextValue {
-  headers: any
-  dataSources: { userApi: any }
-  user: any
+  headers: Record<string, string>
+  dataSources: any
+  user: User
 }
 
 const createTestServer = () =>
@@ -114,16 +115,16 @@ const contextValue = {
   headers: {},
   dataSources: {
     userApi: {
-      addRecipeToUser: (e: any) => mockAddedRecipeToUser(e)
+      addRecipeToUser: (e: unknown) => mockAddedRecipeToUser(e)
     },
     categoryApi: {
-      findOrCreateCategory: (e: any) => mockFindOrCreateCategory(e)
+      findOrCreateCategory: (e: unknown) => mockFindOrCreateCategory(e)
     },
     ingredientApi: {
-      createIngredient: (e: any) => mockCreateIngredient(e)
+      createIngredient: (e: unknown) => mockCreateIngredient(e)
     },
     recipeApi: {
-      createRecipe: (e: any) => mockCreateRecipe(e)
+      createRecipe: (e: unknown) => mockCreateRecipe(e)
     }
   },
   user: mockUser
@@ -138,12 +139,12 @@ describe('saveRecipe', () => {
   it('should save a recipe', async () => {
     const result = await testServer.executeOperation(
       { query: SAVE_RECIPE, variables: mockSaveRecipeInput },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
     const {
       errors,
       data = {}
-    }: { errors: any | undefined; data: any | undefined } = JSON.parse(
+    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
@@ -176,7 +177,7 @@ describe('saveRecipe', () => {
         query: SAVE_RECIPE,
         variables: { input: { ...mockSaveRecipeInput.input, picture_url: '' } }
       },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
     expect(mockCreateRecipe).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -191,7 +192,7 @@ describe('saveRecipe', () => {
     try {
       await testServer.executeOperation(
         { query: SAVE_RECIPE, variables: mockSaveRecipeInput },
-        { contextValue }
+        { contextValue: contextValue as any }
       )
     } catch (error) {
       expect(error).toStrictEqual({})
@@ -202,9 +203,9 @@ describe('saveRecipe', () => {
     mockAddedRecipeToUser.mockRejectedValueOnce(null)
     const result = await testServer.executeOperation(
       { query: SAVE_RECIPE, variables: mockSaveRecipeInput },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
-    const { errors }: { errors: any | undefined } = JSON.parse(
+    const { errors }: { errors: unknown | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
@@ -221,12 +222,12 @@ describe('saveRecipe', () => {
   it('should throw an error if context user is null', async () => {
     const result = await testServer.executeOperation(
       { query: SAVE_RECIPE, variables: mockSaveRecipeInput },
-      { contextValue: { ...contextValue, user: null } }
+      { contextValue: { ...contextValue, user: undefined as unknown as User } }
     )
-    const { errors }: { errors: any | undefined; data: any | undefined } =
+    const { errors }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
       JSON.parse(JSON.stringify(result.body))['singleResult']
 
-    expect(errors[0].message).toBe('Not logged in!')
+    expect((errors as { message: string }[])[0].message).toBe('Not logged in!')
   })
 })
 

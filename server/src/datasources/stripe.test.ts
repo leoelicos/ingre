@@ -127,9 +127,9 @@ const mockSessionsCreate = jest.fn().mockResolvedValue(mockSession)
 const mockPricesCreate = jest.fn().mockResolvedValue(mockPrice)
 
 let mockStripeInstance = {
-  products: { create: (e: any) => mockProductsCreate(e) },
-  checkout: { sessions: { create: (e: any) => mockSessionsCreate(e) } },
-  prices: { create: (e: any) => mockPricesCreate(e) }
+  products: { create: (e: unknown) => mockProductsCreate(e) },
+  checkout: { sessions: { create: (e: unknown) => mockSessionsCreate(e) } },
+  prices: { create: (e: unknown) => mockPricesCreate(e) }
 }
 
 jest.mock('stripe', () => {
@@ -139,14 +139,14 @@ jest.mock('stripe', () => {
 describe('StripeApi class', () => {
   const mockProps = {
     productName: mockProduct.name,
-    productDescription: mockProduct.description,
+    productDescription: mockProduct.description ?? '',
     productImages: mockProduct.images,
-    productCost: mockPrice.unit_amount,
+    productCost: mockPrice.unit_amount ?? 0,
     productCurrency: mockPrice.currency,
     rootEndpoint: mockRootUrl
   }
 
-  let stripeApi: any
+  let stripeApi: StripeApi
   beforeEach(() => {
     jest.clearAllMocks()
 

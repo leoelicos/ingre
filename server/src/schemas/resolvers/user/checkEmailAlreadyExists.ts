@@ -1,7 +1,7 @@
-import { MyContext } from 'schemas/types'
+import { MyContext } from '../../types'
 
 export const checkEmailAlreadyExists = async (
-  _parent: any,
+  _parent: unknown,
   { email }: { email: string },
   { dataSources }: MyContext
 ) => {

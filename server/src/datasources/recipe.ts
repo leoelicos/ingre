@@ -1,12 +1,12 @@
-import mongoose, { Types } from 'mongoose'
-import { Recipe, RecipeSchema } from 'models/Recipe'
+import mongoose, { Types, Document } from 'mongoose'
+import { Recipe, RecipeSchema } from '../models/Recipe'
 import {
   IngredientInput,
   Ingredient as IngredientType,
   RecipeInput
-} from 'schemas/types'
-import { Ingredient, IngredientSchema } from 'models/Ingredient'
-import { Category } from 'models/Category'
+} from '../schemas/types'
+import { Ingredient, IngredientSchema } from '../models/Ingredient'
+import { Category } from '../models/Category'
 
 export const updateUniqueCategoryName = async ({
   category
@@ -28,13 +28,13 @@ export const generateIngredients = async ({
   ingredients
 }: {
   ingredients: Array<IngredientInput>
-}): Promise<Array<Types.Subdocument<any> & IngredientSchema>> => {
+}): Promise<Array<Types.Subdocument<unknown> & IngredientSchema>> => {
   try {
     const generatedIngredientArrays = await Promise.all(
       ingredients.map((ingredient) => generateIngredient({ ingredient }))
     )
     return generatedIngredientArrays as Array<
-      Types.Subdocument<any> & IngredientSchema
+      Types.Subdocument<unknown> & IngredientSchema
     >
   } catch (error) {
     throw error
@@ -83,7 +83,7 @@ export class RecipeApi {
     name: string
     portions: number
     instructions: string
-    ingredients: any
+    ingredients: unknown[]
     picture_url: string
     edamamId: string
   }) => {
@@ -191,7 +191,7 @@ export class RecipeApi {
 
         // Generate new ingredients
         const generatedIngredients: Array<
-          Types.Subdocument<any> & IngredientSchema
+          Types.Subdocument<unknown> & IngredientSchema
         > = await generateIngredients({
           ingredients: input.ingredients
         })

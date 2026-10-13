@@ -1,8 +1,9 @@
+import type { User } from '../../../schemas/types'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
-import { typeDefs } from 'schemas/typeDefs'
-import { resolvers } from 'schemas/resolvers'
-import 'utils/auth'
+import { typeDefs } from '../../typeDefs'
+import { resolvers } from '../../resolvers'
+import '../../../utils/auth'
 
 const mockGetUserSavedRecipes = jest.fn()
 const mockUserSavedRecipes = [
@@ -85,9 +86,9 @@ export const GET_SAVED_RECIPES = gql`
 `
 
 interface ContextValue {
-  headers: any
-  dataSources: { userApi: any }
-  user: any
+  headers: Record<string, string>
+  dataSources: any
+  user: User
 }
 
 const createTestServer = () =>
@@ -99,7 +100,7 @@ const contextValue = {
   headers: {},
   dataSources: {
     userApi: {
-      getUserSavedRecipes: (e: any) => mockGetUserSavedRecipes(e)
+      getUserSavedRecipes: (e: unknown) => mockGetUserSavedRecipes(e)
     }
   },
   user: mockUser
@@ -116,18 +117,18 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_SAVED_RECIPES },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
 
     const {
       errors,
       data = {}
-    }: { errors: any | undefined; data: any | undefined } = JSON.parse(
+    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
     expect(errors).toBeUndefined()
-    expect(data.getSavedRecipes).toStrictEqual(mockUserSavedRecipes)
+    expect( (data as any).getSavedRecipes).toStrictEqual(mockUserSavedRecipes)
   })
 
   it('should throw an error if context user is null', async () => {
@@ -135,16 +136,16 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_SAVED_RECIPES },
-      { contextValue: { ...contextValue, user: null } }
+      { contextValue: { ...contextValue, user: undefined as unknown as User } }
     )
     const {
       errors,
       data = {}
-    }: { errors: any | undefined; data: any | undefined } = JSON.parse(
+    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
-    expect(errors[0].message).toBe('Unexpected error value: "Not logged in!"')
-    expect(data.getSavedRecipes).toBeNull()
+    expect((errors as { message: string }[])[0].message).toBe('Unexpected error value: "Not logged in!"')
+    expect( (data as any).getSavedRecipes).toBeNull()
   })
 })

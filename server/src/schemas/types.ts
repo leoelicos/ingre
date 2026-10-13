@@ -1,6 +1,6 @@
 import { Types } from 'mongoose'
 import { Request } from 'express'
-import { createDataSources } from 'datasources'
+import { createDataSources } from '../datasources'
 
 export type User = {
   _id: Types.ObjectId

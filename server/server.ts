@@ -2,12 +2,12 @@ import express, { json, urlencoded } from 'express'
 import cors from 'cors'
 import { ApolloServer } from '@apollo/server'
 import { expressMiddleware } from '@apollo/server/express4'
-import { createDataSources } from 'datasources'
-import { resolvers } from 'schemas/resolvers'
-import { typeDefs } from 'schemas/typeDefs'
-import { authMiddleware } from 'utils/auth'
+import { createDataSources } from './src/datasources'
+import { resolvers } from './src/schemas/resolvers'
+import { typeDefs } from './src/schemas/typeDefs'
+import { authMiddleware } from './src/utils/auth'
 import connection from './config/connection'
-import { AuthenticatedRequest, MyContext } from 'schemas/types'
+import { AuthenticatedRequest, MyContext } from './src/schemas/types'
 
 const PORT = process.env.PORT || 3001
 const app = express()

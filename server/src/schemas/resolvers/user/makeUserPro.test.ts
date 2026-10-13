@@ -1,9 +1,9 @@
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
-import { UserInput } from 'schemas/types'
-import { typeDefs } from 'schemas/typeDefs'
-import { resolvers } from 'schemas/resolvers'
-import 'utils/auth'
+import { UserInput } from '../../types'
+import { typeDefs } from '../../typeDefs'
+import { resolvers } from '../../resolvers'
+import '../../../utils/auth'
 import { Types } from 'mongoose'
 
 const mockMakeUserPro = jest.fn()
@@ -18,8 +18,8 @@ export const MAKE_USER_PRO = gql`
 `
 
 interface ContextValue {
-  headers: any
-  dataSources: { userApi: any }
+  headers: Record<string, string>
+  dataSources: any
 }
 
 const createTestServer = () =>
@@ -29,7 +29,7 @@ let testServer = createTestServer()
 
 const contextValue = {
   headers: {},
-  dataSources: { userApi: { makeUserPro: (e: any) => mockMakeUserPro(e) } },
+  dataSources: { userApi: { makeUserPro: mockMakeUserPro } } as any,
   user: {
     _id: new Types.ObjectId(),
     firstName: 'John',
@@ -67,18 +67,18 @@ describe('makeUserPro', () => {
 
     const result = await testServer.executeOperation(
       { query: MAKE_USER_PRO },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
 
     const {
       errors,
       data = {}
-    }: { errors: any | undefined; data: any | undefined } = JSON.parse(
+    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
     expect(errors).toBeUndefined()
-    expect(data.makeUserPro).toStrictEqual({ _id: mockUserId, pro: true })
+    expect((data as any)?.makeUserPro).toStrictEqual({ _id: mockUserId, pro: true })
   })
 
   it('should throw an error if there was an error with makeUserPro', async () => {
@@ -86,17 +86,17 @@ describe('makeUserPro', () => {
 
     const result = await testServer.executeOperation(
       { query: MAKE_USER_PRO },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
     const {
       errors,
       data = {}
-    }: { errors: any | undefined; data: any | undefined } = JSON.parse(
+    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
-    expect(errors[0].message).toBe('User not found')
-    expect(data.makeUserPro).toBeNull()
+    expect((errors as { message: string }[])[0].message).toBe('User not found')
+    expect((data as any)?.makeUserPro).toBeNull()
   })
 
   it('should throw an error if context user is null', async () => {
@@ -110,10 +110,10 @@ describe('makeUserPro', () => {
       },
       { contextValue: newContextValue }
     )
-    const { errors, data }: { errors: any | undefined; data: any | undefined } =
+    const { errors, data }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
       JSON.parse(JSON.stringify(result.body))['singleResult']
 
-    expect(errors[0].message).toBe('Not logged in!')
-    expect(data.makeUserPro).toBeNull()
+    expect((errors as { message: string }[])[0].message).toBe('Not logged in!')
+    expect((data as any)?.makeUserPro).toBeNull()
   })
 })

@@ -1,8 +1,8 @@
+import { UserApi } from './user'
 import mongoose from 'mongoose'
 import { CategoryApi } from './category'
 import { IngredientApi } from './ingredient'
 import { RecipeApi } from './recipe'
-import { UserApi } from './user'
 
 const categoryApi = new CategoryApi()
 const ingredientApi = new IngredientApi()
@@ -19,7 +19,7 @@ const mockCategoryVegetable = {
 }
 
 describe('categoryApi', () => {
-  beforeEach(async (done) => {
+  beforeEach(async () => {
     mongoose.set('strictQuery', false)
     await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_category')
     await categoryApi.deleteAllCategories()
@@ -28,12 +28,10 @@ describe('categoryApi', () => {
     await userApi.deleteAllUsers()
     jest.resetAllMocks()
     jest.clearAllMocks()
-    done()
   })
-  afterEach(async (done) => {
+  afterEach(async () => {
     await mongoose.connection.dropDatabase()
     await mongoose.disconnect()
-    done()
   })
 
   it('createCategory should return a new category', async () => {

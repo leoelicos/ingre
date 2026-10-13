@@ -1,7 +1,8 @@
+import type { User } from '../../../schemas/types'
 import { Types } from 'mongoose'
 import { ApolloServer } from '@apollo/server'
-import { typeDefs } from 'schemas/typeDefs'
-import { resolvers } from 'schemas/resolvers'
+import { typeDefs } from '../../typeDefs'
+import { resolvers } from '../../resolvers'
 import gql from 'graphql-tag'
 
 export const GET_RECIPE = gql`
@@ -41,7 +42,7 @@ const mockUser = {
 
 interface ContextValue {
   headers: object
-  dataSources: { recipeApi: object }
+  dataSources: any
   user: object | null
 }
 
@@ -55,7 +56,7 @@ const contextValue = {
   headers: {},
   dataSources: {
     recipeApi: {
-      getRecipe: (e: any) => mockGetRecipe(e)
+      getRecipe: (e: unknown) => mockGetRecipe(e)
     }
   },
   user: mockUser
@@ -107,16 +108,16 @@ describe('getRecipe', () => {
     mockGetRecipe.mockResolvedValueOnce(populatedRecipe)
     const result = await testServer.executeOperation(
       { query: GET_RECIPE, variables: { id: recipeId } },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
 
     const {
       errors,
       data = {}
-    }: { errors: any | undefined; data: any | undefined } = JSON.parse(
+    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
       JSON.stringify(result?.body)
     )['singleResult']
-    expect(data.getRecipe).toStrictEqual(populatedRecipe)
+    expect((data as { getRecipe: unknown }).getRecipe).toStrictEqual(populatedRecipe)
     expect(errors).toBe(undefined)
     expect(mockGetRecipe).toHaveBeenCalled()
   })
@@ -126,10 +127,10 @@ describe('getRecipe', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_RECIPE, variables: { id: recipeId } },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
 
-    const { errors }: { errors: any | undefined; data: any | undefined } =
+    const { errors }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
       JSON.parse(JSON.stringify(result?.body))['singleResult']
 
     expect(errors).toStrictEqual([
@@ -149,10 +150,10 @@ describe('getRecipe', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_RECIPE, variables: { id: recipeId } },
-      { contextValue }
+      { contextValue: contextValue as any }
     )
 
-    const { errors }: { errors: any | undefined } = JSON.parse(
+    const { errors }: { errors: unknown | undefined } = JSON.parse(
       JSON.stringify(result?.body)
     )['singleResult']
 
@@ -171,12 +172,12 @@ describe('getRecipe', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_RECIPE, variables: { id: recipeId } },
-      { contextValue: { ...contextValue, user: null } }
+      { contextValue: { ...contextValue, user: undefined as unknown as User } }
     )
-    const { errors }: { errors: any | undefined } = JSON.parse(
+    const { errors }: { errors: unknown | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
-    expect(errors[0].message).toBe('Not logged in!')
+    expect((errors as { message: string }[])[0].message).toBe('Not logged in!')
   })
 })

@@ -1,13 +1,13 @@
 import mongoose from 'mongoose'
-import { RecipeSchema } from 'models/Recipe'
-import { MyContext } from 'schemas/types'
+import { RecipeSchema } from '../../../models/Recipe'
+import { MyContext } from '../../types'
 
 export const getSavedRecipes = async (
-  _parent: any,
-  _args: any,
+  _parent: unknown,
+  _args: unknown,
   { dataSources, user }: MyContext
 ): Promise<
-  Array<mongoose.Types.Subdocument<any> & RecipeSchema> | undefined
+  Array<mongoose.Types.Subdocument<unknown> & RecipeSchema> | undefined
 > => {
   try {
     if (!user) throw 'Not logged in!'

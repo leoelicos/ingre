@@ -1,8 +1,8 @@
-import { MyContext } from 'schemas/types'
+import { MyContext } from '../../types'
 
 export const getNumSavedRecipes = async (
-  _parent: any,
-  _args: any,
+  _parent: unknown,
+  _args: unknown,
   { dataSources, user }: MyContext
 ): Promise<number> => {
   try {

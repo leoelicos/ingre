@@ -1,8 +1,8 @@
-import { MyContext } from 'schemas/types'
+import { MyContext } from '../../types'
 
 export const getUser = async (
-  _: any,
-  __: any,
+  _: unknown,
+  __: unknown,
   { dataSources, user: contextUser }: MyContext
 ) => {
   try {

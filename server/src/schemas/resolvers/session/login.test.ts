@@ -1,9 +1,9 @@
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
-import { UserInput } from 'schemas/types'
-import { typeDefs } from 'schemas/typeDefs'
-import { resolvers } from 'schemas/resolvers'
-import 'utils/auth'
+import { UserInput } from '../../types'
+import { typeDefs } from '../../typeDefs'
+import { resolvers } from '../../resolvers'
+import '../../../utils/auth'
 
 const mockSignToken = jest.fn()
 const mockFindOneUser = jest.fn()
@@ -23,15 +23,15 @@ export const LOGIN = gql`
 `
 
 interface ContextValue {
-  headers: any
-  dataSources: { userApi: any }
-  // user: any //! TODO: prevent login if already logged in
+  headers: Record<string, string>
+  dataSources: any
+  // user: User //! TODO: prevent login if already logged in
 }
 
 const createTestServer = () =>
   new ApolloServer<ContextValue>({ typeDefs, resolvers })
 
-jest.mock('utils/auth', () => ({ signToken: (e: any) => mockSignToken(e) }))
+jest.mock('../../../utils/auth', () => ({ signToken: (e: unknown) => mockSignToken(e) }))
 
 let testServer = createTestServer()
 
@@ -40,8 +40,8 @@ const contextValue = {
     headers: {},
     dataSources: {
       userApi: {
-        findOneUser: (e: any) => mockFindOneUser(e),
-        checkUserPassword: (e: any) => mockCheckUserPassword(e)
+        findOneUser: (e: unknown) => mockFindOneUser(e),
+        checkUserPassword: (e: unknown) => mockCheckUserPassword(e)
       }
     }
   }
@@ -82,12 +82,12 @@ describe('login', () => {
     const {
       errors,
       data = {}
-    }: { errors: any | undefined; data: any | undefined } = JSON.parse(
+    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
     expect(errors).toBeUndefined()
-    expect(data.login).toStrictEqual({
+    expect((data as any)?.login).toStrictEqual({
       user: { _id: mockUser._id },
       token: mockToken
     })
@@ -112,12 +112,12 @@ describe('login', () => {
     const {
       errors,
       data = {}
-    }: { errors: any | undefined; data: any | undefined } = JSON.parse(
+    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
       JSON.stringify(result.body)
     )['singleResult']
 
-    expect(errors[0].message).toBe('Incorrect credentials')
-    expect(data.login).toBeNull()
+    expect((errors as { message: string }[])[0].message).toBe('Incorrect credentials')
+    expect((data as any)?.login).toBeNull()
     expect(mockSignToken).not.toHaveBeenCalled()
   })
 
@@ -132,11 +132,11 @@ describe('login', () => {
       },
       contextValue
     )
-    const { errors, data }: { errors: any | undefined; data: any | undefined } =
+    const { errors, data }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
       JSON.parse(JSON.stringify(result.body))['singleResult']
 
-    expect(errors[0].message).toBe('Unexpected error value: null')
-    expect(data.login).toBeNull()
+    expect((errors as { message: string }[])[0].message).toBe('Unexpected error value: null')
+    expect((data as any)?.login).toBeNull()
     expect(mockSignToken).not.toHaveBeenCalled()
   })
 })

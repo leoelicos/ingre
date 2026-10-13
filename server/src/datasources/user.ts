@@ -1,6 +1,6 @@
-import { User, UserMethods, UserSchema } from 'models/User'
+import { User, UserMethods, UserSchema } from '../models/User'
 import { Types } from 'mongoose'
-import { UserInput } from 'schemas/types'
+import { UserInput } from '../schemas/types'
 
 export class UserApi {
   public async findOneUserById({ id }: { id: Types.ObjectId }) {

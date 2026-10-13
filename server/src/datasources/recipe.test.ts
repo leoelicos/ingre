@@ -1,3 +1,4 @@
+import { UserApi } from './user'
 import mongoose, { Types } from 'mongoose'
 import { CategoryApi } from './category'
 import { IngredientApi } from './ingredient'
@@ -6,8 +7,7 @@ import {
   RecipeApi,
   updateUniqueCategoryName
 } from './recipe'
-import { UserApi } from './user'
-import { Recipe } from 'models/Recipe'
+import { Recipe } from '../models/Recipe'
 import * as recipeDataSource from './recipe'
 
 let categoryApi = new CategoryApi()
@@ -44,7 +44,7 @@ const mockRecipe = {
 }
 
 describe('recipeApi', () => {
-  beforeEach(async (done) => {
+  beforeEach(async () => {
     mongoose.set('strictQuery', false)
     await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_recipe')
     categoryApi = new CategoryApi()
@@ -59,12 +59,10 @@ describe('recipeApi', () => {
     jest.restoreAllMocks()
     jest.clearAllMocks()
 
-    done()
   })
-  afterEach(async (done) => {
+  afterEach(async () => {
     await mongoose.connection.dropDatabase()
     await mongoose.disconnect()
-    done()
   })
 
   it('createRecipe returns a new recipe', async () => {

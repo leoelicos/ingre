@@ -1,10 +1,10 @@
+import { UserApi } from './user'
 import mongoose, { Types } from 'mongoose'
-import { UserInput } from 'schemas/types'
+import { UserInput } from '../schemas/types'
 import { CategoryApi } from './category'
 import { IngredientApi } from './ingredient'
 import { RecipeApi } from './recipe'
-import { UserApi } from './user'
-import { User } from 'models/User'
+import { User } from '../models/User'
 
 const categoryApi = new CategoryApi()
 const ingredientApi = new IngredientApi()
@@ -20,7 +20,7 @@ const mockInput: UserInput = {
 }
 
 describe('userApi', () => {
-  beforeEach(async (done) => {
+  beforeEach(async () => {
     mongoose.set('strictQuery', false)
     await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_user')
     await categoryApi.deleteAllCategories()
@@ -29,12 +29,10 @@ describe('userApi', () => {
     await userApi.deleteAllUsers()
     jest.resetAllMocks()
     jest.clearAllMocks()
-    done()
   })
-  afterEach(async (done) => {
+  afterEach(async () => {
     await mongoose.connection.dropDatabase()
     await mongoose.disconnect()
-    done()
   })
   it('createUser returns created user', async () => {
     const user = await userApi.createUser(mockInput)

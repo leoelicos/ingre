@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
-import { AuthenticatedRequest, MyContext } from 'schemas/types'
+import { AuthenticatedRequest, MyContext } from '../schemas/types'
 import { Types } from 'mongoose'
-import { UserSchema } from 'models/User'
+import { UserSchema } from '../models/User'
 
 dotenv.config()
 const expiration = '1h'
@@ -30,7 +30,7 @@ export const authMiddleware = ({
       maxAge: expiration
     }) as jwt.JwtPayload
     req.user = data
-  } catch (error: any) {
+  } catch (error: unknown) {
     req.user = undefined
   }
   return req
