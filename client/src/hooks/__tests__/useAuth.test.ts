@@ -11,7 +11,6 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('@apollo/client', () => ({
   useMutation: (_mutation: any, options: any) => {
-    // Store options so we can call onCompleted
     (global as any).__loginOptions = options
     return [mockLoginMutation, { loading: false, error: null }]
   },
@@ -57,5 +56,16 @@ describe('useAuth', () => {
     })
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'LOGIN', data: 'abc123' })
     expect(mockNavigate).toHaveBeenCalledWith(-1)
+  })
+
+  it('onError logs error', () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+    renderHook(() => useAuth())
+    const options = (global as any).__loginOptions
+    act(() => {
+      options.onError(new Error('login failed'))
+    })
+    expect(consoleSpy).toHaveBeenCalled()
+    consoleSpy.mockRestore()
   })
 })
