@@ -41,3 +41,23 @@ describe('reducer', () => {
     expect(result).toBe(initialState)
   })
 })
+
+import { UPDATE_SAVED_RECIPES, CLEAR_EDIT_RECIPE, FLAG_SAVED_MOUNTED } from '../actions'
+
+describe('reducer additional cases', () => {
+  it('updates saved recipes', () => {
+    const action = { type: UPDATE_SAVED_RECIPES, data: [{ name: 'saved' }] }
+    const result = reducer(initialState, action as any)
+    expect(result.savedRecipes).toEqual([{ name: 'saved' }])
+  })
+
+  it('clears edit recipe', () => {
+    const result = reducer(initialState, { type: CLEAR_EDIT_RECIPE })
+    expect(result.customiseRecipe).toBeNull()
+  })
+
+  it('flags saved mounted', () => {
+    const result = reducer(initialState, { type: FLAG_SAVED_MOUNTED })
+    expect(result.savedDidMount).toBe(true)
+  })
+})
