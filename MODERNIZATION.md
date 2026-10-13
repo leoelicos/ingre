@@ -27,7 +27,7 @@
 - [x] Achieve 100% line coverage (currently 100%)
 
 ## Phase 4: Frontend Tests + Coverage
-- [ ] Add initial frontend unit tests
+- [x] Add initial frontend unit tests
 - [ ] Increase frontend coverage toward completion
 - [ ] Achieve high/complete coverage on client
 
