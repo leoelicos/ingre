@@ -30,12 +30,15 @@ export function isClientRecipeList(value: unknown): value is ClientRecipe[] {
   return Array.isArray(value) && value.every(isClientRecipe)
 }
 
-export function toSavedIngredient(value: unknown): savedIngredientType | undefined {
+export function toSavedIngredient(
+  value: unknown
+): savedIngredientType | undefined {
   if (!isRecord(value)) return undefined
   const { _id, name, quantity, measure, category, recipe, recipeId } = value
   if (typeof _id !== 'string') return undefined
   if (typeof name !== 'string') return undefined
-  if (typeof quantity !== 'string' && typeof quantity !== 'number') return undefined
+  if (typeof quantity !== 'string' && typeof quantity !== 'number')
+    return undefined
   if (typeof measure !== 'string') return undefined
   if (!isRecord(category) || typeof category.name !== 'string') return undefined
   if (typeof recipe !== 'string') return undefined
@@ -51,7 +54,9 @@ export function toSavedIngredient(value: unknown): savedIngredientType | undefin
   }
 }
 
-export function savedIngredientsFromUnknown(values: unknown): savedIngredientType[] {
+export function savedIngredientsFromUnknown(
+  values: unknown
+): savedIngredientType[] {
   if (!Array.isArray(values)) return []
   const result: savedIngredientType[] = []
   for (const value of values) {

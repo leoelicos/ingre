@@ -21,12 +21,20 @@ const mockSave: {
   saveRecipe: jest.Mock
   saveRecipeLoading: boolean
   saveRecipeError: Error | undefined
-} = { saveRecipe: jest.fn(), saveRecipeLoading: false, saveRecipeError: undefined }
+} = {
+  saveRecipe: jest.fn(),
+  saveRecipeLoading: false,
+  saveRecipeError: undefined
+}
 const mockUpdate: {
   updateRecipe: jest.Mock
   updateRecipeLoading: boolean
   updateRecipeError: Error | undefined
-} = { updateRecipe: jest.fn(), updateRecipeLoading: false, updateRecipeError: undefined }
+} = {
+  updateRecipe: jest.fn(),
+  updateRecipeLoading: false,
+  updateRecipeError: undefined
+}
 const mockAuth = { loggedIn: true }
 
 jest.mock('../useCustomiseForm', () => ({
@@ -54,12 +62,18 @@ describe('Customise form', () => {
 
   it('edits ingredients and saves', () => {
     const { rerender } = render(<Customise />)
-    fireEvent.change(screen.getByDisplayValue('Pie'), { target: { value: 'Tart' } })
+    fireEvent.change(screen.getByDisplayValue('Pie'), {
+      target: { value: 'Tart' }
+    })
     fireEvent.change(screen.getByDisplayValue('2'), { target: { value: '3' } })
-    fireEvent.change(screen.getByDisplayValue('Salt'), { target: { value: 'Sugar' } })
+    fireEvent.change(screen.getByDisplayValue('Salt'), {
+      target: { value: 'Sugar' }
+    })
     fireEvent.change(screen.getByDisplayValue('1'), { target: { value: '4' } })
     fireEvent.change(screen.getByDisplayValue('g'), { target: { value: 'kg' } })
-    fireEvent.change(screen.getByDisplayValue('spice'), { target: { value: 'bakery' } })
+    fireEvent.change(screen.getByDisplayValue('spice'), {
+      target: { value: 'bakery' }
+    })
     fireEvent.click(screen.getByText(/delete ingredient/i))
     fireEvent.click(screen.getByText(/add ingredient/i))
     fireEvent.click(screen.getByText(/clear all/i))

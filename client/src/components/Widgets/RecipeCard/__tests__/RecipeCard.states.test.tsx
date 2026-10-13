@@ -41,7 +41,11 @@ describe('RecipeCard states', () => {
     mockCard.getRecipeError = new Error('nope')
     const { rerender } = render(
       <MemoryRouter>
-        <RecipeCard recipe={recipe()} onSavedPage={false} pro={false} />
+        <RecipeCard
+          recipe={recipe()}
+          onSavedPage={false}
+          pro={false}
+        />
       </MemoryRouter>
     )
     expect(screen.getByText('Error')).toBeInTheDocument()
@@ -49,7 +53,11 @@ describe('RecipeCard states', () => {
     mockCard.getRecipeLoading = true
     rerender(
       <MemoryRouter>
-        <RecipeCard recipe={recipe()} onSavedPage={false} pro={false} />
+        <RecipeCard
+          recipe={recipe()}
+          onSavedPage={false}
+          pro={false}
+        />
       </MemoryRouter>
     )
     expect(screen.getByText('Loading')).toBeInTheDocument()
@@ -59,7 +67,11 @@ describe('RecipeCard states', () => {
     mockAuth.loggedIn = false
     const { rerender } = render(
       <MemoryRouter>
-        <RecipeCard recipe={recipe()} onSavedPage={false} pro={true} />
+        <RecipeCard
+          recipe={recipe()}
+          onSavedPage={false}
+          pro={true}
+        />
       </MemoryRouter>
     )
     expect(screen.queryByText(/instructions/i)).not.toBeInTheDocument()
@@ -67,14 +79,22 @@ describe('RecipeCard states', () => {
     mockAuth.loggedIn = true
     rerender(
       <MemoryRouter>
-        <RecipeCard recipe={recipe()} onSavedPage={false} pro={false} />
+        <RecipeCard
+          recipe={recipe()}
+          onSavedPage={false}
+          pro={false}
+        />
       </MemoryRouter>
     )
     expect(screen.queryByText(/instructions/i)).not.toBeInTheDocument()
 
     rerender(
       <MemoryRouter>
-        <RecipeCard recipe={recipe()} onSavedPage={false} pro={true} />
+        <RecipeCard
+          recipe={recipe()}
+          onSavedPage={false}
+          pro={true}
+        />
       </MemoryRouter>
     )
     expect(screen.getByText(/instructions/i)).toBeInTheDocument()

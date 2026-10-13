@@ -64,7 +64,11 @@ function installIndexedDb() {
 describe('idbPromise', () => {
   it('creates stores, puts an object, and closes the database', async () => {
     const fake = installIndexedDb()
-    const pending = idbPromise({ storeName: 'recipes', method: 'put', object: { _id: '1' } })
+    const pending = idbPromise({
+      storeName: 'recipes',
+      method: 'put',
+      object: { _id: '1' }
+    })
     fake.request.onupgradeneeded?.()
     fake.request.onsuccess?.()
     fake.db.onerror?.()
@@ -82,7 +86,11 @@ describe('idbPromise', () => {
 
   it('reads every record', async () => {
     const fake = installIndexedDb()
-    const pending = idbPromise({ storeName: 'recipes', method: 'get', object: null })
+    const pending = idbPromise({
+      storeName: 'recipes',
+      method: 'get',
+      object: null
+    })
     fake.request.onsuccess?.()
     fake.allRequest.onsuccess?.()
     await expect(pending).resolves.toEqual([{ _id: '1' }])
@@ -90,7 +98,11 @@ describe('idbPromise', () => {
 
   it('deletes by id when the object has one', () => {
     const fake = installIndexedDb()
-    void idbPromise({ storeName: 'recipes', method: 'delete', object: { _id: 'abc' } })
+    void idbPromise({
+      storeName: 'recipes',
+      method: 'delete',
+      object: { _id: 'abc' }
+    })
     fake.request.onsuccess?.()
     expect(fake.calls).toContain('delete:abc')
 
@@ -98,9 +110,17 @@ describe('idbPromise', () => {
     fake.request.onsuccess?.()
     void idbPromise({ storeName: 'recipes', method: 'delete', object: null })
     fake.request.onsuccess?.()
-    void idbPromise({ storeName: 'recipes', method: 'delete', object: { name: 'x' } })
+    void idbPromise({
+      storeName: 'recipes',
+      method: 'delete',
+      object: { name: 'x' }
+    })
     fake.request.onsuccess?.()
-    void idbPromise({ storeName: 'recipes', method: 'delete', object: { _id: 4 } })
+    void idbPromise({
+      storeName: 'recipes',
+      method: 'delete',
+      object: { _id: 4 }
+    })
     fake.request.onsuccess?.()
     expect(fake.calls.filter((call) => call.startsWith('delete:'))).toEqual([
       'delete:abc',
@@ -112,7 +132,9 @@ describe('idbPromise', () => {
   })
 
   it('logs an error for an unknown method or a failed open', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     const fake = installIndexedDb()
     void idbPromise({ storeName: 'recipes', method: 'nope', object: {} })
     fake.request.onsuccess?.()

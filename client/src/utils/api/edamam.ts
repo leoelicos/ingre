@@ -15,7 +15,9 @@ type FetchEdamamType = ({
   appKey
 }: FetchEdamamOptions) => Promise<ClientRecipe[]>
 
-export function recipesFromEdamamResponse(response: EdamamHttpResponse): ClientRecipe[] {
+export function recipesFromEdamamResponse(
+  response: EdamamHttpResponse
+): ClientRecipe[] {
   if (!response) throw new Error('Error: 404 Edamam no response')
 
   /* from the docs: https://developer.edamam.com/edamam-docs-recipe-api */

@@ -11,7 +11,9 @@ jest.mock('../../../utils/auth/AuthContext', () => ({
   useAuthContext: () => [{ loggedIn: false }, jest.fn()]
 }))
 
-jest.mock('../../../components/NotLoggedIn', () => () => <div>Not logged in</div>)
+jest.mock('../../../components/NotLoggedIn', () => () => (
+  <div>Not logged in</div>
+))
 
 describe('Ingredients', () => {
   it('shows not logged in when unauthenticated', () => {

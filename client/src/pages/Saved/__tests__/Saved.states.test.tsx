@@ -23,10 +23,13 @@ jest.mock('../../../utils/auth/AuthContext', () => ({
   useAuthContext: () => [mockAuth, jest.fn()]
 }))
 
-jest.mock('../../../components/NotLoggedIn', () => () => <div>Not logged in</div>)
-jest.mock('../../../components/Widgets/RecipeCard/RecipeCardContainer', () => () => (
-  <div data-testid="cards" />
+jest.mock('../../../components/NotLoggedIn', () => () => (
+  <div>Not logged in</div>
 ))
+jest.mock(
+  '../../../components/Widgets/RecipeCard/RecipeCardContainer',
+  () => () => <div data-testid="cards" />
+)
 
 describe('Saved states', () => {
   beforeEach(() => {

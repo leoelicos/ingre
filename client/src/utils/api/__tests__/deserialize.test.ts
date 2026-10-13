@@ -29,7 +29,13 @@ describe('deserialize', () => {
       instructions: 'http://share',
       edamamId: 'abc',
       ingredients: [
-        { name: 'Pea', quantity: 2, measure: 'cup', category: 'veg', _id: undefined }
+        {
+          name: 'Pea',
+          quantity: 2,
+          measure: 'cup',
+          category: 'veg',
+          _id: undefined
+        }
       ]
     })
   })

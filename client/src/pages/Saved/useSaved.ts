@@ -3,7 +3,10 @@ import { useEffect } from 'react'
 import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries'
 import { changeTitle } from '../../utils/changeTitle'
 import { useStoreContext } from '../../utils/state/GlobalState'
-import { FLAG_SAVED_MOUNTED, UPDATE_SAVED_RECIPES } from '../../utils/state/actions'
+import {
+  FLAG_SAVED_MOUNTED,
+  UPDATE_SAVED_RECIPES
+} from '../../utils/state/actions'
 
 export const useSaved = () => {
   changeTitle('Search')

@@ -8,7 +8,10 @@ jest.mock('@apollo/client', () => ({
 }))
 
 jest.mock('../../../utils/state/GlobalState', () => ({
-  useStoreContext: () => [{ savedRecipes: [{ name: 'Pasta', ingredients: [] }] }, jest.fn()]
+  useStoreContext: () => [
+    { savedRecipes: [{ name: 'Pasta', ingredients: [] }] },
+    jest.fn()
+  ]
 }))
 
 describe('useIngredients', () => {

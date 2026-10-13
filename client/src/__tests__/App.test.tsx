@@ -5,16 +5,26 @@ import { authHeaders, graphqlEndpoint, Ingre, withAuthHeaders } from '../App'
 jest.mock('../pages/Home/Home', () => () => <div>Home page</div>)
 jest.mock('../pages/Search/Search', () => () => <div>Search page</div>)
 jest.mock('../pages/Customise/Customise', () => () => <div>Customise page</div>)
-jest.mock('../pages/Saved/Saved', () => ({ Saved: () => <div>Saved page</div> }))
+jest.mock('../pages/Saved/Saved', () => ({
+  Saved: () => <div>Saved page</div>
+}))
 jest.mock('../pages/Ingredients/Ingredients', () => ({
   Ingredients: () => <div>Ingredients page</div>
 }))
 jest.mock('../pages/TapOff/TapOff', () => () => <div>Tapoff page</div>)
-jest.mock('../pages/Admin/Login', () => ({ Login: () => <div>Login page</div> }))
-jest.mock('../pages/Admin/Signup', () => ({ Signup: () => <div>Signup page</div> }))
+jest.mock('../pages/Admin/Login', () => ({
+  Login: () => <div>Login page</div>
+}))
+jest.mock('../pages/Admin/Signup', () => ({
+  Signup: () => <div>Signup page</div>
+}))
 jest.mock('../pages/Admin/Upgrade', () => () => <div>Upgrade page</div>)
-jest.mock('../pages/Admin/Success', () => ({ Success: () => <div>Success page</div> }))
-jest.mock('../pages/Admin/NoMatch', () => ({ NoMatch: () => <div>No match</div> }))
+jest.mock('../pages/Admin/Success', () => ({
+  Success: () => <div>Success page</div>
+}))
+jest.mock('../pages/Admin/NoMatch', () => ({
+  NoMatch: () => <div>No match</div>
+}))
 jest.mock('../components/Header', () => ({ Header: () => <div>Header</div> }))
 
 describe('App', () => {
@@ -40,9 +50,9 @@ describe('App', () => {
     expect(authHeaders({ accept: 'json' })).toEqual({
       headers: { accept: 'json', authorization: 'Bearer abc' }
     })
-    expect(withAuthHeaders({}, { headers: { accept: 'json' } }).headers.authorization).toBe(
-      'Bearer abc'
-    )
+    expect(
+      withAuthHeaders({}, { headers: { accept: 'json' } }).headers.authorization
+    ).toBe('Bearer abc')
   })
 
   it('uses an empty authorization header without a token', () => {

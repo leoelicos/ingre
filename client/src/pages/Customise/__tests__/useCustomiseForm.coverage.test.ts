@@ -4,7 +4,9 @@ import { recipe } from '../../../test/fixtures'
 import type { ClientRecipe } from '../../../types/client'
 
 const mockNavigate = jest.fn()
-const mockState: { customiseRecipe: ClientRecipe | null } = { customiseRecipe: null }
+const mockState: { customiseRecipe: ClientRecipe | null } = {
+  customiseRecipe: null
+}
 
 jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate
@@ -28,16 +30,30 @@ describe('useCustomiseForm coverage', () => {
   it('edits fields, undoes, clears, and saves a new recipe', async () => {
     const saveRecipe = jest.fn()
     const updateRecipe = jest.fn()
-    const { result } = renderHook(() => useCustomiseForm({ updateRecipe, saveRecipe }))
+    const { result } = renderHook(() =>
+      useCustomiseForm({ updateRecipe, saveRecipe })
+    )
 
     act(() => {
       result.current.onNameChange({ target: { value: 'Pie' } })
       result.current.onPortionsChange({ target: { value: '4' } })
-      result.current.onIngredientsChange({ idx: 0, newObject: { name: 'Salt' } })
+      result.current.onIngredientsChange({
+        idx: 0,
+        newObject: { name: 'Salt' }
+      })
       result.current.onIngredientsChange({ idx: 0, newObject: { quantity: 3 } })
-      result.current.onIngredientsChange({ idx: 0, newObject: { measure: 'g' } })
-      result.current.onIngredientsChange({ idx: 0, newObject: { category: 'spice' } })
-      result.current.onIngredientsChange({ idx: 3, newObject: { name: 'ignored' } })
+      result.current.onIngredientsChange({
+        idx: 0,
+        newObject: { measure: 'g' }
+      })
+      result.current.onIngredientsChange({
+        idx: 0,
+        newObject: { category: 'spice' }
+      })
+      result.current.onIngredientsChange({
+        idx: 3,
+        newObject: { name: 'ignored' }
+      })
       result.current.onAddIngredient()
     })
     expect(result.current.name).toBe('Pie')
@@ -76,7 +92,9 @@ describe('useCustomiseForm coverage', () => {
     })
     const saveRecipe = jest.fn()
     const updateRecipe = jest.fn()
-    const { result } = renderHook(() => useCustomiseForm({ updateRecipe, saveRecipe }))
+    const { result } = renderHook(() =>
+      useCustomiseForm({ updateRecipe, saveRecipe })
+    )
     act(() => {
       result.current.onPortionsChange({ target: { value: '' } })
       result.current.onIngredientsChange({ idx: 0, newObject: { quantity: 0 } })
@@ -98,7 +116,9 @@ describe('useCustomiseForm coverage', () => {
   })
 
   it('does not save after cancel and logs save failures', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     const saveRecipe = jest.fn(() => {
       throw new Error('nope')
     })

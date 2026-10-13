@@ -47,7 +47,10 @@ describe('useSaved coverage', () => {
     mockLazy.loading = true
     const { rerender } = renderHook(() => useSaved())
     expect(mockGetSavedRecipes).toHaveBeenCalled()
-    expect(mockDispatch).toHaveBeenCalledWith({ type: 'FLAG_SAVED_MOUNTED', data: undefined })
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'FLAG_SAVED_MOUNTED',
+      data: undefined
+    })
 
     mockLazy.loading = false
     mockLazy.error = new Error('nope')

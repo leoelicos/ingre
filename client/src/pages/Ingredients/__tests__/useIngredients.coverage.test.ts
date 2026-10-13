@@ -23,7 +23,9 @@ const mockLazy: {
 
 jest.mock('@apollo/client', () => ({
   useLazyQuery: () => [mockGetSavedRecipes, mockLazy],
-  useApolloClient: () => ({ query: (...args: unknown[]) => mockQuery(...args) }),
+  useApolloClient: () => ({
+    query: (...args: unknown[]) => mockQuery(...args)
+  }),
   gql: (s: TemplateStringsArray) => s
 }))
 
@@ -48,11 +50,17 @@ describe('useIngredients coverage', () => {
   })
 
   it('reloads recipes, skips ones without an id, and adds a row', async () => {
-    mockStore.savedRecipes = [recipe(), recipe({ _id: undefined, name: 'Skip' })]
+    mockStore.savedRecipes = [
+      recipe(),
+      recipe({ _id: undefined, name: 'Skip' })
+    ]
     mockQuery.mockResolvedValue({
       data: {
         getRecipe: {
-          ingredients: [ingredient({ _id: 'a' }), ingredient({ _id: undefined, name: 'Salt' })]
+          ingredients: [
+            ingredient({ _id: 'a' }),
+            ingredient({ _id: undefined, name: 'Salt' })
+          ]
         }
       }
     })
@@ -73,7 +81,9 @@ describe('useIngredients coverage', () => {
   })
 
   it('logs a failed reload', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     mockStore.savedRecipes = [recipe()]
     mockQuery.mockRejectedValue(new Error('no recipe'))
     const { result } = renderHook(() => useIngredients())

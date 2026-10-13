@@ -6,7 +6,10 @@ jest.mock('react-router-dom', () => ({
 }))
 
 jest.mock('../../../utils/state/GlobalState', () => ({
-  useStoreContext: () => [{ customiseRecipe: { name: 'Test', ingredients: [] } }, jest.fn()]
+  useStoreContext: () => [
+    { customiseRecipe: { name: 'Test', ingredients: [] } },
+    jest.fn()
+  ]
 }))
 
 jest.mock('../../../utils/auth/AuthContext', () => ({
@@ -15,7 +18,9 @@ jest.mock('../../../utils/auth/AuthContext', () => ({
 
 describe('useCustomiseForm', () => {
   it('returns form state', () => {
-    const { result } = renderHook(() => useCustomiseForm({ updateRecipe: jest.fn(), saveRecipe: jest.fn() }))
+    const { result } = renderHook(() =>
+      useCustomiseForm({ updateRecipe: jest.fn(), saveRecipe: jest.fn() })
+    )
     expect(result.current).toBeDefined()
     expect(typeof result.current.onNameChange).toBe('function')
     expect(typeof result.current.onFinish).toBe('function')

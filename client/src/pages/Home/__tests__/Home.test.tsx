@@ -14,9 +14,10 @@ jest.mock('../useHome', () => ({
   useHome: () => mockHome
 }))
 
-jest.mock('../../../components/Widgets/RecipeCard/RecipeCardContainer', () => () => (
-  <div data-testid="recipe-cards" />
-))
+jest.mock(
+  '../../../components/Widgets/RecipeCard/RecipeCardContainer',
+  () => () => <div data-testid="recipe-cards" />
+)
 
 describe('Home', () => {
   it('renders welcome message when logged in', () => {

@@ -42,8 +42,14 @@ describe('Signup states', () => {
     render(
       <MemoryRouter initialEntries={['/signup']}>
         <Routes>
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/" element={<div>home</div>} />
+          <Route
+            path="/signup"
+            element={<Signup />}
+          />
+          <Route
+            path="/"
+            element={<div>home</div>}
+          />
         </Routes>
       </MemoryRouter>
     )
@@ -55,7 +61,10 @@ describe('Signup states', () => {
     const { rerender } = render(
       <MemoryRouter initialEntries={['/signup']}>
         <Routes>
-          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/signup"
+            element={<Signup />}
+          />
         </Routes>
       </MemoryRouter>
     )
@@ -66,7 +75,10 @@ describe('Signup states', () => {
     rerender(
       <MemoryRouter initialEntries={['/signup']}>
         <Routes>
-          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/signup"
+            element={<Signup />}
+          />
         </Routes>
       </MemoryRouter>
     )
@@ -77,11 +89,16 @@ describe('Signup states', () => {
     rerender(
       <MemoryRouter initialEntries={['/signup']}>
         <Routes>
-          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/signup"
+            element={<Signup />}
+          />
         </Routes>
       </MemoryRouter>
     )
-    expect(screen.getByText(/user with this email already exists/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/user with this email already exists/i)
+    ).toBeInTheDocument()
     expect(screen.getByText(/couldn't sign you up/i)).toBeInTheDocument()
     const inputs = screen.getAllByRole('textbox')
     fireEvent.change(inputs[0], { target: { value: 'Ada' } })

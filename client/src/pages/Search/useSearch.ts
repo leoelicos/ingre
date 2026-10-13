@@ -93,7 +93,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-function isOneOf<T extends string>(options: readonly T[], value: string): value is T {
+function isOneOf<T extends string>(
+  options: readonly T[],
+  value: string
+): value is T {
   for (const option of options) {
     if (option === value) return true
   }
@@ -113,11 +116,14 @@ export function buildFilterState(value: unknown): filterTypes {
     const val = value[key]
     if (typeof val !== 'string') continue
     if (key === 'diet' && isOneOf(dietTypes, val)) next.diet.push(val)
-    else if (key === 'health' && isOneOf(healthTypes, val)) next.health.push(val)
+    else if (key === 'health' && isOneOf(healthTypes, val))
+      next.health.push(val)
     else if (key === 'cuisine-type' && isOneOf(cuisineTypes, val))
       next.cuisineType.push(val)
-    else if (key === 'meal-type' && isOneOf(mealTypes, val)) next.mealType.push(val)
-    else if (key === 'dish-type' && isOneOf(dishTypes, val)) next.dishType.push(val)
+    else if (key === 'meal-type' && isOneOf(mealTypes, val))
+      next.mealType.push(val)
+    else if (key === 'dish-type' && isOneOf(dishTypes, val))
+      next.dishType.push(val)
   }
   return next
 }

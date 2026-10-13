@@ -46,7 +46,9 @@ describe('useSuccess coverage', () => {
   })
 
   it('logs a failed upgrade', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     mockMakeUserPro.mockRejectedValue(new Error('stripe'))
     renderHook(() => useSuccess())
     await act(async () => {

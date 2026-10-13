@@ -4,7 +4,10 @@ import { Link } from 'react-router-dom'
 import NotLoggedIn from '../../components/NotLoggedIn'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 import { changeTitle } from '../../utils/changeTitle'
-import type { compressedCategoriesType, compressedCategoryType } from '../../utils/compress'
+import type {
+  compressedCategoriesType,
+  compressedCategoryType
+} from '../../utils/compress'
 import compress from '../../utils/compress'
 import { useStoreContext } from '../../utils/state/GlobalState'
 import { savedIngredientsFromUnknown } from '../../utils/state/guards'
@@ -59,20 +62,25 @@ const TapOff: FC = () => {
             compressedRecipes.map((r: compressedCategoryType, ri: number) => (
               <>
                 <p>{r.category.name}</p>
-                {r.items.map((i: { description: string; checked: boolean }, ii: number) => (
-                  <>
-                    {' '}
-                    <input
-                      key={r.category + i.description}
-                      type="checkbox"
-                      checked={i.checked}
-                      onChange={(e) => handleChange(ri, ii, e.target.checked)}
-                    />
-                    <label htmlFor={r.category + i.description}>
-                      {i.description}
-                    </label>
-                  </>
-                ))}
+                {r.items.map(
+                  (
+                    i: { description: string; checked: boolean },
+                    ii: number
+                  ) => (
+                    <>
+                      {' '}
+                      <input
+                        key={r.category + i.description}
+                        type="checkbox"
+                        checked={i.checked}
+                        onChange={(e) => handleChange(ri, ii, e.target.checked)}
+                      />
+                      <label htmlFor={r.category + i.description}>
+                        {i.description}
+                      </label>
+                    </>
+                  )
+                )}
               </>
             ))
           ) : (

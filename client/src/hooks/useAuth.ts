@@ -4,7 +4,7 @@ import { LOGIN } from '../lib/apollo/graphQL/mutations'
 import { useAuthContext } from '../utils/auth/AuthContext'
 
 export const useAuth = () => {
-  const [_auth, dispatch] = useAuthContext()
+  const [, dispatch] = useAuthContext()
   const navigate = useNavigate()
 
   const [loginMutation, { loading: loginLoading, error: loginError }] =

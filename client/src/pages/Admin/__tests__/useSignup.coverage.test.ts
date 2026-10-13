@@ -12,7 +12,10 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('@apollo/client', () => ({
   useMutation: () => [mockAddUser, { error: undefined }],
-  useLazyQuery: () => [mockCheck, { loading: false, data: null, error: undefined }],
+  useLazyQuery: () => [
+    mockCheck,
+    { loading: false, data: null, error: undefined }
+  ],
   gql: (s: TemplateStringsArray) => s
 }))
 
@@ -50,7 +53,9 @@ describe('useSignup coverage', () => {
   })
 
   it('logs a failed signup', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     mockAddUser.mockRejectedValue(new Error('exists'))
     const { result } = renderHook(() => useSignup())
     await act(async () => {

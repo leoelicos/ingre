@@ -3,20 +3,32 @@ import { useHome } from '../useHome'
 
 const mockDispatch = jest.fn()
 jest.mock('@apollo/client', () => ({
-  useApolloClient: () => ({ query: jest.fn().mockResolvedValue({ data: { getAppCredentials: { appId: 'id', appKey: 'key' } } }) }),
+  useApolloClient: () => ({
+    query: jest.fn().mockResolvedValue({
+      data: { getAppCredentials: { appId: 'id', appKey: 'key' } }
+    })
+  }),
   gql: (s: TemplateStringsArray) => s
 }))
 
 jest.mock('../../../utils/auth/AuthContext', () => ({
-  useAuthContext: () => [{ loggedIn: true, profile: { data: { firstName: 'Test' } } }, jest.fn()]
+  useAuthContext: () => [
+    { loggedIn: true, profile: { data: { firstName: 'Test' } } },
+    jest.fn()
+  ]
 }))
 
 jest.mock('../../../utils/state/GlobalState', () => ({
-  useStoreContext: () => [{ homeRecipes: [], homeDidMount: false }, mockDispatch]
+  useStoreContext: () => [
+    { homeRecipes: [], homeDidMount: false },
+    mockDispatch
+  ]
 }))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-jest.mock('../../../utils/api/edamam', () => jest.fn().mockResolvedValue([{ name: 'Pasta' }]))
+jest.mock('../../../utils/api/edamam', () =>
+  jest.fn().mockResolvedValue([{ name: 'Pasta' }])
+)
 
 describe('useHome', () => {
   it('returns expected shape and calls changeTitle', () => {

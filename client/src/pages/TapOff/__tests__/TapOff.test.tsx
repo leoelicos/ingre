@@ -12,7 +12,9 @@ jest.mock('../../../utils/state/GlobalState', () => ({
 }))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-jest.mock('../../../components/NotLoggedIn', () => () => <div>Not logged in</div>)
+jest.mock('../../../components/NotLoggedIn', () => () => (
+  <div>Not logged in</div>
+))
 
 describe('TapOff', () => {
   it('shows not logged in when unauthenticated', () => {

@@ -34,7 +34,7 @@
 ## Notes
 - TypeScript is pinned at 6 on client and server (client install is 6.0.3). A TS 7 pin was reverted because the ESLint toolchain could not typecheck it.
 - Client `no-explicit-any` is enforced by the `@typescript-eslint` plugin bundled with `eslint-config-react-app`. Listing a second copy in `.eslintrc.js` made ESLint abort before the rule ran. After the dedupe, the rule reports 0 violations.
-- Remaining client ESLint output is pre-existing Prettier formatting (213) plus a few unused-var / hook-deps warnings. Not `any`.
+- Client source is Prettier-clean. Unused bindings `_auth` and `_state` were removed. Remaining ESLint output is one `import/extensions` error in `index.test.tsx` and two `react-hooks/exhaustive-deps` warnings. Not `any`.
 - Jest: server 29 with mongodb-memory-server; client still uses Jest 27 via react-scripts 5.
 - React Scripts 5 is unmaintained — consider a Vite migration later.
 - tsconfig `"strict": true` is set in both packages.

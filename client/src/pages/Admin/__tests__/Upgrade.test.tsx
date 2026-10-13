@@ -6,7 +6,9 @@ jest.mock('../useUpgrade', () => ({
   useUpgrade: () => ({ pro: false, loggedIn: false, getCheckout: jest.fn() })
 }))
 
-jest.mock('../../../components/NotLoggedIn', () => () => <div>Not logged in</div>)
+jest.mock('../../../components/NotLoggedIn', () => () => (
+  <div>Not logged in</div>
+))
 
 describe('Upgrade', () => {
   it('shows upgrade message when not logged in', () => {
@@ -15,7 +17,9 @@ describe('Upgrade', () => {
   })
 
   it('shows pro message when user is pro', () => {
-    jest.spyOn(require('../useUpgrade'), 'useUpgrade').mockReturnValue({ pro: true, loggedIn: true, getCheckout: jest.fn() })
+    jest
+      .spyOn(require('../useUpgrade'), 'useUpgrade')
+      .mockReturnValue({ pro: true, loggedIn: true, getCheckout: jest.fn() })
     render(<Upgrade />)
     expect(screen.getByText(/you are pro/i)).toBeInTheDocument()
   })

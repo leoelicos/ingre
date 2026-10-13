@@ -22,12 +22,22 @@ describe('TrashButton', () => {
   })
 
   it('shows spinner when loading', () => {
-    render(<TrashButton {...defaultProps} removeRecipeLoading={true} />)
+    render(
+      <TrashButton
+        {...defaultProps}
+        removeRecipeLoading={true}
+      />
+    )
     expect(screen.getByTestId('spinner')).toBeInTheDocument()
   })
 
   it('disables button when recipe is not saved', () => {
-    render(<TrashButton {...defaultProps} savedRecipes={[]} />)
+    render(
+      <TrashButton
+        {...defaultProps}
+        savedRecipes={[]}
+      />
+    )
     expect(screen.getByRole('button')).toBeDisabled()
   })
 })

@@ -3,10 +3,14 @@ import { useUpgrade } from '../useUpgrade'
 
 const mockGetCheckout = jest.fn()
 const mockRedirect = jest.fn()
-const mockStripeBox: { current: { redirectToCheckout: typeof mockRedirect } | null } = {
+const mockStripeBox: {
+  current: { redirectToCheckout: typeof mockRedirect } | null
+} = {
   current: { redirectToCheckout: mockRedirect }
 }
-const mockCheckout: { data: { checkout: { session: string } } | null } = { data: null }
+const mockCheckout: { data: { checkout: { session: string } } | null } = {
+  data: null
+}
 const mockUser: {
   loading: boolean
   error: Error | null
@@ -16,7 +20,9 @@ const mockUser: {
 jest.mock('@stripe/stripe-js', () => ({
   loadStripe: () => ({
     then: (
-      onFulfilled: (stripe: { redirectToCheckout: typeof mockRedirect } | null) => void
+      onFulfilled: (
+        stripe: { redirectToCheckout: typeof mockRedirect } | null
+      ) => void
     ) => {
       onFulfilled(mockStripeBox.current)
       return Promise.resolve()
@@ -51,7 +57,9 @@ describe('useUpgrade coverage', () => {
   })
 
   it('logs when stripe does not load', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     mockStripeBox.current = null
     mockCheckout.data = { checkout: { session: 'sess_1' } }
     renderHook(() => useUpgrade())

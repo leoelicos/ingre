@@ -6,7 +6,9 @@ const mockQuery = jest.fn()
 const mockFetchEdamam = jest.fn()
 
 jest.mock('@apollo/client', () => ({
-  useApolloClient: () => ({ query: (...args: unknown[]) => mockQuery(...args) }),
+  useApolloClient: () => ({
+    query: (...args: unknown[]) => mockQuery(...args)
+  }),
   gql: (s: TemplateStringsArray) => s
 }))
 
@@ -98,10 +100,14 @@ describe('useSearch coverage', () => {
 
     act(() => {
       result.current.onSearchChange({ target: { value: 'pasta' } })
-      result.current.handleFilterChange({ target: { value: { diet: 'low-sodium' } } })
+      result.current.handleFilterChange({
+        target: { value: { diet: 'low-sodium' } }
+      })
     })
     await act(async () => {
-      await result.current.handleFormSubmit('pasta', { target: { value: 'pasta' } })
+      await result.current.handleFormSubmit('pasta', {
+        target: { value: 'pasta' }
+      })
     })
     expect(mockFetchEdamam).toHaveBeenCalledWith({
       search: {
@@ -123,19 +129,27 @@ describe('useSearch coverage', () => {
   })
 
   it('logs credential and network failures', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     const { result } = renderHook(() => useSearch())
     mockQuery.mockResolvedValueOnce(null)
     await act(async () => {
-      await result.current.handleFormSubmit('pasta', { target: { value: 'pasta' } })
+      await result.current.handleFormSubmit('pasta', {
+        target: { value: 'pasta' }
+      })
     })
     mockQuery.mockRejectedValueOnce(new Error('down'))
     await act(async () => {
-      await result.current.handleFormSubmit('pasta', { target: { value: 'pasta' } })
+      await result.current.handleFormSubmit('pasta', {
+        target: { value: 'pasta' }
+      })
     })
     mockFetchEdamam.mockRejectedValueOnce(new Error('edamam'))
     await act(async () => {
-      await result.current.handleFormSubmit('pasta', { target: { value: 'pasta' } })
+      await result.current.handleFormSubmit('pasta', {
+        target: { value: 'pasta' }
+      })
     })
     expect(error).toHaveBeenCalled()
     error.mockRestore()

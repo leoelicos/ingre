@@ -35,22 +35,29 @@ describe('reducer', () => {
   it('updates recipe lists only when the payload is a recipe list', () => {
     const recipes = [recipe()]
     expect(
-      reducer(initialState, { type: UPDATE_SEARCH_RECIPES, data: recipes }).searchRecipes
+      reducer(initialState, { type: UPDATE_SEARCH_RECIPES, data: recipes })
+        .searchRecipes
     ).toEqual(recipes)
     expect(
-      reducer(initialState, { type: UPDATE_SEARCH_RECIPES, data: [{ name: 'nope' }] })
-        .searchRecipes
+      reducer(initialState, {
+        type: UPDATE_SEARCH_RECIPES,
+        data: [{ name: 'nope' }]
+      }).searchRecipes
     ).toEqual([])
     expect(
-      reducer(initialState, { type: UPDATE_HOME_RECIPES, data: recipes }).homeRecipes
+      reducer(initialState, { type: UPDATE_HOME_RECIPES, data: recipes })
+        .homeRecipes
     ).toEqual(recipes)
-    expect(reducer(initialState, { type: UPDATE_HOME_RECIPES }).homeRecipes).toEqual([])
+    expect(
+      reducer(initialState, { type: UPDATE_HOME_RECIPES }).homeRecipes
+    ).toEqual([])
   })
 
   it('updates saved recipes and treats undefined as an empty list', () => {
     const recipes = [recipe({ edamamId: 'saved' })]
     expect(
-      reducer(initialState, { type: UPDATE_SAVED_RECIPES, data: recipes }).savedRecipes
+      reducer(initialState, { type: UPDATE_SAVED_RECIPES, data: recipes })
+        .savedRecipes
     ).toEqual(recipes)
     expect(
       reducer(
@@ -59,13 +66,15 @@ describe('reducer', () => {
       ).savedRecipes
     ).toEqual([])
     expect(
-      reducer(initialState, { type: UPDATE_SAVED_RECIPES, data: 'nope' }).savedRecipes
+      reducer(initialState, { type: UPDATE_SAVED_RECIPES, data: 'nope' })
+        .savedRecipes
     ).toEqual([])
   })
 
   it('updates saved ingredients and tap off lists', () => {
     expect(
-      reducer(initialState, { type: UPDATE_SAVED_INGREDIENTS, data: ['a'] }).savedIngredients
+      reducer(initialState, { type: UPDATE_SAVED_INGREDIENTS, data: ['a'] })
+        .savedIngredients
     ).toEqual(['a'])
     expect(
       reducer(initialState, { type: UPDATE_SAVED_INGREDIENTS, data: undefined })
@@ -75,8 +84,12 @@ describe('reducer', () => {
       reducer(initialState, { type: UPDATE_SAVED_INGREDIENTS, data: 'nope' })
         .savedIngredients
     ).toEqual([])
-    expect(reducer(initialState, { type: UPDATE_TAP_OFF, data: [1] }).tapOff).toEqual([1])
-    expect(reducer(initialState, { type: UPDATE_TAP_OFF, data: 'nope' }).tapOff).toEqual([])
+    expect(
+      reducer(initialState, { type: UPDATE_TAP_OFF, data: [1] }).tapOff
+    ).toEqual([1])
+    expect(
+      reducer(initialState, { type: UPDATE_TAP_OFF, data: 'nope' }).tapOff
+    ).toEqual([])
   })
 
   it('adds a saved recipe once and ignores invalid payloads', () => {
@@ -84,15 +97,21 @@ describe('reducer', () => {
     const added = reducer(initialState, { type: ADD_SAVED_RECIPE, data: first })
     expect(added.savedRecipes).toEqual([first])
     expect(
-      reducer(added, { type: ADD_SAVED_RECIPE, data: recipe({ edamamId: 'a' }) }).savedRecipes
+      reducer(added, {
+        type: ADD_SAVED_RECIPE,
+        data: recipe({ edamamId: 'a' })
+      }).savedRecipes
     ).toHaveLength(1)
-    expect(reducer(initialState, { type: ADD_SAVED_RECIPE, data: { name: 'x' } })).toBe(
-      initialState
-    )
+    expect(
+      reducer(initialState, { type: ADD_SAVED_RECIPE, data: { name: 'x' } })
+    ).toBe(initialState)
   })
 
   it('removes a saved recipe by edamam id', () => {
-    const state = { ...initialState, savedRecipes: [recipe({ edamamId: 'keep' }), recipe()] }
+    const state = {
+      ...initialState,
+      savedRecipes: [recipe({ edamamId: 'keep' }), recipe()]
+    }
     expect(
       reducer(state, { type: REMOVE_SAVED_RECIPE, data: 'ed1' }).savedRecipes
     ).toEqual([recipe({ edamamId: 'keep' })])
@@ -102,23 +121,32 @@ describe('reducer', () => {
   it('sets and clears the recipe being customised', () => {
     const next = recipe({ name: 'Edit me' })
     expect(
-      reducer(initialState, { type: SET_EDIT_RECIPE, data: next }).customiseRecipe
+      reducer(initialState, { type: SET_EDIT_RECIPE, data: next })
+        .customiseRecipe
     ).toEqual(next)
     expect(
-      reducer(initialState, { type: SET_EDIT_RECIPE, data: null }).customiseRecipe
+      reducer(initialState, { type: SET_EDIT_RECIPE, data: null })
+        .customiseRecipe
     ).toBeNull()
-    expect(reducer(initialState, { type: SET_EDIT_RECIPE, data: { name: 'x' } })).toBe(
-      initialState
-    )
+    expect(
+      reducer(initialState, { type: SET_EDIT_RECIPE, data: { name: 'x' } })
+    ).toBe(initialState)
     const editing = { ...initialState, customiseRecipe: next }
-    expect(reducer(editing, { type: CLEAR_EDIT_RECIPE }).customiseRecipe).toBeNull()
+    expect(
+      reducer(editing, { type: CLEAR_EDIT_RECIPE }).customiseRecipe
+    ).toBeNull()
   })
 
   it('flags pages as mounted or generated', () => {
-    expect(reducer(initialState, { type: FLAG_HOME_MOUNTED }).homeDidMount).toBe(true)
-    expect(reducer(initialState, { type: FLAG_SAVED_MOUNTED }).savedDidMount).toBe(true)
     expect(
-      reducer(initialState, { type: FLAG_INGREDIENTS_GENERATED }).ingredientsDidGenerate
+      reducer(initialState, { type: FLAG_HOME_MOUNTED }).homeDidMount
+    ).toBe(true)
+    expect(
+      reducer(initialState, { type: FLAG_SAVED_MOUNTED }).savedDidMount
+    ).toBe(true)
+    expect(
+      reducer(initialState, { type: FLAG_INGREDIENTS_GENERATED })
+        .ingredientsDidGenerate
     ).toBe(true)
   })
 

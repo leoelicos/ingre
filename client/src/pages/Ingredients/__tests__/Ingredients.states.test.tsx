@@ -55,7 +55,9 @@ describe('Ingredients states', () => {
         <Ingredients />
       </MemoryRouter>
     )
-    expect(screen.getByText(/couldn't load saved ingredients/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/couldn't load saved ingredients/i)
+    ).toBeInTheDocument()
 
     mockIngredients.savedRecipeError = undefined
     rerender(

@@ -58,11 +58,15 @@ describe('useRecipeCard coverage', () => {
     ])
     mockSaveRecipe.mockResolvedValue({ data: { saveRecipe: recipe() } })
     mockRemoveRecipe.mockResolvedValue({ data: {} })
-    mockGetRecipe.mockResolvedValue({ data: { getRecipe: recipe({ name: 'Server' }) } })
+    mockGetRecipe.mockResolvedValue({
+      data: { getRecipe: recipe({ name: 'Server' }) }
+    })
   })
 
   it('logs mutation errors', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     mockFlags.saveError = new Error('save')
     mockFlags.removeError = new Error('remove')
     renderHook(() => useRecipeCard({ onSavedPage: false, recipe: recipe() }))
@@ -71,7 +75,9 @@ describe('useRecipeCard coverage', () => {
   })
 
   it('edits a saved recipe and ignores edit failures', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     const { result } = renderHook(() =>
       useRecipeCard({ onSavedPage: false, recipe: recipe({ _id: undefined }) })
     )
@@ -80,7 +86,9 @@ describe('useRecipeCard coverage', () => {
     })
     expect(mockGetRecipe).not.toHaveBeenCalled()
 
-    const loaded = renderHook(() => useRecipeCard({ onSavedPage: true, recipe: recipe() }))
+    const loaded = renderHook(() =>
+      useRecipeCard({ onSavedPage: true, recipe: recipe() })
+    )
     await act(async () => {
       await loaded.result.current.handleEdit()
     })
@@ -102,7 +110,9 @@ describe('useRecipeCard coverage', () => {
   })
 
   it('saves with defaults and with the provided recipe', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     const empty = renderHook(() =>
       useRecipeCard({
         onSavedPage: false,
@@ -112,7 +122,9 @@ describe('useRecipeCard coverage', () => {
           picture_url: '',
           edamamId: undefined,
           instructions: undefined,
-          ingredients: [ingredient({ name: '', quantity: 0, measure: '', category: '' })]
+          ingredients: [
+            ingredient({ name: '', quantity: 0, measure: '', category: '' })
+          ]
         })
       })
     )
@@ -140,11 +152,16 @@ describe('useRecipeCard coverage', () => {
       await blankInstructions.result.current.handleSave()
     })
 
-    const full = renderHook(() => useRecipeCard({ onSavedPage: false, recipe: recipe() }))
+    const full = renderHook(() =>
+      useRecipeCard({ onSavedPage: false, recipe: recipe() })
+    )
     await act(async () => {
       await full.result.current.handleSave()
     })
-    expect(mockDispatch).toHaveBeenCalledWith({ type: 'ADD_SAVED_RECIPE', data: recipe() })
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'ADD_SAVED_RECIPE',
+      data: recipe()
+    })
 
     mockSaveRecipe.mockResolvedValueOnce(undefined)
     await act(async () => {
@@ -159,13 +176,19 @@ describe('useRecipeCard coverage', () => {
   })
 
   it('removes a recipe from the saved page or by edamam id', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     mockSaved.savedRecipes = [recipe({ _id: 'saved-id', edamamId: 'ed1' })]
-    const saved = renderHook(() => useRecipeCard({ onSavedPage: true, recipe: recipe() }))
+    const saved = renderHook(() =>
+      useRecipeCard({ onSavedPage: true, recipe: recipe() })
+    )
     await act(async () => {
       await saved.result.current.handleRemove()
     })
-    expect(mockRemoveRecipe).toHaveBeenCalledWith({ variables: { recipeId: 'id1' } })
+    expect(mockRemoveRecipe).toHaveBeenCalledWith({
+      variables: { recipeId: 'id1' }
+    })
 
     const searched = renderHook(() =>
       useRecipeCard({ onSavedPage: false, recipe: recipe() })
@@ -173,7 +196,9 @@ describe('useRecipeCard coverage', () => {
     await act(async () => {
       await searched.result.current.handleRemove()
     })
-    expect(mockRemoveRecipe).toHaveBeenCalledWith({ variables: { recipeId: 'saved-id' } })
+    expect(mockRemoveRecipe).toHaveBeenCalledWith({
+      variables: { recipeId: 'saved-id' }
+    })
 
     mockSaved.savedRecipes = []
     await act(async () => {
@@ -188,7 +213,10 @@ describe('useRecipeCard coverage', () => {
     await act(async () => {
       await searched.result.current.handleRemove()
     })
-    expect(mockDispatch).toHaveBeenCalledWith({ type: 'REMOVE_SAVED_RECIPE', data: 'ed1' })
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'REMOVE_SAVED_RECIPE',
+      data: 'ed1'
+    })
     expect(error).toHaveBeenCalledWith(Error)
     error.mockRestore()
   })

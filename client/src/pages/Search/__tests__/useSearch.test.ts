@@ -2,7 +2,11 @@ import { renderHook, act } from '@testing-library/react'
 import { useSearch } from '../useSearch'
 
 jest.mock('@apollo/client', () => ({
-  useApolloClient: () => ({ query: jest.fn().mockResolvedValue({ data: { getAppCredentials: { appId: 'id', appKey: 'key' } } }) }),
+  useApolloClient: () => ({
+    query: jest.fn().mockResolvedValue({
+      data: { getAppCredentials: { appId: 'id', appKey: 'key' } }
+    })
+  }),
   gql: (s: TemplateStringsArray) => s
 }))
 

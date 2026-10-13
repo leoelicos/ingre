@@ -18,7 +18,11 @@ describe('RecipeCardContainer', () => {
   it('shows loading state', () => {
     render(
       <MemoryRouter>
-        <RecipeCardContainer results={[]} loading={true} onSavedPage={false} />
+        <RecipeCardContainer
+          results={[]}
+          loading={true}
+          onSavedPage={false}
+        />
       </MemoryRouter>
     )
     expect(screen.getByText(/loading/i)).toBeInTheDocument()
@@ -27,7 +31,11 @@ describe('RecipeCardContainer', () => {
   it('shows no recipes message when empty', () => {
     render(
       <MemoryRouter>
-        <RecipeCardContainer results={[]} loading={false} onSavedPage={false} />
+        <RecipeCardContainer
+          results={[]}
+          loading={false}
+          onSavedPage={false}
+        />
       </MemoryRouter>
     )
     expect(screen.getByText(/no recipes/i)).toBeInTheDocument()
@@ -37,7 +45,11 @@ describe('RecipeCardContainer', () => {
     const results = [recipe({ name: 'Pasta', edamamId: '1' })]
     render(
       <MemoryRouter>
-        <RecipeCardContainer results={results} loading={false} onSavedPage={false} />
+        <RecipeCardContainer
+          results={results}
+          loading={false}
+          onSavedPage={false}
+        />
       </MemoryRouter>
     )
     expect(screen.getByTestId('card')).toHaveTextContent('Pasta')

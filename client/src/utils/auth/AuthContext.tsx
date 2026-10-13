@@ -1,4 +1,5 @@
-import {   FC,
+import {
+  FC,
   ReactNode,
   createContext,
   useContext,
@@ -32,7 +33,10 @@ export function readInitialAuth(token: string | null): AuthType {
   }
 }
 
-type AuthContextType = [state: AuthType, dispatch: React.Dispatch<{ type: string; data: string }>]
+type AuthContextType = [
+  state: AuthType,
+  dispatch: React.Dispatch<{ type: string; data: string }>
+]
 
 const initialState: AuthType = readInitialAuth(localStorage.getItem('id_token'))
 
@@ -50,13 +54,19 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 const useAuthContext = () => useContext(AuthContext)
 export { AuthProvider, useAuthContext }
-interface AuthState { loggedIn: boolean; profile: ProfileType | null }
+interface AuthState {
+  loggedIn: boolean
+  profile: ProfileType | null
+}
 
 const useAuthReducer = (initialState: AuthState) => {
   return useReducer(authReducer, initialState)
 }
 
-type reducerType = (state: AuthState, action: { type: string; data: string }) => AuthState
+type reducerType = (
+  state: AuthState,
+  action: { type: string; data: string }
+) => AuthState
 export const authReducer: reducerType = (state, action) => {
   switch (action.type) {
     case 'UPDATE':

@@ -14,7 +14,9 @@ const mockStore: { homeRecipes: never[]; homeDidMount: boolean } = {
 }
 
 jest.mock('@apollo/client', () => ({
-  useApolloClient: () => ({ query: (...args: unknown[]) => mockQuery(...args) }),
+  useApolloClient: () => ({
+    query: (...args: unknown[]) => mockQuery(...args)
+  }),
   gql: (s: TemplateStringsArray) => s
 }))
 
@@ -61,7 +63,15 @@ describe('useHome coverage', () => {
 
   it('refreshes every preset query and stores the hits', async () => {
     const { result } = renderHook(() => useHome())
-    for (const query of ['vegetarian', 'vegan', 'balanced', 'breakfast', 'lunch', 'dinner', 'yum']) {
+    for (const query of [
+      'vegetarian',
+      'vegan',
+      'balanced',
+      'breakfast',
+      'lunch',
+      'dinner',
+      'yum'
+    ]) {
       await act(async () => {
         await result.current.handleRefresh(query)
       })
@@ -84,7 +94,9 @@ describe('useHome coverage', () => {
   })
 
   it('logs and stops loading when credentials are missing or the query throws', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     mockStore.homeDidMount = true
     const { result } = renderHook(() => useHome())
     mockQuery.mockResolvedValueOnce(null)
@@ -101,13 +113,22 @@ describe('useHome coverage', () => {
   })
 
   it('fetches on first mount and logs a failed first load', async () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     mockStore.homeDidMount = false
     await act(async () => {
       renderHook(() => useHome())
     })
-    expect(mockDispatch).toHaveBeenCalledWith({ type: 'FLAG_HOME_MOUNTED', data: undefined })
-    expect(mockFetchEdamam).toHaveBeenCalledWith({ search: {}, appId: 'id', appKey: 'key' })
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'FLAG_HOME_MOUNTED',
+      data: undefined
+    })
+    expect(mockFetchEdamam).toHaveBeenCalledWith({
+      search: {},
+      appId: 'id',
+      appKey: 'key'
+    })
 
     mockFetchEdamam.mockClear()
     mockQuery.mockRejectedValue(new Error('down'))

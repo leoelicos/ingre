@@ -4,12 +4,8 @@ import { options } from './options'
 import { useSearch } from './useSearch'
 
 const Search: FC = () => {
-  const {
-    searchText,
-    onSearchChange,
-    loadingEdamam,
-    edamamRecipes,
-  } = useSearch()
+  const { searchText, onSearchChange, loadingEdamam, edamamRecipes } =
+    useSearch()
   return (
     <>
       <p>Search</p>

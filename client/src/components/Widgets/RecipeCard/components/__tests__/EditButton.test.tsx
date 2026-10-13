@@ -19,7 +19,10 @@ describe('EditButton', () => {
   it('renders edit button', () => {
     render(
       <MemoryRouter>
-        <EditButton handleEdit={handleEdit} loggedIn={true} />
+        <EditButton
+          handleEdit={handleEdit}
+          loggedIn={true}
+        />
       </MemoryRouter>
     )
     expect(screen.getByRole('button')).toBeInTheDocument()
@@ -28,7 +31,10 @@ describe('EditButton', () => {
   it('calls handleEdit and navigates when logged in', () => {
     render(
       <MemoryRouter>
-        <EditButton handleEdit={handleEdit} loggedIn={true} />
+        <EditButton
+          handleEdit={handleEdit}
+          loggedIn={true}
+        />
       </MemoryRouter>
     )
     fireEvent.click(screen.getByRole('button'))
@@ -39,7 +45,10 @@ describe('EditButton', () => {
   it('navigates to login when not logged in', () => {
     render(
       <MemoryRouter>
-        <EditButton handleEdit={handleEdit} loggedIn={false} />
+        <EditButton
+          handleEdit={handleEdit}
+          loggedIn={false}
+        />
       </MemoryRouter>
     )
     fireEvent.click(screen.getByRole('button'))

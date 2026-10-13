@@ -26,7 +26,7 @@ export const SAVE_RECIPE = gql`
 `
 
 export const useSaveRecipe = () => {
-  const [_state, dispatch] = useStoreContext()
+  const [, dispatch] = useStoreContext()
   const [saveRecipe, { loading: saveRecipeLoading, error: saveRecipeError }] =
     useMutation(SAVE_RECIPE, {
       onCompleted: (data) => {

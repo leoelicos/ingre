@@ -74,7 +74,9 @@ describe('useAuth', () => {
   })
 
   it('onError logs error', () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const consoleSpy = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     renderHook(() => useAuth())
     const onError = mockLoginOptions.onError
     if (!onError) throw new Error('missing onError')

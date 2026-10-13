@@ -32,7 +32,9 @@ jest.mock('@apollo/client', () => ({
 describe('recipe mutations', () => {
   it('logs save completion and errors', () => {
     const log = jest.spyOn(console, 'log').mockImplementation(() => undefined)
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     renderHook(() => useSaveRecipe(), { wrapper: StoreProvider })
     act(() => {
       mockHandlers.onCompleted?.({ saveRecipe: { name: 'Pie' } })
@@ -46,7 +48,9 @@ describe('recipe mutations', () => {
 
   it('logs update completion and errors', () => {
     const log = jest.spyOn(console, 'log').mockImplementation(() => undefined)
-    const error = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     renderHook(() => useUpdateRecipe())
     act(() => {
       mockHandlers.onCompleted?.({ updateRecipe: { name: 'Pie' } })

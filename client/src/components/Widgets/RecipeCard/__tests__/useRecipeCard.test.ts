@@ -3,7 +3,9 @@ import { useRecipeCard } from '../useRecipeCard'
 import { recipe } from '../../../../test/fixtures'
 
 const mockDispatch = jest.fn()
-const mockGetRecipe = jest.fn().mockResolvedValue({ data: { getRecipe: { name: 'Test' } } })
+const mockGetRecipe = jest
+  .fn()
+  .mockResolvedValue({ data: { getRecipe: { name: 'Test' } } })
 
 jest.mock('@apollo/client', () => ({
   useMutation: () => [jest.fn(), { loading: false, error: null }],

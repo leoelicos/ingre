@@ -16,7 +16,9 @@ jest.mock('../useUpgrade', () => ({
 describe('Upgrade checkout', () => {
   it('starts checkout for a logged-in visitor', () => {
     render(<Upgrade />)
-    fireEvent.click(screen.getByRole('button', { name: /checkout with stripe/i }))
+    fireEvent.click(
+      screen.getByRole('button', { name: /checkout with stripe/i })
+    )
     expect(mockGetCheckout).toHaveBeenCalled()
     expect(screen.getByText(/why upgrade/i)).toBeInTheDocument()
   })

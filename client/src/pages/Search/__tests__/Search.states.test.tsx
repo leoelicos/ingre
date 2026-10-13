@@ -13,9 +13,10 @@ jest.mock('../useSearch', () => ({
   useSearch: () => mockSearch
 }))
 
-jest.mock('../../../components/Widgets/RecipeCard/RecipeCardContainer', () => () => (
-  <div data-testid="cards" />
-))
+jest.mock(
+  '../../../components/Widgets/RecipeCard/RecipeCardContainer',
+  () => () => <div data-testid="cards" />
+)
 
 describe('Search states', () => {
   it('shows recipes or a loading message', () => {

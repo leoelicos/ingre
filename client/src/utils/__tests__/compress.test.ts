@@ -59,11 +59,17 @@ describe('compress', () => {
       }
     ])
 
-    const produce = result.find((category) => category.category.name === 'Produce')
+    const produce = result.find(
+      (category) => category.category.name === 'Produce'
+    )
     const other = result.find((category) => category.category.name === 'Other')
     const dairy = result.find((category) => category.category.name === 'Dairy')
-    expect(produce?.items.some((item) => item.description.includes('3 cups'))).toBe(true)
-    expect(produce?.items.some((item) => item.description.startsWith('Apple'))).toBe(true)
+    expect(
+      produce?.items.some((item) => item.description.includes('3 cups'))
+    ).toBe(true)
+    expect(
+      produce?.items.some((item) => item.description.startsWith('Apple'))
+    ).toBe(true)
     expect(other?.items[0].description).toBe('Double  space (1)')
     expect(dairy?.items[0].description).toContain('+')
     expect(result.map((category) => category.category.name)).toEqual([

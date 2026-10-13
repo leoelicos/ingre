@@ -40,7 +40,10 @@ describe('SaveButton', () => {
   it('shows spinner when loading', () => {
     render(
       <MemoryRouter>
-        <SaveButton {...defaultProps} saveRecipeLoading={true} />
+        <SaveButton
+          {...defaultProps}
+          saveRecipeLoading={true}
+        />
       </MemoryRouter>
     )
     expect(screen.getByTestId('spinner')).toBeInTheDocument()
@@ -49,7 +52,10 @@ describe('SaveButton', () => {
   it('disables button when recipe is already saved', () => {
     render(
       <MemoryRouter>
-        <SaveButton {...defaultProps} savedRecipes={[recipe({ edamamId: 'ed1' })]} />
+        <SaveButton
+          {...defaultProps}
+          savedRecipes={[recipe({ edamamId: 'ed1' })]}
+        />
       </MemoryRouter>
     )
     expect(screen.getByRole('button')).toBeDisabled()
@@ -58,7 +64,10 @@ describe('SaveButton', () => {
   it('navigates to login when not logged in and clicked', () => {
     render(
       <MemoryRouter>
-        <SaveButton {...defaultProps} loggedIn={false} />
+        <SaveButton
+          {...defaultProps}
+          loggedIn={false}
+        />
       </MemoryRouter>
     )
     fireEvent.click(screen.getByRole('button'))

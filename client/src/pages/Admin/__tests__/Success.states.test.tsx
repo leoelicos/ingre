@@ -17,7 +17,9 @@ jest.mock('../useSuccess', () => ({
   useSuccess: () => mockSuccess
 }))
 
-jest.mock('../../../components/NotLoggedIn', () => () => <div>Not logged in</div>)
+jest.mock('../../../components/NotLoggedIn', () => () => (
+  <div>Not logged in</div>
+))
 
 describe('Success states', () => {
   it('shows a logged-out message and a payment error', () => {

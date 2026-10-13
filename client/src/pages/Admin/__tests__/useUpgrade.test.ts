@@ -10,7 +10,10 @@ jest.mock('@apollo/client', () => ({
 }))
 
 jest.mock('../../../utils/auth/AuthContext', () => ({
-  useAuthContext: () => [{ loggedIn: true, profile: { data: { pro: false } } }, jest.fn()]
+  useAuthContext: () => [
+    { loggedIn: true, profile: { data: { pro: false } } },
+    jest.fn()
+  ]
 }))
 
 describe('useUpgrade', () => {

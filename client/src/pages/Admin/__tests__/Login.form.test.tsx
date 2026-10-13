@@ -46,7 +46,9 @@ describe('Login form', () => {
         <Login />
       </MemoryRouter>
     )
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'a@b.c' } })
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'a@b.c' }
+    })
     const password = document.getElementById('password')
     if (!password) throw new Error('password field missing')
     fireEvent.change(password, { target: { value: 'secret' } })
@@ -55,7 +57,10 @@ describe('Login form', () => {
     fireEvent.click(screen.getByRole('button', { name: '🙈' }))
     expect(password).toHaveAttribute('type', 'password')
     fireEvent.click(screen.getByRole('button', { name: 'Submit' }))
-    expect(mockLogin).toHaveBeenCalledWith({ email: 'a@b.c', password: 'secret' })
+    expect(mockLogin).toHaveBeenCalledWith({
+      email: 'a@b.c',
+      password: 'secret'
+    })
   })
 
   it('shows loading and error states', () => {

@@ -5,12 +5,18 @@ const mockGetSavedRecipes = jest.fn()
 const mockDispatch = jest.fn()
 
 jest.mock('@apollo/client', () => ({
-  useLazyQuery: () => [mockGetSavedRecipes, { loading: false, error: null, data: { getSavedRecipes: [] } }],
+  useLazyQuery: () => [
+    mockGetSavedRecipes,
+    { loading: false, error: null, data: { getSavedRecipes: [] } }
+  ],
   gql: (s: TemplateStringsArray) => s
 }))
 
 jest.mock('../../../utils/state/GlobalState', () => ({
-  useStoreContext: () => [{ savedRecipes: [], savedDidMount: false }, mockDispatch]
+  useStoreContext: () => [
+    { savedRecipes: [], savedDidMount: false },
+    mockDispatch
+  ]
 }))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))

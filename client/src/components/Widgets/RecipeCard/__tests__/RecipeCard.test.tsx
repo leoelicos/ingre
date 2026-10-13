@@ -14,15 +14,25 @@ jest.mock('../useRecipeCard', () => ({
   })
 }))
 
-jest.mock('../components/EditButton', () => ({ EditButton: () => <button>Edit</button> }))
-jest.mock('../components/SaveButton', () => ({ SaveButton: () => <button>Save</button> }))
-jest.mock('../components/TrashButton', () => ({ TrashButton: () => <button>Delete</button> }))
+jest.mock('../components/EditButton', () => ({
+  EditButton: () => <button>Edit</button>
+}))
+jest.mock('../components/SaveButton', () => ({
+  SaveButton: () => <button>Save</button>
+}))
+jest.mock('../components/TrashButton', () => ({
+  TrashButton: () => <button>Delete</button>
+}))
 
 describe('RecipeCard', () => {
   it('renders recipe name', () => {
     render(
       <MemoryRouter>
-        <RecipeCard recipe={recipe({ name: 'Test Recipe' })} onSavedPage={false} pro={false} />
+        <RecipeCard
+          recipe={recipe({ name: 'Test Recipe' })}
+          onSavedPage={false}
+          pro={false}
+        />
       </MemoryRouter>
     )
     expect(screen.getByText('Test Recipe')).toBeInTheDocument()

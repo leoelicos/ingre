@@ -5,7 +5,10 @@ import fetchEdamam from '../../utils/api/edamam'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 import { changeTitle } from '../../utils/changeTitle'
 import { useStoreContext } from '../../utils/state/GlobalState'
-import { FLAG_HOME_MOUNTED, UPDATE_HOME_RECIPES } from '../../utils/state/actions'
+import {
+  FLAG_HOME_MOUNTED,
+  UPDATE_HOME_RECIPES
+} from '../../utils/state/actions'
 
 export const useHome = () => {
   useEffect(() => {

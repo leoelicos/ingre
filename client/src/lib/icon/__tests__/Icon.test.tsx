@@ -30,7 +30,10 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
 describe('Icon', () => {
   it('renders every icon, including small and extra styles', () => {
     const icons = [
-      <Icon icon={['fas', 'egg']} key="plain" />,
+      <Icon
+        icon={['fas', 'egg']}
+        key="plain"
+      />,
       <IngreIconLogoEgg key="egg" />,
       <IngreIconLogoMenuCollapsed key="menu" />,
       <IngreIconChevronDown key="chevron" />,

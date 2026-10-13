@@ -22,17 +22,29 @@ describe('recipe guards', () => {
     expect(isClientRecipe({ ...recipe(), picture_url: 1 })).toBe(false)
     expect(isClientRecipe({ ...recipe(), ingredients: 'none' })).toBe(false)
     expect(isClientRecipe({ ...recipe(), ingredients: [null] })).toBe(false)
-    expect(isClientRecipe({ ...recipe(), ingredients: [{ ...ingredient(), name: 1 }] })).toBe(
-      false
-    )
     expect(
-      isClientRecipe({ ...recipe(), ingredients: [{ ...ingredient(), quantity: '1' }] })
+      isClientRecipe({
+        ...recipe(),
+        ingredients: [{ ...ingredient(), name: 1 }]
+      })
     ).toBe(false)
     expect(
-      isClientRecipe({ ...recipe(), ingredients: [{ ...ingredient(), measure: 1 }] })
+      isClientRecipe({
+        ...recipe(),
+        ingredients: [{ ...ingredient(), quantity: '1' }]
+      })
     ).toBe(false)
     expect(
-      isClientRecipe({ ...recipe(), ingredients: [{ ...ingredient(), category: 1 }] })
+      isClientRecipe({
+        ...recipe(),
+        ingredients: [{ ...ingredient(), measure: 1 }]
+      })
+    ).toBe(false)
+    expect(
+      isClientRecipe({
+        ...recipe(),
+        ingredients: [{ ...ingredient(), category: 1 }]
+      })
     ).toBe(false)
     expect(isClientRecipeList('nope')).toBe(false)
     expect(isClientRecipeList([recipe(), { name: 'bad' }])).toBe(false)
@@ -53,7 +65,9 @@ describe('savedIngredientsFromUnknown', () => {
   it('normalises string and numeric quantities', () => {
     expect(toSavedIngredient(valid)).toEqual(valid)
     expect(toSavedIngredient({ ...valid, quantity: 3 })?.quantity).toBe('3')
-    expect(savedIngredientsFromUnknown([valid, { nope: true }, 'x'])).toEqual([valid])
+    expect(savedIngredientsFromUnknown([valid, { nope: true }, 'x'])).toEqual([
+      valid
+    ])
   })
 
   it('rejects malformed values', () => {
@@ -63,7 +77,9 @@ describe('savedIngredientsFromUnknown', () => {
     expect(toSavedIngredient({ ...valid, quantity: true })).toBeUndefined()
     expect(toSavedIngredient({ ...valid, measure: 1 })).toBeUndefined()
     expect(toSavedIngredient({ ...valid, category: null })).toBeUndefined()
-    expect(toSavedIngredient({ ...valid, category: { name: 1 } })).toBeUndefined()
+    expect(
+      toSavedIngredient({ ...valid, category: { name: 1 } })
+    ).toBeUndefined()
     expect(toSavedIngredient({ ...valid, recipe: 1 })).toBeUndefined()
     expect(toSavedIngredient({ ...valid, recipeId: 1 })).toBeUndefined()
     expect(savedIngredientsFromUnknown('nope')).toEqual([])

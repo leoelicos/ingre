@@ -4,7 +4,17 @@ import { MemoryRouter } from 'react-router-dom'
 import { Signup } from '../Signup'
 
 jest.mock('../useSignup', () => ({
-  useSignup: () => ({ loggedIn: true, handleFormSubmit: jest.fn(), onFirstNameChange: jest.fn(), onLastNameChange: jest.fn(), onEmailChange: jest.fn(), checkEmailLoading: false, checkEmailError: null, onPasswordChange: jest.fn(), addUserError: null })
+  useSignup: () => ({
+    loggedIn: true,
+    handleFormSubmit: jest.fn(),
+    onFirstNameChange: jest.fn(),
+    onLastNameChange: jest.fn(),
+    onEmailChange: jest.fn(),
+    checkEmailLoading: false,
+    checkEmailError: null,
+    onPasswordChange: jest.fn(),
+    addUserError: null
+  })
 }))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))

@@ -10,9 +10,15 @@ jest.mock('../../../utils/auth/AuthContext', () => ({
   useAuthContext: () => [{ loggedIn: false }, jest.fn()]
 }))
 
-jest.mock('../../../components/NotLoggedIn', () => () => <div>Not logged in</div>)
-jest.mock('../../../lib/apollo/graphQL/useSaveRecipe', () => ({ useSaveRecipe: () => [jest.fn()] }))
-jest.mock('../../../lib/apollo/graphQL/updateRecipe', () => ({ useUpdateRecipe: () => [jest.fn()] }))
+jest.mock('../../../components/NotLoggedIn', () => () => (
+  <div>Not logged in</div>
+))
+jest.mock('../../../lib/apollo/graphQL/useSaveRecipe', () => ({
+  useSaveRecipe: () => [jest.fn()]
+}))
+jest.mock('../../../lib/apollo/graphQL/updateRecipe', () => ({
+  useUpdateRecipe: () => [jest.fn()]
+}))
 
 describe('Customise', () => {
   it('shows not logged in when unauthenticated', () => {

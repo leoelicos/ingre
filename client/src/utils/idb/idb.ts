@@ -36,7 +36,7 @@ const idbPromise: (params: IdbPromiseType) => Promise<unknown> = (params) => {
       const store = tx.objectStore(storeName)
 
       db.onerror = function (_e) {
-        console.error("error")
+        console.error('error')
       }
 
       switch (method) {

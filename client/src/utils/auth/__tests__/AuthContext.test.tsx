@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom'
 import { render, screen, act } from '@testing-library/react'
-import { AuthProvider, authReducer, readInitialAuth, useAuthContext } from '../AuthContext'
+import {
+  AuthProvider,
+  authReducer,
+  readInitialAuth,
+  useAuthContext
+} from '../AuthContext'
 
 function token(exp: number) {
   const payload = Buffer.from(
@@ -15,9 +20,7 @@ function token(exp: number) {
 function Probe() {
   const [state, dispatch] = useAuthContext()
   return (
-    <button
-      onClick={() => dispatch({ type: 'LOGOUT', data: '' })}
-    >
+    <button onClick={() => dispatch({ type: 'LOGOUT', data: '' })}>
       {state.loggedIn ? 'in' : 'out'}
     </button>
   )
@@ -50,7 +53,9 @@ describe('authReducer', () => {
     expect(loggedIn.profile?.data.firstName).toBe('Ada')
     expect(localStorage.getItem('id_token')).toBe(fresh)
 
-    expect(authReducer(loggedIn, { type: 'UPDATE', data: '' }).loggedIn).toBe(true)
+    expect(authReducer(loggedIn, { type: 'UPDATE', data: '' }).loggedIn).toBe(
+      true
+    )
 
     const loggedBackOut = authReducer(loggedIn, { type: 'LOGOUT', data: '' })
     expect(loggedBackOut).toEqual({ profile: null, loggedIn: false })
@@ -58,7 +63,9 @@ describe('authReducer', () => {
   })
 
   it('update logs out when the token is missing or expired', () => {
-    expect(authReducer(loggedOut, { type: 'UPDATE', data: '' }).loggedIn).toBe(false)
+    expect(authReducer(loggedOut, { type: 'UPDATE', data: '' }).loggedIn).toBe(
+      false
+    )
 
     localStorage.setItem('id_token', token(1))
     const cleared = authReducer(
