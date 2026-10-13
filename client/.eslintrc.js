@@ -1,7 +1,6 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
   extends: ['react-app'],
-  plugins: ['@typescript-eslint', 'react-hooks', 'prettier'],
+  plugins: ['prettier'],
   rules: {
     'prettier/prettier': 'error',
     'react/prop-types': 'off',
@@ -10,9 +9,16 @@ module.exports = {
       'error',
       'ignorePackages',
       { '': 'never', ts: 'never', tsx: 'never' }
-    ],
-    '@typescript-eslint/no-explicit-any': 'error'
+    ]
   },
+  overrides: [
+    {
+      files: ['**/*.{ts,tsx}'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'error'
+      }
+    }
+  ],
   settings: {
     react: {
       version: 'detect'
