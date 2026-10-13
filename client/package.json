@@ -18,7 +18,7 @@
     "react-bootstrap": "^2.10.7",
     "react-dom": "^18.2.0",
     "react-masonry-css": "^1.0.16",
-    "react-router-dom": "^6.30.6",
+    "react-router-dom": "^7.18.4",
     "react-scripts": "5.0.1",
     "sass": "^1.63.6"
   },
@@ -48,6 +48,9 @@
     "eject": "react-scripts eject"
   },
   "jest": {
+    "moduleNameMapper": {
+      "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js"
+    },
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "src/setupTests.ts"
