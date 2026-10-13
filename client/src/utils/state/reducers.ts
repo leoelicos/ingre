@@ -1,4 +1,6 @@
+import type { ClientRecipe } from '../../types/client'
 import { useReducer } from 'react'
+import type { Store } from './GlobalState'
 
 import {
   UPDATE_SEARCH_RECIPES,
@@ -13,23 +15,23 @@ import {
   FLAG_HOME_MOUNTED,
   FLAG_SAVED_MOUNTED,
   FLAG_INGREDIENTS_GENERATED
-} from './actions.ts'
+} from './actions'
 
 // The reducer is a function that accepts the current state and an action. It returns a new state based on that action.
-export const reducer: (
-  state: any,
-  action: { type: string; data: any }
-) => any = (state, action) => {
+export const reducer = (
+  state: Store,
+  action: { type: string; data?: unknown }
+) => {
   switch (action.type) {
     case UPDATE_SEARCH_RECIPES:
-      return { ...state, searchRecipes: action.data }
+      return { ...state, searchRecipes: action.data } as Store
 
     case UPDATE_HOME_RECIPES:
-      return { ...state, homeRecipes: action.data }
+      return { ...state, homeRecipes: action.data } as Store
 
     case UPDATE_SAVED_RECIPES:
       if (action.data === undefined) return { ...state, savedRecipes: [] }
-      return { ...state, savedRecipes: action.data }
+      return { ...state, savedRecipes: action.data } as Store
 
     case UPDATE_SAVED_INGREDIENTS:
       if (action.data === undefined) return { ...state, savedIngredients: [] }
@@ -43,7 +45,7 @@ export const reducer: (
     case ADD_SAVED_RECIPE:
       if (
         state.savedRecipes.find(
-          (r: { edamamId: string }) => r.edamamId === action.data.edamamId
+          (r) => (r as ClientRecipe).edamamId === (action.data as ClientRecipe).edamamId
         )
       )
         return { ...state }
@@ -81,6 +83,6 @@ export const reducer: (
   }
 }
 
-export function useGlobalReducer(initialState: any) {
-  return useReducer(reducer, initialState)
+export function useGlobalReducer(initialState: Store) {
+  return useReducer(reducer as React.Reducer<Store, { type: string; data?: unknown }>, initialState)
 }

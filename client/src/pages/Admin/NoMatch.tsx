@@ -1,6 +1,6 @@
-import React, { FC } from 'react'
+import type { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { changeTitle } from 'utils/changeTitle'
+import { changeTitle } from '../../utils/changeTitle'
 
 export const NoMatch: FC = () => {
   changeTitle('ingré')

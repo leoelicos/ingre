@@ -1,14 +1,14 @@
 import { useLazyQuery, useMutation } from '@apollo/client'
-import type { ClientRecipe } from 'types/client'
-import { REMOVE_RECIPE } from 'lib/apollo/graphQL/mutations'
-import { GET_RECIPE, GET_SAVED_RECIPES } from 'lib/apollo/graphQL/queries'
-import { SAVE_RECIPE } from 'lib/apollo/graphQL/useSaveRecipe'
-import { useStoreContext } from 'utils/state/GlobalState'
+import type { ClientRecipe } from '../../../types/client'
+import { REMOVE_RECIPE } from '../../../lib/apollo/graphQL/mutations'
+import { GET_RECIPE, GET_SAVED_RECIPES } from '../../../lib/apollo/graphQL/queries'
+import { SAVE_RECIPE } from '../../../lib/apollo/graphQL/useSaveRecipe'
+import { useStoreContext } from '../../../utils/state/GlobalState'
 import {
   ADD_SAVED_RECIPE,
   REMOVE_SAVED_RECIPE,
   SET_EDIT_RECIPE
-} from 'utils/state/actions'
+} from '../../../utils/state/actions'
 
 export const useRecipeCard = ({
   onSavedPage,
@@ -24,7 +24,7 @@ export const useRecipeCard = ({
   if (saveRecipeError) console.error('saveRecipeError', { saveRecipeError })
   const [
     removeRecipe,
-    { loading: removeRecipeLoading, error: removeRecipeError }
+    { error: removeRecipeError }
   ] = useMutation(REMOVE_RECIPE, {
     refetchQueries: [{ query: GET_SAVED_RECIPES }]
   })
@@ -116,7 +116,7 @@ export const useRecipeCard = ({
       if (onSavedPage) {
         _id = recipe._id
       } else {
-        _id = state.savedRecipes.find((r) => r.edamamId === recipe.edamamId)._id
+        _id = state.savedRecipes.find((r) => r.edamamId === recipe.edamamId)?._id
       }
       const payload = { variables: { recipeId: _id } }
       const res = await removeRecipe(payload)
@@ -132,6 +132,7 @@ export const useRecipeCard = ({
     getRecipeLoading,
     handleEdit,
     handleSave,
+    handleRemove,
     savedRecipes: state.savedRecipes,
     saveRecipeLoading
   }

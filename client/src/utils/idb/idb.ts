@@ -2,33 +2,33 @@
 type IdbPromiseType = {
   storeName: string
   method: string
-  object: any
+  object: unknown
 }
 
-const idbPromise: (params: IdbPromiseType) => Promise<any> = (params) => {
+const idbPromise: (params: IdbPromiseType) => Promise<unknown> = (params) => {
   const { storeName, method, object } = params
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     const request = window.indexedDB.open('ingre', 1)
 
-    request.onupgradeneeded = function (e) {
+    request.onupgradeneeded = function (_e) {
       const db = request.result
       db.createObjectStore('recipes', { keyPath: '_id' })
       db.createObjectStore('ingredients', { keyPath: '_id' })
       db.createObjectStore('categories', { keyPath: '_id' })
     }
 
-    request.onerror = function (e) {
+    request.onerror = function (_e) {
       console.error('There was an error')
     }
 
-    request.onsuccess = function (e) {
+    request.onsuccess = function (_e) {
       const db = request.result
       const tx = db.transaction(storeName, 'readwrite')
       const store = tx.objectStore(storeName)
 
-      db.onerror = function (e) {
-        console.error('error', e)
+      db.onerror = function (_e) {
+        console.error("error")
       }
 
       switch (method) {
@@ -43,7 +43,7 @@ const idbPromise: (params: IdbPromiseType) => Promise<any> = (params) => {
           }
           break
         case 'delete':
-          store.delete(object._id)
+          store.delete((object as { _id: string })._id)
           break
         default:
           console.error('No valid method')

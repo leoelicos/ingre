@@ -1,10 +1,8 @@
-import axios from 'axios'
 
 import type {
-  EdamamRecipeSearchResponse,
   FetchEdamamOptions
-} from 'types/edamam'
-import type { ClientRecipe } from 'types/client'
+} from '../../types/edamam'
+import type { ClientRecipe } from '../../types/client'
 import encode from './encode'
 import deserialize from './deserialize'
 import { mockResponse } from './mockResponse'
@@ -27,7 +25,7 @@ const fetchEdamam: FetchEdamamType = async ({ search, appId, appKey }) => {
       dishType
     })
 
-    let uri =
+    const uri =
       `https://api.edamam.com/api/recipes/v2?` +
       [
         'type=public',
@@ -46,8 +44,7 @@ const fetchEdamam: FetchEdamamType = async ({ search, appId, appKey }) => {
         searchString
       ].join('&')
 
-    // const response: { status: number; data: EdamamRecipeSearchResponse } =
-    // await axios.get(uri)
+    void uri // await axios.get(uri)
     const response = { status: 200, data: mockResponse }
     if (!response) throw new Error('Error: 404 Edamam no response')
 

@@ -1,5 +1,4 @@
-import React, {
-  FC,
+import {   FC,
   ReactNode,
   createContext,
   useContext,
@@ -26,7 +25,7 @@ interface AuthType {
 const isJwtExpired = (token: string) =>
   jwtDecode<ProfileType>(token).exp < Date.now() / 1000
 
-type AuthContextType = [state: AuthType, dispatch: React.Dispatch<any>]
+type AuthContextType = [state: AuthType, dispatch: React.Dispatch<{ type: string; data: string }>]
 
 const initialToken = localStorage.getItem('id_token')
 const initialState: AuthType = {
@@ -48,11 +47,13 @@ const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 const useAuthContext = () => useContext(AuthContext)
 export { AuthProvider, useAuthContext }
-const useAuthReducer = (initialState: any) => {
+interface AuthState { loggedIn: boolean; profile: ProfileType | null }
+
+const useAuthReducer = (initialState: AuthState) => {
   return useReducer(reducer, initialState)
 }
 
-type reducerType = (state: any, action: { type: string; data: any }) => any
+type reducerType = (state: AuthState, action: { type: string; data: string }) => AuthState
 const reducer: reducerType = (state, action) => {
   switch (action.type) {
     case 'UPDATE':

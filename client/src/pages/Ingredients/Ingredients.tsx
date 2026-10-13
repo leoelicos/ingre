@@ -1,13 +1,13 @@
-import React, { FC } from 'react'
+import type { FC } from 'react'
 import { Link } from 'react-router-dom'
-import NotLoggedIn from 'components/NotLoggedIn'
+import NotLoggedIn from '../../components/NotLoggedIn'
 import {
   IngreIconAddIngredient,
   IngreIconClearCustom,
   IngreIconSave
-} from 'lib/icon/Icon'
-import { useAuthContext } from 'utils/auth/AuthContext'
-import { useIngredients } from './useIngredients.ts'
+} from '../../lib/icon/Icon'
+import { useAuthContext } from '../../utils/auth/AuthContext'
+import { useIngredients } from './useIngredients'
 
 export const Ingredients: FC = () => {
   const {

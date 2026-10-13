@@ -1,7 +1,7 @@
-import React, { FC } from 'react'
-import NotLoggedIn from 'components/NotLoggedIn'
-import RecipeCardContainer from 'components/Widgets/RecipeCard/RecipeCardContainer'
-import { useAuthContext } from 'utils/auth/AuthContext'
+import type { FC } from 'react'
+import NotLoggedIn from '../../components/NotLoggedIn'
+import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardContainer'
+import { useAuthContext } from '../../utils/auth/AuthContext'
 import { useSaved } from './useSaved'
 
 export const Saved: FC = () => {

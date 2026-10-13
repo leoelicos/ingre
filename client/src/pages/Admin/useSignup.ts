@@ -1,10 +1,10 @@
 import React from 'react'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useNavigate } from 'react-router-dom'
-import { ADD_USER } from 'lib/apollo/graphQL/mutations'
-import { CHECK_EMAIL_ALREADY_EXISTS } from 'lib/apollo/graphQL/queries'
-import { useAuthContext } from 'utils/auth/AuthContext'
-import { changeTitle } from 'utils/changeTitle'
+import { ADD_USER } from '../../lib/apollo/graphQL/mutations'
+import { CHECK_EMAIL_ALREADY_EXISTS } from '../../lib/apollo/graphQL/queries'
+import { useAuthContext } from '../../utils/auth/AuthContext'
+import { changeTitle } from '../../utils/changeTitle'
 
 export const useSignup = () => {
   changeTitle('Sign up')
@@ -48,6 +48,7 @@ export const useSignup = () => {
   const handleFormSubmit: React.FormEventHandler<HTMLFormElement> = async (
     e
   ) => {
+    e.preventDefault()
     const { firstName, lastName, email, password } = fields
     const variables = { input: { email, password, firstName, lastName } }
     try {
@@ -57,8 +58,8 @@ export const useSignup = () => {
       dispatch({ type: 'LOGIN', data: token })
 
       navigate(-1)
-    } catch (e) {
-      console.error(e)
+    } catch (_e) {
+      console.error(_e)
     }
   }
 

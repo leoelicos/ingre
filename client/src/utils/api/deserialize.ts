@@ -1,7 +1,7 @@
 /* convert EdamamHit to Recipe */
 
-import type { ClientRecipe } from 'types/client'
-import type { EdamamHit } from 'types/edamam'
+import type { ClientRecipe } from '../../types/client'
+import type { EdamamHit } from '../../types/edamam'
 
 const placeholder =
   'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc'

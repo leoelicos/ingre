@@ -1,12 +1,14 @@
-import React, { FC, ReactNode, createContext, useContext } from 'react'
-import { useGlobalReducer } from './reducers.ts'
+import { useGlobalReducer } from './reducers'
+import type { FC, ReactNode, Dispatch } from 'react'
+import { createContext, useContext } from 'react'
+import type { ClientRecipe } from '../../types/client'
 
-interface Store {
+export interface Store {
   modalVisible: boolean
   leftSidebarCollapsed: boolean
-  searchRecipes: any[]
-  homeRecipes: any[]
-  savedRecipes: any[]
+  searchRecipes: ClientRecipe[]
+  homeRecipes: ClientRecipe[]
+  savedRecipes: ClientRecipe[]
   customiseRecipe: {
     _id: string
     name: string
@@ -23,13 +25,13 @@ interface Store {
     instructions: string
   }
   homeDidMount: boolean
-  savedIngredients: any[]
+  savedIngredients: unknown[]
   savedDidMount: boolean
   ingredientsDidGenerate: boolean
-  tapOff: any[]
+  tapOff: unknown[]
 }
 
-type StoreContextType = [state: Store, dispatch: React.Dispatch<any>]
+type StoreContextType = [state: Store, dispatch: Dispatch<{ type: string; data: unknown }>]
 
 const initialState: Store = {
   modalVisible: false,

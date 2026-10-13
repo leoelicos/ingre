@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { loadStripe } from '@stripe/stripe-js'
-import { CHECKOUT, GET_USER } from 'lib/apollo/graphQL/queries'
-import { useAuthContext } from 'utils/auth/AuthContext'
+import { CHECKOUT, GET_USER } from '../../lib/apollo/graphQL/queries'
+import { useAuthContext } from '../../utils/auth/AuthContext'
 
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
 export const useUpgrade = () => {

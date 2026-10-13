@@ -4,7 +4,7 @@
 
 import { plural, singular } from 'pluralize'
 
-type savedIngredientType = {
+export type savedIngredientType = {
   _id: string
   name: string
   quantity: string

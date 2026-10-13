@@ -1,7 +1,8 @@
-import React, { FC, CSSProperties } from 'react'
-import type { ClientRecipe } from 'types/client'
-import { IngreIconPro } from 'lib/icon/Icon'
-import { useAuthContext } from 'utils/auth/AuthContext'
+import type { CSSProperties } from 'react'
+import type { FC } from 'react'
+import type { ClientRecipe } from '../../../types/client'
+import { IngreIconPro } from '../../../lib/icon/Icon'
+import { useAuthContext } from '../../../utils/auth/AuthContext'
 import { useRecipeCard } from './useRecipeCard'
 import { EditButton } from './components/EditButton'
 import { SaveButton } from './components/SaveButton'
@@ -61,7 +62,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           handleSave={handleSave}
           savedRecipes={savedRecipes}
           saveRecipeLoading={saveRecipeLoading}
-          edamamId={recipe.edamamId}
+          edamamId={recipe.edamamId ?? ""}
           loggedIn={loggedIn}
         />
       </td>

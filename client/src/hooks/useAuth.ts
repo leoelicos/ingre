@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
-import { LOGIN } from 'lib/apollo/graphQL/mutations'
-import { useAuthContext } from 'utils/auth/AuthContext'
+import { LOGIN } from '../lib/apollo/graphQL/mutations'
+import { useAuthContext } from '../utils/auth/AuthContext'
 
 export const useAuth = () => {
   const [_auth, dispatch] = useAuthContext()
@@ -32,7 +32,7 @@ export const useAuth = () => {
   }
 
   const handleLogout = () => {
-    dispatch({ type: 'LOGOUT' })
+    dispatch({ type: 'LOGOUT', data: '' })
   }
 
   return {

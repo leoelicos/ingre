@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useApolloClient } from '@apollo/client'
-import { GET_APP_CREDENTIALS } from 'lib/apollo/graphQL/queries'
-import fetchEdamam from 'utils/api/edamam'
-import { useAuthContext } from 'utils/auth/AuthContext'
-import { changeTitle } from 'utils/changeTitle'
-import { useStoreContext } from 'utils/state/GlobalState'
-import { FLAG_HOME_MOUNTED, UPDATE_HOME_RECIPES } from 'utils/state/actions'
+import { GET_APP_CREDENTIALS } from '../../lib/apollo/graphQL/queries'
+import fetchEdamam from '../../utils/api/edamam'
+import { useAuthContext } from '../../utils/auth/AuthContext'
+import { changeTitle } from '../../utils/changeTitle'
+import { useStoreContext } from '../../utils/state/GlobalState'
+import { FLAG_HOME_MOUNTED, UPDATE_HOME_RECIPES } from '../../utils/state/actions'
 
 export const useHome = () => {
   useEffect(() => {
@@ -102,7 +102,7 @@ export const useHome = () => {
   useEffect(() => {
     const fetchOnFirstLoad = async () => {
       if (state.homeDidMount === false) {
-        dispatch({ type: FLAG_HOME_MOUNTED })
+        dispatch({ type: FLAG_HOME_MOUNTED, data: undefined })
         try {
           setLoadingEdamam(true)
           const { appId, appKey } = await getAppCredentials()

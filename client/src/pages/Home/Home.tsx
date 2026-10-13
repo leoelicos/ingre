@@ -1,14 +1,15 @@
-import React, { FC } from 'react'
-import RecipeCardContainer from 'components/Widgets/RecipeCard/RecipeCardContainer'
+import type { ClientRecipe } from '../../types/client'
+import type { FC } from 'react'
+import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardContainer'
 import { useHome } from './useHome'
 
 const HomeComponent: FC<{
   loggedIn: boolean
   firstName: string
   loadingEdamam: boolean
-  edamamRecipes: Array<any>
-  handleRefresh: any
-}> = ({ loggedIn, firstName, loadingEdamam, edamamRecipes, handleRefresh }) => {
+  edamamRecipes: Array<unknown>
+  handleRefresh: unknown
+}> = ({ loggedIn, firstName, loadingEdamam, edamamRecipes }) => {
   return (
     <div className="container">
       {loggedIn && <p>Welcome {firstName}</p>}
@@ -16,7 +17,7 @@ const HomeComponent: FC<{
         <p>Loading…</p>
       ) : (
         <RecipeCardContainer
-          results={edamamRecipes}
+          results={edamamRecipes as ClientRecipe[]}
           loading={loadingEdamam}
           onSavedPage={false}
         />

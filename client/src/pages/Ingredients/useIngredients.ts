@@ -1,15 +1,15 @@
 import { useApolloClient, useLazyQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
-import type { ClientRecipe } from 'types/client'
-import type { IngredientGeneratedTypeWithKey } from 'types/ingredientGenerated'
-import { GET_RECIPE, GET_SAVED_RECIPES } from 'lib/apollo/graphQL/queries'
-import { changeTitle } from 'utils/changeTitle'
-import { useStoreContext } from 'utils/state/GlobalState'
+import type { ClientRecipe } from '../../types/client'
+import type { IngredientGeneratedTypeWithKey } from '../../types/ingredientGenerated'
+import { GET_RECIPE, GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries'
+import { changeTitle } from '../../utils/changeTitle'
+import { useStoreContext } from '../../utils/state/GlobalState'
 import {
   FLAG_INGREDIENTS_GENERATED,
   UPDATE_SAVED_INGREDIENTS,
   UPDATE_SAVED_RECIPES
-} from 'utils/state/actions'
+} from '../../utils/state/actions'
 
 export const useIngredients = () => {
   useEffect(() => {
@@ -41,10 +41,10 @@ export const useIngredients = () => {
       for (const recipe of savedRecipes) {
         /* //TODO this is promise chaining - it should be replaced by getSavedIngredients */
         const recipeName = recipe.name
-        const recipeId = recipe._id.toString()
+        const recipeId = recipe._id!.toString()
         const res = await client.query({
           query: GET_RECIPE,
-          variables: { id: recipe._id }
+          variables: { id: recipe._id! }
         })
         const getRecipe: ClientRecipe = res.data.getRecipe
         /* push serialized into savedIngredient[] */
@@ -111,7 +111,7 @@ export const useIngredients = () => {
   useEffect(() => {
     if (state.ingredientsDidGenerate) return
     const generateOnFirstLoad = async () => {
-      dispatch({ type: FLAG_INGREDIENTS_GENERATED })
+      dispatch({ type: FLAG_INGREDIENTS_GENERATED, data: undefined })
       await getSavedRecipes()
       await reload()
       setUpdateRecipes(true)

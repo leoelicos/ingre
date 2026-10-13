@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import type { FC } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useSignup } from './useSignup'
 

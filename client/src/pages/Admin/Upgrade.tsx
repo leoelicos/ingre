@@ -1,6 +1,6 @@
-import React, { FC } from 'react'
-import NotLoggedIn from 'components/NotLoggedIn'
-import { IngreIconPro } from 'lib/icon/Icon'
+import type { FC } from 'react'
+import NotLoggedIn from '../../components/NotLoggedIn'
+import { IngreIconPro } from '../../lib/icon/Icon'
 import { useUpgrade } from './useUpgrade'
 
 const exampleCookingInstructionURL =

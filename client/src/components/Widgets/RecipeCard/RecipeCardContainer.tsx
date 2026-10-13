@@ -1,9 +1,11 @@
-import React, { FC, CSSProperties } from 'react'
-import { useAuthContext } from 'utils/auth/AuthContext'
+import type { ClientRecipe } from '../../../types/client'
+import type { CSSProperties } from 'react'
+import type { FC } from 'react'
+import { useAuthContext } from '../../../utils/auth/AuthContext'
 import RecipeCard from './RecipeCard'
 
 type RecipeCardContainerType = FC<{
-  results: any[]
+  results: ClientRecipe[]
   loading: boolean
   onSavedPage: boolean
 }>
@@ -29,7 +31,7 @@ const RecipeCardContainer: RecipeCardContainerType = ({
           <td>No recipes</td>
         </tr>
       ) : (
-        results?.map((recipe, idx) => {
+        results?.map((recipe: ClientRecipe, idx: number) => {
           return (
             <RecipeCard
               key={idx}

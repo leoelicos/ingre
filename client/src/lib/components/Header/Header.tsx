@@ -1,7 +1,6 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import { Container, Nav, Navbar } from 'react-bootstrap'
-import { AuthButton } from 'components/AuthButton'
+import { AuthButton } from '../../../components/AuthButton'
 
 const { Brand, Toggle, Collapse, Text } = Navbar
 

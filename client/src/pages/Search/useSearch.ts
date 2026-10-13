@@ -1,10 +1,10 @@
 import { useApolloClient } from '@apollo/client'
 import { useEffect, useState } from 'react'
-import { GET_APP_CREDENTIALS } from 'lib/apollo/graphQL/queries'
-import fetchEdamam from 'utils/api/edamam'
-import { changeTitle } from 'utils/changeTitle'
-import { useStoreContext } from 'utils/state/GlobalState'
-import { UPDATE_SEARCH_RECIPES } from 'utils/state/actions'
+import { GET_APP_CREDENTIALS } from '../../lib/apollo/graphQL/queries'
+import fetchEdamam from '../../utils/api/edamam'
+import { changeTitle } from '../../utils/changeTitle'
+import { useStoreContext } from '../../utils/state/GlobalState'
+import { UPDATE_SEARCH_RECIPES } from '../../utils/state/actions'
 import type {
   cuisineType,
   dietType,
@@ -26,7 +26,7 @@ export const useSearch = () => {
   const client = useApolloClient()
   const [state, dispatch] = useStoreContext()
   const [loadingEdamam, setLoadingEdamam] = useState(false)
-  const [edamamRecipes, setEdamamRecipes] = useState<Array<any>>(
+  const [edamamRecipes, setEdamamRecipes] = useState<Array<unknown>>(
     state.searchRecipes
   )
   const blankForm = {
@@ -59,8 +59,8 @@ export const useSearch = () => {
     }
   }
 
-  const handleFilterChange = (event: any) => {
-    const newState = event.reduce(
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newState = Object.entries(event.target.value || {}).reduce(
       (accumulator: filterTypes, curr: string[]) => {
         let key = curr[0]
         let val = curr[1]

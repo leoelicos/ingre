@@ -1,6 +1,6 @@
-import React, { FC } from 'react'
-import { useAuthContext } from 'utils/auth/AuthContext'
-import { IngreIconLogoEgg, IngreIconLogoMenuCollapsed } from 'lib/icon/Icon'
+import type { FC } from 'react'
+import { useAuthContext } from '../utils/auth/AuthContext'
+import { IngreIconLogoEgg, IngreIconLogoMenuCollapsed } from '../lib/icon/Icon'
 import {
   IngreIconCustomise,
   IngreIconIngredients,
@@ -8,8 +8,8 @@ import {
   IngreIconSave,
   IngreIconSearch,
   IngreIconTapOff
-} from 'lib/icon/Icon'
-import { Header as LibHeader } from 'lib/components/index.tsx'
+} from '../lib/icon/Icon'
+import { Header as LibHeader } from '../lib/components/index'
 
 const links = [
   { to: '/search', icon: <IngreIconSearch />, label: 'Search' },

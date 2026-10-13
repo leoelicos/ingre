@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { RecipeInput } from 'types/payloads'
-import { useStoreContext } from 'utils/state/GlobalState'
+import { RecipeInput } from '../../types/payloads'
+import { useStoreContext } from '../../utils/state/GlobalState'
 
 const defaultIngredient = {
   name: '',
@@ -19,8 +19,8 @@ export const useCustomiseForm = ({
   updateRecipe,
   saveRecipe
 }: {
-  updateRecipe: any
-  saveRecipe: any
+  updateRecipe: Function
+  saveRecipe: Function
 }) => {
   const [state] = useStoreContext()
   const [name, setName] = useState(defaultCustomiseFields.name)

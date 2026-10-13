@@ -1,6 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
-import { useStoreContext } from 'utils/state/GlobalState'
-import { ADD_SAVED_RECIPE } from 'utils/state/actions'
+import { useStoreContext } from '../../../utils/state/GlobalState'
+import { ADD_SAVED_RECIPE } from '../../../utils/state/actions'
 
 export const SAVE_RECIPE = gql`
   mutation SaveRecipe($input: RecipeInput!) {

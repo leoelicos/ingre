@@ -1,17 +1,18 @@
-import React, { FC, useEffect, useState } from 'react'
+import type { FC, ChangeEvent, FormEvent } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { changeTitle } from 'utils/changeTitle'
-import { useAuth } from 'hooks/useAuth'
-import { useAuthContext } from 'utils/auth/AuthContext'
+import { changeTitle } from '../../utils/changeTitle'
+import { useAuth } from '../../hooks/useAuth'
+import { useAuthContext } from '../../utils/auth/AuthContext'
 
 const useLoginForm = () => {
-  const [email, setEmail] = React.useState<string>('')
-  const [password, setPassword] = React.useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e?.target) setEmail(e.target.value)
   }
-  const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e?.target) setPassword(e.target.value)
   }
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev)
@@ -37,7 +38,7 @@ export const Login: FC = () => {
     togglePasswordVisibility
   } = useLoginForm()
 
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     login({ email, password })
   }

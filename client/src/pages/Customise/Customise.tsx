@@ -1,16 +1,16 @@
-import React, { FC } from 'react'
-import NotLoggedIn from 'components/NotLoggedIn'
-import { useAuthContext } from 'utils/auth/AuthContext'
+import type { FC } from 'react'
+import NotLoggedIn from '../../components/NotLoggedIn'
+import { useAuthContext } from '../../utils/auth/AuthContext'
 import {
   IngreIconAddIngredient,
   IngreIconClearCustom,
   IngreIconRemove,
   IngreIconSave,
   IngreIconUndoCustom
-} from 'lib/icon/Icon'
+} from '../../lib/icon/Icon'
 import { useCustomiseForm } from './useCustomiseForm'
-import { useSaveRecipe } from 'lib/apollo/graphQL/useSaveRecipe'
-import { useUpdateRecipe } from 'lib/apollo/graphQL/updateRecipe'
+import { useSaveRecipe } from '../../lib/apollo/graphQL/useSaveRecipe'
+import { useUpdateRecipe } from '../../lib/apollo/graphQL/updateRecipe'
 import './customise.css'
 
 const Customise: FC = () => {

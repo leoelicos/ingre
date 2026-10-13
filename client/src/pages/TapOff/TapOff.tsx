@@ -1,12 +1,14 @@
-import React, { FC, useEffect, useState } from 'react'
+import type { savedIngredientType } from '../../utils/compress'
+import type { FC } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import NotLoggedIn from 'components/NotLoggedIn'
-import { useAuthContext } from 'utils/auth/AuthContext'
-import { changeTitle } from 'utils/changeTitle'
-import type { compressedCategoriesType } from 'utils/compress'
-import compress from 'utils/compress'
-import { useStoreContext } from 'utils/state/GlobalState'
-import { UPDATE_TAP_OFF } from 'utils/state/actions'
+import NotLoggedIn from '../../components/NotLoggedIn'
+import { useAuthContext } from '../../utils/auth/AuthContext'
+import { changeTitle } from '../../utils/changeTitle'
+import type { compressedCategoriesType, compressedCategoryType } from '../../utils/compress'
+import compress from '../../utils/compress'
+import { useStoreContext } from '../../utils/state/GlobalState'
+import { UPDATE_TAP_OFF } from '../../utils/state/actions'
 import './style.css'
 
 const TapOff: FC = () => {
@@ -40,7 +42,7 @@ const TapOff: FC = () => {
   }
 
   useEffect(() => {
-    const compressed = compress(savedIngredients)
+    const compressed = compress(savedIngredients as savedIngredientType[])
     setCompressedRecipes(compressed)
     dispatch({ type: UPDATE_TAP_OFF, data: compressed })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -54,10 +56,10 @@ const TapOff: FC = () => {
       ) : (
         <>
           {compressedRecipes?.length ? (
-            compressedRecipes.map((r, ri) => (
+            compressedRecipes.map((r: compressedCategoryType, ri: number) => (
               <>
                 <p>{r.category.name}</p>
-                {r.items.map((i, ii) => (
+                {r.items.map((i: { description: string; checked: boolean }, ii: number) => (
                   <>
                     {' '}
                     <input

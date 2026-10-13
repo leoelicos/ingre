@@ -10,7 +10,8 @@ module.exports = {
       'error',
       'ignorePackages',
       { '': 'never', ts: 'never', tsx: 'never' }
-    ]
+    ],
+    '@typescript-eslint/no-explicit-any': 'error'
   },
   settings: {
     react: {

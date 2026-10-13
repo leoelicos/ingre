@@ -1,7 +1,7 @@
-import React, { FC } from 'react'
+import type { FC } from 'react'
 import { Link } from 'react-router-dom'
-import NotLoggedIn from 'components/NotLoggedIn'
-import { IngreIconPro } from 'lib/icon/Icon'
+import NotLoggedIn from '../../components/NotLoggedIn'
+import { IngreIconPro } from '../../lib/icon/Icon'
 import { useSuccess } from './useSuccess'
 
 export const Success: FC = () => {

@@ -1,5 +1,6 @@
-import React, { FC } from 'react'
-import RecipeCardContainer from 'components/Widgets/RecipeCard/RecipeCardContainer'
+import type { ClientRecipe } from '../../types/client'
+import type { FC } from 'react'
+import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardContainer'
 import { options } from './options'
 import { useSearch } from './useSearch'
 
@@ -9,8 +10,6 @@ const Search: FC = () => {
     onSearchChange,
     loadingEdamam,
     edamamRecipes,
-    handleFormSubmit, // unused
-    handleFilterChange // unused
   } = useSearch()
   return (
     <>
@@ -23,7 +22,7 @@ const Search: FC = () => {
           type="text"
         />
         <ul>
-          {options.map(({ label, value: valueParent, children }) => (
+          {options.map(({ label, value: _valueParent, children }) => (
             <li>
               {label}
               <ul>
@@ -45,7 +44,7 @@ const Search: FC = () => {
         'Loading…'
       ) : (
         <RecipeCardContainer
-          results={edamamRecipes}
+          results={edamamRecipes as ClientRecipe[]}
           loading={loadingEdamam}
           onSavedPage={false}
         />

@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
-import { MAKE_USER_PRO } from 'lib/apollo/graphQL/mutations'
-import { useAuthContext } from 'utils/auth/AuthContext'
+import { MAKE_USER_PRO } from '../../lib/apollo/graphQL/mutations'
+import { useAuthContext } from '../../utils/auth/AuthContext'
 
 export const useSuccess = () => {
   const [makeUserPro] = useMutation(MAKE_USER_PRO)
@@ -13,7 +13,6 @@ export const useSuccess = () => {
   const loggedIn = auth.loggedIn
 
   const Token = () => {
-    const params = searchParams.get('session_id')
     return null
   }
 
