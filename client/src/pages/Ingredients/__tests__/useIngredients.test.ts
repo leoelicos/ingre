@@ -8,12 +8,13 @@ jest.mock('@apollo/client', () => ({
 }))
 
 jest.mock('../../../utils/state/GlobalState', () => ({
-  useStoreContext: () => [{ savedRecipes: [] }, jest.fn()]
+  useStoreContext: () => [{ savedRecipes: [{ name: 'Pasta', ingredients: [] }] }, jest.fn()]
 }))
 
 describe('useIngredients', () => {
   it('returns expected shape', () => {
     const { result } = renderHook(() => useIngredients())
     expect(result.current).toBeDefined()
+    expect(result.current.savedRecipeLoading).toBe(false)
   })
 })
