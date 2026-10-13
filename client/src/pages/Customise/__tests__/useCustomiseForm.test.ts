@@ -1,8 +1,9 @@
 import { renderHook } from '@testing-library/react'
 import { useCustomiseForm } from '../useCustomiseForm'
+
+jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn()
 }))
-import { useCustomiseForm } from '../useCustomiseForm'
 
 jest.mock('../../../utils/state/GlobalState', () => ({
   useStoreContext: () => [{ customiseRecipe: { name: 'Test', ingredients: [] } }, jest.fn()]
