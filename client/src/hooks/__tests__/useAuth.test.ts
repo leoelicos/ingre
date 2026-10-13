@@ -10,7 +10,11 @@ jest.mock('react-router-dom', () => ({
 }))
 
 jest.mock('@apollo/client', () => ({
-  useMutation: () => [mockLoginMutation, { loading: false, error: null }],
+  useMutation: (_mutation: any, options: any) => {
+    // Store options so we can call onCompleted
+    (global as any).__loginOptions = options
+    return [mockLoginMutation, { loading: false, error: null }]
+  },
   gql: (s: TemplateStringsArray) => s
 }))
 
@@ -43,5 +47,15 @@ describe('useAuth', () => {
       result.current.login({ email: 'test@example.com', password: 'pass' })
     })
     expect(mockLoginMutation).toHaveBeenCalled()
+  })
+
+  it('onCompleted dispatches LOGIN and navigates', () => {
+    renderHook(() => useAuth())
+    const options = (global as any).__loginOptions
+    act(() => {
+      options.onCompleted({ login: { token: 'abc123' } })
+    })
+    expect(mockDispatch).toHaveBeenCalledWith({ type: 'LOGIN', data: 'abc123' })
+    expect(mockNavigate).toHaveBeenCalledWith(-1)
   })
 })
