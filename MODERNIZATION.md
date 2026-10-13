@@ -6,7 +6,7 @@
 - [x] Resolve TypeScript version conflicts with @types/node
 - [x] Convert server path aliases to relative imports
 - [x] Convert client path aliases to relative imports
-- [x] Ensure project builds and starts after updates. Client `react-scripts build` succeeds with `fork-ts-checker-webpack-plugin` 6.5.3 (6.5.2 threw on TypeScript 6 `performance.mark`). Server `tsc --noEmit` is clean and the API listens on `/graphql` once MongoDB is up.
+- [x] Ensure project builds and starts after updates. Client production build is `vite build` (output stays in `client/build`). Server `tsc --noEmit` is clean and the API listens on `/graphql` once MongoDB is up.
 
 ## Phase 2: TypeScript Strictness
 - [x] Server `tsc --noEmit` is clean
@@ -37,7 +37,6 @@
 - Client ESLint is clean: extensionless imports stay allowed (including `.js`), the Login mount-only redirect is an intentional exhaustive-deps exception, and `useSaved` lists `dispatch` and `getSavedRecipes` as effect dependencies.
 - Client `package-lock.json` matches `package.json` (`npm ci` works). `caniuse-lite` is 1.0.30001815, so the production build no longer warns that Browserslist data is outdated.
 - Client dropped unused `axios` 0.27 (high severity, no imports). GraphQL is 16.14.2 and `react-router-dom` is 7.18.4, which closes both open-redirect advisories. Jest maps the `react-router/dom` export, and `setupTests` provides `TextEncoder`. `tsc` is clean and 67 suites / 150 tests pass.
-- Jest is 30.5.2 on both packages. The client no longer runs tests through `react-scripts` (that runner is stuck on Jest 27). `npm test` uses Jest 30 with ts-jest, babel-jest for `src/index.js`, and jsdom. `react-scripts` remains the start and build tool.
-- React Scripts 5 is unmaintained — consider a Vite migration later.
+- Jest is 30.5.2 on both packages. The client `npm test` uses Jest with ts-jest and jsdom. `npm start` and `npm run build` use Vite 8 (`@vitejs/plugin-react`). The dev server is port 3000 and proxies `/graphql` to `localhost:3001`. ESLint still extends `eslint-config-react-app`, now a direct dependency. `react-scripts` is gone.
 - Server lockfile received non-breaking `npm audit fix` patches (mongoose 6.13.11, express 4.22.3, sha.js 2.4.12). `jsonwebtoken` is 9.0.3, `bcrypt` is 6.0.0, and Apollo Server is 5.5.1 with Express mounted through `@as-integrations/express4`. GraphQL is 16.14.2. Dev tools: nodemon 3.1.14, Jest 30.5.2 with ts-jest 29.4.14, ts-loader 9.6.2. Jest 30 types drop `toThrowError`, so those assertions now use `toThrow`. `tsc` is clean and 99 tests pass. `npm audit` reports 0 critical and 3 high, all the same unfixed `braces` issue inside nodemon's chokidar 3. npm's suggested "fix" is a downgrade to nodemon 1.14.10, which is not an upgrade. Remaining moderates are the same class of false fix (downgrade Jest to 25).
 - tsconfig `"strict": true` is set in both packages.
