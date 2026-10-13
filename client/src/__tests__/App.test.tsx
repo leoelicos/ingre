@@ -4,7 +4,6 @@ import { authHeaders, graphqlEndpoint, Ingre, withAuthHeaders } from '../App'
 
 jest.mock('../pages/Home/Home', () => () => <div>Home page</div>)
 jest.mock('../pages/Search/Search', () => () => <div>Search page</div>)
-jest.mock('../pages/Customise/Customise', () => () => <div>Customise page</div>)
 jest.mock('../pages/Saved/Saved', () => ({
   Saved: () => <div>Saved page</div>
 }))
@@ -42,7 +41,7 @@ describe('App', () => {
       'https://ingre-backend.onrender.com/graphql'
     )
     expect(graphqlEndpoint('test')).toBe('http://localhost:3001/graphql')
-    expect(graphqlEndpoint(undefined)).toBe('http://localhost:3001/graphql')
+    expect(graphqlEndpoint('development')).toBe('http://localhost:3001/graphql')
   })
 
   it('adds a bearer token when one is stored', () => {

@@ -24,7 +24,7 @@ export const IngreIconLogoEgg = () => (
     icon={['fas', 'egg']}
     extraStyle={{
       marginRight: '0.3rem',
-      color: 'var(--ingre-eggshell)',
+      color: 'var(--color-accent)',
       fontSize: '1.8rem',
       paddingBottom: '2px'
     }}
@@ -50,13 +50,6 @@ export const IngreIconRecipe = () => (
 export const IngreIconSearch = () => (
   <Icon
     icon={['fas', 'magnifying-glass']}
-    small={true}
-  />
-)
-
-export const IngreIconCustomise = () => (
-  <Icon
-    icon={['fas', 'pen']}
     small={true}
   />
 )
@@ -109,7 +102,7 @@ export const IngreIconPortion = () => (
     extraStyle={{
       borderRadius: '50%',
       padding: '0 4px 0',
-      color: 'black'
+      color: 'var(--color-text-strong)'
     }}
     small={true}
   />
@@ -123,31 +116,10 @@ export const IngreIconClearSearch = () => (
   />
 )
 
-/* customise */
+/* ingredients */
 export const IngreIconAddIngredient = () => (
   <Icon
     icon={['fas', 'add']}
-    small={true}
-  />
-)
-
-export const IngreIconRemove = () => (
-  <Icon
-    icon={['fas', 'trash']}
-    small={true}
-  />
-)
-
-export const IngreIconFormError = () => (
-  <Icon
-    icon={['fas', 'exclamation']}
-    small={true}
-  />
-)
-
-export const IngreIconUndoCustom = () => (
-  <Icon
-    icon={['fas', 'rotate-left']}
     small={true}
   />
 )

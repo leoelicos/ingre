@@ -1,0 +1,36 @@
+/*
+ * Ingre theme: the single source of truth for colours and shape.
+ * Change a palette by editing the values in this file only.
+ * Components must reference these tokens (var(--…)), never raw colours.
+ */
+:root {
+  /* surfaces */
+  --color-bg: #fff; /* page background (Bootstrap default) */
+  --color-surface: #fff; /* cards, panels */
+  --color-highlight: #fff9f7; /* subtle tinted background */
+
+  /* brand */
+  --color-primary: #0074ba; /* primary actions/links */
+  --color-on-primary: #fff; /* text on primary */
+  --color-accent: #f3ad61; /* icons, large labels */
+  --color-brand: #b55f26; /* logo/brand wordmark */
+  --color-success: #00b050; /* completed/checked state */
+
+  /* text */
+  --color-text: #212529; /* body text (Bootstrap default) */
+  --color-text-strong: #000; /* high-contrast icons */
+
+  /* lines */
+  --color-border: #a5a5a5;
+
+  /* shape */
+  --radius-card: 1rem;
+}
+
+/* Feed tokens into Bootstrap so its components follow the theme. */
+html body {
+  --bs-body-bg: var(--color-bg);
+  --bs-body-color: var(--color-text);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}

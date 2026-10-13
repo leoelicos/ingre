@@ -6,8 +6,6 @@ import {
   IngreIconChevronDown,
   IngreIconClearCustom,
   IngreIconClearSearch,
-  IngreIconCustomise,
-  IngreIconFormError,
   IngreIconHelp,
   IngreIconIngredients,
   IngreIconLogoEgg,
@@ -15,12 +13,10 @@ import {
   IngreIconPortion,
   IngreIconPro,
   IngreIconRecipe,
-  IngreIconRemove,
   IngreIconSave,
   IngreIconSearch,
   IngreIconSpin,
-  IngreIconTapOff,
-  IngreIconUndoCustom
+  IngreIconTapOff
 } from '../Icon'
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
@@ -39,7 +35,6 @@ describe('Icon', () => {
       <IngreIconChevronDown key="chevron" />,
       <IngreIconRecipe key="recipe" />,
       <IngreIconSearch key="search" />,
-      <IngreIconCustomise key="customise" />,
       <IngreIconIngredients key="ingredients" />,
       <IngreIconTapOff key="tap" />,
       <IngreIconPro key="pro" />,
@@ -49,9 +44,6 @@ describe('Icon', () => {
       <IngreIconPortion key="portion" />,
       <IngreIconClearSearch key="clear-search" />,
       <IngreIconAddIngredient key="add" />,
-      <IngreIconRemove key="remove" />,
-      <IngreIconFormError key="error" />,
-      <IngreIconUndoCustom key="undo" />,
       <IngreIconClearCustom key="clear" />
     ]
     icons.forEach((icon) => {

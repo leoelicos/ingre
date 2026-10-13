@@ -35,9 +35,9 @@
   width: calc(100% - 24px);
   white-space: pre-wrap;
   padding: 0 0.6rem;
-  border-radius: 1rem;
-  background-color: var(--ingre-white);
-  border: 1px solid var(--ingre-grey);
+  border-radius: var(--radius-card);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
 }
 
 .my-masonry-grid .ant-checkbox-wrapper {
@@ -50,7 +50,7 @@
 }
 .my-masonry-grid .card-all-tapped > * > * > .ant-typography {
   border-radius: 1 rem 1rem 0 0;
-  color: var(--ingre-green) !important;
+  color: var(--color-success) !important;
 }
 
 @media screen and (min-width: 1208px) {

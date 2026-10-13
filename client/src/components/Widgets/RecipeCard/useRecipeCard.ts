@@ -1,18 +1,16 @@
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import type { ClientRecipe } from '../../../types/client'
-import { REMOVE_RECIPE } from '../../../lib/apollo/graphQL/mutations'
 import {
-  GET_RECIPE,
-  GET_SAVED_RECIPES
-} from '../../../lib/apollo/graphQL/queries'
+  REMOVE_RECIPE,
+  SAVE_RECIPE
+} from '../../../lib/apollo/graphQL/mutations'
+import { GET_SAVED_RECIPES } from '../../../lib/apollo/graphQL/queries'
 import { toClientRecipe } from '../../../utils/toClientRecipe'
-import { SAVE_RECIPE } from '../../../lib/apollo/graphQL/useSaveRecipe'
 import { toRecipeInput } from './toRecipeInput'
 import { useStoreContext } from '../../../utils/state/GlobalState'
 import {
   ADD_SAVED_RECIPE,
-  REMOVE_SAVED_RECIPE,
-  SET_EDIT_RECIPE
+  REMOVE_SAVED_RECIPE
 } from '../../../utils/state/actions'
 
 export const useRecipeCard = ({
@@ -37,26 +35,6 @@ export const useRecipeCard = ({
   if (removeRecipeError) console.error({ removeRecipeError })
 
   const [state, dispatch] = useStoreContext()
-
-  const [getRecipe, { loading: getRecipeLoading, error: getRecipeError }] =
-    useLazyQuery(GET_RECIPE, {
-      fetchPolicy: 'network-only'
-      // nextFetchPolicy: 'cache-first'
-    })
-  const handleEdit = async () => {
-    if (recipe._id === undefined) return
-    try {
-      const { data } = await getRecipe({ variables: { id: recipe._id } })
-      if (data) {
-        dispatch({
-          type: SET_EDIT_RECIPE,
-          data: toClientRecipe(data.getRecipe)
-        })
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
 
   const handleSave = async () => {
     try {
@@ -87,9 +65,6 @@ export const useRecipeCard = ({
   }
 
   return {
-    getRecipeError,
-    getRecipeLoading,
-    handleEdit,
     handleSave,
     handleRemove,
     savedRecipes: state.savedRecipes,

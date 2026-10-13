@@ -8,12 +8,6 @@ export const FLAG_HOME_MOUNTED = 'FLAG_HOME_MOUNTED'
 //* update search page recipes
 export const UPDATE_SEARCH_RECIPES = 'UPDATE_SEARCH_RECIPES'
 
-//? Customise page
-//* set the recipe on this page
-export const SET_EDIT_RECIPE = 'SET_EDIT_RECIPE'
-//* reset
-export const CLEAR_EDIT_RECIPE = 'CLEAR_EDIT_RECIPE'
-
 //? Saved page
 //* update saved recipe list
 export const UPDATE_SAVED_RECIPES = 'UPDATE_SAVED_RECIPES'

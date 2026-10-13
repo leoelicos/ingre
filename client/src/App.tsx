@@ -13,12 +13,12 @@ import { NoMatch } from './pages/Admin/NoMatch'
 import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
-import Customise from './pages/Customise/Customise'
 import Home from './pages/Home/Home'
 import { Ingredients } from './pages/Ingredients/Ingredients'
 import { Saved } from './pages/Saved/Saved'
 import Search from './pages/Search/Search'
 import TapOff from './pages/TapOff/TapOff'
+import { APP_MODE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
 import { changeTitle } from './utils/changeTitle'
@@ -27,8 +27,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 addFontAwesome()
 
-export function graphqlEndpoint(nodeEnv: string | undefined): string {
-  if (nodeEnv === 'production') {
+export function graphqlEndpoint(mode: string): string {
+  if (mode === 'production') {
     return 'https://ingre-backend.onrender.com/graphql'
   }
   return 'http://localhost:3001/graphql'
@@ -50,7 +50,7 @@ export const withAuthHeaders = (
 
 const authLink = setContext(withAuthHeaders)
 
-const uri = graphqlEndpoint(process.env['NODE_ENV'])
+const uri = graphqlEndpoint(APP_MODE)
 const httpLink = createHttpLink({ uri })
 const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
@@ -72,10 +72,6 @@ export const Ingre: FC = () => {
               <Route
                 path="/search"
                 element={<Search />}
-              />
-              <Route
-                path="/customise"
-                element={<Customise />}
               />
               <Route
                 path="/saved"

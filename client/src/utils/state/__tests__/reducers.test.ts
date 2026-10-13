@@ -1,12 +1,10 @@
 import { reducer, useGlobalReducer } from '../reducers'
 import {
   ADD_SAVED_RECIPE,
-  CLEAR_EDIT_RECIPE,
   FLAG_HOME_MOUNTED,
   FLAG_INGREDIENTS_GENERATED,
   FLAG_SAVED_MOUNTED,
   REMOVE_SAVED_RECIPE,
-  SET_EDIT_RECIPE,
   UPDATE_HOME_RECIPES,
   UPDATE_SAVED_INGREDIENTS,
   UPDATE_SAVED_RECIPES,
@@ -23,7 +21,6 @@ const initialState: Store = {
   searchRecipes: [],
   homeRecipes: [],
   savedRecipes: [],
-  customiseRecipe: null,
   homeDidMount: false,
   savedIngredients: [],
   savedDidMount: false,
@@ -116,25 +113,6 @@ describe('reducer', () => {
       reducer(state, { type: REMOVE_SAVED_RECIPE, data: 'ed1' }).savedRecipes
     ).toEqual([recipe({ libraryId: 'keep' })])
     expect(reducer(state, { type: REMOVE_SAVED_RECIPE, data: 4 })).toBe(state)
-  })
-
-  it('sets and clears the recipe being customised', () => {
-    const next = recipe({ name: 'Edit me' })
-    expect(
-      reducer(initialState, { type: SET_EDIT_RECIPE, data: next })
-        .customiseRecipe
-    ).toEqual(next)
-    expect(
-      reducer(initialState, { type: SET_EDIT_RECIPE, data: null })
-        .customiseRecipe
-    ).toBeNull()
-    expect(
-      reducer(initialState, { type: SET_EDIT_RECIPE, data: { name: 'x' } })
-    ).toBe(initialState)
-    const editing = { ...initialState, customiseRecipe: next }
-    expect(
-      reducer(editing, { type: CLEAR_EDIT_RECIPE }).customiseRecipe
-    ).toBeNull()
   })
 
   it('flags pages as mounted or generated', () => {

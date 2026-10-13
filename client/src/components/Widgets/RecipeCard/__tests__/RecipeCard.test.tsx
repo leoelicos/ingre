@@ -6,7 +6,6 @@ import { recipe } from '../../../../test/fixtures'
 
 jest.mock('../useRecipeCard', () => ({
   useRecipeCard: () => ({
-    handleEdit: jest.fn(),
     handleSave: jest.fn(),
     handleRemove: jest.fn(),
     isSaved: false,
@@ -14,9 +13,6 @@ jest.mock('../useRecipeCard', () => ({
   })
 }))
 
-jest.mock('../components/EditButton', () => ({
-  EditButton: () => <button>Edit</button>
-}))
 jest.mock('../components/SaveButton', () => ({
   SaveButton: () => <button>Save</button>
 }))

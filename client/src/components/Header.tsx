@@ -2,7 +2,6 @@ import type { FC } from 'react'
 import { useAuthContext } from '../utils/auth/AuthContext'
 import { IngreIconLogoEgg, IngreIconLogoMenuCollapsed } from '../lib/icon/Icon'
 import {
-  IngreIconCustomise,
   IngreIconIngredients,
   IngreIconPro,
   IngreIconSave,
@@ -13,7 +12,6 @@ import { Header as LibHeader } from '../lib/components/index'
 
 const links = [
   { to: '/search', icon: <IngreIconSearch />, label: 'Search' },
-  { to: '/customise', icon: <IngreIconCustomise />, label: 'Customise' },
   { to: '/saved', icon: <IngreIconSave />, label: 'Saved' },
   { to: '/ingredients', icon: <IngreIconIngredients />, label: 'Ingredients' },
   { to: '/tapoff', icon: <IngreIconTapOff />, label: 'Tap Off' },

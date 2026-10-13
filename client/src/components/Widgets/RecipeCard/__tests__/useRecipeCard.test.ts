@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { useRecipeCard } from '../useRecipeCard'
 import { recipe } from '../../../../test/fixtures'
 
@@ -24,18 +24,7 @@ describe('useRecipeCard', () => {
     const { result } = renderHook(() =>
       useRecipeCard({ onSavedPage: false, recipe: card })
     )
-    expect(typeof result.current.handleEdit).toBe('function')
     expect(typeof result.current.handleSave).toBe('function')
     expect(typeof result.current.handleRemove).toBe('function')
-  })
-
-  it('handleEdit calls getRecipe', async () => {
-    const { result } = renderHook(() =>
-      useRecipeCard({ onSavedPage: false, recipe: card })
-    )
-    await act(async () => {
-      await result.current.handleEdit()
-    })
-    expect(mockGetRecipe).toHaveBeenCalled()
   })
 })

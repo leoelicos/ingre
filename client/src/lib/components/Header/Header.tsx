@@ -22,7 +22,7 @@ export const Header: React.FC<{
             <Logo />
             <span
               style={{
-                color: 'var(--ingre-dark-brown)',
+                color: 'var(--color-brand)',
                 fontFamily: 'Poppins, sans-serif',
                 fontSize: '36px',
                 letterSpacing: -1,

@@ -11,7 +11,6 @@ import { checkout } from './resolvers/session/checkout'
 import { addUser } from './resolvers/user/addUser'
 import { makeUserPro } from './resolvers/user/makeUserPro'
 import { saveRecipe } from './resolvers/recipe/saveRecipe'
-import { updateRecipe } from './resolvers/recipe/updateRecipe'
 import { removeRecipe } from './resolvers/recipe/removeRecipe'
 import { login } from './resolvers/session/login'
 
@@ -28,7 +27,6 @@ export const resolvers = {
     addUser,
     makeUserPro,
     saveRecipe,
-    updateRecipe,
     removeRecipe,
     login
   }

@@ -1,50 +1,9 @@
 import { NotFoundError } from '../errors'
 import mongoose, { Types, Document } from 'mongoose'
 import { Recipe, RecipeSchema } from '../models/Recipe'
-import {
-  IngredientInput,
-  Ingredient as IngredientType,
-  RecipeInput
-} from '../schemas/types'
+import { Ingredient as IngredientType } from '../schemas/types'
 import { Ingredient } from '../models/Ingredient'
 import { Category } from '../models/Category'
-import { withIngredientDefaults } from '../utils/ingredientDefaults'
-
-/** Returns the category with this name, creating it first if missing. */
-export const updateUniqueCategoryName = async ({
-  category: { name }
-}: {
-  category: { name: string }
-}) => {
-  const exists = await Category.exists({ name })
-  if (!exists) await Category.create({ name })
-  return await Category.findOne({ name }).select('-__v')
-}
-
-export const generateIngredients = async ({
-  ingredients
-}: {
-  ingredients: Array<IngredientInput>
-}) =>
-  Promise.all(
-    ingredients.map((ingredient) => generateIngredient({ ingredient }))
-  )
-
-export const generateIngredient = async ({
-  ingredient
-}: {
-  ingredient: IngredientInput
-}) => {
-  const { category, ...fields } = withIngredientDefaults(ingredient)
-  const categoryDoc = await updateUniqueCategoryName({
-    category: { name: category }
-  })
-  const created = await Ingredient.create({ ...fields, category: categoryDoc })
-  return await Ingredient.findById(created._id)
-    .select('-__v')
-    .populate({ path: 'category' })
-    .orFail()
-}
 
 /** Distinct category ids referenced by the given recipes' ingredients. */
 export const usedCategoryIds = <Id>(
@@ -59,19 +18,6 @@ export const usedCategoryIds = <Id>(
       )
     )
   )
-
-/** Recipe fields to store on update, given the new ingredient ids. */
-export const toRecipeUpdate = <Id>(
-  input: RecipeInput,
-  ingredientIds: Id[]
-) => ({
-  name: input.name,
-  portions: input.portions,
-  ingredients: ingredientIds,
-  picture_url: input.picture_url,
-  libraryId: input.libraryId,
-  instructions: input.instructions
-})
 
 /** Deletes the given ingredient documents in parallel. */
 export const deleteIngredients = (
@@ -165,34 +111,5 @@ export class RecipeApi {
     await deleteIngredients(dbRecipe.ingredients)
     await Recipe.findByIdAndDelete(recipeId)
     await this.categoryCleanup()
-  }
-
-  /** Replaces a recipe's fields and ingredients; returns null when the recipe does not exist. */
-  public updateRecipe = async ({
-    recipeId,
-    input
-  }: {
-    recipeId: mongoose.Types.ObjectId
-    input: RecipeInput
-  }) => {
-    const dbRecipe =
-      await Recipe.findById<RecipeSchema>(recipeId).select('-__v')
-    if (!dbRecipe) return null
-
-    await deleteIngredients(dbRecipe.ingredients)
-    const ingredients = await generateIngredients({
-      ingredients: input.ingredients
-    })
-
-    dbRecipe.set(
-      toRecipeUpdate(
-        input,
-        ingredients.map(({ _id }) => _id)
-      )
-    )
-    await dbRecipe.save()
-    await dbRecipe.populate({ path: 'ingredients', populate: 'category' })
-    await this.categoryCleanup()
-    return dbRecipe
   }
 }

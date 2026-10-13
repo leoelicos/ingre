@@ -10,7 +10,6 @@ export interface Store {
   searchRecipes: ClientRecipe[]
   homeRecipes: ClientRecipe[]
   savedRecipes: ClientRecipe[]
-  customiseRecipe: ClientRecipe | null
   homeDidMount: boolean
   savedIngredients: unknown[]
   savedDidMount: boolean
@@ -26,7 +25,6 @@ const initialState: Store = {
   searchRecipes: [],
   homeRecipes: [],
   savedRecipes: [],
-  customiseRecipe: null,
   homeDidMount: false,
   savedIngredients: [],
   savedDidMount: false,

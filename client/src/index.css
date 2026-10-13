@@ -1,14 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wdth,wght@95,800&family=Poppins&display=swap');
+@import './styles/theme.css';
 
-:root {
-  --ingre-blue: #0074ba;
-  --ingre-white: #fff;
-  --ingre-light-red: #fff9f7;
-  --ingre-dark-brown: #b55f26;
-  --ingre-eggshell: #f3ad61;
-  --ingre-grey: #a5a5a5;
-  --ingre-green: #00b050;
-}
 * {
   font-family: 'Poppins', sans-serif;
 }

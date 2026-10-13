@@ -79,41 +79,6 @@ describe('useRecipeCard coverage', () => {
     error.mockRestore()
   })
 
-  it('edits a saved recipe and ignores edit failures', async () => {
-    const error = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => undefined)
-    const { result } = renderHook(() =>
-      useRecipeCard({ onSavedPage: false, recipe: omit(recipe(), '_id') })
-    )
-    await act(async () => {
-      await result.current.handleEdit()
-    })
-    expect(mockGetRecipe).not.toHaveBeenCalled()
-
-    const loaded = renderHook(() =>
-      useRecipeCard({ onSavedPage: true, recipe: recipe() })
-    )
-    await act(async () => {
-      await loaded.result.current.handleEdit()
-    })
-    expect(mockDispatch).toHaveBeenCalledWith({
-      type: 'SET_EDIT_RECIPE',
-      data: recipe({ name: 'Server' })
-    })
-
-    mockGetRecipe.mockResolvedValueOnce({ data: undefined })
-    await act(async () => {
-      await loaded.result.current.handleEdit()
-    })
-    mockGetRecipe.mockRejectedValueOnce(new Error('edit failed'))
-    await act(async () => {
-      await loaded.result.current.handleEdit()
-    })
-    expect(error).toHaveBeenCalled()
-    error.mockRestore()
-  })
-
   it('saves with defaults and with the provided recipe', async () => {
     const error = jest
       .spyOn(console, 'error')

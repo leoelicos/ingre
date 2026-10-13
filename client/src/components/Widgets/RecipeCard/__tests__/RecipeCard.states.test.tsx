@@ -6,16 +6,10 @@ import { recipe, omit } from '../../../../test/fixtures'
 import type { ClientRecipe } from '../../../../types/client'
 
 const mockCard: {
-  getRecipeError: Error | undefined
-  getRecipeLoading: boolean
-  handleEdit: () => void
   handleSave: () => void
   savedRecipes: ClientRecipe[]
   saveRecipeLoading: boolean
 } = {
-  getRecipeError: undefined,
-  getRecipeLoading: false,
-  handleEdit: () => undefined,
   handleSave: () => undefined,
   savedRecipes: [],
   saveRecipeLoading: false
@@ -32,35 +26,7 @@ jest.mock('../../../../utils/auth/AuthContext', () => ({
 
 describe('RecipeCard states', () => {
   beforeEach(() => {
-    mockCard.getRecipeError = undefined
-    mockCard.getRecipeLoading = false
     mockAuth.loggedIn = false
-  })
-
-  it('shows an error and a loading state', () => {
-    mockCard.getRecipeError = new Error('nope')
-    const { rerender } = render(
-      <MemoryRouter>
-        <RecipeCard
-          recipe={recipe()}
-          onSavedPage={false}
-          pro={false}
-        />
-      </MemoryRouter>
-    )
-    expect(screen.getByText('Error')).toBeInTheDocument()
-    mockCard.getRecipeError = undefined
-    mockCard.getRecipeLoading = true
-    rerender(
-      <MemoryRouter>
-        <RecipeCard
-          recipe={recipe()}
-          onSavedPage={false}
-          pro={false}
-        />
-      </MemoryRouter>
-    )
-    expect(screen.getByText('Loading')).toBeInTheDocument()
   })
 
   it('shows instructions only for a logged-in pro', () => {

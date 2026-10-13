@@ -72,7 +72,6 @@ export const typeDefs = gql`
 
   type Mutation {
     saveRecipe(input: RecipeInput!): Recipe!
-    updateRecipe(recipeId: ID!, input: RecipeInput!): Recipe!
     removeRecipe(recipeId: ID!): Boolean!
   }
 

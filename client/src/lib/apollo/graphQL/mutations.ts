@@ -1,5 +1,12 @@
 import { gql } from '@apollo/client'
-import type { Operation, User, UserInput, UserProfile } from './typedefs'
+import type {
+  Operation,
+  Recipe,
+  RecipeVariables,
+  User,
+  UserInput,
+  UserProfile
+} from './typedefs'
 
 export const ADD_USER: Operation<
   { addUser: { token: string; user: Pick<User, '_id' | 'firstName'> } },
@@ -51,6 +58,32 @@ export const LOGIN: Operation<
         numSavedRecipes
         pro
       }
+    }
+  }
+`
+
+export const SAVE_RECIPE: Operation<
+  { saveRecipe: Recipe },
+  RecipeVariables
+> = gql`
+  mutation SaveRecipe($input: RecipeInput!) {
+    saveRecipe(input: $input) {
+      _id
+      name
+      portions
+      ingredients {
+        _id
+        name
+        quantity
+        measure
+        category {
+          _id
+          name
+        }
+      }
+      picture_url
+      libraryId
+      instructions
     }
   }
 `

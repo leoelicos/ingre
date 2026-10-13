@@ -4,7 +4,6 @@ import type { ClientRecipe } from '../../../types/client'
 import { IngreIconPro } from '../../../lib/icon/Icon'
 import { useAuthContext } from '../../../utils/auth/AuthContext'
 import { useRecipeCard } from './useRecipeCard'
-import { EditButton } from './components/EditButton'
 import { SaveButton } from './components/SaveButton'
 
 interface RecipeCardProps {
@@ -21,19 +20,11 @@ const RecipeCardStyle: CSSProperties = {
 const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
   const [auth] = useAuthContext()
   const loggedIn = auth.loggedIn
-  const {
-    getRecipeError,
-    getRecipeLoading,
-    handleEdit,
-    handleSave,
-    savedRecipes,
-    saveRecipeLoading
-  } = useRecipeCard({ recipe, onSavedPage })
-  return getRecipeError ? (
-    'Error'
-  ) : getRecipeLoading ? (
-    'Loading'
-  ) : (
+  const { handleSave, savedRecipes, saveRecipeLoading } = useRecipeCard({
+    recipe,
+    onSavedPage
+  })
+  return (
     <tr style={RecipeCardStyle}>
       <td>
         <h6>{recipe.name}</h6>
@@ -48,13 +39,6 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
             <IngreIconPro /> Instructions
           </a>
         )}
-      </td>
-      <td>
-        <EditButton
-          key="edit"
-          handleEdit={handleEdit}
-          loggedIn={loggedIn}
-        />
       </td>
       <td>
         <SaveButton

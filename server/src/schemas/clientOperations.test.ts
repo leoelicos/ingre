@@ -9,12 +9,7 @@ const clientGraphQLDir = join(
   __dirname,
   '../../../client/src/lib/apollo/graphQL'
 )
-const files = [
-  'queries.ts',
-  'mutations.ts',
-  'useSaveRecipe.ts',
-  'updateRecipe.ts'
-]
+const files = ['queries.ts', 'mutations.ts']
 
 const operations = files.flatMap((file) =>
   Array.from(

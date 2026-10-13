@@ -10,7 +10,7 @@ import {
 jest.setTimeout(60000)
 
 const dataSources = createDataSources()
-const { userApi, recipeApi, categoryApi, ingredientApi } = dataSources
+const { userApi, categoryApi, ingredientApi } = dataSources
 
 const userInput = {
   email: 'branches@example.com',
@@ -49,21 +49,6 @@ describe('branch coverage with real data sources', () => {
     const reloaded = await User.findOne({ email: userInput.email }).orFail()
     expect(reloaded.firstName).toBe('Renamed')
     expect(reloaded.password).toBe(hash)
-  })
-
-  it('updateRecipe returns null for an unknown recipe', async () => {
-    const result = await recipeApi.updateRecipe({
-      recipeId: new Types.ObjectId(),
-      input: {
-        name: 'x',
-        portions: 1,
-        ingredients: [],
-        picture_url: 'p',
-        libraryId: 'l',
-        instructions: 'i'
-      }
-    })
-    expect(result).toBeNull()
   })
 
   it('createSaveIngredient falls back to defaults for empty fields', async () => {
