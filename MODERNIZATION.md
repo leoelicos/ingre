@@ -6,7 +6,7 @@
 - [x] Resolve TypeScript version conflicts with @types/node
 - [x] Convert server path aliases to relative imports
 - [x] Convert client path aliases to relative imports
-- [x] Ensure project builds and starts after updates. Client `react-scripts build` succeeds (fork-ts-checker logs a TS 6 `performance.mark` TypeError, then "Compiled successfully"). Server `tsc --noEmit` is clean and the API listens on `/graphql` once MongoDB is up.
+- [x] Ensure project builds and starts after updates. Client `react-scripts build` succeeds with `fork-ts-checker-webpack-plugin` 6.5.3 (6.5.2 threw on TypeScript 6 `performance.mark`). Server `tsc --noEmit` is clean and the API listens on `/graphql` once MongoDB is up.
 
 ## Phase 2: TypeScript Strictness
 - [x] Server `tsc --noEmit` is clean
