@@ -21,7 +21,9 @@ const mockCategoryVegetable = {
 describe('categoryApi', () => {
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_category`)
+    await mongoose.connect(
+      `${process.env['MONGO_TEST_URI']}test_ingre_category`
+    )
     await categoryApi.deleteAllCategories()
     await ingredientApi.deleteAllIngredients()
     await recipeApi.deleteAllRecipes()
@@ -44,8 +46,8 @@ describe('categoryApi', () => {
     await categoryApi.createCategory(mockCategoryVegetable.name)
     const result = await categoryApi.getAllCategories()
     expect(result?.length).toBe(2)
-    expect(result?.[0].name).toBe(mockCategoryMeat.name)
-    expect(result?.[1].name).toBe(mockCategoryVegetable.name)
+    expect(result[0]?.name).toBe(mockCategoryMeat.name)
+    expect(result[1]?.name).toBe(mockCategoryVegetable.name)
   })
 
   it('findOrCreateCategory will find an existing category, or create a new one', async () => {

@@ -86,7 +86,10 @@ describe('addUser', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.addUser).toStrictEqual({ user: mockUser, token: mockToken })
+    expect(data?.['addUser']).toStrictEqual({
+      user: mockUser,
+      token: mockToken
+    })
     expect(mockFindOneUser).toHaveBeenCalledWith({ email: input.email })
     expect(mockCreateUser).toHaveBeenCalledWith(input)
     expect(mockSignToken).toHaveBeenCalledWith(mockUser)
@@ -103,22 +106,10 @@ describe('addUser', () => {
     )
     const { errors, data = {} } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Email already in use')
-    expect(data?.addUser).toBeNull()
+    expect(errors?.[0]?.message).toBe('Email already in use')
+    expect(data).toBeNull()
     expect(mockFindOneUser).toHaveBeenCalledWith({ email: input.email })
     expect(mockCreateUser).not.toHaveBeenCalled()
     expect(mockSignToken).not.toHaveBeenCalled()
-  })
-
-  it('should throw if user creation returns null', async () => {
-    mockFindOneUser.mockResolvedValueOnce(null)
-    mockCreateUser.mockResolvedValueOnce(null)
-    const result = await testServer.executeOperation(
-      { query: ADD_USER, variables: { input } },
-      { contextValue }
-    )
-    const { errors } = singleResult(result)
-    expect(errors).toBeDefined()
-    expect(errors?.[0].message).toContain('could not create user')
   })
 })

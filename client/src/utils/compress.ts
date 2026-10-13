@@ -58,27 +58,26 @@ const aggregateQuantities = (
     measure = clean(measure)
     category = { ...category, name: clean(category.name) }
 
-    const foundIdx = prev.findIndex(
+    const found = prev.find(
       (r) => r.name === name && r.category.name === category.name
     )
-    if (foundIdx === -1) {
+    if (!found) {
       prev.push({
         key,
         name,
         quantityMeasures: [{ quantity, measure }],
         category
       })
+      return prev
+    }
+    const current = found.quantityMeasures.find(
+      (qm) => qm.measure.trim().toLocaleLowerCase() === measure
+    )
+    if (!current) {
+      found.quantityMeasures.push({ quantity, measure })
     } else {
-      const foundMeasureIdx = prev[foundIdx].quantityMeasures.findIndex(
-        (qm) => qm.measure.trim().toLocaleLowerCase() === measure
-      )
-      if (foundMeasureIdx === -1) {
-        prev[foundIdx].quantityMeasures.push({ quantity, measure })
-      } else {
-        const current = prev[foundIdx].quantityMeasures[foundMeasureIdx]
-        const sum = parseFloat(current.quantity) + parseFloat(quantity)
-        current.quantity = sum.toString()
-      }
+      const sum = parseFloat(current.quantity) + parseFloat(quantity)
+      current.quantity = sum.toString()
     }
     return prev
   }, emptyAggregates())
@@ -110,20 +109,16 @@ const qualifyDescriptions = (arr: aggregatedIngredientType[]): categoryType[] =>
   })
 
 const categorize = (arr: categoryType[]): compressedCategoriesType => {
-  const uniqueCategories: compressedCategoriesType = Array.from(
-    new Set(arr.map((i) => i.category.name))
-  ).map((i) => ({ category: { name: i }, items: [] }))
-
-  /* iterate through arr to populate each category's empty items array */
-  arr.forEach((v) => {
-    const { description, category } = v
-    const j = uniqueCategories.findIndex(
-      (i) => i.category.name === category.name
-    )
-    uniqueCategories[j].items.push({ description, checked: false })
-  })
-
-  return uniqueCategories
+  const byCategory = new Map<string, compressedCategoryType>()
+  for (const { description, category } of arr) {
+    const entry = byCategory.get(category.name) ?? {
+      category: { name: category.name },
+      items: []
+    }
+    entry.items.push({ description, checked: false })
+    byCategory.set(category.name, entry)
+  }
+  return Array.from(byCategory.values())
 }
 
 const sortCategoriesAndItems = (

@@ -22,20 +22,22 @@ const userInput = {
 describe('branch coverage with real data sources', () => {
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_branches`)
+    await mongoose.connect(
+      `${process.env['MONGO_TEST_URI']}test_ingre_branches`
+    )
   })
   afterEach(async () => {
     await mongoose.connection.dropDatabase()
     await mongoose.disconnect()
   })
 
-  it('user lookups return undefined for unknown users', async () => {
+  it('user lookups return null for unknown users', async () => {
     const id = new Types.ObjectId()
-    expect(await userApi.findOneUserById({ id })).toBeUndefined()
-    expect(await userApi.getUserSavedRecipes({ id })).toBeUndefined()
+    expect(await userApi.findOneUserById({ id })).toBeNull()
+    expect(await userApi.getUserSavedRecipes({ id })).toBeNull()
     expect(
       await userApi.findOneUser({ email: 'nobody@example.com' })
-    ).toBeUndefined()
+    ).toBeNull()
   })
 
   it('does not re-hash the password when an existing user is saved', async () => {
@@ -49,7 +51,7 @@ describe('branch coverage with real data sources', () => {
     expect(reloaded.password).toBe(hash)
   })
 
-  it('updateRecipe returns undefined for an unknown recipe', async () => {
+  it('updateRecipe returns null for an unknown recipe', async () => {
     const result = await recipeApi.updateRecipe({
       recipeId: new Types.ObjectId(),
       input: {
@@ -61,7 +63,7 @@ describe('branch coverage with real data sources', () => {
         instructions: 'i'
       }
     })
-    expect(result).toBeUndefined()
+    expect(result).toBeNull()
   })
 
   it('createSaveIngredient falls back to defaults for empty fields', async () => {

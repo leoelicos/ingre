@@ -1,4 +1,4 @@
-import { singleResult } from '../../../test-utils/singleResult'
+import { singleResult, withoutUser } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { UserInput } from '../../types'
@@ -72,7 +72,7 @@ describe('getUser', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.getUser).toStrictEqual(mockUser)
+    expect(data?.['getUser']).toStrictEqual(mockUser)
   })
 
   it('should throw an error if context user is null', async () => {
@@ -80,24 +80,25 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_USER },
-      { contextValue: { ...contextValue, user: undefined } }
+      { contextValue: withoutUser(contextValue) }
     )
     const { errors, data = {} } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Not logged in!')
-    expect(data?.getUser).toBeNull()
+    expect(errors?.[0]?.message).toBe('Not logged in!')
+    expect(data).toBeNull()
   })
 
-  it('should throw an error if context user has no _id', async () => {
-    mockFindOneUserById.mockReturnValueOnce(mockUser)
+  it('should throw NOT_FOUND if the user no longer exists', async () => {
+    mockFindOneUserById.mockResolvedValueOnce(null)
 
     const result = await testServer.executeOperation(
       { query: GET_USER },
-      { contextValue: { ...contextValue, user: {} } }
+      { contextValue }
     )
-    const { errors, data = {} } = singleResult(result)
+    const { errors, data } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Not logged in!')
-    expect(data?.getUser).toBeNull()
+    expect(errors?.[0]?.message).toBe('Could not find user')
+    expect(errors?.[0]?.['extensions']).toEqual({ code: 'NOT_FOUND' })
+    expect(data).toBeNull()
   })
 })

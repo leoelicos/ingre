@@ -5,8 +5,8 @@ const mockDispatch = jest.fn()
 const mockNavigate = jest.fn()
 const mockLoginMutation = jest.fn()
 const mockLoginOptions: {
-  onCompleted?: (data: { login?: { token?: string } }) => void
-  onError?: (error: Error) => void
+  onCompleted?: ((data: { login?: { token?: string } }) => void) | undefined
+  onError?: ((error: Error) => void) | undefined
 } = {}
 
 jest.mock('react-router-dom', () => ({

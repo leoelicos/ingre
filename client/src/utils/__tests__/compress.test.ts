@@ -70,8 +70,8 @@ describe('compress', () => {
     expect(
       produce?.items.some((item) => item.description.startsWith('Apple'))
     ).toBe(true)
-    expect(other?.items[0].description).toBe('Double  space (1)')
-    expect(dairy?.items[0].description).toContain('+')
+    expect(other?.items[0]?.description).toBe('Double  space (1)')
+    expect(dairy?.items[0]?.description).toContain('+')
     expect(result.map((category) => category.category.name)).toEqual([
       'Dairy',
       'Other',

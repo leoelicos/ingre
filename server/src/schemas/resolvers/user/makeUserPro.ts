@@ -1,3 +1,4 @@
+import { requireUser } from '../../../utils/requireUser'
 import { MyContext } from '../../types'
 
 export const makeUserPro = async (
@@ -5,10 +6,6 @@ export const makeUserPro = async (
   _args: unknown,
   { dataSources, user }: MyContext
 ) => {
-  try {
-    if (!user?._id) throw new Error('Not logged in!')
-    return dataSources.userApi.makeUserPro({ _id: user._id })
-  } catch (error) {
-    throw error
-  }
+  const { _id } = requireUser(user)
+  return dataSources.userApi.makeUserPro({ _id })
 }

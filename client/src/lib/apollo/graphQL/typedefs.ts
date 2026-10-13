@@ -22,8 +22,8 @@ export type Recipe = {
   portions: number
   ingredients: Ingredient[]
   picture_url: string
-  libraryId: string
-  instructions: string
+  libraryId: string | null
+  instructions: string | null
 }
 
 export type RecipeInput = {
@@ -84,23 +84,20 @@ export type Auth = {
 
 // not being used
 export type Query = {
-  checkEmailAlreadyExists: (email: string) => Promise<boolean | undefined>
-  getUser: () => Promise<User | undefined>
-  getRecipe: (_id: string) => Promise<Recipe | undefined>
-  getSavedRecipes: () => Promise<Recipe[] | undefined>
-  getNumSavedRecipes: () => Promise<number | undefined>
-  checkout: () => Promise<Checkout | undefined>
+  checkEmailAlreadyExists: (email: string) => Promise<boolean>
+  getUser: () => Promise<User>
+  getRecipe: (_id: string) => Promise<Recipe>
+  getSavedRecipes: () => Promise<Recipe[]>
+  getNumSavedRecipes: () => Promise<number>
+  checkout: () => Promise<Checkout>
 }
 
 // not being used
 export type Mutation = {
-  addUser: (input: UserInput) => Promise<Auth | undefined>
-  makeUserPro: () => Promise<User | undefined>
-  saveRecipe: (input: RecipeInput) => Promise<Recipe | undefined>
-  updateRecipe: (
-    recipeId: string,
-    input: RecipeInput
-  ) => Promise<Recipe | undefined>
-  removeRecipe: (recipeId: string) => Promise<boolean | undefined>
-  login: (email: string, password: string) => Promise<Auth | undefined>
+  addUser: (input: UserInput) => Promise<Auth>
+  makeUserPro: () => Promise<User>
+  saveRecipe: (input: RecipeInput) => Promise<Recipe>
+  updateRecipe: (recipeId: string, input: RecipeInput) => Promise<Recipe>
+  removeRecipe: (recipeId: string) => Promise<boolean>
+  login: (email: string, password: string) => Promise<Auth>
 }

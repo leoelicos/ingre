@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { useIngredients } from '../useIngredients'
-import { ingredient, recipe } from '../../../test/fixtures'
+import { ingredient, recipe, omit } from '../../../test/fixtures'
 import type { ClientRecipe } from '../../../types/client'
 
 const mockDispatch = jest.fn()
@@ -50,16 +50,13 @@ describe('useIngredients coverage', () => {
   })
 
   it('reloads recipes, skips ones without an id, and adds a row', async () => {
-    mockStore.savedRecipes = [
-      recipe(),
-      recipe({ _id: undefined, name: 'Skip' })
-    ]
+    mockStore.savedRecipes = [recipe(), omit(recipe({ name: 'Skip' }), '_id')]
     mockQuery.mockResolvedValue({
       data: {
         getRecipe: {
           ingredients: [
             ingredient({ _id: 'a' }),
-            ingredient({ _id: undefined, name: 'Salt' })
+            omit(ingredient({ name: 'Salt' }), '_id')
           ]
         }
       }

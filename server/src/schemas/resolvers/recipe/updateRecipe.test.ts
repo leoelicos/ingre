@@ -1,4 +1,4 @@
-import { singleResult } from '../../../test-utils/singleResult'
+import { singleResult, withoutUser } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -110,7 +110,19 @@ describe('updateRecipe', () => {
     )
     const response2 = singleResult(result)
     expect(response2.errors).toBeUndefined()
-    expect(response2.data?.updateRecipe).toStrictEqual(mockUpdatedRecipe)
+    expect(response2.data?.['updateRecipe']).toStrictEqual(mockUpdatedRecipe)
+  })
+
+  it('returns NOT_FOUND when the recipe does not exist', async () => {
+    mockUpdateRecipe.mockResolvedValueOnce(null)
+    const result = await testServer.executeOperation(
+      { query: UPDATE_RECIPE, variables: mockUpdateRecipeInput },
+      { contextValue }
+    )
+    const { errors, data } = singleResult(result)
+    expect(errors?.[0]?.message).toBe('could not find recipe')
+    expect(errors?.[0]?.['extensions']).toEqual({ code: 'NOT_FOUND' })
+    expect(data).toBeNull()
   })
 
   it('handles updateRecipe error', async () => {
@@ -130,15 +142,15 @@ describe('updateRecipe', () => {
         path: ['updateRecipe']
       }
     ])
-    expect(response2.data?.updateRecipe).toBeNull()
+    expect(response2.data).toBeNull()
   })
 
   it('should throw an error if context user is null', async () => {
     const result = await testServer.executeOperation(
       { query: UPDATE_RECIPE, variables: mockUpdateRecipeInput },
-      { contextValue: { ...contextValue, user: undefined } }
+      { contextValue: withoutUser(contextValue) }
     )
     const { errors } = singleResult(result)
-    expect(errors?.[0].message).toBe('Not logged in!')
+    expect(errors?.[0]?.message).toBe('Not logged in!')
   })
 })

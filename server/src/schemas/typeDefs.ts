@@ -2,13 +2,13 @@ import { gql } from 'graphql-tag'
 
 export const typeDefs = gql`
   type User {
-    _id: ID
-    firstName: String
-    lastName: String
-    email: String
-    pro: Boolean
-    savedRecipes: [Recipe]
-    numSavedRecipes: Int
+    _id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+    pro: Boolean!
+    savedRecipes: [Recipe!]!
+    numSavedRecipes: Int!
   }
 
   input UserInput {
@@ -19,11 +19,11 @@ export const typeDefs = gql`
   }
 
   type Recipe {
-    _id: ID
-    name: String
-    portions: Int
-    ingredients: [Ingredient]
-    picture_url: String
+    _id: ID!
+    name: String!
+    portions: Int!
+    ingredients: [Ingredient!]!
+    picture_url: String!
     libraryId: String
     instructions: String
   }
@@ -37,11 +37,11 @@ export const typeDefs = gql`
     instructions: String
   }
   type Ingredient {
-    _id: ID
-    name: String
-    quantity: Float
-    measure: String
-    category: Category
+    _id: ID!
+    name: String!
+    quantity: Float!
+    measure: String!
+    category: Category!
   }
 
   input IngredientInput {
@@ -62,8 +62,8 @@ export const typeDefs = gql`
   }
 
   type Category {
-    _id: ID
-    name: String
+    _id: ID!
+    name: String!
   }
 
   type Product {
@@ -76,44 +76,44 @@ export const typeDefs = gql`
   }
 
   type Checkout {
-    session: String
+    session: String!
   }
 
   type Auth {
-    token: String
-    user: User
+    token: String!
+    user: User!
   }
 
   # recipe
   type Query {
-    getRecipe(_id: ID!): Recipe
+    getRecipe(_id: ID!): Recipe!
   }
 
   type Mutation {
-    saveRecipe(input: RecipeInput!): Recipe
-    updateRecipe(recipeId: ID!, input: RecipeInput!): Recipe
-    removeRecipe(recipeId: ID!): Boolean
+    saveRecipe(input: RecipeInput!): Recipe!
+    updateRecipe(recipeId: ID!, input: RecipeInput!): Recipe!
+    removeRecipe(recipeId: ID!): Boolean!
   }
 
   # session
   type Query {
-    checkout: Checkout
+    checkout: Checkout!
   }
 
   type Mutation {
-    login(email: String!, password: String!): Auth
+    login(email: String!, password: String!): Auth!
   }
 
   # user
   type Query {
-    getUser: User
-    getSavedRecipes: [Recipe]
-    getNumSavedRecipes: Int
-    checkEmailAlreadyExists(email: String!): Boolean
+    getUser: User!
+    getSavedRecipes: [Recipe!]!
+    getNumSavedRecipes: Int!
+    checkEmailAlreadyExists(email: String!): Boolean!
   }
 
   type Mutation {
-    addUser(input: UserInput!): Auth
-    makeUserPro: User
+    addUser(input: UserInput!): Auth!
+    makeUserPro: User!
   }
 `

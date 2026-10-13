@@ -85,7 +85,7 @@ describe('login', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.login).toStrictEqual({
+    expect(data?.['login']).toStrictEqual({
       user: { _id: mockUser._id },
       token: mockToken
     })
@@ -109,8 +109,8 @@ describe('login', () => {
     )
     const { errors, data = {} } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Incorrect credentials')
-    expect(data?.login).toBeNull()
+    expect(errors?.[0]?.message).toBe('Incorrect credentials')
+    expect(data).toBeNull()
     expect(mockSignToken).not.toHaveBeenCalled()
   })
 
@@ -127,8 +127,8 @@ describe('login', () => {
     )
     const { errors, data } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Unexpected error value: null')
-    expect(data?.login).toBeNull()
+    expect(errors?.[0]?.message).toBe('Unexpected error value: null')
+    expect(data).toBeNull()
     expect(mockSignToken).not.toHaveBeenCalled()
   })
 })

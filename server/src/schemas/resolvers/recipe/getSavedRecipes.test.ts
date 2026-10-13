@@ -1,4 +1,4 @@
-import { singleResult } from '../../../test-utils/singleResult'
+import { singleResult, withoutUser } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -123,7 +123,18 @@ describe('getUser', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.getSavedRecipes).toStrictEqual(mockUserSavedRecipes)
+    expect(data?.['getSavedRecipes']).toStrictEqual(mockUserSavedRecipes)
+  })
+
+  it('returns NOT_FOUND when the user no longer exists', async () => {
+    mockGetUserSavedRecipes.mockResolvedValueOnce(null)
+    const result = await testServer.executeOperation(
+      { query: GET_SAVED_RECIPES },
+      { contextValue }
+    )
+    const { errors, data } = singleResult(result)
+    expect(errors?.[0]?.['extensions']).toEqual({ code: 'NOT_FOUND' })
+    expect(data).toBeNull()
   })
 
   it('should throw an error if context user is null', async () => {
@@ -131,11 +142,11 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_SAVED_RECIPES },
-      { contextValue: { ...contextValue, user: undefined } }
+      { contextValue: withoutUser(contextValue) }
     )
     const { errors, data = {} } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Unexpected error value: "Not logged in!"')
-    expect(data?.getSavedRecipes).toBeNull()
+    expect(errors?.[0]?.message).toBe('Not logged in!')
+    expect(data).toBeNull()
   })
 })

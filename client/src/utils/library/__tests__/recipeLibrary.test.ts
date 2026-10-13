@@ -34,6 +34,12 @@ const salad: LibraryRecipe = {
 }
 const fixtures = [chickenRice, salad]
 
+const firstBundledRecipe = (): LibraryRecipe => {
+  const [first] = recipeData.recipes
+  if (!first) throw new Error('bundled library is empty')
+  return first
+}
+
 describe('recipe library data', () => {
   it('every recipe ingredient references the catalogue', () => {
     const ids = new Set(ingredientData.ingredients.map((i) => i.id))
@@ -124,8 +130,8 @@ describe('toClientRecipe', () => {
   })
 
   it('uses the bundled catalogue by default', () => {
-    const r = toClientRecipe(recipeData.recipes[0])
-    expect(r.ingredients[0].category).not.toBe('other')
+    const r = toClientRecipe(firstBundledRecipe())
+    expect(r.ingredients[0]?.category).not.toBe('other')
   })
 })
 
@@ -165,7 +171,7 @@ describe('matchesSearch / searchLibrary', () => {
     expect(searchLibrary({ q: 'haloumi' }).map((r) => r.name)).toEqual([
       'Greek salad with haloumi'
     ])
-    expect(matchesSearch(recipeData.recipes[0], { q: 'beef' })).toBe(true)
+    expect(matchesSearch(firstBundledRecipe(), { q: 'beef' })).toBe(true)
   })
 
   it('lists unique sorted tags', () => {

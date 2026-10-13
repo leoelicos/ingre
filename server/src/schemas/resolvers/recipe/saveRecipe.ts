@@ -1,12 +1,16 @@
 import { CategoryApi } from '../../../datasources/category'
 import { IngredientApi } from '../../../datasources/ingredient'
-import { IngredientSchema } from '../../../models/Ingredient'
+import { requireUser } from '../../../utils/requireUser'
 import {
   IngredientInput,
   MyContext,
   RecipeInput,
   RecipePopulated
 } from '../../types'
+import { toRecipePopulated } from './toRecipePopulated'
+
+export const DEFAULT_PICTURE_URL =
+  'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc'
 
 export const createSaveIngredient = async ({
   ingredientInput,
@@ -17,30 +21,26 @@ export const createSaveIngredient = async ({
   categoryApi: CategoryApi
   ingredientApi: IngredientApi
 }) => {
-  try {
-    const name = ingredientInput.name || 'Generic'
-    const quantity = ingredientInput.quantity || 1
-    const measure = ingredientInput.measure || 'unit'
-    const category = ingredientInput.category || 'Generic'
+  const name = ingredientInput.name || 'Generic'
+  const quantity = ingredientInput.quantity || 1
+  const measure = ingredientInput.measure || 'unit'
+  const category = ingredientInput.category || 'Generic'
 
-    const foundCategory = await categoryApi.findOrCreateCategory({
-      categoryName: category
-    })
-    const response = await ingredientApi.createIngredient({
-      name,
-      quantity,
-      measure,
-      category: foundCategory._id
-    })
-    return {
-      _id: response._id,
-      name: response.name,
-      quantity: response.quantity,
-      measure: response.measure,
-      category: response.category
-    }
-  } catch (error) {
-    throw error
+  const foundCategory = await categoryApi.findOrCreateCategory({
+    categoryName: category
+  })
+  const response = await ingredientApi.createIngredient({
+    name,
+    quantity,
+    measure,
+    category: foundCategory._id
+  })
+  return {
+    _id: response._id,
+    name: response.name,
+    quantity: response.quantity,
+    measure: response.measure,
+    category: response.category
   }
 }
 
@@ -52,7 +52,7 @@ export const createSaveIngredients = async ({
   ingredients: Array<IngredientInput>
   categoryApi: CategoryApi
   ingredientApi: IngredientApi
-}): Promise<IngredientSchema[]> => {
+}) => {
   const results = await Promise.allSettled(
     ingredients.map((ingredientInput) =>
       createSaveIngredient({
@@ -63,12 +63,9 @@ export const createSaveIngredients = async ({
     )
   )
 
-  return results
-    .filter(
-      (result): result is PromiseFulfilledResult<IngredientSchema> =>
-        result.status === 'fulfilled'
-    )
-    .map((result) => result.value)
+  return results.flatMap((result) =>
+    result.status === 'fulfilled' ? [result.value] : []
+  )
 }
 
 // saves a recipe to the database
@@ -78,55 +75,23 @@ export const saveRecipe = async (
     input: { name, portions, ingredients, picture_url, libraryId, instructions }
   }: { input: RecipeInput },
   { user, dataSources }: MyContext
-): Promise<RecipePopulated | undefined> => {
-  try {
-    console.log({
-      user,
-      name,
-      portions,
-      ingredients,
-      picture_url,
-      libraryId,
-      instructions
-    })
-    if (!user) throw new Error('Not logged in!')
+): Promise<RecipePopulated> => {
+  const { _id: userId } = requireUser(user)
 
-    const createdIngredients = await createSaveIngredients({
-      ingredients,
-      categoryApi: dataSources.categoryApi,
-      ingredientApi: dataSources.ingredientApi
-    })
+  const createdIngredients = await createSaveIngredients({
+    ingredients,
+    categoryApi: dataSources.categoryApi,
+    ingredientApi: dataSources.ingredientApi
+  })
 
-    const recipe = await dataSources.recipeApi.createRecipe({
-      name,
-      portions,
-      instructions,
-      ingredients: createdIngredients,
-      picture_url:
-        picture_url ||
-        'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc',
-      libraryId
-    })
-    await dataSources.userApi.addRecipeToUser({
-      userId: user._id,
-      recipeId: recipe._id
-    })
-    return {
-      _id: recipe._id,
-      name: recipe.name,
-      portions: recipe.portions,
-      instructions: recipe.instructions,
-      ingredients: recipe.ingredients.map((i) => ({
-        _id: i._id,
-        category: i.category,
-        measure: i.measure,
-        name: i.name,
-        quantity: i.quantity
-      })),
-      picture_url: recipe.picture_url,
-      libraryId: recipe.libraryId
-    }
-  } catch (error) {
-    throw error
-  }
+  const recipe = await dataSources.recipeApi.createRecipe({
+    name,
+    portions,
+    instructions,
+    ingredients: createdIngredients,
+    picture_url: picture_url || DEFAULT_PICTURE_URL,
+    libraryId
+  })
+  await dataSources.userApi.addRecipeToUser({ userId, recipeId: recipe._id })
+  return toRecipePopulated(recipe)
 }

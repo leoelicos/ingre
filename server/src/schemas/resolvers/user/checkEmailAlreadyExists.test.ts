@@ -60,7 +60,7 @@ describe('getUser', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.checkEmailAlreadyExists).toBe(true)
+    expect(data?.['checkEmailAlreadyExists']).toBe(true)
   })
 
   it('should return false if findOneUser returns null', async () => {
@@ -76,7 +76,7 @@ describe('getUser', () => {
 
     const { data = {} } = singleResult(result)
 
-    expect(data?.checkEmailAlreadyExists).toBe(false)
+    expect(data?.['checkEmailAlreadyExists']).toBe(false)
   })
 
   it('should throw if findOneUser throws', async () => {
@@ -92,7 +92,7 @@ describe('getUser', () => {
 
     const { errors, data = {} } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('uh-oh')
-    expect(data?.checkEmailAlreadyExists).toBeNull()
+    expect(errors?.[0]?.message).toBe('uh-oh')
+    expect(data).toBeNull()
   })
 })

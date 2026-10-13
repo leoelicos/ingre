@@ -22,7 +22,7 @@ const mockInput: UserInput = {
 describe('userApi', () => {
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_user`)
+    await mongoose.connect(`${process.env['MONGO_TEST_URI']}test_ingre_user`)
     await categoryApi.deleteAllCategories()
     await ingredientApi.deleteAllIngredients()
     await recipeApi.deleteAllRecipes()
@@ -136,24 +136,24 @@ describe('userApi', () => {
 
     const foundUserById = await userApi.findOneUserById({ id: userId })
     if (!foundUserById) return
-    expect(foundUserById.savedRecipes).toMatchObject(expectedObject)
+    expect(foundUserById['savedRecipes']).toMatchObject(expectedObject)
 
     let foundOneUser = await userApi.findOneUser({ email: mockInput.email })
     if (!foundOneUser) return
-    expect(foundOneUser.savedRecipes).toMatchObject(expectedObject)
+    expect(foundOneUser['savedRecipes']).toMatchObject(expectedObject)
 
     await userApi.removeRecipeFromUser({ recipeId: recipe._id, userId: userId })
 
     foundOneUser = await userApi.findOneUser({ email: mockInput.email })
     if (!foundOneUser) return
-    expect(foundOneUser.savedRecipes).toMatchObject([])
+    expect(foundOneUser['savedRecipes']).toMatchObject([])
   })
 
   it('findOneUser return one user', async () => {
     await userApi.createUser(mockInput)
     const result = await userApi.findOneUser({ email: mockInput.email })
     if (!result) return
-    expect(result.firstName).toEqual(mockInput.firstName)
+    expect(result['firstName']).toEqual(mockInput.firstName)
   })
   it('findOneUserById return one user', async () => {
     const user = await userApi.createUser(mockInput)
@@ -162,9 +162,9 @@ describe('userApi', () => {
       id: user._id
     })
     if (!result) return
-    expect(result.email).toEqual(mockInput.email)
-    expect(result.firstName).toEqual(mockInput.firstName)
-    expect(result.lastName).toEqual(mockInput.lastName)
+    expect(result['email']).toEqual(mockInput.email)
+    expect(result['firstName']).toEqual(mockInput.firstName)
+    expect(result['lastName']).toEqual(mockInput.lastName)
   })
   it('findOneUserById throws error if api failed', async () => {
     const user = await userApi.createUser(mockInput)
@@ -241,17 +241,15 @@ describe('userApi', () => {
     if (!user) return
     expect(user.pro).toBe(false)
     const newUser = await userApi.makeUserPro({ _id: user._id })
-    expect(newUser.pro).toBe(true)
+    expect(newUser['pro']).toBe(true)
   })
 
   it('makeUserPro throws if findByIdAndUpdate returns null', async () => {
-    try {
-      await userApi.makeUserPro({
+    await expect(
+      userApi.makeUserPro({
         _id: new Types.ObjectId('66dd91fce41720d94c15edd7')
       })
-    } catch (error) {
-      expect(error).toStrictEqual(new Error('User not found'))
-    }
+    ).rejects.toThrow('User not found')
   })
 })
 

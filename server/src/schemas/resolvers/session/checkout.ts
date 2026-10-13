@@ -1,9 +1,10 @@
+import { PaymentProviderError } from '../../../errors'
 import { MyContext } from '../../types'
 
 export const getRootEndpointFromHeaders = ({
   headers
 }: {
-  headers?: { referer?: string }
+  headers?: { referer?: string } | undefined
 }) => (headers?.referer ? new URL(headers.referer).origin : '')
 
 export const checkout = async (
@@ -24,7 +25,7 @@ export const checkout = async (
       rootEndpoint: getRootEndpointFromHeaders({ headers })
     })
     return { session: response.id }
-  } catch (e: unknown) {
-    throw new Error('could not create stripe response')
+  } catch {
+    throw new PaymentProviderError('could not create stripe response')
   }
 }

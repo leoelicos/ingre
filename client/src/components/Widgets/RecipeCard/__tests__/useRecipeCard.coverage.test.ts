@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { useRecipeCard } from '../useRecipeCard'
-import { ingredient, recipe } from '../../../../test/fixtures'
+import { ingredient, recipe, omit } from '../../../../test/fixtures'
 import type { ClientRecipe } from '../../../../types/client'
 
 const mockSaveRecipe = jest.fn()
@@ -79,7 +79,7 @@ describe('useRecipeCard coverage', () => {
       .spyOn(console, 'error')
       .mockImplementation(() => undefined)
     const { result } = renderHook(() =>
-      useRecipeCard({ onSavedPage: false, recipe: recipe({ _id: undefined }) })
+      useRecipeCard({ onSavedPage: false, recipe: omit(recipe(), '_id') })
     )
     await act(async () => {
       await result.current.handleEdit()
@@ -116,16 +116,18 @@ describe('useRecipeCard coverage', () => {
     const empty = renderHook(() =>
       useRecipeCard({
         onSavedPage: false,
-        recipe: recipe({
-          name: '',
-          portions: 0,
-          picture_url: '',
-          libraryId: undefined,
-          instructions: undefined,
-          ingredients: [
-            ingredient({ name: '', quantity: 0, measure: '', category: '' })
-          ]
-        })
+        recipe: omit(
+          recipe({
+            name: '',
+            portions: 0,
+            picture_url: '',
+            ingredients: [
+              ingredient({ name: '', quantity: 0, measure: '', category: '' })
+            ]
+          }),
+          'libraryId',
+          'instructions'
+        )
       })
     )
     await act(async () => {
@@ -135,9 +137,7 @@ describe('useRecipeCard coverage', () => {
       variables: {
         input: expect.objectContaining({
           name: 'Untitled Recipe',
-          portions: 1,
-          libraryId: undefined,
-          instructions: undefined
+          portions: 1
         })
       }
     })

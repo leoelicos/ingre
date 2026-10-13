@@ -1,5 +1,4 @@
 import { Types } from 'mongoose'
-import { Request } from 'express'
 import { createDataSources } from '../datasources'
 
 export type User = {
@@ -44,8 +43,8 @@ export type RecipeInput = {
   portions: number
   ingredients: Array<IngredientInput>
   picture_url: string
-  libraryId: string
-  instructions: string
+  libraryId?: string | null
+  instructions?: string | null
 }
 
 export type Ingredient = {
@@ -102,9 +101,4 @@ export interface MyContext {
   headers?: {
     referer?: string
   }
-}
-
-export interface AuthenticatedRequest extends Request {
-  user?: User
-  dataSources: ReturnType<typeof createDataSources>
 }

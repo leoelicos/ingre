@@ -1,4 +1,4 @@
-import { singleResult } from '../../../test-utils/singleResult'
+import { singleResult, withoutUser } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -144,7 +144,7 @@ describe('saveRecipe', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.saveRecipe).toStrictEqual({
+    expect(data?.['saveRecipe']).toStrictEqual({
       name: 'Roast chicken',
       portions: 2,
       ingredients: [
@@ -215,11 +215,11 @@ describe('saveRecipe', () => {
   it('should throw an error if context user is null', async () => {
     const result = await testServer.executeOperation(
       { query: SAVE_RECIPE, variables: mockSaveRecipeInput },
-      { contextValue: { ...contextValue, user: undefined } }
+      { contextValue: withoutUser(contextValue) }
     )
     const { errors } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Not logged in!')
+    expect(errors?.[0]?.message).toBe('Not logged in!')
   })
 })
 

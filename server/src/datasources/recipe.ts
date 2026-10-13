@@ -1,3 +1,4 @@
+import { NotFoundError } from '../errors'
 import mongoose, { Types, Document } from 'mongoose'
 import { Recipe, RecipeSchema } from '../models/Recipe'
 import {
@@ -5,7 +6,7 @@ import {
   Ingredient as IngredientType,
   RecipeInput
 } from '../schemas/types'
-import { Ingredient, IngredientSchema } from '../models/Ingredient'
+import { Ingredient } from '../models/Ingredient'
 import { Category } from '../models/Category'
 
 export const updateUniqueCategoryName = async ({
@@ -28,18 +29,10 @@ export const generateIngredients = async ({
   ingredients
 }: {
   ingredients: Array<IngredientInput>
-}): Promise<Array<Types.Subdocument<unknown> & IngredientSchema>> => {
-  try {
-    const generatedIngredientArrays = await Promise.all(
-      ingredients.map((ingredient) => generateIngredient({ ingredient }))
-    )
-    return generatedIngredientArrays as Array<
-      Types.Subdocument<unknown> & IngredientSchema
-    >
-  } catch (error) {
-    throw error
-  }
-}
+}) =>
+  Promise.all(
+    ingredients.map((ingredient) => generateIngredient({ ingredient }))
+  )
 
 const defaultIngredientName = 'Generic'
 const defaultIngredientQuantity = 1
@@ -66,10 +59,17 @@ export const generateIngredient = async ({
     return await Ingredient.findById(createdIngredient._id)
       .select('-__v')
       .populate({ path: 'category' })
+      .orFail()
   } catch (error) {
     throw error
   }
 }
+
+/** Deletes the given ingredient documents in parallel. */
+export const deleteIngredients = (
+  ingredients: ReadonlyArray<{ _id: Types.ObjectId }>
+) =>
+  Promise.all(ingredients.map(({ _id }) => Ingredient.findByIdAndDelete(_id)))
 
 export class RecipeApi {
   public createRecipe = async ({
@@ -82,10 +82,10 @@ export class RecipeApi {
   }: {
     name: string
     portions: number
-    instructions: string
+    instructions?: string | null | undefined
     ingredients: unknown[]
     picture_url: string
-    libraryId: string
+    libraryId?: string | null | undefined
   }) => {
     const recipe = await Recipe.create({
       name,
@@ -160,19 +160,13 @@ export class RecipeApi {
   }) => {
     const dbRecipe =
       await Recipe.findById<RecipeSchema>(recipeId).select('-__v')
-
-    if (!dbRecipe) throw new Error('Recipe does not exist!') // test
-
-    // remove existing ingredients
-    for (const { _id } of dbRecipe.ingredients) {
-      await Ingredient.findByIdAndDelete<IngredientType>(_id).select('-__v')
-    }
-
+    if (!dbRecipe) throw new NotFoundError('Recipe does not exist!')
+    await deleteIngredients(dbRecipe.ingredients)
     await Recipe.findByIdAndDelete(recipeId)
-
     await this.categoryCleanup()
   }
 
+  /** Replaces a recipe's fields and ingredients; returns null when the recipe does not exist. */
   public updateRecipe = async ({
     recipeId,
     input
@@ -180,38 +174,26 @@ export class RecipeApi {
     recipeId: mongoose.Types.ObjectId
     input: RecipeInput
   }) => {
-    try {
-      const dbRecipe =
-        await Recipe.findById<RecipeSchema>(recipeId).select('-__v')
+    const dbRecipe =
+      await Recipe.findById<RecipeSchema>(recipeId).select('-__v')
+    if (!dbRecipe) return null
 
-      if (dbRecipe) {
-        // remove existing ingredients
-        for (const { _id } of dbRecipe.ingredients) {
-          await Ingredient.findByIdAndDelete<IngredientType>(_id).select('-__v')
-        }
+    await deleteIngredients(dbRecipe.ingredients)
+    const ingredients = await generateIngredients({
+      ingredients: input.ingredients
+    })
 
-        // Generate new ingredients
-        const generatedIngredients: Array<
-          Types.Subdocument<unknown> & IngredientSchema
-        > = await generateIngredients({
-          ingredients: input.ingredients
-        })
-
-        // assign updated values to the recipe
-        dbRecipe.name = input.name
-        dbRecipe.portions = input.portions
-        dbRecipe.ingredients = generatedIngredients
-        dbRecipe.picture_url = input.picture_url
-        dbRecipe.libraryId = input.libraryId
-        dbRecipe.instructions = input.instructions
-        await dbRecipe.save()
-        await dbRecipe.populate({ path: 'ingredients', populate: 'category' })
-
-        await this.categoryCleanup()
-        return dbRecipe
-      }
-    } catch (error) {
-      throw error
-    }
+    dbRecipe.set({
+      name: input.name,
+      portions: input.portions,
+      ingredients: ingredients.map(({ _id }) => _id),
+      picture_url: input.picture_url,
+      libraryId: input.libraryId,
+      instructions: input.instructions
+    })
+    await dbRecipe.save()
+    await dbRecipe.populate({ path: 'ingredients', populate: 'category' })
+    await this.categoryCleanup()
+    return dbRecipe
   }
 }

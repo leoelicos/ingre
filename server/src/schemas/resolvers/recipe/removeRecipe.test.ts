@@ -1,4 +1,4 @@
-import { singleResult } from '../../../test-utils/singleResult'
+import { singleResult, withoutUser } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -79,7 +79,7 @@ describe('removeRecipe', () => {
       { contextValue }
     )
     const { errors } = singleResult(result)
-    expect(errors?.[0].message).toBe('delete recipe error')
+    expect(errors?.[0]?.message).toBe('delete recipe error')
   })
 
   it('should throw error when removeRecipeFromUser fails', async () => {
@@ -91,15 +91,15 @@ describe('removeRecipe', () => {
       { contextValue }
     )
     const { errors } = singleResult(result)
-    expect(errors?.[0].message).toBe('remove recipe from user error')
+    expect(errors?.[0]?.message).toBe('remove recipe from user error')
   })
 
   it('should throw an error if context user is null', async () => {
     const result = await testServer.executeOperation(
       { query: REMOVE_RECIPE, variables: mockRemoveRecipeInput },
-      { contextValue: { ...contextValue, user: undefined } }
+      { contextValue: withoutUser(contextValue) }
     )
     const { errors } = singleResult(result)
-    expect(errors?.[0].message).toBe('Not logged in!')
+    expect(errors?.[0]?.message).toBe('Not logged in!')
   })
 })

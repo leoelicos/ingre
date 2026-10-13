@@ -1,15 +1,18 @@
 export interface ClientRecipe {
-  _id: string | undefined // will not have one if not from server
+  /** present only for recipes saved on the server */
+  _id?: string
   name: string
   portions: number
   picture_url: string
-  instructions: string | undefined // will not have one if not from server
-  libraryId: string | undefined
+  /** instructions URL; present only for server recipes that have one */
+  instructions?: string
+  /** id in the local recipe library, when the recipe came from it */
+  libraryId?: string
   ingredients: ClientIngredient[]
 }
 
 export interface ClientIngredient {
-  _id: string | undefined
+  _id?: string
   name: string
   quantity: number
   measure: string

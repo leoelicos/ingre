@@ -8,21 +8,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function isIngredient(value: unknown): value is ClientIngredient {
   if (!isRecord(value)) return false
   return (
-    typeof value.name === 'string' &&
-    typeof value.quantity === 'number' &&
-    typeof value.measure === 'string' &&
-    typeof value.category === 'string'
+    typeof value['name'] === 'string' &&
+    typeof value['quantity'] === 'number' &&
+    typeof value['measure'] === 'string' &&
+    typeof value['category'] === 'string'
   )
 }
 
 export function isClientRecipe(value: unknown): value is ClientRecipe {
   if (!isRecord(value)) return false
   return (
-    typeof value.name === 'string' &&
-    typeof value.portions === 'number' &&
-    typeof value.picture_url === 'string' &&
-    Array.isArray(value.ingredients) &&
-    value.ingredients.every(isIngredient)
+    typeof value['name'] === 'string' &&
+    typeof value['portions'] === 'number' &&
+    typeof value['picture_url'] === 'string' &&
+    Array.isArray(value['ingredients']) &&
+    value['ingredients'].every(isIngredient)
   )
 }
 
@@ -40,7 +40,8 @@ export function toSavedIngredient(
   if (typeof quantity !== 'string' && typeof quantity !== 'number')
     return undefined
   if (typeof measure !== 'string') return undefined
-  if (!isRecord(category) || typeof category.name !== 'string') return undefined
+  if (!isRecord(category) || typeof category['name'] !== 'string')
+    return undefined
   if (typeof recipe !== 'string') return undefined
   if (typeof recipeId !== 'string') return undefined
   return {
@@ -48,7 +49,7 @@ export function toSavedIngredient(
     name,
     quantity: String(quantity),
     measure,
-    category: { name: category.name },
+    category: { name: category['name'] },
     recipe,
     recipeId
   }

@@ -74,7 +74,7 @@ describe('makeUserPro', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.makeUserPro).toStrictEqual({ _id: mockUserId, pro: true })
+    expect(data?.['makeUserPro']).toStrictEqual({ _id: mockUserId, pro: true })
   })
 
   it('should throw an error if there was an error with makeUserPro', async () => {
@@ -86,8 +86,8 @@ describe('makeUserPro', () => {
     )
     const { errors, data = {} } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('User not found')
-    expect(data?.makeUserPro).toBeNull()
+    expect(errors?.[0]?.message).toBe('User not found')
+    expect(data).toBeNull()
   })
 
   it('should throw an error if context user is null', async () => {
@@ -103,7 +103,7 @@ describe('makeUserPro', () => {
     )
     const { errors, data } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Not logged in!')
-    expect(data?.makeUserPro).toBeNull()
+    expect(errors?.[0]?.message).toBe('Not logged in!')
+    expect(data).toBeNull()
   })
 })

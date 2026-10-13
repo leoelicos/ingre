@@ -1,4 +1,4 @@
-import { singleResult } from '../../../test-utils/singleResult'
+import { singleResult, withoutUser } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -120,7 +120,7 @@ describe('getUser', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.getNumSavedRecipes).toStrictEqual(2)
+    expect(data?.['getNumSavedRecipes']).toStrictEqual(2)
   })
 
   it('should throw an error if context user is null', async () => {
@@ -128,12 +128,12 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_NUM_SAVED_RECIPES },
-      { contextValue: { ...contextValue, user: undefined } }
+      { contextValue: withoutUser(contextValue) }
     )
     const { errors, data = {} } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Not logged in!')
-    expect(data?.getNumSavedRecipes).toBeNull()
+    expect(errors?.[0]?.message).toBe('Not logged in!')
+    expect(data).toBeNull()
   })
 
   it('should throw an error if no user is found', async () => {
@@ -145,7 +145,7 @@ describe('getUser', () => {
     )
     const { errors, data = {} } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Could not find user')
-    expect(data?.getNumSavedRecipes).toBeNull()
+    expect(errors?.[0]?.message).toBe('Could not find user')
+    expect(data).toBeNull()
   })
 })

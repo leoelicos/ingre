@@ -19,16 +19,13 @@ export function toClientRecipe(
 ): ClientRecipe {
   const byId = new Map(ingredients.map((i) => [i.id, i]))
   return {
-    _id: undefined,
     name: recipe.name,
     portions: recipe.portions,
     picture_url: recipe.picture_url || PLACEHOLDER_PICTURE,
-    instructions: undefined,
     libraryId: recipe.id,
     ingredients: recipe.ingredients.map((ri) => {
       const item = byId.get(ri.ingredientId)
       return {
-        _id: undefined,
         name: item?.name ?? ri.ingredientId,
         quantity: ri.quantity,
         measure: ri.measure,

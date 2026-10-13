@@ -3,11 +3,12 @@ export interface RecipeInput {
   portions: number
   ingredients: IngredientInput[]
   picture_url: string
-  libraryId: string | undefined // will be undefined if user-generated
-  instructions: string
+  /** omitted for user-created recipes */
+  libraryId?: string
+  instructions?: string
 }
 
-interface IngredientInput {
+export interface IngredientInput {
   name: string
   quantity: number
   measure: string

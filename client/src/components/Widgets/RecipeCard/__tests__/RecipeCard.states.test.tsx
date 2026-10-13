@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import RecipeCard from '../RecipeCard'
-import { recipe } from '../../../../test/fixtures'
+import { recipe, omit } from '../../../../test/fixtures'
 import type { ClientRecipe } from '../../../../types/client'
 
 const mockCard: {
@@ -102,7 +102,7 @@ describe('RecipeCard states', () => {
     rerender(
       <MemoryRouter>
         <RecipeCard
-          recipe={recipe({ libraryId: undefined })}
+          recipe={omit(recipe(), 'libraryId')}
           onSavedPage={false}
           pro={true}
         />

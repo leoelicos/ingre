@@ -51,12 +51,14 @@ describe('App', () => {
       headers: { accept: 'json', authorization: 'Bearer abc' }
     })
     expect(
-      withAuthHeaders({}, { headers: { accept: 'json' } }).headers.authorization
+      withAuthHeaders({}, { headers: { accept: 'json' } }).headers[
+        'authorization'
+      ]
     ).toBe('Bearer abc')
   })
 
   it('uses an empty authorization header without a token', () => {
     expect(authHeaders(undefined)).toEqual({ headers: { authorization: '' } })
-    expect(withAuthHeaders({}, {}).headers.authorization).toBe('')
+    expect(withAuthHeaders({}, {}).headers['authorization']).toBe('')
   })
 })

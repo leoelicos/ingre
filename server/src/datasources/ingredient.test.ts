@@ -14,7 +14,9 @@ jest.setTimeout(60000)
 describe('ingredientApi', () => {
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_ingredient`)
+    await mongoose.connect(
+      `${process.env['MONGO_TEST_URI']}test_ingre_ingredient`
+    )
     await categoryApi.deleteAllCategories()
     await ingredientApi.deleteAllIngredients()
     await recipeApi.deleteAllRecipes()

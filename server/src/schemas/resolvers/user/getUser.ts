@@ -1,3 +1,5 @@
+import { NotFoundError } from '../../../errors'
+import { requireUser } from '../../../utils/requireUser'
 import { MyContext } from '../../types'
 
 export const getUser = async (
@@ -5,14 +7,8 @@ export const getUser = async (
   __: unknown,
   { dataSources, user: contextUser }: MyContext
 ) => {
-  try {
-    if (!contextUser?._id) throw new Error('Not logged in!')
-    const user = await dataSources.userApi.findOneUserById({
-      id: contextUser._id
-    })
-
-    return user
-  } catch (error) {
-    throw error
-  }
+  const { _id } = requireUser(contextUser)
+  const user = await dataSources.userApi.findOneUserById({ id: _id })
+  if (!user) throw new NotFoundError('Could not find user')
+  return user
 }

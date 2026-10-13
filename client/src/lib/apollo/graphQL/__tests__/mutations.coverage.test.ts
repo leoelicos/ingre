@@ -4,11 +4,13 @@ import { useUpdateRecipe } from '../updateRecipe'
 import { StoreProvider } from '../../../../utils/state/GlobalState'
 
 const mockHandlers: {
-  onCompleted?: (data: {
-    saveRecipe?: { name: string }
-    updateRecipe?: { name: string }
-  }) => void
-  onError?: (error: Error) => void
+  onCompleted?:
+    | ((data: {
+        saveRecipe?: { name: string }
+        updateRecipe?: { name: string }
+      }) => void)
+    | undefined
+  onError?: ((error: Error) => void) | undefined
 } = {}
 
 jest.mock('@apollo/client', () => ({

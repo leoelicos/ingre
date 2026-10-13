@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { useCustomiseForm } from '../useCustomiseForm'
-import { recipe } from '../../../test/fixtures'
+import { recipe, omit } from '../../../test/fixtures'
 import type { ClientRecipe } from '../../../types/client'
 
 const mockNavigate = jest.fn()
@@ -66,7 +66,7 @@ describe('useCustomiseForm coverage', () => {
     })
     expect(result.current.name).toBe('')
 
-    mockState.customiseRecipe = recipe({ name: 'Original', _id: undefined })
+    mockState.customiseRecipe = omit(recipe({ name: 'Original' }), '_id')
     act(() => {
       result.current.handleUndoAll()
     })
@@ -85,11 +85,10 @@ describe('useCustomiseForm coverage', () => {
   })
 
   it('updates an existing recipe and fills empty defaults', async () => {
-    mockState.customiseRecipe = recipe({
-      _id: 'saved-id',
-      picture_url: '',
-      libraryId: undefined
-    })
+    mockState.customiseRecipe = omit(
+      recipe({ _id: 'saved-id', picture_url: '' }),
+      'libraryId'
+    )
     const saveRecipe = jest.fn()
     const updateRecipe = jest.fn()
     const { result } = renderHook(() =>

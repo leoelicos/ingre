@@ -18,12 +18,8 @@ export class CategoryApi {
     categoryName: string
   }) => {
     const categories = await this.getAllCategories()
-    const foundIndex = categories.findIndex(({ name }) => name === categoryName)
-    if (foundIndex === -1) {
-      const createdCategory = await this.createCategory(categoryName)
-      return createdCategory
-    }
-    return categories[foundIndex]
+    const found = categories.find(({ name }) => name === categoryName)
+    return found ?? (await this.createCategory(categoryName))
   }
 
   public deleteAllCategories = async () => {

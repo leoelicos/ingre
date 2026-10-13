@@ -9,7 +9,7 @@ beforeAll(async () => {
   const uri = mongo.getUri()
 
   // tests connect with `${process.env.MONGO_TEST_URI}<db name>`
-  process.env.MONGO_TEST_URI = uri
+  process.env['MONGO_TEST_URI'] = uri
 })
 
 afterAll(async () => {

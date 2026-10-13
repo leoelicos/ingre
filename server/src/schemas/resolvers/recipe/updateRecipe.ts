@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
-import { RecipeSchema } from '../../../models/Recipe'
+import { NotFoundError } from '../../../errors'
+import { requireUser } from '../../../utils/requireUser'
 import { MyContext, RecipeInput } from '../../types'
 
 export const updateRecipe = async (
@@ -9,14 +10,9 @@ export const updateRecipe = async (
     input
   }: { recipeId: mongoose.Types.ObjectId; input: RecipeInput },
   { user, dataSources }: MyContext
-): Promise<RecipeSchema | undefined> => {
-  try {
-    if (!user) throw new Error('Not logged in!')
-    return await dataSources.recipeApi.updateRecipe({
-      recipeId,
-      input
-    })
-  } catch (error) {
-    throw error
-  }
+) => {
+  requireUser(user)
+  const recipe = await dataSources.recipeApi.updateRecipe({ recipeId, input })
+  if (!recipe) throw new NotFoundError('could not find recipe')
+  return recipe
 }

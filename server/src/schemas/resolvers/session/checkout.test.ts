@@ -64,7 +64,7 @@ describe('checkout', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.checkout).toStrictEqual({ session: 'mockstripeid' })
+    expect(data?.['checkout']).toStrictEqual({ session: 'mockstripeid' })
     expect(mockStripePay).toHaveBeenCalledWith({
       productName: 'ingré PRO',
       productDescription: 'Access instructions to cook each recipe',
@@ -96,8 +96,8 @@ describe('checkout', () => {
     )
     const { errors, data = {} } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('could not create stripe response')
-    expect(data?.checkout).toBeNull()
+    expect(errors?.[0]?.message).toBe('could not create stripe response')
+    expect(data).toBeNull()
   })
 
   it('if headers is null, stripePay is called with blank referrer', async () => {
@@ -116,6 +116,6 @@ describe('checkout', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.checkout).toStrictEqual({ session: 'mockstripeid' })
+    expect(data?.['checkout']).toStrictEqual({ session: 'mockstripeid' })
   })
 })

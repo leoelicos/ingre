@@ -46,7 +46,7 @@ const mockRecipe = {
 describe('recipeApi', () => {
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_recipe`)
+    await mongoose.connect(`${process.env['MONGO_TEST_URI']}test_ingre_recipe`)
     categoryApi = new CategoryApi()
     ingredientApi = new IngredientApi()
     recipeApi = new RecipeApi()

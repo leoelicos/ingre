@@ -1,4 +1,4 @@
-import { singleResult } from '../../../test-utils/singleResult'
+import { singleResult, withoutUser } from '../../../test-utils/singleResult'
 import { Types } from 'mongoose'
 import { ApolloServer } from '@apollo/server'
 import { typeDefs } from '../../typeDefs'
@@ -112,7 +112,7 @@ describe('getRecipe', () => {
     )
 
     const { errors, data = {} } = singleResult(result)
-    expect(data?.getRecipe).toStrictEqual(populatedRecipe)
+    expect(data?.['getRecipe']).toStrictEqual(populatedRecipe)
     expect(errors).toBe(undefined)
     expect(mockGetRecipe).toHaveBeenCalled()
   })
@@ -129,7 +129,7 @@ describe('getRecipe', () => {
 
     expect(errors).toStrictEqual([
       {
-        extensions: { code: 'INTERNAL_SERVER_ERROR' },
+        extensions: { code: 'NOT_FOUND' },
         locations: [{ column: 3, line: 2 }],
         message: 'could not find recipe',
         path: ['getRecipe']
@@ -164,10 +164,10 @@ describe('getRecipe', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_RECIPE, variables: { id: recipeId } },
-      { contextValue: { ...contextValue, user: undefined } }
+      { contextValue: withoutUser(contextValue) }
     )
     const { errors } = singleResult(result)
 
-    expect(errors?.[0].message).toBe('Not logged in!')
+    expect(errors?.[0]?.message).toBe('Not logged in!')
   })
 })

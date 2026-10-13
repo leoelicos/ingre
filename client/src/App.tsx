@@ -50,7 +50,7 @@ export const withAuthHeaders = (
 
 const authLink = setContext(withAuthHeaders)
 
-const uri = graphqlEndpoint(process.env.NODE_ENV)
+const uri = graphqlEndpoint(process.env['NODE_ENV'])
 const httpLink = createHttpLink({ uri })
 const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
