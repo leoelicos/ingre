@@ -1,7 +1,9 @@
+import { renderHook } from '@testing-library/react'
+import { useSignup } from '../useSignup'
+
 jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn()
 }))
-import { useSignup } from '../useSignup'
 
 jest.mock('@apollo/client', () => ({
   useMutation: () => [jest.fn(), { loading: false, error: null }],
