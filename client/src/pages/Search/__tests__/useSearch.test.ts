@@ -1,8 +1,8 @@
-import { renderHook } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useSearch } from '../useSearch'
 
 jest.mock('@apollo/client', () => ({
-  useApolloClient: () => ({ query: jest.fn() }),
+  useApolloClient: () => ({ query: jest.fn().mockResolvedValue({ data: { getAppCredentials: { appId: 'id', appKey: 'key' } } }) }),
   gql: (s: TemplateStringsArray) => s
 }))
 
@@ -11,7 +11,7 @@ jest.mock('../../../utils/state/GlobalState', () => ({
 }))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-jest.mock('../../../utils/api/edamam', () => jest.fn())
+jest.mock('../../../utils/api/edamam', () => jest.fn().mockResolvedValue([]))
 
 describe('useSearch', () => {
   it('returns expected shape', () => {
@@ -19,5 +19,13 @@ describe('useSearch', () => {
     expect(typeof result.current.searchText).toBe('string')
     expect(typeof result.current.handleFormSubmit).toBe('function')
     expect(typeof result.current.onSearchChange).toBe('function')
+  })
+
+  it('onSearchChange updates searchText', () => {
+    const { result } = renderHook(() => useSearch())
+    act(() => {
+      result.current.onSearchChange({ target: { value: 'pasta' } } as any)
+    })
+    expect(result.current.searchText).toBe('pasta')
   })
 })
