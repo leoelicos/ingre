@@ -3,6 +3,7 @@ import { useIngredients } from '../useIngredients'
 
 jest.mock('@apollo/client', () => ({
   useLazyQuery: () => [jest.fn(), { loading: false, error: null, data: null }],
+  useApolloClient: () => ({ query: jest.fn() }),
   gql: (s: TemplateStringsArray) => s
 }))
 
