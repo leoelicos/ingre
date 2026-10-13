@@ -38,5 +38,5 @@
 - Client `package-lock.json` matches `package.json` (`npm ci` works). `caniuse-lite` is 1.0.30001815, so the production build no longer warns that Browserslist data is outdated.
 - Jest: server 29 with mongodb-memory-server; client still uses Jest 27 via react-scripts 5.
 - React Scripts 5 is unmaintained — consider a Vite migration later.
-- Server lockfile received non-breaking `npm audit fix` patches (mongoose 6.13.11, express 4.22.3, sha.js 2.4.12, bcrypt 5.1.1, Apollo Server 4.13.0). `jsonwebtoken` is 9.0.3, which closes the algorithm-confusion advisories; auth tests pass. `npm audit --omit=dev` is clean. Still open in dev dependencies, and not forced: `tar` via bcrypt 5 (fix is bcrypt 6) and Apollo Server 5.
+- Server lockfile received non-breaking `npm audit fix` patches (mongoose 6.13.11, express 4.22.3, sha.js 2.4.12, Apollo Server 4.13.0). `jsonwebtoken` is 9.0.3 and `bcrypt` is 6.0.0 (prebuildify, so the vulnerable `tar`/`node-pre-gyp` chain is gone). `tsc` is clean and 99 tests pass. `npm audit` reports 0 critical. Still open, and not forced: Apollo Server 4 (fix is 5) and high-severity issues inside Jest 29 / nodemon 2.
 - tsconfig `"strict": true` is set in both packages.
