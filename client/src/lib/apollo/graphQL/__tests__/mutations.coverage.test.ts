@@ -1,3 +1,5 @@
+import { serverRecipe } from '../../../../test/fixtures'
+import type { Recipe as ServerRecipe } from '../typedefs'
 import { renderHook, act } from '@testing-library/react'
 import { useSaveRecipe } from '../useSaveRecipe'
 import { useUpdateRecipe } from '../updateRecipe'
@@ -6,7 +8,7 @@ import { StoreProvider } from '../../../../utils/state/GlobalState'
 const mockHandlers: {
   onCompleted?:
     | ((data: {
-        saveRecipe?: { name: string }
+        saveRecipe?: ServerRecipe
         updateRecipe?: { name: string }
       }) => void)
     | undefined
@@ -19,7 +21,7 @@ jest.mock('@apollo/client', () => ({
     _query: unknown,
     options: {
       onCompleted?: (data: {
-        saveRecipe?: { name: string }
+        saveRecipe?: ServerRecipe
         updateRecipe?: { name: string }
       }) => void
       onError?: (error: Error) => void
@@ -39,7 +41,7 @@ describe('recipe mutations', () => {
       .mockImplementation(() => undefined)
     renderHook(() => useSaveRecipe(), { wrapper: StoreProvider })
     act(() => {
-      mockHandlers.onCompleted?.({ saveRecipe: { name: 'Pie' } })
+      mockHandlers.onCompleted?.({ saveRecipe: serverRecipe({ name: 'Pie' }) })
       mockHandlers.onError?.(new Error('save'))
     })
     expect(log).toHaveBeenCalled()

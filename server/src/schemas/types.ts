@@ -62,28 +62,9 @@ export type IngredientInput = {
   category: string
 }
 
-export type IngredientListItem = {
-  _id: Types.ObjectId
-  name: string
-  quantity: number
-  measure: string
-  category: string
-  recipe: string
-  recipeId: Types.ObjectId
-}
-
 export type Category = {
   _id: Types.ObjectId
   name: string
-}
-
-export type Product = {
-  _id: Types.ObjectId
-  name: string
-  description: string
-  image: string
-  quantity: number
-  price: number
 }
 
 export type Checkout = {

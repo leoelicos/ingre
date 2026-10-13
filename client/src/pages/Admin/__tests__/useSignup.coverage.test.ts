@@ -64,4 +64,18 @@ describe('useSignup coverage', () => {
     expect(error).toHaveBeenCalled()
     error.mockRestore()
   })
+
+  it('does not log in when the mutation returns no data', async () => {
+    const error = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
+    mockAddUser.mockResolvedValue({ data: null })
+    const { result } = renderHook(() => useSignup())
+    await act(async () => {
+      await result.current.handleFormSubmit({ preventDefault: () => undefined })
+    })
+    expect(mockDispatch).not.toHaveBeenCalled()
+    expect(error).toHaveBeenCalledWith(new Error('Sign up returned no data'))
+    error.mockRestore()
+  })
 })

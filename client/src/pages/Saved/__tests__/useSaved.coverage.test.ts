@@ -1,3 +1,5 @@
+import { serverRecipe } from '../../../test/fixtures'
+import type { Recipe as ServerRecipe } from '../../../lib/apollo/graphQL/typedefs'
 import { renderHook } from '@testing-library/react'
 import { useSaved } from '../useSaved'
 import { recipe } from '../../../test/fixtures'
@@ -12,7 +14,7 @@ const mockStore: { savedRecipes: ClientRecipe[]; savedDidMount: boolean } = {
 const mockLazy: {
   loading: boolean
   error: Error | null
-  data: { getSavedRecipes?: ClientRecipe[] } | null
+  data: { getSavedRecipes: ServerRecipe[] } | null
 } = { loading: false, error: null, data: null }
 
 jest.mock('@apollo/client', () => ({
@@ -56,9 +58,7 @@ describe('useSaved coverage', () => {
     mockLazy.error = new Error('nope')
     rerender()
     mockLazy.error = null
-    mockLazy.data = {}
-    rerender()
-    mockLazy.data = { getSavedRecipes: [recipe()] }
+    mockLazy.data = { getSavedRecipes: [serverRecipe()] }
     rerender()
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'UPDATE_SAVED_RECIPES',

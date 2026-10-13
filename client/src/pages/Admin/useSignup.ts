@@ -52,6 +52,7 @@ export const useSignup = () => {
     try {
       await emailAlreadyExists(email) // debug this
       const res = await addUser({ variables })
+      if (!res.data) throw new Error('Sign up returned no data')
       const token = res.data.addUser.token
       dispatch({ type: 'LOGIN', data: token })
 

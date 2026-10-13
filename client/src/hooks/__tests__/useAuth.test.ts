@@ -5,7 +5,7 @@ const mockDispatch = jest.fn()
 const mockNavigate = jest.fn()
 const mockLoginMutation = jest.fn()
 const mockLoginOptions: {
-  onCompleted?: ((data: { login?: { token?: string } }) => void) | undefined
+  onCompleted?: ((data: { login: { token: string } }) => void) | undefined
   onError?: ((error: Error) => void) | undefined
 } = {}
 
@@ -17,7 +17,7 @@ jest.mock('@apollo/client', () => ({
   useMutation: (
     _mutation: unknown,
     options: {
-      onCompleted?: (data: { login?: { token?: string } }) => void
+      onCompleted?: (data: { login: { token: string } }) => void
       onError?: (error: Error) => void
     }
   ) => {
@@ -59,14 +59,11 @@ describe('useAuth', () => {
     expect(mockLoginMutation).toHaveBeenCalled()
   })
 
-  it('onCompleted dispatches LOGIN and navigates only when a token exists', () => {
+  it('onCompleted dispatches LOGIN with the token and navigates back', () => {
     renderHook(() => useAuth())
     const onCompleted = mockLoginOptions.onCompleted
     if (!onCompleted) throw new Error('missing onCompleted')
     act(() => {
-      onCompleted({})
-      onCompleted({ login: {} })
-      onCompleted({ login: { token: '' } })
       onCompleted({ login: { token: 'abc123' } })
     })
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'LOGIN', data: 'abc123' })

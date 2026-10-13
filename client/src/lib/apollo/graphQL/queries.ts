@@ -1,14 +1,18 @@
 import { gql } from '@apollo/client'
+import type { Checkout, Operation, Recipe, UserProfile } from './typedefs'
 
-export const CHECK_EMAIL_ALREADY_EXISTS = gql`
+export const CHECK_EMAIL_ALREADY_EXISTS: Operation<
+  { checkEmailAlreadyExists: boolean },
+  { email: string }
+> = gql`
   query CheckEmailAlreadyExists($email: String!) {
     checkEmailAlreadyExists(email: $email)
   }
 `
 
-export const GET_USER = gql`
-  query GetUser($includeSavedRecipes: Boolean) {
-    getUser(includeSavedRecipes: $includeSavedRecipes) {
+export const GET_USER: Operation<{ getUser: UserProfile }> = gql`
+  query GetUser {
+    getUser {
       _id
       email
       firstName
@@ -20,13 +24,15 @@ export const GET_USER = gql`
 `
 
 // not being used
-export const GET_NUM_SAVED_RECIPES = gql`
+export const GET_NUM_SAVED_RECIPES: Operation<{
+  getNumSavedRecipes: number
+}> = gql`
   query getNumSavedRecipes {
     getNumSavedRecipes
   }
 `
 
-export const GET_SAVED_RECIPES = gql`
+export const GET_SAVED_RECIPES: Operation<{ getSavedRecipes: Recipe[] }> = gql`
   query GetSavedRecipes {
     getSavedRecipes {
       _id
@@ -49,7 +55,7 @@ export const GET_SAVED_RECIPES = gql`
   }
 `
 
-export const GET_RECIPE = gql`
+export const GET_RECIPE: Operation<{ getRecipe: Recipe }, { id: string }> = gql`
   query GetRecipe($id: ID!) {
     getRecipe(_id: $id) {
       _id
@@ -60,7 +66,10 @@ export const GET_RECIPE = gql`
         name
         quantity
         measure
-        category
+        category {
+          _id
+          name
+        }
       }
       picture_url
       libraryId
@@ -69,7 +78,7 @@ export const GET_RECIPE = gql`
   }
 `
 
-export const CHECKOUT = gql`
+export const CHECKOUT: Operation<{ checkout: Checkout }> = gql`
   query Checkout {
     checkout {
       session

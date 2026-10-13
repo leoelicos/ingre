@@ -5,6 +5,7 @@ import {
   GET_RECIPE,
   GET_SAVED_RECIPES
 } from '../../../lib/apollo/graphQL/queries'
+import { toClientRecipe } from '../../../utils/toClientRecipe'
 import { SAVE_RECIPE } from '../../../lib/apollo/graphQL/useSaveRecipe'
 import { toRecipeInput } from './toRecipeInput'
 import { useStoreContext } from '../../../utils/state/GlobalState'
@@ -43,17 +44,17 @@ export const useRecipeCard = ({
       // nextFetchPolicy: 'cache-first'
     })
   const handleEdit = async () => {
-    let data = recipe
-    if (recipe._id) {
-      try {
-        const res = await getRecipe({ variables: { id: recipe._id } })
-        if (res) {
-          data = res.data.getRecipe
-          dispatch({ type: SET_EDIT_RECIPE, data: data })
-        }
-      } catch (error) {
-        console.error(error)
+    if (recipe._id === undefined) return
+    try {
+      const { data } = await getRecipe({ variables: { id: recipe._id } })
+      if (data) {
+        dispatch({
+          type: SET_EDIT_RECIPE,
+          data: toClientRecipe(data.getRecipe)
+        })
       }
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -62,9 +63,11 @@ export const useRecipeCard = ({
       const res = await saveRecipe({
         variables: { input: toRecipeInput(recipe) }
       })
-      if (!res) throw new Error('Could not save recipe')
-      const saveData = res.data.saveRecipe
-      dispatch({ type: ADD_SAVED_RECIPE, data: saveData })
+      if (!res.data) throw new Error('Could not save recipe')
+      dispatch({
+        type: ADD_SAVED_RECIPE,
+        data: toClientRecipe(res.data.saveRecipe)
+      })
     } catch (error) {
       console.error(error)
     }
@@ -72,20 +75,14 @@ export const useRecipeCard = ({
 
   const handleRemove = async () => {
     try {
-      let _id
-      if (onSavedPage) {
-        _id = recipe._id
-      } else {
-        _id = state.savedRecipes.find(
-          (r) => r.libraryId === recipe.libraryId
-        )?._id
-      }
-      const payload = { variables: { recipeId: _id } }
-      const res = await removeRecipe(payload)
-      if (!res) throw new Error('Could not save recipe')
+      const recipeId = onSavedPage
+        ? recipe._id
+        : state.savedRecipes.find((r) => r.libraryId === recipe.libraryId)?._id
+      if (recipeId === undefined) throw new Error('Recipe is not saved')
+      await removeRecipe({ variables: { recipeId } })
       dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.libraryId }) // this won't work if it doesn't have libraryId
     } catch (error) {
-      console.error(Error)
+      console.error(error)
     }
   }
 

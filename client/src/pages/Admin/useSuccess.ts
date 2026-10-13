@@ -19,9 +19,7 @@ export const useSuccess = () => {
   useEffect(() => {
     async function saveOrder() {
       try {
-        const product = { membership: 'PRO' }
-
-        await makeUserPro({ variables: { product } })
+        await makeUserPro()
 
         setTimeout(() => {
           navigate('/upgrade')

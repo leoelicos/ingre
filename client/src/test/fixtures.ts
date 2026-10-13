@@ -1,4 +1,5 @@
 import type { ClientIngredient, ClientRecipe } from '../types/client'
+import type { Recipe as ServerRecipe } from '../lib/apollo/graphQL/typedefs'
 
 export function ingredient(
   overrides: Partial<ClientIngredient> = {}
@@ -34,4 +35,28 @@ export function omit<T extends object, K extends keyof T>(
   const copy = { ...value }
   for (const key of keys) delete copy[key]
   return copy
+}
+
+/** A server-shaped recipe (category objects, nullable fields) matching `recipe()`. */
+export function serverRecipe(
+  overrides: Partial<ServerRecipe> = {}
+): ServerRecipe {
+  return {
+    _id: 'id1',
+    name: 'Pasta',
+    portions: 2,
+    picture_url: 'http://pic.example/pasta.jpg',
+    instructions: 'Boil',
+    libraryId: 'ed1',
+    ingredients: [
+      {
+        _id: 'ing1',
+        name: 'Tomato',
+        quantity: 1,
+        measure: 'cup',
+        category: { _id: 'cat1', name: 'produce' }
+      }
+    ],
+    ...overrides
+  }
 }

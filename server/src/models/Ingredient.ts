@@ -23,7 +23,9 @@ const ingredientSchema = new mongoose.Schema<IngredientSchema>({
     default: 0
   },
   measure: {
-    type: String
+    type: String,
+    required: true,
+    default: 'unit'
   },
   text: {
     type: String

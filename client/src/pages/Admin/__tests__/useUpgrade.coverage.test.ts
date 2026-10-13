@@ -14,7 +14,7 @@ const mockCheckout: { data: { checkout: { session: string } } | null } = {
 const mockUser: {
   loading: boolean
   error: Error | null
-  data: { getUser?: { pro: boolean } } | null
+  data: { getUser: { pro: boolean } } | null
 } = { loading: true, error: null, data: null }
 
 jest.mock('@stripe/stripe-js', () => ({
@@ -76,8 +76,6 @@ describe('useUpgrade coverage', () => {
     mockUser.error = new Error('user')
     rerender()
     mockUser.error = null
-    mockUser.data = {}
-    rerender()
     mockUser.data = { getUser: { pro: true } }
     rerender()
     expect(result.current.pro).toBe(true)

@@ -1,7 +1,11 @@
 import { gql, useMutation } from '@apollo/client'
 import { GET_SAVED_RECIPES } from './queries'
+import type { Operation, Recipe, RecipeVariables } from './typedefs'
 
-export const UPDATE_RECIPE = gql`
+export const UPDATE_RECIPE: Operation<
+  { updateRecipe: Recipe },
+  RecipeVariables & { recipeId: string }
+> = gql`
   mutation UpdateRecipe($input: RecipeInput!, $recipeId: ID!) {
     updateRecipe(input: $input, recipeId: $recipeId) {
       _id
@@ -19,6 +23,7 @@ export const UPDATE_RECIPE = gql`
       }
       picture_url
       libraryId
+      instructions
     }
   }
 `

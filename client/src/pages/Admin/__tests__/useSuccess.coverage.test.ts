@@ -38,9 +38,7 @@ describe('useSuccess coverage', () => {
     act(() => {
       jest.runAllTimers()
     })
-    expect(mockMakeUserPro).toHaveBeenCalledWith({
-      variables: { product: { membership: 'PRO' } }
-    })
+    expect(mockMakeUserPro).toHaveBeenCalledWith()
     expect(mockNavigate).toHaveBeenCalledWith('/upgrade')
     render(result.current.Token())
   })

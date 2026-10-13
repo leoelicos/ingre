@@ -31,7 +31,7 @@ const RecipeCardContainer: RecipeCardContainerType = ({
           <td>No recipes</td>
         </tr>
       ) : (
-        results?.map((recipe: ClientRecipe, idx: number) => {
+        results.map((recipe: ClientRecipe, idx: number) => {
           return (
             <RecipeCard
               key={idx}

@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react'
 import { useIngredients } from '../useIngredients'
-import { ingredient, recipe, omit } from '../../../test/fixtures'
+import { recipe, omit, serverRecipe } from '../../../test/fixtures'
+import type { Recipe as ServerRecipe } from '../../../lib/apollo/graphQL/typedefs'
 import type { ClientRecipe } from '../../../types/client'
 
 const mockDispatch = jest.fn()
@@ -18,7 +19,7 @@ const mockStore: {
 const mockLazy: {
   loading: boolean
   error: Error | null
-  data: { getSavedRecipes?: ClientRecipe[] } | null
+  data: { getSavedRecipes: ServerRecipe[] } | null
 } = { loading: false, error: null, data: null }
 
 jest.mock('@apollo/client', () => ({
@@ -53,21 +54,28 @@ describe('useIngredients coverage', () => {
     mockStore.savedRecipes = [recipe(), omit(recipe({ name: 'Skip' }), '_id')]
     mockQuery.mockResolvedValue({
       data: {
-        getRecipe: {
-          ingredients: [
-            ingredient({ _id: 'a' }),
-            omit(ingredient({ name: 'Salt' }), '_id')
-          ]
-        }
+        getRecipe: serverRecipe()
       }
     })
     const { result } = renderHook(() => useIngredients())
     await act(async () => {
       await result.current.reload()
     })
-    expect(mockDispatch).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'UPDATE_SAVED_INGREDIENTS' })
-    )
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'UPDATE_SAVED_INGREDIENTS',
+      data: [
+        {
+          _id: 'ing1',
+          key: 'ing1',
+          name: 'Tomato',
+          quantity: 1,
+          measure: 'cup',
+          category: { name: 'produce' },
+          recipe: 'Pasta',
+          recipeId: 'id1'
+        }
+      ]
+    })
     act(() => {
       result.current.handleAdd()
       result.current.onFinish()
@@ -95,7 +103,7 @@ describe('useIngredients coverage', () => {
     mockStore.ingredientsDidGenerate = false
     mockStore.savedRecipes = [recipe()]
     mockQuery.mockResolvedValue({
-      data: { getRecipe: { ingredients: [ingredient()] } }
+      data: { getRecipe: serverRecipe() }
     })
     await act(async () => {
       renderHook(() => useIngredients())
@@ -114,9 +122,7 @@ describe('useIngredients coverage', () => {
     mockLazy.error = new Error('load')
     rerender()
     mockLazy.error = null
-    mockLazy.data = {}
-    rerender()
-    mockLazy.data = { getSavedRecipes: [recipe({ name: 'Loaded' })] }
+    mockLazy.data = { getSavedRecipes: [serverRecipe({ name: 'Loaded' })] }
     rerender()
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'UPDATE_SAVED_RECIPES',

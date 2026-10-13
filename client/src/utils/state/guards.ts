@@ -30,20 +30,16 @@ export function isClientRecipeList(value: unknown): value is ClientRecipe[] {
   return Array.isArray(value) && value.every(isClientRecipe)
 }
 
-export function toSavedIngredient(
-  value: unknown
-): savedIngredientType | undefined {
-  if (!isRecord(value)) return undefined
+export function toSavedIngredient(value: unknown): savedIngredientType | null {
+  if (!isRecord(value)) return null
   const { _id, name, quantity, measure, category, recipe, recipeId } = value
-  if (typeof _id !== 'string') return undefined
-  if (typeof name !== 'string') return undefined
-  if (typeof quantity !== 'string' && typeof quantity !== 'number')
-    return undefined
-  if (typeof measure !== 'string') return undefined
-  if (!isRecord(category) || typeof category['name'] !== 'string')
-    return undefined
-  if (typeof recipe !== 'string') return undefined
-  if (typeof recipeId !== 'string') return undefined
+  if (typeof _id !== 'string') return null
+  if (typeof name !== 'string') return null
+  if (typeof quantity !== 'string' && typeof quantity !== 'number') return null
+  if (typeof measure !== 'string') return null
+  if (!isRecord(category) || typeof category['name'] !== 'string') return null
+  if (typeof recipe !== 'string') return null
+  if (typeof recipeId !== 'string') return null
   return {
     _id,
     name,
@@ -59,10 +55,8 @@ export function savedIngredientsFromUnknown(
   values: unknown
 ): savedIngredientType[] {
   if (!Array.isArray(values)) return []
-  const result: savedIngredientType[] = []
-  for (const value of values) {
+  return values.flatMap((value) => {
     const ingredient = toSavedIngredient(value)
-    if (ingredient) result.push(ingredient)
-  }
-  return result
+    return ingredient === null ? [] : [ingredient]
+  })
 }

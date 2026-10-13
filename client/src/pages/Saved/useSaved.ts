@@ -1,3 +1,4 @@
+import { toClientRecipe } from '../../utils/toClientRecipe'
 import { useLazyQuery } from '@apollo/client'
 import { useEffect } from 'react'
 import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries'
@@ -22,8 +23,11 @@ export const useSaved = () => {
 
   // update local savedRecipes when getSavedRecipes is loaded from server
   useEffect(() => {
-    if (!loading && !error && data?.getSavedRecipes) {
-      dispatch({ type: UPDATE_SAVED_RECIPES, data: data.getSavedRecipes })
+    if (!loading && !error && data) {
+      dispatch({
+        type: UPDATE_SAVED_RECIPES,
+        data: data.getSavedRecipes.map(toClientRecipe)
+      })
     }
   }, [loading, error, data, dispatch])
 

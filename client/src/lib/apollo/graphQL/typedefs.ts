@@ -1,3 +1,7 @@
+import type { TypedDocumentNode } from '@apollo/client'
+import type { RecipeInput } from '../../../types/payloads'
+
+/** Mirrors the server SDL. Every field is non-null unless the SDL says otherwise. */
 export type User = {
   _id: string
   firstName: string
@@ -13,7 +17,6 @@ export type UserInput = {
   lastName: string
   email: string
   password: string
-  pro: boolean
 }
 
 export type Recipe = {
@@ -22,18 +25,12 @@ export type Recipe = {
   portions: number
   ingredients: Ingredient[]
   picture_url: string
+  /** null for recipes that did not come from the local library */
   libraryId: string | null
+  /** null when the recipe has no instructions URL */
   instructions: string | null
 }
 
-export type RecipeInput = {
-  name: string
-  portions: number
-  ingredients: IngredientInput[]
-  picture_url: string
-  libraryId: string
-  instructions: string
-}
 export type Ingredient = {
   _id: string
   name: string
@@ -42,62 +39,22 @@ export type Ingredient = {
   category: Category
 }
 
-export type IngredientInput = {
-  name: string
-  quantity: number
-  measure: string
-  category: string
-}
-
-/* export type IngredientListItem = {
-  _id: string
-  name: string
-  quantity: number
-  measure: string
-  category: Category
-  recipe: string
-  recipeId: string
-} */
-
 export type Category = {
   _id: string
   name: string
-}
-
-export type Product = {
-  _id: string
-  name: string
-  description: string
-  image: string
-  quantity: number
-  price: number
 }
 
 export type Checkout = {
   session: string
 }
 
-export type Auth = {
-  token: string
-  user: User
-}
+/** The user fields selected by GET_USER and LOGIN. */
+export type UserProfile = Omit<User, 'savedRecipes'>
 
-// not being used
-export type Query = {
-  checkEmailAlreadyExists: (email: string) => Promise<boolean>
-  getUser: () => Promise<User>
-  getRecipe: (_id: string) => Promise<Recipe>
-  getSavedRecipes: () => Promise<Recipe[]>
-  getNumSavedRecipes: () => Promise<number>
-  checkout: () => Promise<Checkout>
-}
+/** Typed document helper: binds result and variable shapes to an operation. */
+export type Operation<
+  TData,
+  TVariables extends Record<string, unknown> = Record<string, never>
+> = TypedDocumentNode<TData, TVariables>
 
-// not being used
-export type Mutation = {
-  addUser: (input: UserInput) => Promise<Auth>
-  makeUserPro: () => Promise<User>
-  saveRecipe: (input: RecipeInput) => Promise<Recipe>
-  updateRecipe: (recipeId: string, input: RecipeInput) => Promise<Recipe>
-  removeRecipe: (recipeId: string) => Promise<boolean>
-  login: (email: string, password: string) => Promise<Auth>
-}
+export type RecipeVariables = { input: RecipeInput }

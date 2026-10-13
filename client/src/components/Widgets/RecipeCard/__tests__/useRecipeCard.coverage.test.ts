@@ -1,6 +1,11 @@
 import { renderHook, act } from '@testing-library/react'
 import { useRecipeCard } from '../useRecipeCard'
-import { ingredient, recipe, omit } from '../../../../test/fixtures'
+import {
+  ingredient,
+  recipe,
+  omit,
+  serverRecipe
+} from '../../../../test/fixtures'
 import type { ClientRecipe } from '../../../../types/client'
 
 const mockSaveRecipe = jest.fn()
@@ -56,10 +61,10 @@ describe('useRecipeCard coverage', () => {
       mockGetRecipe,
       { loading: mockFlags.getLoading, error: mockFlags.getError }
     ])
-    mockSaveRecipe.mockResolvedValue({ data: { saveRecipe: recipe() } })
+    mockSaveRecipe.mockResolvedValue({ data: { saveRecipe: serverRecipe() } })
     mockRemoveRecipe.mockResolvedValue({ data: {} })
     mockGetRecipe.mockResolvedValue({
-      data: { getRecipe: recipe({ name: 'Server' }) }
+      data: { getRecipe: serverRecipe({ name: 'Server' }) }
     })
   })
 
@@ -97,7 +102,7 @@ describe('useRecipeCard coverage', () => {
       data: recipe({ name: 'Server' })
     })
 
-    mockGetRecipe.mockResolvedValueOnce(undefined)
+    mockGetRecipe.mockResolvedValueOnce({ data: undefined })
     await act(async () => {
       await loaded.result.current.handleEdit()
     })
@@ -163,7 +168,7 @@ describe('useRecipeCard coverage', () => {
       data: recipe()
     })
 
-    mockSaveRecipe.mockResolvedValueOnce(undefined)
+    mockSaveRecipe.mockResolvedValueOnce({ data: null })
     await act(async () => {
       await full.result.current.handleSave()
     })
@@ -201,14 +206,13 @@ describe('useRecipeCard coverage', () => {
     })
 
     mockSaved.savedRecipes = []
+    mockRemoveRecipe.mockClear()
     await act(async () => {
       await searched.result.current.handleRemove()
     })
+    expect(mockRemoveRecipe).not.toHaveBeenCalled()
+    mockSaved.savedRecipes = [recipe({ _id: 'saved-id', libraryId: 'ed1' })]
 
-    mockRemoveRecipe.mockResolvedValueOnce(undefined)
-    await act(async () => {
-      await searched.result.current.handleRemove()
-    })
     mockRemoveRecipe.mockRejectedValueOnce(new Error('remove failed'))
     await act(async () => {
       await searched.result.current.handleRemove()
@@ -217,7 +221,8 @@ describe('useRecipeCard coverage', () => {
       type: 'REMOVE_SAVED_RECIPE',
       data: 'ed1'
     })
-    expect(error).toHaveBeenCalledWith(Error)
+    expect(error).toHaveBeenCalledWith(new Error('Recipe is not saved'))
+    expect(error).toHaveBeenCalledWith(new Error('remove failed'))
     error.mockRestore()
   })
 })

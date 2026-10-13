@@ -29,10 +29,10 @@ export const typeDefs = gql`
   }
 
   input RecipeInput {
-    name: String
-    portions: Int
-    ingredients: [IngredientInput]
-    picture_url: String
+    name: String!
+    portions: Int!
+    ingredients: [IngredientInput!]!
+    picture_url: String!
     libraryId: String
     instructions: String
   }
@@ -45,34 +45,15 @@ export const typeDefs = gql`
   }
 
   input IngredientInput {
-    name: String
-    quantity: Float
-    measure: String
-    category: String
-  }
-
-  type IngredientListItem {
-    _id: ID
-    name: String
-    quantity: Float
-    measure: String
-    category: String
-    recipe: String
-    recipeId: ID
+    name: String!
+    quantity: Float!
+    measure: String!
+    category: String!
   }
 
   type Category {
     _id: ID!
     name: String!
-  }
-
-  type Product {
-    _id: ID
-    name: String
-    description: String
-    image: String
-    quantity: Int
-    price: Float
   }
 
   type Checkout {

@@ -1,7 +1,7 @@
 import { useApolloClient, useLazyQuery } from '@apollo/client'
 import { useEffect, useState } from 'react'
-import type { ClientRecipe } from '../../types/client'
 import type { IngredientGeneratedTypeWithKey } from '../../types/ingredientGenerated'
+import { toClientRecipe } from '../../utils/toClientRecipe'
 import { GET_RECIPE, GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries'
 import { changeTitle } from '../../utils/changeTitle'
 import { useStoreContext } from '../../utils/state/GlobalState'
@@ -45,19 +45,18 @@ export const useIngredients = () => {
           query: GET_RECIPE,
           variables: { id: recipeId }
         })
-        const getRecipe: ClientRecipe = res.data.getRecipe
         /* push serialized into savedIngredient[] */
-        getRecipe.ingredients.forEach((ingredient) => {
+        res.data.getRecipe.ingredients.forEach((ingredient) => {
           const { _id, name, quantity, measure, category } = ingredient
           const savedIngredient = {
-            _id: _id || '',
+            _id,
             name,
             quantity,
             measure,
-            category: { name: category },
+            category: { name: category.name },
             recipe: recipeName,
             recipeId,
-            key: _id || ''
+            key: _id
           }
           savedIngredientArray.push(savedIngredient)
         })
@@ -96,12 +95,8 @@ export const useIngredients = () => {
 
   // update local savedRecipes when getSavedRecipes is loaded from server
   useEffect(() => {
-    if (
-      !savedRecipeLoading &&
-      !savedRecipeError &&
-      savedRecipeData?.getSavedRecipes
-    ) {
-      setSavedRecipes(savedRecipeData.getSavedRecipes)
+    if (!savedRecipeLoading && !savedRecipeError && savedRecipeData) {
+      setSavedRecipes(savedRecipeData.getSavedRecipes.map(toClientRecipe))
       setUpdateRecipes(true)
     }
   }, [savedRecipeLoading, savedRecipeError, savedRecipeData])

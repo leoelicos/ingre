@@ -10,10 +10,8 @@ export const useAuth = () => {
   const [loginMutation, { loading: loginLoading, error: loginError }] =
     useMutation(LOGIN, {
       onCompleted: (data) => {
-        if (data?.login?.token) {
-          dispatch({ type: 'LOGIN', data: data.login.token })
-          navigate(-1)
-        }
+        dispatch({ type: 'LOGIN', data: data.login.token })
+        navigate(-1)
       },
       onError: (error) => {
         // send them to an error page?
