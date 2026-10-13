@@ -33,6 +33,6 @@ export const useSaved = () => {
       dispatch({ type: FLAG_SAVED_MOUNTED, data: undefined })
       getSavedRecipes()
     }
-  }, [state.savedDidMount])
+  }, [state.savedDidMount, dispatch, getSavedRecipes])
   return { loading, error, savedRecipes: state.savedRecipes }
 }

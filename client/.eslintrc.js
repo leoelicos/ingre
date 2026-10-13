@@ -8,7 +8,13 @@ module.exports = {
     'import/extensions': [
       'error',
       'ignorePackages',
-      { '': 'never', ts: 'never', tsx: 'never' }
+      {
+        '': 'never',
+        js: 'never',
+        jsx: 'never',
+        ts: 'never',
+        tsx: 'never'
+      }
     ]
   },
   overrides: [

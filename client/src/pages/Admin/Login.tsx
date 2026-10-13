@@ -43,10 +43,11 @@ export const Login: FC = () => {
     login({ email, password })
   }
 
+  // Redirect only when this page opens. A successful login navigates itself.
   useEffect(() => {
     changeTitle('Log in')
     if (auth.loggedIn) navigate(-1)
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div>
       <div>
