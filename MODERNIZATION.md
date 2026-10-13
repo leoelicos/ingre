@@ -35,6 +35,7 @@
 - TypeScript is pinned at 6 on client and server (client install is 6.0.3). A TS 7 pin was reverted because the ESLint toolchain could not typecheck it.
 - Client `no-explicit-any` is enforced by the `@typescript-eslint` plugin bundled with `eslint-config-react-app`. Listing a second copy in `.eslintrc.js` made ESLint abort before the rule ran. After the dedupe, the rule reports 0 violations.
 - Client ESLint is clean: extensionless imports stay allowed (including `.js`), the Login mount-only redirect is an intentional exhaustive-deps exception, and `useSaved` lists `dispatch` and `getSavedRecipes` as effect dependencies.
+- Client `package-lock.json` matches `package.json` (`npm ci` works). `caniuse-lite` is 1.0.30001815, so the production build no longer warns that Browserslist data is outdated.
 - Jest: server 29 with mongodb-memory-server; client still uses Jest 27 via react-scripts 5.
 - React Scripts 5 is unmaintained — consider a Vite migration later.
 - tsconfig `"strict": true` is set in both packages.
