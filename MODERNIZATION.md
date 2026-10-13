@@ -28,7 +28,7 @@
 
 ## Phase 4: Frontend Tests + Coverage
 - [x] Add initial frontend unit tests
-- [ ] Increase frontend coverage toward completion (~59%)
+- [ ] Increase frontend coverage toward completion (~60%)
 - [ ] Achieve high/complete coverage on client
 
 ## Notes
