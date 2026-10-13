@@ -7,35 +7,38 @@ export const useAuth = () => {
   const [_auth, dispatch] = useAuthContext()
   const navigate = useNavigate()
 
-  const [login, { loading: loginLoading, error: loginError }] = useMutation(
-    LOGIN,
-    {
+  const [loginMutation, { loading: loginLoading, error: loginError }] =
+    useMutation(LOGIN, {
       onCompleted: (data) => {
-        const {
-          login: { token }
-        } = data
-        dispatch({ type: 'LOGIN', data: token })
-        navigate(-1)
+        if (data?.login?.token) {
+          dispatch({ type: 'LOGIN', data: data.login.token })
+          navigate(-1)
+        }
       },
       onError: (error) => {
+        // send them to an error page?
         console.error(error)
       }
-    }
-  )
+    })
 
-  const handleLogin = async ({
+  const login = async ({
     email,
     password
   }: {
     email: string
     password: string
-  }) => {
-    login({ variables: { email, password } })
+  }): Promise<void> => {
+    loginMutation({ variables: { email, password } })
   }
 
   const handleLogout = () => {
     dispatch({ type: 'LOGOUT' })
   }
 
-  return { handleLogin, handleLogout, loginLoading, loginError }
+  return {
+    login,
+    handleLogout,
+    loginLoading,
+    loginError
+  }
 }

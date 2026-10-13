@@ -1,10 +1,10 @@
-import React, { FC } from 'react'
-import { Card, Dropdown } from 'react-bootstrap'
+import React, { FC, CSSProperties } from 'react'
 import type { ClientRecipe } from 'types/client'
-import { IngreIconChevronDown, IngreIconPro } from 'lib/icon/Icon'
+import { IngreIconPro } from 'lib/icon/Icon'
 import { useAuthContext } from 'utils/auth/AuthContext'
-import { EditButton, SaveButton } from './RecipeCardButtons'
 import { useRecipeCard } from './useRecipeCard'
+import { EditButton } from './components/EditButton'
+import { SaveButton } from './components/SaveButton'
 
 interface RecipeCardProps {
   recipe: ClientRecipe
@@ -12,6 +12,11 @@ interface RecipeCardProps {
   pro: boolean
 }
 
+const RecipeCardStyle: CSSProperties = {
+  // display: 'flex',
+  // width: '100%',
+  // justifyContent: 'space-between'
+}
 const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
   const [auth] = useAuthContext()
   const loggedIn = auth.loggedIn
@@ -23,53 +28,44 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
     savedRecipes,
     saveRecipeLoading
   } = useRecipeCard({ recipe, onSavedPage })
-  return (
-    <Card>
-      <Card.Text>
-        <Card.Img src={'temp.svg'} />
-      </Card.Text>
-      <Card.Body className="d-flex justify-content-between">
-        <div className="me-3">{recipe.name}</div>
-        <Dropdown>
-          <Dropdown.Toggle
-            variant="success"
-            id="dropdown-basic"
+  return getRecipeError ? (
+    'Error'
+  ) : getRecipeLoading ? (
+    'Loading'
+  ) : (
+    <tr style={RecipeCardStyle}>
+      <td>
+        <h6>{recipe.name}</h6>
+      </td>
+      <td>
+        {loggedIn && pro && (
+          <a
+            href={recipe.instructions}
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <IngreIconChevronDown />
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {loggedIn && pro && (
-              <Dropdown.Item
-                href={recipe.instructions}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <IngreIconPro /> Instructions
-              </Dropdown.Item>
-            )}
-            <Dropdown.Item>
-              <EditButton
-                key="edit"
-                getRecipeError={getRecipeError}
-                getRecipeLoading={getRecipeLoading}
-                handleEdit={handleEdit}
-                loggedIn={loggedIn}
-              />
-            </Dropdown.Item>
-            <Dropdown.Item>
-              <SaveButton
-                key="save"
-                handleSave={handleSave}
-                savedRecipes={savedRecipes}
-                saveRecipeLoading={saveRecipeLoading}
-                edamamId={recipe.edamamId}
-                loggedIn={loggedIn}
-              />
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </Card.Body>
-    </Card>
+            <IngreIconPro /> Instructions
+          </a>
+        )}
+      </td>
+      <td>
+        <EditButton
+          key="edit"
+          handleEdit={handleEdit}
+          loggedIn={loggedIn}
+        />
+      </td>
+      <td>
+        <SaveButton
+          key="save"
+          handleSave={handleSave}
+          savedRecipes={savedRecipes}
+          saveRecipeLoading={saveRecipeLoading}
+          edamamId={recipe.edamamId}
+          loggedIn={loggedIn}
+        />
+      </td>
+    </tr>
   )
 }
 

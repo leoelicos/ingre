@@ -46,7 +46,8 @@ const fetchEdamam: FetchEdamamType = async ({ search, appId, appKey }) => {
         searchString
       ].join('&')
 
-    // const response: { status: number; data: EdamamRecipeSearchResponse } = await axios.get(uri)
+    // const response: { status: number; data: EdamamRecipeSearchResponse } =
+    // await axios.get(uri)
     const response = { status: 200, data: mockResponse }
     if (!response) throw new Error('Error: 404 Edamam no response')
 

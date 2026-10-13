@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { changeTitle } from 'utils/changeTitle'
 import { useAuth } from 'hooks/useAuth'
@@ -7,29 +7,39 @@ import { useAuthContext } from 'utils/auth/AuthContext'
 const useLoginForm = () => {
   const [email, setEmail] = React.useState<string>('')
   const [password, setPassword] = React.useState<string>('')
+  const [showPassword, setShowPassword] = useState<boolean>(false)
   const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e?.target) setEmail(e.target.value)
   }
   const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e?.target) setPassword(e.target.value)
   }
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev)
   return {
     email,
     onEmailChange,
     password,
-    onPasswordChange
+    onPasswordChange,
+    showPassword,
+    togglePasswordVisibility
   }
 }
 export const Login: FC = () => {
   const navigate = useNavigate()
   const [auth] = useAuthContext()
-  const { handleLogin, loginError, loginLoading } = useAuth()
-  const { email, password, onEmailChange, onPasswordChange } = useLoginForm()
+  const { login, loginError, loginLoading } = useAuth()
+  const {
+    email,
+    password,
+    showPassword,
+    onEmailChange,
+    onPasswordChange,
+    togglePasswordVisibility
+  } = useLoginForm()
 
-  const handleFormSubmit: React.FormEventHandler<
-    HTMLFormElement
-  > = async () => {
-    handleLogin({ email, password })
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    login({ email, password })
   }
 
   useEffect(() => {
@@ -48,15 +58,40 @@ export const Login: FC = () => {
       ) : (
         <form onSubmit={handleFormSubmit}>
           <input
-            id="email-input"
+            id="email"
+            name="email"
             type="text"
+            value={email}
             onChange={onEmailChange}
+            autoComplete="email"
+            required
           />
-          <input
-            id="password-input"
-            type="text"
-            onChange={onPasswordChange}
-          />
+          <div>
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={onPasswordChange}
+              autoComplete="password"
+              required
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              style={{
+                position: 'absolute',
+                right: 10,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button>
+          </div>
           <button type="submit">Submit</button>
         </form>
       )}
