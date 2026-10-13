@@ -1,8 +1,9 @@
-import { renderHook } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useHome } from '../useHome'
 
+const mockDispatch = jest.fn()
 jest.mock('@apollo/client', () => ({
-  useApolloClient: () => ({ query: jest.fn() }),
+  useApolloClient: () => ({ query: jest.fn().mockResolvedValue({ data: { getAppCredentials: { appId: 'id', appKey: 'key' } } }) }),
   gql: (s: TemplateStringsArray) => s
 }))
 
@@ -11,17 +12,24 @@ jest.mock('../../../utils/auth/AuthContext', () => ({
 }))
 
 jest.mock('../../../utils/state/GlobalState', () => ({
-  useStoreContext: () => [{ homeRecipes: [], homeDidMount: false }, jest.fn()]
+  useStoreContext: () => [{ homeRecipes: [], homeDidMount: false }, mockDispatch]
 }))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-jest.mock('../../../utils/api/edamam', () => jest.fn())
+jest.mock('../../../utils/api/edamam', () => jest.fn().mockResolvedValue([{ name: 'Pasta' }]))
 
 describe('useHome', () => {
-  it('returns expected shape', () => {
+  it('returns expected shape and calls changeTitle', () => {
     const { result } = renderHook(() => useHome())
     expect(result.current.loggedIn).toBe(true)
     expect(result.current.firstName).toBe('Test')
-    expect(typeof result.current.handleRefresh).toBe('function')
+  })
+
+  it('handleRefresh fetches recipes', async () => {
+    const { result } = renderHook(() => useHome())
+    await act(async () => {
+      await result.current.handleRefresh('pasta')
+    })
+    expect(result.current.loadingEdamam).toBe(false)
   })
 })
