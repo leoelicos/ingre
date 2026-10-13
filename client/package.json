@@ -31,30 +31,24 @@
     "@types/react": "^18.2.14",
     "@typescript-eslint/eslint-plugin": "^8.71.2",
     "@typescript-eslint/parser": "^8.71.2",
+    "babel-jest": "^30.5.2",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
     "fork-ts-checker-webpack-plugin": "^6.5.3",
-    "jest": "^27.5.1",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2",
     "prettier": "^2.8.8",
+    "ts-jest": "^29.4.14",
     "typescript": "6"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest --watchAll=false --forceExit",
     "eject": "react-scripts eject"
-  },
-  "jest": {
-    "moduleNameMapper": {
-      "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js"
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "src/setupTests.ts"
-    ]
   },
   "eslintConfig": {
     "extends": [
