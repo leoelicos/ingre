@@ -117,4 +117,16 @@ describe('addUser', () => {
     expect(mockCreateUser).not.toHaveBeenCalled()
     expect(mockSignToken).not.toHaveBeenCalled()
   })
+
+  it('should throw if user creation returns null', async () => {
+    mockFindOneUser.mockResolvedValueOnce(null)
+    mockCreateUser.mockResolvedValueOnce(null)
+    const result = await testServer.executeOperation(
+      { query: ADD_USER, variables: { input } },
+      { contextValue: contextValue as any }
+    )
+    const { errors } = JSON.parse(JSON.stringify(result.body))['singleResult']
+    expect(errors).toBeDefined()
+    expect(errors[0].message).toContain('could not create user')
+  })
 })

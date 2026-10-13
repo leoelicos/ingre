@@ -254,3 +254,11 @@ describe('userApi', () => {
     }
   })
 })
+
+  it('checkUserPassword throws on internal error', async () => {
+    const User = require('../models/User').User
+    jest.spyOn(User, 'findOne').mockRejectedValueOnce(new Error('db error'))
+    await expect(
+      userApi.checkUserPassword({ email: mockInput.email, password: mockInput.password })
+    ).rejects.toThrow('checkUserPassword error')
+  })
