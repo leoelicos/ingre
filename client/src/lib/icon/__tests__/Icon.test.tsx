@@ -1,6 +1,13 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import { IngreIconSearch, IngreIconSpin, IngreIconSave, IngreIconPro } from '../Icon'
+import {
+  IngreIconSearch,
+  IngreIconSpin,
+  IngreIconSave,
+  IngreIconPro,
+  IngreIconCustomise,
+  IngreIconIngredients
+} from '../Icon'
 
 describe('Icon', () => {
   it('renders search icon without throwing', () => {
@@ -17,5 +24,13 @@ describe('Icon', () => {
 
   it('renders pro icon without throwing', () => {
     expect(() => render(<IngreIconPro />)).not.toThrow()
+  })
+
+  it('renders customise icon without throwing', () => {
+    expect(() => render(<IngreIconCustomise />)).not.toThrow()
+  })
+
+  it('renders ingredients icon without throwing', () => {
+    expect(() => render(<IngreIconIngredients />)).not.toThrow()
   })
 })
