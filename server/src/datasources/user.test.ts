@@ -57,7 +57,7 @@ describe('userApi', () => {
         throw new Error('mocked find error')
       })
 
-    await expect(userApi.createUser(mockInput)).rejects.toThrowError(
+    await expect(userApi.createUser(mockInput)).rejects.toThrow(
       'mocked find error'
     )
 
@@ -180,7 +180,7 @@ describe('userApi', () => {
       userApi.findOneUserById({
         id: user._id
       })
-    ).rejects.toThrowError('mocked find error')
+    ).rejects.toThrow('mocked find error')
 
     findByIdSpy.mockReset()
     findByIdSpy.mockRestore()

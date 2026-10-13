@@ -304,7 +304,7 @@ describe('recipeApi', () => {
             { ...mockBroccoli, category: mockCategoryVegetable.name } // this line causes the categoryCleanup test below to file
           ]
         })
-      ).rejects.toThrowError('mocked create error')
+      ).rejects.toThrow('mocked create error')
     } catch (error) {
       const { message } = error as Error
       expect(message).toStrictEqual('could not create ingredient')
@@ -323,7 +323,7 @@ describe('recipeApi', () => {
         recipeDataSource.generateIngredient({
           ingredient: { ...mockChicken, category: mockCategoryMeat.name }
         })
-      ).rejects.toThrowError('mocked create error')
+      ).rejects.toThrow('mocked create error')
     } catch (error) {
       const { message } = error as Error
       expect(message).toStrictEqual('could not create ingredient')
