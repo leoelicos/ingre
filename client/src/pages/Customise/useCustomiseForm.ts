@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RecipeInput } from '../../types/payloads'
+import type { ClientRecipe } from '../../types/client'
+import { DEFAULT_PICTURE_URL } from '../../components/Widgets/RecipeCard/toRecipeInput'
 import { useStoreContext } from '../../utils/state/GlobalState'
 
 type UpdateRecipe = (options: {
@@ -8,6 +10,41 @@ type UpdateRecipe = (options: {
 }) => unknown
 
 type SaveRecipeFn = (options: { variables: { input: RecipeInput } }) => unknown
+
+type CustomIngredient = {
+  name: string
+  quantity: number
+  measure: string
+  category: string
+}
+
+/** Fills blank ingredient fields with defaults. */
+export const toCustomIngredientInput = (i: CustomIngredient) => ({
+  name: i.name || 'Ingredient',
+  quantity: i.quantity || 1,
+  measure: i.measure || 'unit',
+  category: i.category || 'Generic'
+})
+
+/** Builds the save/update payload from the form fields. */
+export const buildCustomRecipeInput = ({
+  name,
+  portions,
+  ingredients,
+  customiseRecipe
+}: {
+  name: string
+  portions: number
+  ingredients: CustomIngredient[]
+  customiseRecipe: Pick<ClientRecipe, 'picture_url' | 'libraryId'> | null
+}): RecipeInput => ({
+  name: name || 'Custom recipe',
+  portions: portions || 1,
+  ingredients: ingredients.map(toCustomIngredientInput),
+  instructions: '',
+  picture_url: customiseRecipe?.picture_url || DEFAULT_PICTURE_URL,
+  libraryId: customiseRecipe?.libraryId || '-1'
+})
 
 const defaultIngredient = {
   name: '',
@@ -91,21 +128,12 @@ export const useCustomiseForm = ({
     if (cancel) return
 
     try {
-      const input: RecipeInput = {
-        name: name || 'Custom recipe',
-        portions: portions || 1,
-        ingredients: ingredients.map((i) => ({
-          name: i.name || 'Ingredient',
-          quantity: i.quantity || 1,
-          measure: i.measure || 'unit',
-          category: i.category || 'Generic'
-        })),
-        instructions: '',
-        picture_url:
-          state.customiseRecipe?.picture_url ||
-          'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc',
-        libraryId: state.customiseRecipe?.libraryId || '-1'
-      }
+      const input = buildCustomRecipeInput({
+        name,
+        portions,
+        ingredients,
+        customiseRecipe: state.customiseRecipe
+      })
 
       //* if already saved, update, otherwise save
       if (state.customiseRecipe?._id) {

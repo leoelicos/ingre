@@ -91,40 +91,43 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-function isOneOf<T extends string>(
-  options: readonly T[],
-  value: string
-): value is T {
-  for (const option of options) {
-    if (option === value) return true
-  }
-  return false
+/** Returns `[value[key]]` when it is one of `options`, otherwise `[]`. */
+export function pickOption<T extends string>(
+  value: Record<string, unknown>,
+  key: string,
+  options: readonly T[]
+): T[] {
+  const candidate = value[key]
+  return options.filter((option) => option === candidate)
 }
 
+export const emptyFilterState = (): filterTypes => ({
+  diet: [],
+  health: [],
+  cuisineType: [],
+  mealType: [],
+  dishType: []
+})
+
 export function buildFilterState(value: unknown): filterTypes {
-  const next: filterTypes = {
-    diet: [],
-    health: [],
-    cuisineType: [],
-    mealType: [],
-    dishType: []
+  if (!isRecord(value)) return emptyFilterState()
+  return {
+    diet: pickOption(value, 'diet', dietTypes),
+    health: pickOption(value, 'health', healthTypes),
+    cuisineType: pickOption(value, 'cuisine-type', cuisineTypes),
+    mealType: pickOption(value, 'meal-type', mealTypes),
+    dishType: pickOption(value, 'dish-type', dishTypes)
   }
-  if (!isRecord(value)) return next
-  for (const key of Object.keys(value)) {
-    const val = value[key]
-    if (typeof val !== 'string') continue
-    if (key === 'diet' && isOneOf(dietTypes, val)) next.diet.push(val)
-    else if (key === 'health' && isOneOf(healthTypes, val))
-      next.health.push(val)
-    else if (key === 'cuisine-type' && isOneOf(cuisineTypes, val))
-      next.cuisineType.push(val)
-    else if (key === 'meal-type' && isOneOf(mealTypes, val))
-      next.mealType.push(val)
-    else if (key === 'dish-type' && isOneOf(dishTypes, val))
-      next.dishType.push(val)
-  }
-  return next
 }
+
+/** Flattens every selected filter into a single tag list. */
+export const filterTags = (filter: filterTypes): string[] => [
+  ...filter.diet,
+  ...filter.health,
+  ...filter.cuisineType,
+  ...filter.mealType,
+  ...filter.dishType
+]
 
 type SearchHandlerType = (value: string, event?: { target?: unknown }) => void
 
@@ -134,29 +137,15 @@ export const useSearch = () => {
   const [libraryRecipes, setLibraryRecipes] = useState<ClientRecipe[]>(
     state.searchRecipes
   )
-  const blankForm = {
-    diet: [],
-    health: [],
-    cuisineType: [],
-    mealType: [],
-    dishType: []
-  }
   const [updateRecipes, setUpdateRecipes] = useState(false)
   const [searchText, setSearchText] = useState<string>('')
-  const [filterState, setFilterState] = useState<filterTypes>(blankForm)
+  const [filterState, setFilterState] = useState<filterTypes>(emptyFilterState)
 
   const handleFormSubmit: SearchHandlerType = async (q, event) => {
     if (!event) return
     try {
       setLoadingRecipes(true)
-      const tags = [
-        ...filterState.diet,
-        ...filterState.health,
-        ...filterState.cuisineType,
-        ...filterState.mealType,
-        ...filterState.dishType
-      ]
-      const hits = searchLibrary({ q, tags })
+      const hits = searchLibrary({ q, tags: filterTags(filterState) })
       setLibraryRecipes(hits)
       setUpdateRecipes(true)
       setLoadingRecipes(false)

@@ -8,21 +8,17 @@ import {
 } from '../schemas/types'
 import { Ingredient } from '../models/Ingredient'
 import { Category } from '../models/Category'
+import { withIngredientDefaults } from '../utils/ingredientDefaults'
 
+/** Returns the category with this name, creating it first if missing. */
 export const updateUniqueCategoryName = async ({
-  category
+  category: { name }
 }: {
-  category: {
-    name: string
-  }
+  category: { name: string }
 }) => {
-  const categories = await Category.find().select('name')
-  const uniqueCategories = categories.map((c) => c.name)
-  if (!uniqueCategories.includes(category.name)) {
-    await Category.create({ name: category.name })
-    uniqueCategories.push(category.name)
-  }
-  return await Category.findOne({ name: category.name }).select('-__v')
+  const exists = await Category.exists({ name })
+  if (!exists) await Category.create({ name })
+  return await Category.findOne({ name }).select('-__v')
 }
 
 export const generateIngredients = async ({
@@ -34,36 +30,48 @@ export const generateIngredients = async ({
     ingredients.map((ingredient) => generateIngredient({ ingredient }))
   )
 
-const defaultIngredientName = 'Generic'
-const defaultIngredientQuantity = 1
-const defaultIngredientMeasure = 'unit'
-
 export const generateIngredient = async ({
   ingredient
 }: {
   ingredient: IngredientInput
 }) => {
-  try {
-    const categoryId = await updateUniqueCategoryName({
-      category: {
-        name: ingredient.category || defaultIngredientName
-      }
-    })
-    const newIngredient = {
-      name: ingredient.name || defaultIngredientName,
-      quantity: ingredient.quantity || defaultIngredientQuantity,
-      measure: ingredient.measure || defaultIngredientMeasure,
-      category: categoryId
-    }
-    const createdIngredient = await Ingredient.create(newIngredient)
-    return await Ingredient.findById(createdIngredient._id)
-      .select('-__v')
-      .populate({ path: 'category' })
-      .orFail()
-  } catch (error) {
-    throw error
-  }
+  const { category, ...fields } = withIngredientDefaults(ingredient)
+  const categoryDoc = await updateUniqueCategoryName({
+    category: { name: category }
+  })
+  const created = await Ingredient.create({ ...fields, category: categoryDoc })
+  return await Ingredient.findById(created._id)
+    .select('-__v')
+    .populate({ path: 'category' })
+    .orFail()
 }
+
+/** Distinct category ids referenced by the given recipes' ingredients. */
+export const usedCategoryIds = <Id>(
+  recipes: ReadonlyArray<{
+    ingredients: ReadonlyArray<{ category: { _id: Id } }>
+  }>
+): Id[] =>
+  Array.from(
+    new Set(
+      recipes.flatMap(({ ingredients }) =>
+        ingredients.map(({ category }) => category._id)
+      )
+    )
+  )
+
+/** Recipe fields to store on update, given the new ingredient ids. */
+export const toRecipeUpdate = <Id>(
+  input: RecipeInput,
+  ingredientIds: Id[]
+) => ({
+  name: input.name,
+  portions: input.portions,
+  ingredients: ingredientIds,
+  picture_url: input.picture_url,
+  libraryId: input.libraryId,
+  instructions: input.instructions
+})
 
 /** Deletes the given ingredient documents in parallel. */
 export const deleteIngredients = (
@@ -143,14 +151,7 @@ export class RecipeApi {
         path: 'ingredients',
         populate: { path: 'category' }
       })
-    const usedCategories = Array.from(
-      new Set(
-        allRecipes.flatMap((recipe) =>
-          recipe.ingredients.map((ingredient) => ingredient.category._id)
-        )
-      )
-    )
-    await Category.deleteMany({ _id: { $nin: usedCategories } })
+    await Category.deleteMany({ _id: { $nin: usedCategoryIds(allRecipes) } })
   }
 
   public deleteRecipe = async ({
@@ -183,14 +184,12 @@ export class RecipeApi {
       ingredients: input.ingredients
     })
 
-    dbRecipe.set({
-      name: input.name,
-      portions: input.portions,
-      ingredients: ingredients.map(({ _id }) => _id),
-      picture_url: input.picture_url,
-      libraryId: input.libraryId,
-      instructions: input.instructions
-    })
+    dbRecipe.set(
+      toRecipeUpdate(
+        input,
+        ingredients.map(({ _id }) => _id)
+      )
+    )
     await dbRecipe.save()
     await dbRecipe.populate({ path: 'ingredients', populate: 'category' })
     await this.categoryCleanup()
