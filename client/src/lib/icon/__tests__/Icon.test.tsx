@@ -6,7 +6,9 @@ import {
   IngreIconSave,
   IngreIconPro,
   IngreIconCustomise,
-  IngreIconIngredients
+  IngreIconIngredients,
+  IngreIconTapOff,
+  IngreIconLogoEgg
 } from '../Icon'
 
 describe('Icon', () => {
@@ -32,5 +34,13 @@ describe('Icon', () => {
 
   it('renders ingredients icon without throwing', () => {
     expect(() => render(<IngreIconIngredients />)).not.toThrow()
+  })
+
+  it('renders tapoff icon without throwing', () => {
+    expect(() => render(<IngreIconTapOff />)).not.toThrow()
+  })
+
+  it('renders logo egg icon without throwing', () => {
+    expect(() => render(<IngreIconLogoEgg />)).not.toThrow()
   })
 })
