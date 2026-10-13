@@ -1,6 +1,21 @@
-import { reducer } from '../reducers'
-import { UPDATE_SEARCH_RECIPES, FLAG_HOME_MOUNTED } from '../actions'
+import { reducer, useGlobalReducer } from '../reducers'
+import {
+  ADD_SAVED_RECIPE,
+  CLEAR_EDIT_RECIPE,
+  FLAG_HOME_MOUNTED,
+  FLAG_INGREDIENTS_GENERATED,
+  FLAG_SAVED_MOUNTED,
+  REMOVE_SAVED_RECIPE,
+  SET_EDIT_RECIPE,
+  UPDATE_HOME_RECIPES,
+  UPDATE_SAVED_INGREDIENTS,
+  UPDATE_SAVED_RECIPES,
+  UPDATE_SEARCH_RECIPES,
+  UPDATE_TAP_OFF
+} from '../actions'
 import type { Store } from '../GlobalState'
+import { recipe } from '../../../test/fixtures'
+import { renderHook } from '@testing-library/react'
 
 const initialState: Store = {
   modalVisible: false,
@@ -8,15 +23,7 @@ const initialState: Store = {
   searchRecipes: [],
   homeRecipes: [],
   savedRecipes: [],
-  customiseRecipe: {
-    _id: '',
-    name: '',
-    portions: '',
-    ingredients: [],
-    picture_url: '',
-    edamamId: '',
-    instructions: ''
-  },
+  customiseRecipe: null,
   homeDidMount: false,
   savedIngredients: [],
   savedDidMount: false,
@@ -25,39 +32,104 @@ const initialState: Store = {
 }
 
 describe('reducer', () => {
-  it('updates search recipes', () => {
-    const action = { type: UPDATE_SEARCH_RECIPES, data: [{ name: 'test' }] }
-    const result = reducer(initialState, action as any)
-    expect(result.searchRecipes).toEqual([{ name: 'test' }])
+  it('updates recipe lists only when the payload is a recipe list', () => {
+    const recipes = [recipe()]
+    expect(
+      reducer(initialState, { type: UPDATE_SEARCH_RECIPES, data: recipes }).searchRecipes
+    ).toEqual(recipes)
+    expect(
+      reducer(initialState, { type: UPDATE_SEARCH_RECIPES, data: [{ name: 'nope' }] })
+        .searchRecipes
+    ).toEqual([])
+    expect(
+      reducer(initialState, { type: UPDATE_HOME_RECIPES, data: recipes }).homeRecipes
+    ).toEqual(recipes)
+    expect(reducer(initialState, { type: UPDATE_HOME_RECIPES }).homeRecipes).toEqual([])
   })
 
-  it('flags home mounted', () => {
-    const result = reducer(initialState, { type: FLAG_HOME_MOUNTED })
-    expect(result.homeDidMount).toBe(true)
+  it('updates saved recipes and treats undefined as an empty list', () => {
+    const recipes = [recipe({ edamamId: 'saved' })]
+    expect(
+      reducer(initialState, { type: UPDATE_SAVED_RECIPES, data: recipes }).savedRecipes
+    ).toEqual(recipes)
+    expect(
+      reducer(
+        { ...initialState, savedRecipes: recipes },
+        { type: UPDATE_SAVED_RECIPES, data: undefined }
+      ).savedRecipes
+    ).toEqual([])
+    expect(
+      reducer(initialState, { type: UPDATE_SAVED_RECIPES, data: 'nope' }).savedRecipes
+    ).toEqual([])
   })
 
-  it('returns state for unknown action', () => {
-    const result = reducer(initialState, { type: 'UNKNOWN' })
-    expect(result).toBe(initialState)
+  it('updates saved ingredients and tap off lists', () => {
+    expect(
+      reducer(initialState, { type: UPDATE_SAVED_INGREDIENTS, data: ['a'] }).savedIngredients
+    ).toEqual(['a'])
+    expect(
+      reducer(initialState, { type: UPDATE_SAVED_INGREDIENTS, data: undefined })
+        .savedIngredients
+    ).toEqual([])
+    expect(
+      reducer(initialState, { type: UPDATE_SAVED_INGREDIENTS, data: 'nope' })
+        .savedIngredients
+    ).toEqual([])
+    expect(reducer(initialState, { type: UPDATE_TAP_OFF, data: [1] }).tapOff).toEqual([1])
+    expect(reducer(initialState, { type: UPDATE_TAP_OFF, data: 'nope' }).tapOff).toEqual([])
+  })
+
+  it('adds a saved recipe once and ignores invalid payloads', () => {
+    const first = recipe({ edamamId: 'a' })
+    const added = reducer(initialState, { type: ADD_SAVED_RECIPE, data: first })
+    expect(added.savedRecipes).toEqual([first])
+    expect(
+      reducer(added, { type: ADD_SAVED_RECIPE, data: recipe({ edamamId: 'a' }) }).savedRecipes
+    ).toHaveLength(1)
+    expect(reducer(initialState, { type: ADD_SAVED_RECIPE, data: { name: 'x' } })).toBe(
+      initialState
+    )
+  })
+
+  it('removes a saved recipe by edamam id', () => {
+    const state = { ...initialState, savedRecipes: [recipe({ edamamId: 'keep' }), recipe()] }
+    expect(
+      reducer(state, { type: REMOVE_SAVED_RECIPE, data: 'ed1' }).savedRecipes
+    ).toEqual([recipe({ edamamId: 'keep' })])
+    expect(reducer(state, { type: REMOVE_SAVED_RECIPE, data: 4 })).toBe(state)
+  })
+
+  it('sets and clears the recipe being customised', () => {
+    const next = recipe({ name: 'Edit me' })
+    expect(
+      reducer(initialState, { type: SET_EDIT_RECIPE, data: next }).customiseRecipe
+    ).toEqual(next)
+    expect(
+      reducer(initialState, { type: SET_EDIT_RECIPE, data: null }).customiseRecipe
+    ).toBeNull()
+    expect(reducer(initialState, { type: SET_EDIT_RECIPE, data: { name: 'x' } })).toBe(
+      initialState
+    )
+    const editing = { ...initialState, customiseRecipe: next }
+    expect(reducer(editing, { type: CLEAR_EDIT_RECIPE }).customiseRecipe).toBeNull()
+  })
+
+  it('flags pages as mounted or generated', () => {
+    expect(reducer(initialState, { type: FLAG_HOME_MOUNTED }).homeDidMount).toBe(true)
+    expect(reducer(initialState, { type: FLAG_SAVED_MOUNTED }).savedDidMount).toBe(true)
+    expect(
+      reducer(initialState, { type: FLAG_INGREDIENTS_GENERATED }).ingredientsDidGenerate
+    ).toBe(true)
+  })
+
+  it('returns the same state for an unknown action', () => {
+    expect(reducer(initialState, { type: 'UNKNOWN' })).toBe(initialState)
   })
 })
 
-import { UPDATE_SAVED_RECIPES, CLEAR_EDIT_RECIPE, FLAG_SAVED_MOUNTED } from '../actions'
-
-describe('reducer additional cases', () => {
-  it('updates saved recipes', () => {
-    const action = { type: UPDATE_SAVED_RECIPES, data: [{ name: 'saved' }] }
-    const result = reducer(initialState, action as any)
-    expect(result.savedRecipes).toEqual([{ name: 'saved' }])
-  })
-
-  it('clears edit recipe', () => {
-    const result = reducer(initialState, { type: CLEAR_EDIT_RECIPE })
-    expect(result.customiseRecipe).toBeNull()
-  })
-
-  it('flags saved mounted', () => {
-    const result = reducer(initialState, { type: FLAG_SAVED_MOUNTED })
-    expect(result.savedDidMount).toBe(true)
+describe('useGlobalReducer', () => {
+  it('starts from the provided state', () => {
+    const { result } = renderHook(() => useGlobalReducer(initialState))
+    expect(result.current[0]).toEqual(initialState)
   })
 })

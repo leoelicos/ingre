@@ -1,11 +1,13 @@
-
-import type {
-  FetchEdamamOptions
-} from '../../types/edamam'
+import type { FetchEdamamOptions, EdamamHit } from '../../types/edamam'
 import type { ClientRecipe } from '../../types/client'
 import encode from './encode'
 import deserialize from './deserialize'
 import { mockResponse } from './mockResponse'
+
+export type EdamamHttpResponse = {
+  status: number
+  data?: { hits?: EdamamHit[] } | null
+} | null
 
 type FetchEdamamType = ({
   search,
@@ -13,10 +15,32 @@ type FetchEdamamType = ({
   appKey
 }: FetchEdamamOptions) => Promise<ClientRecipe[]>
 
+export function recipesFromEdamamResponse(response: EdamamHttpResponse): ClientRecipe[] {
+  if (!response) throw new Error('Error: 404 Edamam no response')
+
+  /* from the docs: https://developer.edamam.com/edamam-docs-recipe-api */
+  if (response.status === 400) throw new Error('Error: 400 Edamam error')
+  if (response.status === 403) throw new Error('Error: 403 Edamam error')
+  if (response.status !== 200)
+    console.info('Error: Unknown Edamam error', response.status)
+
+  if (!response.data) throw new Error('Error: 404 Edamam no data')
+
+  if (!response.data.hits) throw new Error('Error: 404 Edamam no hits')
+
+  return deserialize(response.data.hits)
+}
+
+export const edamamTransport = {
+  request: async (_uri: string): Promise<EdamamHttpResponse> => {
+    return { status: 200, data: mockResponse }
+  }
+}
+
 const fetchEdamam: FetchEdamamType = async ({ search, appId, appKey }) => {
   const { q, diet, health, cuisineType, mealType, dishType } = search
   try {
-    let searchString = encode({
+    const searchString = encode({
       q,
       diet,
       health,
@@ -44,21 +68,8 @@ const fetchEdamam: FetchEdamamType = async ({ search, appId, appKey }) => {
         searchString
       ].join('&')
 
-    void uri // await axios.get(uri)
-    const response = { status: 200, data: mockResponse }
-    if (!response) throw new Error('Error: 404 Edamam no response')
-
-    /* from the docs: https://developer.edamam.com/edamam-docs-recipe-api */
-    if (response.status === 400) throw new Error('Error: 400 Edamam error')
-    if (response.status === 403) throw new Error('Error: 403 Edamam error')
-    if (response.status !== 200)
-      console.info('Error: Unknown Edamam error', response.status)
-
-    if (!response.data) throw new Error('Error: 404 Edamam no data')
-
-    if (!response.data.hits) throw new Error('Error: 404 Edamam no hits')
-
-    return deserialize(response.data.hits)
+    const response = await edamamTransport.request(uri)
+    return recipesFromEdamamResponse(response)
   } catch (err) {
     console.error(err)
     return []

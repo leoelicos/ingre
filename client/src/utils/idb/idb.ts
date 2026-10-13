@@ -5,6 +5,14 @@ type IdbPromiseType = {
   object: unknown
 }
 
+function objectId(object: unknown): string {
+  if (typeof object !== 'object' || object === null) return ''
+  if (!('_id' in object)) return ''
+  const id = object._id
+  if (typeof id !== 'string') return ''
+  return id
+}
+
 const idbPromise: (params: IdbPromiseType) => Promise<unknown> = (params) => {
   const { storeName, method, object } = params
 
@@ -43,7 +51,7 @@ const idbPromise: (params: IdbPromiseType) => Promise<unknown> = (params) => {
           }
           break
         case 'delete':
-          store.delete((object as { _id: string })._id)
+          store.delete(objectId(object))
           break
         default:
           console.error('No valid method')

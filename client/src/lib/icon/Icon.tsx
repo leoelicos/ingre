@@ -1,19 +1,18 @@
-import type { CSSProperties } from 'react'
-import type { FC } from 'react'
-import { IconProp } from '@fortawesome/fontawesome-svg-core'
+import type { CSSProperties, FC } from 'react'
+import type { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-export const Icon: FC<{ icon: string; extraStyle?: unknown; small?: boolean }> = ({
-  icon,
-  extraStyle,
-  small
-}) => {
+export const Icon: FC<{
+  icon: IconProp
+  extraStyle?: CSSProperties
+  small?: boolean
+}> = ({ icon, extraStyle, small }) => {
   let style: CSSProperties = {}
   if (small) style.width = '22px'
   if (extraStyle) style = { ...style, ...extraStyle }
   return (
     <FontAwesomeIcon
-      icon={icon as IconProp}
+      icon={icon}
       style={style}
     />
   )
@@ -22,7 +21,7 @@ export const Icon: FC<{ icon: string; extraStyle?: unknown; small?: boolean }> =
 /* header */
 export const IngreIconLogoEgg = () => (
   <Icon
-    icon="fa-solid fa-egg"
+    icon={['fas', 'egg']}
     extraStyle={{
       marginRight: '0.3rem',
       color: 'var(--ingre-eggshell)',
@@ -32,10 +31,10 @@ export const IngreIconLogoEgg = () => (
   />
 )
 
-export const IngreIconLogoMenuCollapsed = () => <Icon icon="fa-solid fa-bars" />
+export const IngreIconLogoMenuCollapsed = () => <Icon icon={['fas', 'bars']} />
 export const IngreIconChevronDown = () => (
   <Icon
-    icon="fa-solid fa-chevron-down"
+    icon={['fas', 'chevron-down']}
     small={true}
   />
 )
@@ -43,49 +42,49 @@ export const IngreIconChevronDown = () => (
 /* sidebar */
 export const IngreIconRecipe = () => (
   <Icon
-    icon="fa-classic fa-cookie"
+    icon={['fas', 'cookie']}
     small={true}
   />
 )
 
 export const IngreIconSearch = () => (
   <Icon
-    icon="fa-solid fa-magnifying-glass"
+    icon={['fas', 'magnifying-glass']}
     small={true}
   />
 )
 
 export const IngreIconCustomise = () => (
   <Icon
-    icon="fa-solid fa-pen"
+    icon={['fas', 'pen']}
     small={true}
   />
 )
 
 export const IngreIconIngredients = () => (
   <Icon
-    icon="fa-solid fa-egg"
+    icon={['fas', 'egg']}
     small={true}
   />
 )
 
 export const IngreIconTapOff = () => (
   <Icon
-    icon="fa-solid fa-square-check"
+    icon={['fas', 'square-check']}
     small={true}
   />
 )
 
 export const IngreIconPro = () => (
   <Icon
-    icon="fa-solid fa-star"
+    icon={['fas', 'star']}
     small={true}
   />
 )
 
 export const IngreIconHelp = () => (
   <Icon
-    icon="fa-solid fa-circle-info"
+    icon={['fas', 'circle-info']}
     small={true}
   />
 )
@@ -93,20 +92,20 @@ export const IngreIconHelp = () => (
 /* recipe, search */
 export const IngreIconSave = () => (
   <Icon
-    icon="fa-solid fa-save"
+    icon={['fas', 'save']}
     small={true}
   />
 )
 export const IngreIconSpin = () => (
   <Icon
-    icon="fa-solid fa-spinner"
+    icon={['fas', 'spinner']}
     small={true}
   />
 )
 
 export const IngreIconPortion = () => (
   <Icon
-    icon="fa-solid fa-user-group"
+    icon={['fas', 'user-group']}
     extraStyle={{
       borderRadius: '50%',
       padding: '0 4px 0',
@@ -119,7 +118,7 @@ export const IngreIconPortion = () => (
 /* search */
 export const IngreIconClearSearch = () => (
   <Icon
-    icon="fa-solid fa-circle-xmark"
+    icon={['fas', 'circle-xmark']}
     small={true}
   />
 )
@@ -127,35 +126,35 @@ export const IngreIconClearSearch = () => (
 /* customise */
 export const IngreIconAddIngredient = () => (
   <Icon
-    icon="fa-solid fa-add"
+    icon={['fas', 'add']}
     small={true}
   />
 )
 
 export const IngreIconRemove = () => (
   <Icon
-    icon="fa-solid fa-trash"
+    icon={['fas', 'trash']}
     small={true}
   />
 )
 
 export const IngreIconFormError = () => (
   <Icon
-    icon="fa-solid fa-exclamation"
+    icon={['fas', 'exclamation']}
     small={true}
   />
 )
 
 export const IngreIconUndoCustom = () => (
   <Icon
-    icon="fa-solid fa-rotate-left"
+    icon={['fas', 'rotate-left']}
     small={true}
   />
 )
 
 export const IngreIconClearCustom = () => (
   <Icon
-    icon="fa-solid fa-eraser"
+    icon={['fas', 'eraser']}
     small={true}
   />
 )

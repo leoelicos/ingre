@@ -10,10 +10,10 @@ const useLoginForm = () => {
   const [password, setPassword] = useState<string>('')
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const onEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e?.target) setEmail(e.target.value)
+    setEmail(e.target.value)
   }
   const onPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e?.target) setPassword(e.target.value)
+    setPassword(e.target.value)
   }
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev)
   return {

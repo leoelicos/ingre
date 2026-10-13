@@ -1,4 +1,3 @@
-import type { ClientRecipe } from '../../types/client'
 import type { FC } from 'react'
 import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardContainer'
 import { options } from './options'
@@ -44,7 +43,7 @@ const Search: FC = () => {
         'Loading…'
       ) : (
         <RecipeCardContainer
-          results={edamamRecipes as ClientRecipe[]}
+          results={edamamRecipes}
           loading={loadingEdamam}
           onSavedPage={false}
         />

@@ -45,9 +45,7 @@ export const useSignup = () => {
     return checkEmailData
   }
 
-  const handleFormSubmit: React.FormEventHandler<HTMLFormElement> = async (
-    e
-  ) => {
+  const handleFormSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
     const { firstName, lastName, email, password } = fields
     const variables = { input: { email, password, firstName, lastName } }
@@ -63,16 +61,16 @@ export const useSignup = () => {
     }
   }
 
-  const onFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onFirstNameChange = (e: { target: { value: string } }) =>
     setFields((prev) => ({ ...prev, firstName: e.target.value }))
 
-  const onLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onLastNameChange = (e: { target: { value: string } }) =>
     setFields((prev) => ({ ...prev, lastName: e.target.value }))
 
-  const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onEmailChange = (e: { target: { value: string } }) =>
     setFields((prev) => ({ ...prev, email: e.target.value }))
 
-  const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onPasswordChange = (e: { target: { value: string } }) =>
     setFields((prev) => ({ ...prev, password: e.target.value }))
 
   return {

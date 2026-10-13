@@ -28,8 +28,8 @@
 
 ## Phase 4: Frontend Tests + Coverage
 - [x] Add initial frontend unit tests
-- [ ] Increase frontend coverage toward completion (~68%)
-- [ ] Achieve high/complete coverage on client
+- [x] Increase frontend coverage toward completion (100%)
+- [x] Achieve complete coverage on client (statements, branches, functions, lines — no type assertions)
 
 ## Notes
 - Current TypeScript: ~4.9 (server), ~4.7 (client) — needs upgrade

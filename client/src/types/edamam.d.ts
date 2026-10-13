@@ -53,7 +53,7 @@ export interface EdamamHit {
     }
     shareAs?: string
     yield?: number
-    ingredients: Array<{
+    ingredients?: Array<{
       text?: string | null
       quantity?: number | null
       measure?: string | null

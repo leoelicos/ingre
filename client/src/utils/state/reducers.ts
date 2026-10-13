@@ -1,6 +1,6 @@
-import type { ClientRecipe } from '../../types/client'
 import { useReducer } from 'react'
 import type { Store } from './GlobalState'
+import { isClientRecipe, isClientRecipeList } from './guards'
 
 import {
   UPDATE_SEARCH_RECIPES,
@@ -17,54 +17,55 @@ import {
   FLAG_INGREDIENTS_GENERATED
 } from './actions'
 
-// The reducer is a function that accepts the current state and an action. It returns a new state based on that action.
-export const reducer = (
-  state: Store,
-  action: { type: string; data?: unknown }
-) => {
+export type StoreAction = { type: string; data?: unknown }
+
+export const reducer = (state: Store, action: StoreAction): Store => {
   switch (action.type) {
     case UPDATE_SEARCH_RECIPES:
-      return { ...state, searchRecipes: action.data } as Store
+      if (!isClientRecipeList(action.data)) return state
+      return { ...state, searchRecipes: action.data }
 
     case UPDATE_HOME_RECIPES:
-      return { ...state, homeRecipes: action.data } as Store
+      if (!isClientRecipeList(action.data)) return state
+      return { ...state, homeRecipes: action.data }
 
     case UPDATE_SAVED_RECIPES:
       if (action.data === undefined) return { ...state, savedRecipes: [] }
-      return { ...state, savedRecipes: action.data } as Store
+      if (!isClientRecipeList(action.data)) return state
+      return { ...state, savedRecipes: action.data }
 
     case UPDATE_SAVED_INGREDIENTS:
       if (action.data === undefined) return { ...state, savedIngredients: [] }
+      if (!Array.isArray(action.data)) return state
       return { ...state, savedIngredients: action.data }
 
     case UPDATE_TAP_OFF: {
-      if (!action.data) return { ...state }
+      if (!Array.isArray(action.data)) return state
       return { ...state, tapOff: action.data }
     }
 
-    case ADD_SAVED_RECIPE:
-      if (
-        state.savedRecipes.find(
-          (r) => (r as ClientRecipe).edamamId === (action.data as ClientRecipe).edamamId
-        )
-      )
-        return { ...state }
-      let newSavedRecipes = JSON.parse(JSON.stringify(state.savedRecipes))
-      newSavedRecipes.push(action.data)
-      return { ...state, savedRecipes: newSavedRecipes }
+    case ADD_SAVED_RECIPE: {
+      if (!isClientRecipe(action.data)) return state
+      const incoming = action.data
+      if (state.savedRecipes.some((r) => r.edamamId === incoming.edamamId)) {
+        return state
+      }
+      return { ...state, savedRecipes: [...state.savedRecipes, incoming] }
+    }
 
-    case REMOVE_SAVED_RECIPE:
-      const copyOfRecipes: { edamamId: string }[] = JSON.parse(
-        JSON.stringify(state.savedRecipes)
-      )
-      const filteredCopyOfRecipes = copyOfRecipes.filter(
-        (r) => r.edamamId !== action.data
-      )
-      return { ...state, savedRecipes: filteredCopyOfRecipes }
+    case REMOVE_SAVED_RECIPE: {
+      if (typeof action.data !== 'string') return state
+      const edamamId = action.data
+      return {
+        ...state,
+        savedRecipes: state.savedRecipes.filter((r) => r.edamamId !== edamamId)
+      }
+    }
 
     case SET_EDIT_RECIPE:
-      const newEditRecipe = action.data
-      return { ...state, customiseRecipe: newEditRecipe }
+      if (action.data === null) return { ...state, customiseRecipe: null }
+      if (!isClientRecipe(action.data)) return state
+      return { ...state, customiseRecipe: action.data }
 
     case CLEAR_EDIT_RECIPE:
       return { ...state, customiseRecipe: null }
@@ -84,5 +85,5 @@ export const reducer = (
 }
 
 export function useGlobalReducer(initialState: Store) {
-  return useReducer(reducer as React.Reducer<Store, { type: string; data?: unknown }>, initialState)
+  return useReducer(reducer, initialState)
 }

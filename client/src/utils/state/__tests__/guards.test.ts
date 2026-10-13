@@ -1,0 +1,71 @@
+import {
+  isClientRecipe,
+  isClientRecipeList,
+  savedIngredientsFromUnknown,
+  toSavedIngredient
+} from '../guards'
+import { recipe, ingredient } from '../../../test/fixtures'
+
+describe('recipe guards', () => {
+  it('accepts a recipe and a list of recipes', () => {
+    const value = recipe()
+    expect(isClientRecipe(value)).toBe(true)
+    expect(isClientRecipeList([value])).toBe(true)
+    expect(isClientRecipeList([])).toBe(true)
+  })
+
+  it('rejects non-records and incomplete recipes', () => {
+    expect(isClientRecipe(null)).toBe(false)
+    expect(isClientRecipe('pasta')).toBe(false)
+    expect(isClientRecipe({ ...recipe(), name: 1 })).toBe(false)
+    expect(isClientRecipe({ ...recipe(), portions: '2' })).toBe(false)
+    expect(isClientRecipe({ ...recipe(), picture_url: 1 })).toBe(false)
+    expect(isClientRecipe({ ...recipe(), ingredients: 'none' })).toBe(false)
+    expect(isClientRecipe({ ...recipe(), ingredients: [null] })).toBe(false)
+    expect(isClientRecipe({ ...recipe(), ingredients: [{ ...ingredient(), name: 1 }] })).toBe(
+      false
+    )
+    expect(
+      isClientRecipe({ ...recipe(), ingredients: [{ ...ingredient(), quantity: '1' }] })
+    ).toBe(false)
+    expect(
+      isClientRecipe({ ...recipe(), ingredients: [{ ...ingredient(), measure: 1 }] })
+    ).toBe(false)
+    expect(
+      isClientRecipe({ ...recipe(), ingredients: [{ ...ingredient(), category: 1 }] })
+    ).toBe(false)
+    expect(isClientRecipeList('nope')).toBe(false)
+    expect(isClientRecipeList([recipe(), { name: 'bad' }])).toBe(false)
+  })
+})
+
+describe('savedIngredientsFromUnknown', () => {
+  const valid = {
+    _id: '1',
+    name: 'Tomato',
+    quantity: '2',
+    measure: 'cup',
+    category: { name: 'Produce' },
+    recipe: 'Salad',
+    recipeId: 'r1'
+  }
+
+  it('normalises string and numeric quantities', () => {
+    expect(toSavedIngredient(valid)).toEqual(valid)
+    expect(toSavedIngredient({ ...valid, quantity: 3 })?.quantity).toBe('3')
+    expect(savedIngredientsFromUnknown([valid, { nope: true }, 'x'])).toEqual([valid])
+  })
+
+  it('rejects malformed values', () => {
+    expect(toSavedIngredient(null)).toBeUndefined()
+    expect(toSavedIngredient({ ...valid, _id: 1 })).toBeUndefined()
+    expect(toSavedIngredient({ ...valid, name: 1 })).toBeUndefined()
+    expect(toSavedIngredient({ ...valid, quantity: true })).toBeUndefined()
+    expect(toSavedIngredient({ ...valid, measure: 1 })).toBeUndefined()
+    expect(toSavedIngredient({ ...valid, category: null })).toBeUndefined()
+    expect(toSavedIngredient({ ...valid, category: { name: 1 } })).toBeUndefined()
+    expect(toSavedIngredient({ ...valid, recipe: 1 })).toBeUndefined()
+    expect(toSavedIngredient({ ...valid, recipeId: 1 })).toBeUndefined()
+    expect(savedIngredientsFromUnknown('nope')).toEqual([])
+  })
+})

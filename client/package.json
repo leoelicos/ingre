@@ -47,6 +47,12 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "jest": {
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "src/setupTests.ts"
+    ]
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

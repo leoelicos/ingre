@@ -24,7 +24,7 @@ describe('useSearch', () => {
   it('onSearchChange updates searchText', () => {
     const { result } = renderHook(() => useSearch())
     act(() => {
-      result.current.onSearchChange({ target: { value: 'pasta' } } as any)
+      result.current.onSearchChange({ target: { value: 'pasta' } })
     })
     expect(result.current.searchText).toBe('pasta')
   })

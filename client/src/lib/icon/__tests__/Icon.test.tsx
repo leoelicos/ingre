@@ -1,46 +1,58 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import {
+  Icon,
+  IngreIconAddIngredient,
+  IngreIconChevronDown,
+  IngreIconClearCustom,
+  IngreIconClearSearch,
+  IngreIconCustomise,
+  IngreIconFormError,
+  IngreIconHelp,
+  IngreIconIngredients,
+  IngreIconLogoEgg,
+  IngreIconLogoMenuCollapsed,
+  IngreIconPortion,
+  IngreIconPro,
+  IngreIconRecipe,
+  IngreIconRemove,
+  IngreIconSave,
   IngreIconSearch,
   IngreIconSpin,
-  IngreIconSave,
-  IngreIconPro,
-  IngreIconCustomise,
-  IngreIconIngredients,
   IngreIconTapOff,
-  IngreIconLogoEgg
+  IngreIconUndoCustom
 } from '../Icon'
 
+jest.mock('@fortawesome/react-fontawesome', () => ({
+  FontAwesomeIcon: () => <span>icon</span>
+}))
+
 describe('Icon', () => {
-  it('renders search icon without throwing', () => {
-    expect(() => render(<IngreIconSearch />)).not.toThrow()
-  })
-
-  it('renders spin icon without throwing', () => {
-    expect(() => render(<IngreIconSpin />)).not.toThrow()
-  })
-
-  it('renders save icon without throwing', () => {
-    expect(() => render(<IngreIconSave />)).not.toThrow()
-  })
-
-  it('renders pro icon without throwing', () => {
-    expect(() => render(<IngreIconPro />)).not.toThrow()
-  })
-
-  it('renders customise icon without throwing', () => {
-    expect(() => render(<IngreIconCustomise />)).not.toThrow()
-  })
-
-  it('renders ingredients icon without throwing', () => {
-    expect(() => render(<IngreIconIngredients />)).not.toThrow()
-  })
-
-  it('renders tapoff icon without throwing', () => {
-    expect(() => render(<IngreIconTapOff />)).not.toThrow()
-  })
-
-  it('renders logo egg icon without throwing', () => {
-    expect(() => render(<IngreIconLogoEgg />)).not.toThrow()
+  it('renders every icon, including small and extra styles', () => {
+    const icons = [
+      <Icon icon={['fas', 'egg']} key="plain" />,
+      <IngreIconLogoEgg key="egg" />,
+      <IngreIconLogoMenuCollapsed key="menu" />,
+      <IngreIconChevronDown key="chevron" />,
+      <IngreIconRecipe key="recipe" />,
+      <IngreIconSearch key="search" />,
+      <IngreIconCustomise key="customise" />,
+      <IngreIconIngredients key="ingredients" />,
+      <IngreIconTapOff key="tap" />,
+      <IngreIconPro key="pro" />,
+      <IngreIconHelp key="help" />,
+      <IngreIconSave key="save" />,
+      <IngreIconSpin key="spin" />,
+      <IngreIconPortion key="portion" />,
+      <IngreIconClearSearch key="clear-search" />,
+      <IngreIconAddIngredient key="add" />,
+      <IngreIconRemove key="remove" />,
+      <IngreIconFormError key="error" />,
+      <IngreIconUndoCustom key="undo" />,
+      <IngreIconClearCustom key="clear" />
+    ]
+    icons.forEach((icon) => {
+      expect(() => render(icon)).not.toThrow()
+    })
   })
 })

@@ -36,15 +36,14 @@ export const useIngredients = () => {
   })
   const reload = async () => {
     try {
-      if (!savedRecipes) return
       const savedIngredientArray: IngredientGeneratedTypeWithKey[] = []
       for (const recipe of savedRecipes) {
-        /* //TODO this is promise chaining - it should be replaced by getSavedIngredients */
         const recipeName = recipe.name
-        const recipeId = recipe._id!.toString()
+        const recipeId = recipe._id
+        if (recipeId === undefined) continue
         const res = await client.query({
           query: GET_RECIPE,
-          variables: { id: recipe._id! }
+          variables: { id: recipeId }
         })
         const getRecipe: ClientRecipe = res.data.getRecipe
         /* push serialized into savedIngredient[] */
@@ -88,7 +87,7 @@ export const useIngredients = () => {
     dispatch({ type: UPDATE_SAVED_INGREDIENTS, data: dataSource })
   }
   useEffect(() => {
-    if (updateRecipes && savedRecipes) {
+    if (updateRecipes) {
       dispatch({ type: UPDATE_SAVED_RECIPES, data: savedRecipes })
       setUpdateRecipes(false)
     }

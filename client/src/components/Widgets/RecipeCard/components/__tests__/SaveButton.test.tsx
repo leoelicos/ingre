@@ -2,6 +2,7 @@ import '@testing-library/jest-dom'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { SaveButton } from '../SaveButton'
+import { recipe } from '../../../../../test/fixtures'
 
 const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
@@ -48,7 +49,7 @@ describe('SaveButton', () => {
   it('disables button when recipe is already saved', () => {
     render(
       <MemoryRouter>
-        <SaveButton {...defaultProps} savedRecipes={[{ edamamId: 'ed1' } as any]} />
+        <SaveButton {...defaultProps} savedRecipes={[recipe({ edamamId: 'ed1' })]} />
       </MemoryRouter>
     )
     expect(screen.getByRole('button')).toBeDisabled()

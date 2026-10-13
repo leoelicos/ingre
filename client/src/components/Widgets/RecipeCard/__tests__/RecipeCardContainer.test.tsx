@@ -2,12 +2,17 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import RecipeCardContainer from '../RecipeCardContainer'
+import { recipe } from '../../../../test/fixtures'
 
 jest.mock('../../../../utils/auth/AuthContext', () => ({
   useAuthContext: () => [{ profile: { data: { pro: false } } }, jest.fn()]
 }))
 
-jest.mock('../RecipeCard', () => ({ recipe }: any) => <tr data-testid="card"><td>{recipe.name}</td></tr>)
+jest.mock('../RecipeCard', () => ({ recipe }: { recipe: { name: string } }) => (
+  <tr data-testid="card">
+    <td>{recipe.name}</td>
+  </tr>
+))
 
 describe('RecipeCardContainer', () => {
   it('shows loading state', () => {
@@ -29,7 +34,7 @@ describe('RecipeCardContainer', () => {
   })
 
   it('renders recipe cards when results exist', () => {
-    const results = [{ name: 'Pasta', edamamId: '1' } as any]
+    const results = [recipe({ name: 'Pasta', edamamId: '1' })]
     render(
       <MemoryRouter>
         <RecipeCardContainer results={results} loading={false} onSavedPage={false} />

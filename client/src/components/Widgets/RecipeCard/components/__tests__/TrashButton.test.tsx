@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { TrashButton } from '../TrashButton'
+import { recipe } from '../../../../../test/fixtures'
 
 jest.mock('../../../../../lib/icon/Icon', () => ({
   IngreIconSpin: () => <div data-testid="spinner" />
@@ -10,7 +11,7 @@ describe('TrashButton', () => {
   const defaultProps = {
     removeRecipeLoading: false,
     handleRemove: jest.fn(),
-    savedRecipes: [{ edamamId: 'ed1' } as any],
+    savedRecipes: [recipe({ edamamId: 'ed1' })],
     edamamId: 'ed1'
   }
 

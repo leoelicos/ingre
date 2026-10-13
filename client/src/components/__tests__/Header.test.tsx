@@ -8,7 +8,9 @@ jest.mock('../../utils/auth/AuthContext', () => ({
 }))
 
 jest.mock('../../lib/components', () => ({
-  Header: ({ children, logoText }: any) => <div data-testid="lib-header">{logoText}{children}</div>
+  Header: ({ logoText }: { logoText: string }) => (
+    <div data-testid="lib-header">{logoText}</div>
+  )
 }))
 
 describe('Header', () => {

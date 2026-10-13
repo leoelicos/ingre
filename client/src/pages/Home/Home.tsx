@@ -7,8 +7,8 @@ const HomeComponent: FC<{
   loggedIn: boolean
   firstName: string
   loadingEdamam: boolean
-  edamamRecipes: Array<unknown>
-  handleRefresh: unknown
+  edamamRecipes: ClientRecipe[]
+  handleRefresh: (query: string) => Promise<void>
 }> = ({ loggedIn, firstName, loadingEdamam, edamamRecipes }) => {
   return (
     <div className="container">
@@ -17,7 +17,7 @@ const HomeComponent: FC<{
         <p>Loading…</p>
       ) : (
         <RecipeCardContainer
-          results={edamamRecipes as ClientRecipe[]}
+          results={edamamRecipes}
           loading={loadingEdamam}
           onSavedPage={false}
         />

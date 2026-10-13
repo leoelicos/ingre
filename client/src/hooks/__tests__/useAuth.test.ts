@@ -4,14 +4,25 @@ import { useAuth } from '../useAuth'
 const mockDispatch = jest.fn()
 const mockNavigate = jest.fn()
 const mockLoginMutation = jest.fn()
+const mockLoginOptions: {
+  onCompleted?: (data: { login?: { token?: string } }) => void
+  onError?: (error: Error) => void
+} = {}
 
 jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate
 }))
 
 jest.mock('@apollo/client', () => ({
-  useMutation: (_mutation: any, options: any) => {
-    (global as any).__loginOptions = options
+  useMutation: (
+    _mutation: unknown,
+    options: {
+      onCompleted?: (data: { login?: { token?: string } }) => void
+      onError?: (error: Error) => void
+    }
+  ) => {
+    mockLoginOptions.onCompleted = options.onCompleted
+    mockLoginOptions.onError = options.onError
     return [mockLoginMutation, { loading: false, error: null }]
   },
   gql: (s: TemplateStringsArray) => s
@@ -48,22 +59,27 @@ describe('useAuth', () => {
     expect(mockLoginMutation).toHaveBeenCalled()
   })
 
-  it('onCompleted dispatches LOGIN and navigates', () => {
+  it('onCompleted dispatches LOGIN and navigates only when a token exists', () => {
     renderHook(() => useAuth())
-    const options = (global as any).__loginOptions
+    const onCompleted = mockLoginOptions.onCompleted
+    if (!onCompleted) throw new Error('missing onCompleted')
     act(() => {
-      options.onCompleted({ login: { token: 'abc123' } })
+      onCompleted({})
+      onCompleted({ login: {} })
+      onCompleted({ login: { token: '' } })
+      onCompleted({ login: { token: 'abc123' } })
     })
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'LOGIN', data: 'abc123' })
     expect(mockNavigate).toHaveBeenCalledWith(-1)
   })
 
   it('onError logs error', () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
     renderHook(() => useAuth())
-    const options = (global as any).__loginOptions
+    const onError = mockLoginOptions.onError
+    if (!onError) throw new Error('missing onError')
     act(() => {
-      options.onError(new Error('login failed'))
+      onError(new Error('login failed'))
     })
     expect(consoleSpy).toHaveBeenCalled()
     consoleSpy.mockRestore()

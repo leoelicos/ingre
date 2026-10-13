@@ -25,13 +25,16 @@ interface AuthType {
 const isJwtExpired = (token: string) =>
   jwtDecode<ProfileType>(token).exp < Date.now() / 1000
 
+export function readInitialAuth(token: string | null): AuthType {
+  return {
+    profile: null,
+    loggedIn: token !== null && !isJwtExpired(token)
+  }
+}
+
 type AuthContextType = [state: AuthType, dispatch: React.Dispatch<{ type: string; data: string }>]
 
-const initialToken = localStorage.getItem('id_token')
-const initialState: AuthType = {
-  profile: null,
-  loggedIn: initialToken !== null && !isJwtExpired(initialToken as string)
-}
+const initialState: AuthType = readInitialAuth(localStorage.getItem('id_token'))
 
 const AuthContext = createContext<AuthContextType>([initialState, () => {}])
 
@@ -50,11 +53,11 @@ export { AuthProvider, useAuthContext }
 interface AuthState { loggedIn: boolean; profile: ProfileType | null }
 
 const useAuthReducer = (initialState: AuthState) => {
-  return useReducer(reducer, initialState)
+  return useReducer(authReducer, initialState)
 }
 
 type reducerType = (state: AuthState, action: { type: string; data: string }) => AuthState
-const reducer: reducerType = (state, action) => {
+export const authReducer: reducerType = (state, action) => {
   switch (action.type) {
     case 'UPDATE':
       const token = localStorage.getItem('id_token')

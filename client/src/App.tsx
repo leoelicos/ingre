@@ -27,17 +27,30 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 addFontAwesome()
 
-const authLink = setContext((_, { headers: oldHeaders }) => {
+export function graphqlEndpoint(nodeEnv: string | undefined): string {
+  if (nodeEnv === 'production') {
+    return 'https://ingre-backend.onrender.com/graphql'
+  }
+  return 'http://localhost:3001/graphql'
+}
+
+export function authHeaders(oldHeaders: Record<string, string> | undefined): {
+  headers: Record<string, string>
+} {
   const token = localStorage.getItem('id_token')
   const authorization = token ? `Bearer ${token}` : ''
   const headers = { ...oldHeaders, authorization }
   return { headers }
-})
+}
 
-const uri =
-  process.env.NODE_ENV === 'production'
-    ? 'https://ingre-backend.onrender.com/graphql'
-    : 'http://localhost:3001/graphql'
+export const withAuthHeaders = (
+  _operation: unknown,
+  context: { headers?: Record<string, string> }
+) => authHeaders(context.headers)
+
+const authLink = setContext(withAuthHeaders)
+
+const uri = graphqlEndpoint(process.env.NODE_ENV)
 const httpLink = createHttpLink({ uri })
 const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()

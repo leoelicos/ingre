@@ -1,7 +1,13 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { RecipeInput } from '../../types/payloads'
 import { useStoreContext } from '../../utils/state/GlobalState'
+
+type UpdateRecipe = (options: {
+  variables: { input: RecipeInput; recipeId: string }
+}) => unknown
+
+type SaveRecipeFn = (options: { variables: { input: RecipeInput } }) => unknown
 
 const defaultIngredient = {
   name: '',
@@ -19,8 +25,8 @@ export const useCustomiseForm = ({
   updateRecipe,
   saveRecipe
 }: {
-  updateRecipe: Function
-  saveRecipe: Function
+  updateRecipe: UpdateRecipe
+  saveRecipe: SaveRecipeFn
 }) => {
   const [state] = useStoreContext()
   const [name, setName] = useState(defaultCustomiseFields.name)
@@ -40,7 +46,7 @@ export const useCustomiseForm = ({
   }
 
   const handleUndoAll = () => {
-    setName(state.customiseRecipe.name)
+    setName(state.customiseRecipe?.name ?? '')
   }
 
   const handleBack = () => {
@@ -48,11 +54,11 @@ export const useCustomiseForm = ({
     navigate(-1)
   }
 
-  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e?.target) setName(e.target.value)
+  const onNameChange = (e: { target: { value: string } }) => {
+    setName(e.target.value)
   }
-  const onPortionsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e?.target) setPortions(parseFloat(e.target.value))
+  const onPortionsChange = (e: { target: { value: string } }) => {
+    setPortions(parseFloat(e.target.value))
   }
   const onIngredientsChange = ({
     idx,
@@ -85,7 +91,7 @@ export const useCustomiseForm = ({
     if (cancel) return
 
     try {
-      const input = {
+      const input: RecipeInput = {
         name: name || 'Custom recipe',
         portions: portions || 1,
         ingredients: ingredients.map((i) => ({
@@ -99,7 +105,7 @@ export const useCustomiseForm = ({
           state.customiseRecipe?.picture_url ||
           'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc',
         edamamId: state.customiseRecipe?.edamamId || '-1'
-      } as RecipeInput
+      }
 
       //* if already saved, update, otherwise save
       if (state.customiseRecipe?._id) {

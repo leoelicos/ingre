@@ -59,7 +59,7 @@ const aggregateQuantities = (
     category = { ...category, name: clean(category.name) }
 
     const foundIdx = prev.findIndex(
-      (r) => r.name === name && r.category === category
+      (r) => r.name === name && r.category.name === category.name
     )
     if (foundIdx === -1) {
       prev.push({
@@ -75,12 +75,17 @@ const aggregateQuantities = (
       if (foundMeasureIdx === -1) {
         prev[foundIdx].quantityMeasures.push({ quantity, measure })
       } else {
-        prev[foundIdx].quantityMeasures[foundMeasureIdx].quantity +=
-          parseFloat(quantity)
+        const current = prev[foundIdx].quantityMeasures[foundMeasureIdx]
+        const sum = parseFloat(current.quantity) + parseFloat(quantity)
+        current.quantity = sum.toString()
       }
     }
     return prev
-  }, [] as aggregatedIngredientType[])
+  }, emptyAggregates())
+
+function emptyAggregates(): aggregatedIngredientType[] {
+  return []
+}
 
 const qualifyDescriptions = (arr: aggregatedIngredientType[]): categoryType[] =>
   arr.map((i) => {

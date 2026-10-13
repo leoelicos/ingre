@@ -1,4 +1,3 @@
-import type { savedIngredientType } from '../../utils/compress'
 import type { FC } from 'react'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,6 +7,7 @@ import { changeTitle } from '../../utils/changeTitle'
 import type { compressedCategoriesType, compressedCategoryType } from '../../utils/compress'
 import compress from '../../utils/compress'
 import { useStoreContext } from '../../utils/state/GlobalState'
+import { savedIngredientsFromUnknown } from '../../utils/state/guards'
 import { UPDATE_TAP_OFF } from '../../utils/state/actions'
 import './style.css'
 
@@ -42,7 +42,7 @@ const TapOff: FC = () => {
   }
 
   useEffect(() => {
-    const compressed = compress(savedIngredients as savedIngredientType[])
+    const compressed = compress(savedIngredientsFromUnknown(savedIngredients))
     setCompressedRecipes(compressed)
     dispatch({ type: UPDATE_TAP_OFF, data: compressed })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,7 +55,7 @@ const TapOff: FC = () => {
         <NotLoggedIn />
       ) : (
         <>
-          {compressedRecipes?.length ? (
+          {compressedRecipes.length ? (
             compressedRecipes.map((r: compressedCategoryType, ri: number) => (
               <>
                 <p>{r.category.name}</p>
