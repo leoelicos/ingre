@@ -6,7 +6,8 @@
     "start": "npx tsx server.ts",
     "watch": "npx tsx --watch server.ts",
     "clear": "jest --clearCache",
-    "test": "jest -c ./jest.config.js --watch",
+    "test": "jest -c ./jest.config.js --watchAll=false --forceExit",
+    "test:watch": "jest -c ./jest.config.js --watch",
     "seed": "node seeds/index.js"
   },
   "keywords": [],
