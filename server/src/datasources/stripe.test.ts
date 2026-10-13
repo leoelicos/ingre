@@ -1,6 +1,5 @@
 import Stripe from 'stripe'
-import { StripeApi } from './stripe'
-import { getStripe } from './stripe'
+import { StripeApi, getStripe } from './stripe'
 
 const mockProduct = {
   id: 'prod_123',
@@ -30,7 +29,7 @@ const mockProduct = {
     idempotencyKey: '',
     stripeAccount: ''
   }
-} as Stripe.Response<Stripe.Product>
+}
 
 const mockPrice = {
   id: 'price_123',
@@ -75,7 +74,7 @@ const mockPrice = {
   type: 'recurring',
   unit_amount: 2000,
   unit_amount_decimal: '2000'
-} as Stripe.Response<Stripe.Price>
+}
 
 const mockSession: Stripe.Checkout.Session = {
   id: 'cs_test_123',

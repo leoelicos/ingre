@@ -46,7 +46,7 @@ const mockRecipe = {
 describe('recipeApi', () => {
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_recipe')
+    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_recipe`)
     categoryApi = new CategoryApi()
     ingredientApi = new IngredientApi()
     recipeApi = new RecipeApi()
@@ -58,7 +58,6 @@ describe('recipeApi', () => {
     jest.resetAllMocks()
     jest.restoreAllMocks()
     jest.clearAllMocks()
-
   })
   afterEach(async () => {
     await mongoose.connection.dropDatabase()
@@ -121,7 +120,7 @@ describe('recipeApi', () => {
       instructions: mockRecipe.instructions
     })
     if (!recipe) return
-    const foundRecipe = await recipeApi.getRecipe(recipe!._id)
+    const foundRecipe = await recipeApi.getRecipe(recipe._id)
     expect(foundRecipe).toMatchObject({
       _id: recipe._id,
       ingredients: [
@@ -228,7 +227,8 @@ describe('recipeApi', () => {
     try {
       await recipeApi.deleteRecipe({ recipeId: new Types.ObjectId() })
     } catch (error) {
-      const e = error as Error
+      if (!(error instanceof Error)) throw error
+      const e = error
       expect(e).toBeInstanceOf(Error)
       expect(e.message).toBe('Recipe does not exist!')
     }
@@ -306,7 +306,8 @@ describe('recipeApi', () => {
         })
       ).rejects.toThrow('mocked create error')
     } catch (error) {
-      const { message } = error as Error
+      if (!(error instanceof Error)) throw error
+      const { message } = error
       expect(message).toStrictEqual('could not create ingredient')
     }
     generateIngredientSpy.mockRestore()
@@ -325,7 +326,8 @@ describe('recipeApi', () => {
         })
       ).rejects.toThrow('mocked create error')
     } catch (error) {
-      const { message } = error as Error
+      if (!(error instanceof Error)) throw error
+      const { message } = error
       expect(message).toStrictEqual('could not create ingredient')
     }
     updateUniqueCategoryNameSpy.mockRestore()
@@ -495,7 +497,8 @@ describe('recipeApi', () => {
         input: updatedInput
       })
     } catch (error) {
-      const { message } = error as Error
+      if (!(error instanceof Error)) throw error
+      const { message } = error
       expect(message).toStrictEqual('mocked findById api error')
     }
 

@@ -73,7 +73,8 @@ describe('recipe library data', () => {
       'meat',
       'oils & vinegar',
       'pasta & rice',
-      'sauces'
+      'sauces',
+      'seafood'
     ])
   })
 

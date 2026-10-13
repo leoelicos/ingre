@@ -1,5 +1,4 @@
-import { Types, Schema, model } from 'mongoose'
-import type { Document } from 'mongoose'
+import { Types, Schema, model, type Document } from 'mongoose'
 import { IngredientSchema } from './Ingredient'
 
 export interface RecipeSchema extends Document {

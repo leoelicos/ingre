@@ -1,4 +1,4 @@
-import type { User } from '../../../schemas/types'
+import { singleResult } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -87,8 +87,8 @@ export const GET_SAVED_RECIPES = gql`
 
 interface ContextValue {
   headers: Record<string, string>
-  dataSources: any
-  user: User
+  dataSources: unknown
+  user?: object
 }
 
 const createTestServer = () =>
@@ -117,18 +117,13 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_SAVED_RECIPES },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
 
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect( (data as any).getSavedRecipes).toStrictEqual(mockUserSavedRecipes)
+    expect(data?.getSavedRecipes).toStrictEqual(mockUserSavedRecipes)
   })
 
   it('should throw an error if context user is null', async () => {
@@ -136,16 +131,11 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_SAVED_RECIPES },
-      { contextValue: { ...contextValue, user: undefined as unknown as User } }
+      { contextValue: { ...contextValue, user: undefined } }
     )
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
-    expect((errors as { message: string }[])[0].message).toBe('Unexpected error value: "Not logged in!"')
-    expect( (data as any).getSavedRecipes).toBeNull()
+    expect(errors?.[0].message).toBe('Unexpected error value: "Not logged in!"')
+    expect(data?.getSavedRecipes).toBeNull()
   })
 })

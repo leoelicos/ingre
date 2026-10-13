@@ -3,7 +3,7 @@ import { Category } from '../models/Category'
 export class CategoryApi {
   public createCategory = async (name: string) => {
     const category = await Category.create({ name })
-    const result = await Category.findById(category._id).select('-__v')
+    const result = await Category.findById(category._id).select('-__v').orFail()
     return result
   }
 

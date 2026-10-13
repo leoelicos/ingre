@@ -1,4 +1,4 @@
-import type { User } from '../../../schemas/types'
+import { singleResult } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -25,8 +25,8 @@ export const GET_NUM_SAVED_RECIPES = gql`
 
 interface ContextValue {
   headers: Record<string, string>
-  dataSources: any
-  user: User
+  dataSources: unknown
+  user?: object
 }
 
 const createTestServer = () =>
@@ -114,18 +114,13 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_NUM_SAVED_RECIPES },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
 
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect( (data as any).getNumSavedRecipes).toStrictEqual(2)
+    expect(data?.getNumSavedRecipes).toStrictEqual(2)
   })
 
   it('should throw an error if context user is null', async () => {
@@ -133,17 +128,12 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_NUM_SAVED_RECIPES },
-      { contextValue: { ...contextValue, user: undefined as unknown as User } }
+      { contextValue: { ...contextValue, user: undefined } }
     )
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
-    expect((errors as { message: string }[])[0].message).toBe('Not logged in!')
-    expect( (data as any).getNumSavedRecipes).toBeNull()
+    expect(errors?.[0].message).toBe('Not logged in!')
+    expect(data?.getNumSavedRecipes).toBeNull()
   })
 
   it('should throw an error if no user is found', async () => {
@@ -151,16 +141,11 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_NUM_SAVED_RECIPES },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
-    expect((errors as { message: string }[])[0].message).toBe('Could not find user')
-    expect( (data as any).getNumSavedRecipes).toBeNull()
+    expect(errors?.[0].message).toBe('Could not find user')
+    expect(data?.getNumSavedRecipes).toBeNull()
   })
 })

@@ -1,4 +1,4 @@
-import type { User } from '../../../schemas/types'
+import { singleResult } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -28,8 +28,8 @@ export const CHECKOUT = gql`
 
 interface ContextValue {
   headers?: { referer?: string }
-  dataSources: any
-  user: User
+  dataSources: unknown
+  user?: object
 }
 
 const createTestServer = () =>
@@ -44,7 +44,7 @@ const contextValue: ContextValue = {
       stripePay: (e: unknown) => mockStripePay(e)
     }
   },
-  user: mockUser as unknown as User
+  user: mockUser
 }
 
 describe('checkout', () => {
@@ -58,18 +58,13 @@ describe('checkout', () => {
 
     const result = await testServer.executeOperation(
       { query: CHECKOUT },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
 
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect( data.checkout).toStrictEqual({ session: 'mockstripeid' })
+    expect(data?.checkout).toStrictEqual({ session: 'mockstripeid' })
     expect(mockStripePay).toHaveBeenCalledWith({
       productName: 'ingré PRO',
       productDescription: 'Access instructions to cook each recipe',
@@ -97,17 +92,12 @@ describe('checkout', () => {
 
     const result = await testServer.executeOperation(
       { query: CHECKOUT },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
-    expect((errors as { message: string }[])[0].message).toBe('could not create stripe response')
-    expect( data.checkout).toBeNull()
+    expect(errors?.[0].message).toBe('could not create stripe response')
+    expect(data?.checkout).toBeNull()
   })
 
   it('if headers is null, stripePay is called with blank referrer', async () => {
@@ -123,14 +113,9 @@ describe('checkout', () => {
       }
     )
 
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect( data.checkout).toStrictEqual({ session: 'mockstripeid' })
+    expect(data?.checkout).toStrictEqual({ session: 'mockstripeid' })
   })
 })

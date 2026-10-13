@@ -1,5 +1,5 @@
+import { singleResult } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
-import type { User } from '../../../schemas/types'
 import { gql } from 'graphql-tag'
 import { UserInput } from '../../types'
 import { typeDefs } from '../../typeDefs'
@@ -44,14 +44,16 @@ const ADD_USER = gql`
 
 interface ContextValue {
   headers: Record<string, string>
-  dataSources: any
-  user: User
+  dataSources: unknown
+  user?: object
 }
 
 const createTestServer = () =>
   new ApolloServer<ContextValue>({ typeDefs, resolvers })
 
-jest.mock('../../../utils/auth', () => ({ signToken: (e: unknown) => mockSignToken(e) }))
+jest.mock('../../../utils/auth', () => ({
+  signToken: (e: unknown) => mockSignToken(e)
+}))
 
 let testServer = createTestServer()
 
@@ -78,18 +80,13 @@ describe('addUser', () => {
 
     const result = await testServer.executeOperation(
       { query: ADD_USER, variables: { input } },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
 
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect( data.addUser).toStrictEqual({ user: mockUser, token: mockToken })
+    expect(data?.addUser).toStrictEqual({ user: mockUser, token: mockToken })
     expect(mockFindOneUser).toHaveBeenCalledWith({ email: input.email })
     expect(mockCreateUser).toHaveBeenCalledWith(input)
     expect(mockSignToken).toHaveBeenCalledWith(mockUser)
@@ -102,17 +99,12 @@ describe('addUser', () => {
 
     const result = await testServer.executeOperation(
       { query: ADD_USER, variables: { input } },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
-    expect((errors as { message: string }[])[0].message).toBe('Email already in use')
-    expect( data.addUser).toBeNull()
+    expect(errors?.[0].message).toBe('Email already in use')
+    expect(data?.addUser).toBeNull()
     expect(mockFindOneUser).toHaveBeenCalledWith({ email: input.email })
     expect(mockCreateUser).not.toHaveBeenCalled()
     expect(mockSignToken).not.toHaveBeenCalled()
@@ -123,10 +115,10 @@ describe('addUser', () => {
     mockCreateUser.mockResolvedValueOnce(null)
     const result = await testServer.executeOperation(
       { query: ADD_USER, variables: { input } },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
-    const { errors } = JSON.parse(JSON.stringify(result.body))['singleResult']
+    const { errors } = singleResult(result)
     expect(errors).toBeDefined()
-    expect(errors[0].message).toContain('could not create user')
+    expect(errors?.[0].message).toContain('could not create user')
   })
 })

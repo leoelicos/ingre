@@ -1,5 +1,4 @@
-import { Schema, Types, model } from 'mongoose'
-import type { Document } from 'mongoose'
+import { Schema, Types, model, type Document } from 'mongoose'
 
 export interface CategorySchema extends Document {
   /* 'Document' refers to a value, but is being used as a type here. Did you mean 'typeof Document'?ts(2749) */

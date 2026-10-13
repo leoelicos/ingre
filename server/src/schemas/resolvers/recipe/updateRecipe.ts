@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 import { RecipeSchema } from '../../../models/Recipe'
-import { RecipeInput } from '../../types'
-import { MyContext } from '../../types'
+import { MyContext, RecipeInput } from '../../types'
 
 export const updateRecipe = async (
   _parent: unknown,

@@ -1,5 +1,4 @@
-import mongoose from 'mongoose'
-import type { Document } from 'mongoose'
+import mongoose, { type Document } from 'mongoose'
 import { CategorySchema } from './Category'
 
 export interface IngredientSchema extends Document {

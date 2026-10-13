@@ -1,8 +1,12 @@
 import { CategoryApi } from '../../../datasources/category'
 import { IngredientApi } from '../../../datasources/ingredient'
 import { IngredientSchema } from '../../../models/Ingredient'
-import { IngredientInput, RecipeInput, RecipePopulated } from '../../types'
-import { MyContext } from '../../types'
+import {
+  IngredientInput,
+  MyContext,
+  RecipeInput,
+  RecipePopulated
+} from '../../types'
 
 export const createSaveIngredient = async ({
   ingredientInput,
@@ -22,22 +26,18 @@ export const createSaveIngredient = async ({
     const foundCategory = await categoryApi.findOrCreateCategory({
       categoryName: category
     })
-    if (foundCategory) {
-      const response = await ingredientApi.createIngredient({
-        name,
-        quantity,
-        measure,
-        category: foundCategory._id
-      })
-      if (response) {
-        return {
-          _id: response._id,
-          name: response.name,
-          quantity: response.quantity,
-          measure: response.measure,
-          category: response.category
-        }
-      }
+    const response = await ingredientApi.createIngredient({
+      name,
+      quantity,
+      measure,
+      category: foundCategory._id
+    })
+    return {
+      _id: response._id,
+      name: response.name,
+      quantity: response.quantity,
+      measure: response.measure,
+      category: response.category
     }
   } catch (error) {
     throw error
@@ -107,26 +107,24 @@ export const saveRecipe = async (
         'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc',
       libraryId
     })
-    if (recipe) {
-      await dataSources.userApi.addRecipeToUser({
-        userId: user._id,
-        recipeId: recipe._id
-      })
-      return {
-        _id: recipe._id,
-        name: recipe.name,
-        portions: recipe.portions,
-        instructions: recipe.instructions,
-        ingredients: recipe.ingredients.map((i) => ({
-          _id: i._id,
-          category: i.category,
-          measure: i.measure,
-          name: i.name,
-          quantity: i.quantity
-        })),
-        picture_url: recipe.picture_url,
-        libraryId: recipe.libraryId
-      }
+    await dataSources.userApi.addRecipeToUser({
+      userId: user._id,
+      recipeId: recipe._id
+    })
+    return {
+      _id: recipe._id,
+      name: recipe.name,
+      portions: recipe.portions,
+      instructions: recipe.instructions,
+      ingredients: recipe.ingredients.map((i) => ({
+        _id: i._id,
+        category: i.category,
+        measure: i.measure,
+        name: i.name,
+        quantity: i.quantity
+      })),
+      picture_url: recipe.picture_url,
+      libraryId: recipe.libraryId
     }
   } catch (error) {
     throw error

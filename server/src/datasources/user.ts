@@ -94,11 +94,10 @@ export class UserApi {
             }
           }
         })
-      if (foundUser) {
-        return foundUser.toObject<
-          UserSchema & Required<{ _id: Types.ObjectId }>
-        >({ virtuals: true })
-      }
+        .orFail()
+      return foundUser.toObject<UserSchema & Required<{ _id: Types.ObjectId }>>(
+        { virtuals: true }
+      )
     } catch (error) {
       throw error
     }

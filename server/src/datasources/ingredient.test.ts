@@ -14,7 +14,7 @@ jest.setTimeout(60000)
 describe('ingredientApi', () => {
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_ingredient')
+    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_ingredient`)
     await categoryApi.deleteAllCategories()
     await ingredientApi.deleteAllIngredients()
     await recipeApi.deleteAllRecipes()
@@ -53,7 +53,7 @@ describe('ingredientApi', () => {
       name: 'Chicken',
       quantity: 1,
       measure: 'unit',
-      category: category!._id
+      category: category._id
     })
     const result = await ingredientApi.getAllIngredients()
     expect(result?.length).toBe(1)
@@ -65,7 +65,7 @@ describe('ingredientApi', () => {
       name: 'Chicken',
       quantity: 1,
       measure: 'unit',
-      category: category!._id
+      category: category._id
     })
     await ingredientApi.deleteAllIngredients()
     const numIngredients = await ingredientApi.getAllIngredients()
@@ -78,7 +78,7 @@ describe('ingredientApi', () => {
       name: 'Chicken',
       quantity: 1,
       measure: 'unit',
-      category: category!._id
+      category: category._id
     })
     if (!createdIngredient) return
     await ingredientApi.deleteIngredient({ _id: createdIngredient?._id })

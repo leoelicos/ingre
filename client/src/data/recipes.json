@@ -924,7 +924,7 @@
       "id": "rice-paper-rolls",
       "name": "Prawn and pork rice paper rolls (gỏi cuốn)",
       "portions": 4,
-      "tags": ["Vietnamese", "dinner"],
+      "tags": ["Vietnamese", "dinner", "lunch"],
       "ingredients": [
         {
           "ingredientId": "cooked-prawns",

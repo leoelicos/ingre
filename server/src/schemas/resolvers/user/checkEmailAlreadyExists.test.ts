@@ -1,3 +1,4 @@
+import { singleResult } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -22,7 +23,7 @@ export const CHECK_EMAIL_ALREADY_EXISTS = gql`
 
 interface ContextValue {
   headers: Record<string, string>
-  dataSources: any
+  dataSources: unknown
 }
 
 const createTestServer = () =>
@@ -53,18 +54,13 @@ describe('getUser', () => {
         query: CHECK_EMAIL_ALREADY_EXISTS,
         variables: { email: mockUser.email }
       },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
 
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect( data.checkEmailAlreadyExists).toBe(true)
+    expect(data?.checkEmailAlreadyExists).toBe(true)
   })
 
   it('should return false if findOneUser returns null', async () => {
@@ -75,13 +71,12 @@ describe('getUser', () => {
         query: CHECK_EMAIL_ALREADY_EXISTS,
         variables: { email: mockUser.email }
       },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
 
-    const { data = {} }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
-      JSON.parse(JSON.stringify(result.body))['singleResult']
+    const { data = {} } = singleResult(result)
 
-    expect( data.checkEmailAlreadyExists).toBe(false)
+    expect(data?.checkEmailAlreadyExists).toBe(false)
   })
 
   it('should throw if findOneUser throws', async () => {
@@ -92,17 +87,12 @@ describe('getUser', () => {
         query: CHECK_EMAIL_ALREADY_EXISTS,
         variables: { email: mockUser.email }
       },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
 
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
-    expect((errors as { message: string }[])[0].message).toBe('uh-oh')
-    expect( data.checkEmailAlreadyExists).toBeNull()
+    expect(errors?.[0].message).toBe('uh-oh')
+    expect(data?.checkEmailAlreadyExists).toBeNull()
   })
 })

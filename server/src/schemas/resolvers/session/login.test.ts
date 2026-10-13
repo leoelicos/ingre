@@ -1,3 +1,4 @@
+import { singleResult } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { UserInput } from '../../types'
@@ -24,14 +25,16 @@ export const LOGIN = gql`
 
 interface ContextValue {
   headers: Record<string, string>
-  dataSources: any
+  dataSources: unknown
   // user: User //! TODO: prevent login if already logged in
 }
 
 const createTestServer = () =>
   new ApolloServer<ContextValue>({ typeDefs, resolvers })
 
-jest.mock('../../../utils/auth', () => ({ signToken: (e: unknown) => mockSignToken(e) }))
+jest.mock('../../../utils/auth', () => ({
+  signToken: (e: unknown) => mockSignToken(e)
+}))
 
 let testServer = createTestServer()
 
@@ -79,15 +82,10 @@ describe('login', () => {
       contextValue
     )
 
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect((data as any)?.login).toStrictEqual({
+    expect(data?.login).toStrictEqual({
       user: { _id: mockUser._id },
       token: mockToken
     })
@@ -109,15 +107,10 @@ describe('login', () => {
       },
       contextValue
     )
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
-    expect((errors as { message: string }[])[0].message).toBe('Incorrect credentials')
-    expect((data as any)?.login).toBeNull()
+    expect(errors?.[0].message).toBe('Incorrect credentials')
+    expect(data?.login).toBeNull()
     expect(mockSignToken).not.toHaveBeenCalled()
   })
 
@@ -132,11 +125,10 @@ describe('login', () => {
       },
       contextValue
     )
-    const { errors, data }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
-      JSON.parse(JSON.stringify(result.body))['singleResult']
+    const { errors, data } = singleResult(result)
 
-    expect((errors as { message: string }[])[0].message).toBe('Unexpected error value: null')
-    expect((data as any)?.login).toBeNull()
+    expect(errors?.[0].message).toBe('Unexpected error value: null')
+    expect(data?.login).toBeNull()
     expect(mockSignToken).not.toHaveBeenCalled()
   })
 })

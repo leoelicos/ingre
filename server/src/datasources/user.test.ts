@@ -22,7 +22,7 @@ const mockInput: UserInput = {
 describe('userApi', () => {
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_user')
+    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_user`)
     await categoryApi.deleteAllCategories()
     await ingredientApi.deleteAllIngredients()
     await recipeApi.deleteAllRecipes()
@@ -64,7 +64,7 @@ describe('userApi', () => {
     findByIdSpy.mockReset()
     findByIdSpy.mockRestore()
   })
-  it("addRecipeToUser saves recipes, addRecipeToUser removes recipes, and the following API's also return saved recipes: getUserSavedRecipes, findOneUserById, findOneUser", async () => {
+  it('addRecipeToUser saves recipes, addRecipeToUser removes recipes, and the following APIs also return saved recipes: getUserSavedRecipes, findOneUserById, findOneUser', async () => {
     // create a mock user
     const user = await userApi.createUser(mockInput)
     if (!user) return
@@ -255,10 +255,13 @@ describe('userApi', () => {
   })
 })
 
-  it('checkUserPassword throws on internal error', async () => {
-    const User = require('../models/User').User
-    jest.spyOn(User, 'findOne').mockRejectedValueOnce(new Error('db error'))
-    await expect(
-      userApi.checkUserPassword({ email: mockInput.email, password: mockInput.password })
-    ).rejects.toThrow('checkUserPassword error')
-  })
+it('checkUserPassword throws on internal error', async () => {
+  const User = require('../models/User').User
+  jest.spyOn(User, 'findOne').mockRejectedValueOnce(new Error('db error'))
+  await expect(
+    userApi.checkUserPassword({
+      email: mockInput.email,
+      password: mockInput.password
+    })
+  ).rejects.toThrow('checkUserPassword error')
+})

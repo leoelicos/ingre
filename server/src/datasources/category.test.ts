@@ -21,7 +21,7 @@ const mockCategoryVegetable = {
 describe('categoryApi', () => {
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_category')
+    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_category`)
     await categoryApi.deleteAllCategories()
     await ingredientApi.deleteAllIngredients()
     await recipeApi.deleteAllRecipes()

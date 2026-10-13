@@ -1,17 +1,19 @@
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
-import { AuthenticatedRequest, MyContext } from '../schemas/types'
+import { User } from '../schemas/types'
 import { Types } from 'mongoose'
 import { UserSchema } from '../models/User'
 
 dotenv.config()
 const expiration = '1h'
 
-export const authMiddleware = ({
+type AuthRequest = { headers: { authorization?: string }; user?: User }
+
+export const authMiddleware = <R extends AuthRequest>({
   req
 }: {
-  req: AuthenticatedRequest
-}): MyContext => {
+  req: R
+}): R => {
   try {
     const secret = process.env.HEROKU_JWT_SECRET || process.env.JWT_SECRET
     if (!secret) {

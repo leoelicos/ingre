@@ -1,4 +1,4 @@
-import type { User } from '../../../schemas/types'
+import { singleResult } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { UserInput } from '../../types'
@@ -36,8 +36,8 @@ export const GET_USER = gql`
 
 interface ContextValue {
   headers: Record<string, string>
-  dataSources: any
-  user: User
+  dataSources: unknown
+  user?: object
 }
 
 const createTestServer = () =>
@@ -66,18 +66,13 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_USER },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
 
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect( (data as any).getUser).toStrictEqual(mockUser)
+    expect(data?.getUser).toStrictEqual(mockUser)
   })
 
   it('should throw an error if context user is null', async () => {
@@ -85,17 +80,12 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_USER },
-      { contextValue: { ...contextValue, user: undefined as unknown as User } }
+      { contextValue: { ...contextValue, user: undefined } }
     )
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
-    expect((errors as { message: string }[])[0].message).toBe('Not logged in!')
-    expect( (data as any).getUser).toBeNull()
+    expect(errors?.[0].message).toBe('Not logged in!')
+    expect(data?.getUser).toBeNull()
   })
 
   it('should throw an error if context user has no _id', async () => {
@@ -103,16 +93,11 @@ describe('getUser', () => {
 
     const result = await testServer.executeOperation(
       { query: GET_USER },
-      { contextValue: { ...contextValue, user: {} as User } }
+      { contextValue: { ...contextValue, user: {} } }
     )
-    const {
-      errors,
-      data = {}
-    }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } = JSON.parse(
-      JSON.stringify(result.body)
-    )['singleResult']
+    const { errors, data = {} } = singleResult(result)
 
-    expect((errors as { message: string }[])[0].message).toBe('Not logged in!')
-    expect( (data as any).getUser).toBeNull()
+    expect(errors?.[0].message).toBe('Not logged in!')
+    expect(data?.getUser).toBeNull()
   })
 })

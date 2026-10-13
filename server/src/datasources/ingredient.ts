@@ -16,7 +16,7 @@ export class IngredientApi {
     quantity: number
     measure: string
     category: Types.ObjectId
-  }): Promise<CreatedIngredient | null> => {
+  }): Promise<CreatedIngredient> => {
     try {
       const ingredient = await Ingredient.create({
         name,
@@ -27,6 +27,7 @@ export class IngredientApi {
       return await Ingredient.findById(ingredient._id)
         .select('-__v')
         .populate({ path: 'category' })
+        .orFail()
     } catch (error) {
       throw new Error('could not create ingredient')
     }

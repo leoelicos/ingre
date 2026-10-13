@@ -17,7 +17,7 @@ export const checkout = async (
       productName: 'ingré PRO',
       productDescription: 'Access instructions to cook each recipe',
       productImages: [
-        `https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc`
+        'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc'
       ],
       productCost: 500,
       productCurrency: 'usd',

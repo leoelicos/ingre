@@ -13,7 +13,7 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
-export default [...compat.extends("prettier"), {
+export default [{ ignores: ["coverage/**", "node_modules/**"] }, ...compat.extends("prettier"), {
     files: ["src/**/*.ts"],
     plugins: {
         "@typescript-eslint": tsPlugin,

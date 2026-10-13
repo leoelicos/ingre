@@ -1,4 +1,4 @@
-import type { User } from '../../../schemas/types'
+import { singleResult } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -55,8 +55,8 @@ const UPDATE_RECIPE = gql`
 
 interface ContextValue {
   headers: Record<string, string>
-  dataSources: any
-  user: User
+  dataSources: unknown
+  user?: object
 }
 
 const createTestServer = () =>
@@ -106,12 +106,11 @@ describe('updateRecipe', () => {
   it('updates a recipe', async () => {
     const result = await testServer.executeOperation(
       { query: UPDATE_RECIPE, variables: mockUpdateRecipeInput },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
-    const response2: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
-      JSON.parse(JSON.stringify(result.body))['singleResult']
+    const response2 = singleResult(result)
     expect(response2.errors).toBeUndefined()
-    expect(response2.data!.updateRecipe).toStrictEqual(mockUpdatedRecipe)
+    expect(response2.data?.updateRecipe).toStrictEqual(mockUpdatedRecipe)
   })
 
   it('handles updateRecipe error', async () => {
@@ -120,10 +119,9 @@ describe('updateRecipe', () => {
     })
     const result = await testServer.executeOperation(
       { query: UPDATE_RECIPE, variables: mockUpdateRecipeInput },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
-    const response2: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
-      JSON.parse(JSON.stringify(result.body))['singleResult']
+    const response2 = singleResult(result)
     expect(response2.errors).toStrictEqual([
       {
         extensions: { code: 'INTERNAL_SERVER_ERROR' },
@@ -132,16 +130,15 @@ describe('updateRecipe', () => {
         path: ['updateRecipe']
       }
     ])
-    expect(response2.data!.updateRecipe).toBeNull()
+    expect(response2.data?.updateRecipe).toBeNull()
   })
 
   it('should throw an error if context user is null', async () => {
     const result = await testServer.executeOperation(
       { query: UPDATE_RECIPE, variables: mockUpdateRecipeInput },
-      { contextValue: { ...contextValue, user: undefined as unknown as User } }
+      { contextValue: { ...contextValue, user: undefined } }
     )
-    const { errors }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
-      JSON.parse(JSON.stringify(result.body))['singleResult']
-    expect((errors as { message: string }[])[0].message).toBe('Not logged in!')
+    const { errors } = singleResult(result)
+    expect(errors?.[0].message).toBe('Not logged in!')
   })
 })

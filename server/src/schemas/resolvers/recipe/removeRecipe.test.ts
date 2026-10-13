@@ -1,4 +1,4 @@
-import type { User } from '../../../schemas/types'
+import { singleResult } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { typeDefs } from '../../typeDefs'
@@ -26,8 +26,8 @@ export const REMOVE_RECIPE = gql`
 
 interface ContextValue {
   headers: Record<string, string>
-  dataSources: any
-  user: User
+  dataSources: unknown
+  user?: object
 }
 
 const createTestServer = () =>
@@ -57,10 +57,9 @@ describe('removeRecipe', () => {
   it('should call deleteRecipe', async () => {
     const result = await testServer.executeOperation(
       { query: REMOVE_RECIPE, variables: mockRemoveRecipeInput },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
-    const { errors }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
-      JSON.parse(JSON.stringify(result.body))['singleResult']
+    const { errors } = singleResult(result)
     expect(errors).toBeUndefined()
     expect(mockDeleteRecipe).toHaveBeenCalledWith({
       recipeId: mockRemoveRecipeInput.recipeId
@@ -77,11 +76,10 @@ describe('removeRecipe', () => {
     })
     const result = await testServer.executeOperation(
       { query: REMOVE_RECIPE, variables: mockRemoveRecipeInput },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
-    const { errors }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
-      JSON.parse(JSON.stringify(result.body))['singleResult']
-    expect((errors as { message: string }[])[0].message).toBe('delete recipe error')
+    const { errors } = singleResult(result)
+    expect(errors?.[0].message).toBe('delete recipe error')
   })
 
   it('should throw error when removeRecipeFromUser fails', async () => {
@@ -90,20 +88,18 @@ describe('removeRecipe', () => {
     })
     const result = await testServer.executeOperation(
       { query: REMOVE_RECIPE, variables: mockRemoveRecipeInput },
-      { contextValue: contextValue as any }
+      { contextValue }
     )
-    const { errors }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
-      JSON.parse(JSON.stringify(result.body))['singleResult']
-    expect((errors as { message: string }[])[0].message).toBe('remove recipe from user error')
+    const { errors } = singleResult(result)
+    expect(errors?.[0].message).toBe('remove recipe from user error')
   })
 
   it('should throw an error if context user is null', async () => {
     const result = await testServer.executeOperation(
       { query: REMOVE_RECIPE, variables: mockRemoveRecipeInput },
-      { contextValue: { ...contextValue, user: undefined as unknown as User } }
+      { contextValue: { ...contextValue, user: undefined } }
     )
-    const { errors }: { errors: unknown | undefined; data: { [key: string]: unknown } | undefined } =
-      JSON.parse(JSON.stringify(result.body))['singleResult']
-    expect((errors as { message: string }[])[0].message).toBe('Not logged in!')
+    const { errors } = singleResult(result)
+    expect(errors?.[0].message).toBe('Not logged in!')
   })
 })

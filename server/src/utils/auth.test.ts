@@ -6,7 +6,9 @@ import jwt from 'jsonwebtoken'
 import { authMiddleware, signToken } from './auth'
 import mongoose from 'mongoose'
 import { User } from '../models/User'
-import { AuthenticatedRequest } from '../schemas/types'
+import type { User as ContextUser } from '../schemas/types'
+
+type TestRequest = { headers: { authorization?: string }; user?: ContextUser }
 import { CategoryApi } from '../datasources/category'
 import { IngredientApi } from '../datasources/ingredient'
 import { RecipeApi } from '../datasources/recipe'
@@ -29,7 +31,7 @@ describe('signToken', () => {
   const ORIGINAL_ENV = process.env
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_category')
+    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_category`)
     await categoryApi.deleteAllCategories()
     await ingredientApi.deleteAllIngredients()
     await recipeApi.deleteAllRecipes()
@@ -48,7 +50,8 @@ describe('signToken', () => {
     const token = signToken(user)
     const decoded = jwt.verify(token, mockSecret)
     expect(decoded).toHaveProperty('data')
-    expect((decoded as { data: unknown }).data).toMatchObject({
+    if (typeof decoded === 'string') throw new Error('expected a JWT payload')
+    expect(decoded.data).toMatchObject({
       _id: user._id.toString(),
       firstName: user.firstName,
       lastName: user.lastName,
@@ -65,7 +68,8 @@ describe('signToken', () => {
       process.env.JWT_SECRET = undefined
       signToken(user)
     } catch (error) {
-      const { message } = error as Error
+      if (!(error instanceof Error)) throw error
+      const { message } = error
       expect(message).toStrictEqual('no secret')
     }
   })
@@ -79,7 +83,8 @@ describe('signToken', () => {
     try {
       signToken(user)
     } catch (error) {
-      const { message } = error as Error
+      if (!(error instanceof Error)) throw error
+      const { message } = error
       expect(message).toStrictEqual('mocked sign error')
     }
     signSpy.mockReset()
@@ -91,7 +96,7 @@ describe('authMiddleware', () => {
   const ORIGINAL_ENV = process.env
   beforeEach(async () => {
     mongoose.set('strictQuery', false)
-    await mongoose.connect('mongodb://127.0.0.1:27017/test_ingre_category')
+    await mongoose.connect(`${process.env.MONGO_TEST_URI}test_ingre_category`)
     await categoryApi.deleteAllCategories()
     await ingredientApi.deleteAllIngredients()
     await recipeApi.deleteAllRecipes()
@@ -114,9 +119,9 @@ describe('authMiddleware', () => {
     const token = jwt.sign({ data: user }, mockSecret, {
       expiresIn: mockExpiration
     })
-    const req = {
+    const req: TestRequest = {
       headers: { authorization: `Bearer ${token}` }
-    } as AuthenticatedRequest
+    }
 
     const result = authMiddleware({ req })
 
@@ -137,7 +142,7 @@ describe('authMiddleware', () => {
   })
 
   it('should throw an error if token is missing', async () => {
-    const req = { headers: {} } as AuthenticatedRequest
+    const req: TestRequest = { headers: {} }
 
     const result = authMiddleware({ req })
 
@@ -145,16 +150,16 @@ describe('authMiddleware', () => {
   })
 
   it('should return request without user if secret is missing', async () => {
-    const req = { headers: {} } as AuthenticatedRequest
+    const req: TestRequest = { headers: {} }
     process.env.HEROKU_JWT_SECRET = undefined
     process.env.JWT_SECRET = undefined
     expect(authMiddleware({ req }).user).toBeUndefined()
   })
 
   it('should throw an error if token is invalid', () => {
-    const req = {
+    const req: TestRequest = {
       headers: { authorization: 'Bearer invalidtoken' }
-    } as AuthenticatedRequest
+    }
     const result = authMiddleware({ req })
     expect(result.user).toBeUndefined()
   })

@@ -7,13 +7,9 @@ let mongo: MongoMemoryServer
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create()
   const uri = mongo.getUri()
-  
-  // Patch mongoose.connect to use the in-memory server
-  const originalConnect = mongoose.connect.bind(mongoose)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mongoose.connect = (async (_url?: string, options?: mongoose.ConnectOptions) => {
-    return originalConnect(uri, options)
-  }) as any
+
+  // tests connect with `${process.env.MONGO_TEST_URI}<db name>`
+  process.env.MONGO_TEST_URI = uri
 })
 
 afterAll(async () => {

@@ -103,6 +103,7 @@ export class RecipeApi {
         path: 'ingredients',
         populate: { path: 'category' }
       })
+      .orFail()
   }
 
   public getRecipe = async (_id: Types.ObjectId) => {
