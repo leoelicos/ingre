@@ -1,45 +1,72 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { MemoryRouter } from 'react-router-dom'
 import Home from '../Home'
+import { AuthProvider } from '../../../utils/auth/AuthContext'
+import { StoreProvider } from '../../../utils/state/GlobalState'
+import { PEOPLE_KEY } from '../../../utils/storage/people'
 
-const mockHome = {
-  loggedIn: true,
-  firstName: 'Test',
-  loadingRecipes: false,
-  libraryRecipes: [],
-  handleRefresh: jest.fn()
-}
+const renderHome = () =>
+  render(
+    <MockedProvider mocks={[]}>
+      <MemoryRouter>
+        <AuthProvider>
+          <StoreProvider>
+            <Home />
+          </StoreProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    </MockedProvider>
+  )
 
-jest.mock('../useHome', () => ({
-  useHome: () => mockHome
-}))
+const cardTitles = () =>
+  screen
+    .getAllByRole('heading', { level: 3 })
+    .map((heading) => heading.textContent)
 
-jest.mock(
-  '../../../components/Widgets/RecipeCard/RecipeCardContainer',
-  () => () => <div data-testid="recipe-cards" />
-)
+const search = () =>
+  screen.getByPlaceholderText("What's on the shelf? e.g. apples")
 
 describe('Home', () => {
-  it('renders welcome message when logged in', () => {
-    mockHome.loggedIn = true
-    mockHome.loadingRecipes = false
-    mockHome.firstName = 'Test'
-    render(<Home />)
-    expect(screen.getByText(/welcome test/i)).toBeInTheDocument()
-    expect(screen.getByTestId('recipe-cards')).toBeInTheDocument()
+  beforeEach(() => localStorage.clear())
+
+  it('lists every library recipe as a card with its local name', () => {
+    renderHome()
+    expect(cardTitles()).toContain('Shaking beef')
+    expect(screen.getByText('bò lúc lắc')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /^Save / })).toHaveLength(
+      cardTitles().length
+    )
   })
 
-  it('hides the welcome message when logged out', () => {
-    mockHome.loggedIn = false
-    mockHome.loadingRecipes = false
-    render(<Home />)
-    expect(screen.queryByText(/welcome/i)).not.toBeInTheDocument()
+  it('searches the library as you type', () => {
+    renderHome()
+    fireEvent.change(search(), { target: { value: 'lemongrass' } })
+    expect(cardTitles().every((t) => t?.startsWith('Lemongrass'))).toBe(true)
+    fireEvent.change(search(), { target: { value: 'zzzz' } })
+    expect(screen.getByText('No recipes')).toBeInTheDocument()
   })
 
-  it('shows a loading message', () => {
-    mockHome.loggedIn = true
-    mockHome.loadingRecipes = true
-    render(<Home />)
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+  it('filters by every selected tag chip', () => {
+    renderHome()
+    const chips = within(screen.getByRole('list', { name: 'Filter by tag' }))
+    const indian = chips.getByRole('button', { name: 'Indian' })
+    fireEvent.click(indian)
+    expect(indian).toHaveAttribute('aria-pressed', 'true')
+    const indianCount = cardTitles().length
+    fireEvent.click(chips.getByRole('button', { name: 'vegan' }))
+    expect(cardTitles().length).toBeLessThan(indianCount)
+    fireEvent.click(indian)
+    expect(indian).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('selects people in an accessible radio group, default 2, persisted', () => {
+    renderHome()
+    const group = within(screen.getByRole('radiogroup', { name: 'People' }))
+    expect(group.getByRole('radio', { name: '2' })).toBeChecked()
+    fireEvent.click(group.getByRole('radio', { name: '1' }))
+    expect(group.getByRole('radio', { name: '1' })).toBeChecked()
+    expect(localStorage.getItem(PEOPLE_KEY)).toBe('1')
   })
 })

@@ -1,77 +1,69 @@
 import '@testing-library/jest-dom'
 import { render, screen, fireEvent } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import type { ComponentProps } from 'react'
 import { SaveButton } from '../SaveButton'
 import { recipe } from '../../../../../test/fixtures'
 
-const mockNavigate = jest.fn()
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockNavigate
-}))
-
-jest.mock('../../../../../lib/icon/Icon', () => ({
-  IngreIconSpin: () => <div data-testid="spinner" />
-}))
+const renderButton = (props: Partial<ComponentProps<typeof SaveButton>>) => {
+  const handleSave = jest.fn()
+  render(
+    <MemoryRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <SaveButton
+              recipeName="Pasta"
+              handleSave={handleSave}
+              savedRecipes={[]}
+              saveRecipeLoading={false}
+              libraryId="ed1"
+              loggedIn={true}
+              {...props}
+            />
+          }
+        />
+        <Route
+          path="/login"
+          element={<p>Login page</p>}
+        />
+      </Routes>
+    </MemoryRouter>
+  )
+  return { handleSave }
+}
 
 describe('SaveButton', () => {
-  const defaultProps = {
-    handleSave: jest.fn(),
-    savedRecipes: [],
-    saveRecipeLoading: false,
-    libraryId: 'ed1',
-    loggedIn: true
-  }
-
-  beforeEach(() => {
-    jest.clearAllMocks()
+  it('is an unpressed, labelled heart that saves when logged in', () => {
+    const { handleSave } = renderButton({})
+    const button = screen.getByRole('button', { name: 'Save Pasta' })
+    expect(button).toHaveAttribute('aria-pressed', 'false')
+    expect(button).toHaveAttribute('aria-busy', 'false')
+    expect(button.querySelector('svg')).toHaveAttribute('fill', 'none')
+    fireEvent.click(button)
+    expect(handleSave).toHaveBeenCalled()
   })
 
-  it('renders save button when not loading and not saved', () => {
-    render(
-      <MemoryRouter>
-        <SaveButton {...defaultProps} />
-      </MemoryRouter>
-    )
-    expect(screen.getByRole('button')).toHaveTextContent('Save')
-    expect(screen.getByRole('button')).not.toBeDisabled()
+  it('is busy and disabled while saving', () => {
+    renderButton({ saveRecipeLoading: true })
+    const button = screen.getByRole('button', { name: 'Save Pasta' })
+    expect(button).toHaveAttribute('aria-busy', 'true')
+    expect(button).toBeDisabled()
   })
 
-  it('shows spinner when loading', () => {
-    render(
-      <MemoryRouter>
-        <SaveButton
-          {...defaultProps}
-          saveRecipeLoading={true}
-        />
-      </MemoryRouter>
-    )
-    expect(screen.getByTestId('spinner')).toBeInTheDocument()
+  it('is pressed, filled and disabled once saved', () => {
+    renderButton({ savedRecipes: [recipe({ libraryId: 'ed1' })] })
+    const button = screen.getByRole('button', { name: 'Saved Pasta' })
+    expect(button).toHaveAttribute('aria-pressed', 'true')
+    expect(button.querySelector('svg')).toHaveAttribute('fill', 'currentColor')
+    expect(button).toBeDisabled()
   })
 
-  it('disables button when recipe is already saved', () => {
-    render(
-      <MemoryRouter>
-        <SaveButton
-          {...defaultProps}
-          savedRecipes={[recipe({ libraryId: 'ed1' })]}
-        />
-      </MemoryRouter>
-    )
-    expect(screen.getByRole('button')).toBeDisabled()
-  })
-
-  it('navigates to login when not logged in and clicked', () => {
-    render(
-      <MemoryRouter>
-        <SaveButton
-          {...defaultProps}
-          loggedIn={false}
-        />
-      </MemoryRouter>
-    )
-    fireEvent.click(screen.getByRole('button'))
-    expect(mockNavigate).toHaveBeenCalledWith('/login')
-    expect(defaultProps.handleSave).not.toHaveBeenCalled()
+  it('goes to login when logged out', () => {
+    const { handleSave } = renderButton({ loggedIn: false })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Pasta' }))
+    expect(screen.getByText('Login page')).toBeInTheDocument()
+    expect(handleSave).not.toHaveBeenCalled()
   })
 })

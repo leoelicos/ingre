@@ -8,9 +8,7 @@ export interface Store {
   modalVisible: boolean
   leftSidebarCollapsed: boolean
   searchRecipes: ClientRecipe[]
-  homeRecipes: ClientRecipe[]
   savedRecipes: ClientRecipe[]
-  homeDidMount: boolean
   savedIngredients: unknown[]
   savedDidMount: boolean
   ingredientsDidGenerate: boolean
@@ -23,9 +21,7 @@ const initialState: Store = {
   modalVisible: false,
   leftSidebarCollapsed: false,
   searchRecipes: [],
-  homeRecipes: [],
   savedRecipes: [],
-  homeDidMount: false,
   savedIngredients: [],
   savedDidMount: false,
   ingredientsDidGenerate: false,

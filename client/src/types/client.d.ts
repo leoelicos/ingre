@@ -9,6 +9,8 @@ export interface ClientRecipe {
   /** id in the local recipe library, when the recipe came from it */
   libraryId?: string
   ingredients: ClientIngredient[]
+  /** library tags (cuisine, meal, diet); empty for server recipes */
+  tags: string[]
 }
 
 export interface ClientIngredient {

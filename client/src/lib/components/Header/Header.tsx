@@ -12,8 +12,11 @@ export const Header: React.FC<{
   loggedIn: boolean
 }> = ({ Logo, logoText, LogoCollapsed, links, loggedIn }) => {
   return (
-    <Navbar expand="lg">
-      <Container>
+    <Navbar
+      expand="lg"
+      className="ingre-navbar"
+    >
+      <Container className="ingre-page">
         <Brand>
           <Link
             to="/"
@@ -37,7 +40,7 @@ export const Header: React.FC<{
           <LogoCollapsed />
         </Toggle>
         <Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto">
+          <Nav className="ms-auto align-items-center">
             {links.map(({ to, label }) => (
               <Text key={to}>
                 <Link

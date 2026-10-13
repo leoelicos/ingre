@@ -6,6 +6,11 @@ export const AuthButton = ({ loggedIn }: { loggedIn: boolean }) => {
   return loggedIn ? (
     <Button onClick={handleLogout}>Log&nbsp;out</Button>
   ) : (
-    <Link to="/login">Log&nbsp;in</Link>
+    <Link
+      to="/login"
+      className="ingre-btn-outline"
+    >
+      Log&nbsp;in
+    </Link>
   )
 }

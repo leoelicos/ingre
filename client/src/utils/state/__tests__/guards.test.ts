@@ -4,7 +4,7 @@ import {
   savedIngredientsFromUnknown,
   toSavedIngredient
 } from '../guards'
-import { recipe, ingredient } from '../../../test/fixtures'
+import { recipe, ingredient, omit } from '../../../test/fixtures'
 
 describe('recipe guards', () => {
   it('accepts a recipe and a list of recipes', () => {
@@ -81,5 +81,13 @@ describe('savedIngredientsFromUnknown', () => {
     expect(toSavedIngredient({ ...valid, recipe: 1 })).toBeNull()
     expect(toSavedIngredient({ ...valid, recipeId: 1 })).toBeNull()
     expect(savedIngredientsFromUnknown('nope')).toEqual([])
+  })
+})
+
+describe('isClientRecipe tags', () => {
+  it('requires a string array of tags', () => {
+    expect(isClientRecipe(recipe({ tags: ['dinner'] }))).toBe(true)
+    expect(isClientRecipe({ ...recipe(), tags: [1] })).toBe(false)
+    expect(isClientRecipe(omit(recipe(), 'tags'))).toBe(false)
   })
 })

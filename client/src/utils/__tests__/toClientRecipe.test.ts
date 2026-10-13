@@ -33,7 +33,8 @@ describe('toClientRecipe', () => {
   it('keeps present optional fields', () => {
     expect(toClientRecipe(recipe)).toEqual({
       ...recipe,
-      ingredients: [toClientIngredient(ingredient)]
+      ingredients: [toClientIngredient(ingredient)],
+      tags: []
     })
   })
   it('omits null libraryId and null/empty instructions', () => {

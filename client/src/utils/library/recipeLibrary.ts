@@ -23,6 +23,7 @@ export function toClientRecipe(
     portions: recipe.portions,
     picture_url: recipe.picture_url || PLACEHOLDER_PICTURE,
     libraryId: recipe.id,
+    tags: recipe.tags,
     ingredients: recipe.ingredients.map((ri) => {
       const item = byId.get(ri.ingredientId)
       return {

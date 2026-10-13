@@ -1,17 +1,17 @@
 import '@testing-library/jest-dom'
 import { render, screen, act } from '@testing-library/react'
 import { StoreProvider, useStoreContext } from '../GlobalState'
-import { FLAG_HOME_MOUNTED } from '../actions'
+import { FLAG_SAVED_MOUNTED } from '../actions'
 
 function Probe() {
   const [state, dispatch] = useStoreContext()
   return (
     <button
       onClick={() => {
-        dispatch({ type: FLAG_HOME_MOUNTED })
+        dispatch({ type: FLAG_SAVED_MOUNTED })
       }}
     >
-      {String(state.homeDidMount)}
+      {String(state.savedDidMount)}
     </button>
   )
 }

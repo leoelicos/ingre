@@ -1,48 +1,32 @@
-import type { ClientRecipe } from '../../../types/client'
-import type { CSSProperties } from 'react'
 import type { FC } from 'react'
+import type { ClientRecipe } from '../../../types/client'
 import { useAuthContext } from '../../../utils/auth/AuthContext'
 import RecipeCard from './RecipeCard'
+import { recipeKey } from './recipeCardHelpers'
+import './recipeCard.css'
 
-type RecipeCardContainerType = FC<{
+const RecipeCardContainer: FC<{
   results: ClientRecipe[]
   loading: boolean
   onSavedPage: boolean
-}>
-
-const RecipeCardContainerStyle: CSSProperties = {
-  width: '100%'
-}
-const RecipeCardContainer: RecipeCardContainerType = ({
-  results,
-  loading,
-  onSavedPage
-}) => {
+}> = ({ results, loading, onSavedPage }) => {
   const [auth] = useAuthContext()
   const pro = auth.profile?.data.pro || false
+  if (loading) return <p className="recipe-grid__status">Loading recipes…</p>
+  if (results.length === 0)
+    return <p className="recipe-grid__status">No recipes</p>
   return (
-    <table style={RecipeCardContainerStyle}>
-      {loading ? (
-        <tr>
-          <td>Loading saved recipes…</td>
-        </tr>
-      ) : !results || results.length === 0 ? (
-        <tr>
-          <td>No recipes</td>
-        </tr>
-      ) : (
-        results.map((recipe: ClientRecipe, idx: number) => {
-          return (
-            <RecipeCard
-              key={idx}
-              recipe={recipe}
-              onSavedPage={onSavedPage}
-              pro={pro}
-            />
-          )
-        })
-      )}
-    </table>
+    <ul className="recipe-grid">
+      {results.map((recipe) => (
+        <li key={recipeKey(recipe)}>
+          <RecipeCard
+            recipe={recipe}
+            onSavedPage={onSavedPage}
+            pro={pro}
+          />
+        </li>
+      ))}
+    </ul>
   )
 }
 

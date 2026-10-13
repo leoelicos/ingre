@@ -31,6 +31,7 @@ export const toClientRecipe = ({
   portions,
   picture_url,
   ingredients: ingredients.map(toClientIngredient),
+  tags: [],
   ...(libraryId === null ? {} : { libraryId }),
   ...(instructions ? { instructions } : {})
 })

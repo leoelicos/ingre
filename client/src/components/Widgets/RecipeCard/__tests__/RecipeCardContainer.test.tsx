@@ -9,9 +9,7 @@ jest.mock('../../../../utils/auth/AuthContext', () => ({
 }))
 
 jest.mock('../RecipeCard', () => ({ recipe }: { recipe: { name: string } }) => (
-  <tr data-testid="card">
-    <td>{recipe.name}</td>
-  </tr>
+  <div data-testid="card">{recipe.name}</div>
 ))
 
 describe('RecipeCardContainer', () => {

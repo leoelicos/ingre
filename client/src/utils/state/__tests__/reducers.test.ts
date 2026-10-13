@@ -1,11 +1,9 @@
 import { reducer, useGlobalReducer } from '../reducers'
 import {
   ADD_SAVED_RECIPE,
-  FLAG_HOME_MOUNTED,
   FLAG_INGREDIENTS_GENERATED,
   FLAG_SAVED_MOUNTED,
   REMOVE_SAVED_RECIPE,
-  UPDATE_HOME_RECIPES,
   UPDATE_SAVED_INGREDIENTS,
   UPDATE_SAVED_RECIPES,
   UPDATE_SEARCH_RECIPES,
@@ -19,9 +17,7 @@ const initialState: Store = {
   modalVisible: false,
   leftSidebarCollapsed: false,
   searchRecipes: [],
-  homeRecipes: [],
   savedRecipes: [],
-  homeDidMount: false,
   savedIngredients: [],
   savedDidMount: false,
   ingredientsDidGenerate: false,
@@ -40,13 +36,6 @@ describe('reducer', () => {
         type: UPDATE_SEARCH_RECIPES,
         data: [{ name: 'nope' }]
       }).searchRecipes
-    ).toEqual([])
-    expect(
-      reducer(initialState, { type: UPDATE_HOME_RECIPES, data: recipes })
-        .homeRecipes
-    ).toEqual(recipes)
-    expect(
-      reducer(initialState, { type: UPDATE_HOME_RECIPES }).homeRecipes
     ).toEqual([])
   })
 
@@ -116,9 +105,6 @@ describe('reducer', () => {
   })
 
   it('flags pages as mounted or generated', () => {
-    expect(
-      reducer(initialState, { type: FLAG_HOME_MOUNTED }).homeDidMount
-    ).toBe(true)
     expect(
       reducer(initialState, { type: FLAG_SAVED_MOUNTED }).savedDidMount
     ).toBe(true)

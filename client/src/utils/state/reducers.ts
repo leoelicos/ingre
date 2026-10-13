@@ -4,13 +4,11 @@ import { isClientRecipe, isClientRecipeList } from './guards'
 
 import {
   UPDATE_SEARCH_RECIPES,
-  UPDATE_HOME_RECIPES,
   UPDATE_SAVED_RECIPES,
   UPDATE_SAVED_INGREDIENTS,
   UPDATE_TAP_OFF,
   ADD_SAVED_RECIPE,
   REMOVE_SAVED_RECIPE,
-  FLAG_HOME_MOUNTED,
   FLAG_SAVED_MOUNTED,
   FLAG_INGREDIENTS_GENERATED
 } from './actions'
@@ -22,10 +20,6 @@ export const reducer = (state: Store, action: StoreAction): Store => {
     case UPDATE_SEARCH_RECIPES:
       if (!isClientRecipeList(action.data)) return state
       return { ...state, searchRecipes: action.data }
-
-    case UPDATE_HOME_RECIPES:
-      if (!isClientRecipeList(action.data)) return state
-      return { ...state, homeRecipes: action.data }
 
     case UPDATE_SAVED_RECIPES:
       if (action.data === undefined) return { ...state, savedRecipes: [] }
@@ -61,9 +55,6 @@ export const reducer = (state: Store, action: StoreAction): Store => {
         )
       }
     }
-
-    case FLAG_HOME_MOUNTED:
-      return { ...state, homeDidMount: true }
 
     case FLAG_SAVED_MOUNTED:
       return { ...state, savedDidMount: true }

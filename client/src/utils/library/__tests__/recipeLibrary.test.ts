@@ -101,6 +101,7 @@ describe('toClientRecipe', () => {
       picture_url: 'http://pic.example/chicken-rice.jpg',
       instructions: undefined,
       libraryId: 'hainan-chicken-rice',
+      tags: ['Chinese', 'Malaysian', 'Singaporean', 'dinner'],
       ingredients: [
         {
           _id: undefined,

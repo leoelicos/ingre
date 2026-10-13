@@ -37,8 +37,23 @@
   /* lines */
   --color-border: var(--palette-stone);
 
+  /* meal tints (photo-free card headers) */
+  --color-tint-dinner: #e6f2ea;
+  --color-tint-lunch: #fde8e3;
+  --color-chip-active: var(--color-tint-dinner);
+
+  /* elevation */
+  --shadow-card: 0 2px 8px rgba(43, 43, 43, 0.08);
+
   /* shape */
   --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-pill: 999px;
+
+  /* layout */
+  --layout-max-width: 1100px;
+  --layout-gutter: 16px;
+  --space-nav-gap: 24px;
 }
 
 /* Feed tokens into Bootstrap so its components follow the theme. */

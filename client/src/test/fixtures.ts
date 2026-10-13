@@ -23,6 +23,7 @@ export function recipe(overrides: Partial<ClientRecipe> = {}): ClientRecipe {
     instructions: 'Boil',
     libraryId: 'ed1',
     ingredients: [ingredient()],
+    tags: [],
     ...overrides
   }
 }

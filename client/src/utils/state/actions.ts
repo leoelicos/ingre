@@ -1,9 +1,3 @@
-//? Home page
-//* update home page recipes
-export const UPDATE_HOME_RECIPES = 'UPDATE_HOME_RECIPES'
-//* set to True: Home has mounted once
-export const FLAG_HOME_MOUNTED = 'FLAG_HOME_MOUNTED'
-
 //? Search page
 //* update search page recipes
 export const UPDATE_SEARCH_RECIPES = 'UPDATE_SEARCH_RECIPES'
