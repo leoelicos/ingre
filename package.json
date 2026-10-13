@@ -1,7 +1,6 @@
 {
   "name": "ingre",
   "version": "1.0.0",
-  "proxy": "http://localhost:3001/",
   "description": "Shopping app for the home cook",
   "main": "server/server.ts",
   "scripts": {
@@ -15,9 +14,7 @@
     "type": "git",
     "url": "git+https://github.com/leoelicos/ingre.git"
   },
-  "keywords": [
-    "create-react-app-v4"
-  ],
+  "keywords": [],
   "author": "Leo Wong",
   "license": "MIT",
   "bugs": {

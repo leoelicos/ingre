@@ -71,7 +71,7 @@ export const useRecipeCard = ({
         portions: 1,
         picture_url:
           'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc',
-        edamamId: undefined,
+        libraryId: undefined,
         instructions: undefined,
         ingredients: [defaultIngredient]
       }
@@ -86,10 +86,10 @@ export const useRecipeCard = ({
               recipe.picture_url.length > 0
                 ? recipe.picture_url
                 : defaultRecipe.picture_url,
-            edamamId:
-              recipe.edamamId !== undefined
-                ? recipe.edamamId
-                : defaultRecipe.edamamId,
+            libraryId:
+              recipe.libraryId !== undefined
+                ? recipe.libraryId
+                : defaultRecipe.libraryId,
             instructions:
               recipe.instructions === undefined ||
               recipe.instructions.length === 0
@@ -120,13 +120,13 @@ export const useRecipeCard = ({
         _id = recipe._id
       } else {
         _id = state.savedRecipes.find(
-          (r) => r.edamamId === recipe.edamamId
+          (r) => r.libraryId === recipe.libraryId
         )?._id
       }
       const payload = { variables: { recipeId: _id } }
       const res = await removeRecipe(payload)
       if (!res) throw new Error('Could not save recipe')
-      dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.edamamId }) // this won't work if it doesn't have edamamId
+      dispatch({ type: REMOVE_SAVED_RECIPE, data: recipe.libraryId }) // this won't work if it doesn't have libraryId
     } catch (error) {
       console.error(Error)
     }

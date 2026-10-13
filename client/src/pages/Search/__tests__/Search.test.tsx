@@ -6,8 +6,8 @@ jest.mock('../useSearch', () => ({
   useSearch: () => ({
     searchText: '',
     onSearchChange: jest.fn(),
-    loadingEdamam: false,
-    edamamRecipes: []
+    loadingRecipes: false,
+    libraryRecipes: []
   })
 }))
 

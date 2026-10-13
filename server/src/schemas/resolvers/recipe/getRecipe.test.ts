@@ -22,7 +22,7 @@ export const GET_RECIPE = gql`
         }
       }
       picture_url
-      edamamId
+      libraryId
       instructions
     }
   }
@@ -80,7 +80,7 @@ describe('getRecipe', () => {
     portions: 4,
     ingredients: [],
     picture_url: 'http://example.com/image.jpg',
-    edamamId: 'some-edamam-id',
+    libraryId: 'some-library-id',
     instructions: 'Test instructions'
   }
   // GraphQL responses return _id fields as strings

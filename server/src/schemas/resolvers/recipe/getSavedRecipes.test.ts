@@ -24,7 +24,7 @@ const mockUserSavedRecipes = [
       }
     ],
     picture_url: 'www.duck0.com',
-    edamamId: '4bd3f94346ff2cb493285199f5f06f71',
+    libraryId: '4bd3f94346ff2cb493285199f5f06f71',
     instructions: 'Cook it3'
   },
   {
@@ -44,7 +44,7 @@ const mockUserSavedRecipes = [
       }
     ],
     picture_url: 'www.google.com',
-    edamamId: '4bd3f94346ff2cb493285199f5f06f71',
+    libraryId: '4bd3f94346ff2cb493285199f5f06f71',
     instructions: 'Make it'
   }
 ]
@@ -79,7 +79,7 @@ export const GET_SAVED_RECIPES = gql`
         quantity
       }
       picture_url
-      edamamId
+      libraryId
       instructions
     }
   }

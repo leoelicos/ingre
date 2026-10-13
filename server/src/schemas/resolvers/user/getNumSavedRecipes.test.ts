@@ -75,7 +75,7 @@ describe('getUser', () => {
             }
           ],
           picture_url: 'www.duck4.com',
-          edamamId: '4bd3f94346ff2cb493285199f5f06f71',
+          libraryId: '4bd3f94346ff2cb493285199f5f06f71',
           instructions: 'Cook it3',
           __v: 9,
           id: '67179523a5b4544355ebab56'
@@ -101,7 +101,7 @@ describe('getUser', () => {
             }
           ],
           picture_url: 'www.google.com',
-          edamamId: '4bd3f94346ff2cb493285199f5f06f71',
+          libraryId: '4bd3f94346ff2cb493285199f5f06f71',
           instructions: 'Make it',
           __v: 0,
           id: '675440fe65ec6e62c95f5eaa'

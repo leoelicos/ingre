@@ -104,7 +104,7 @@ export const useCustomiseForm = ({
         picture_url:
           state.customiseRecipe?.picture_url ||
           'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc',
-        edamamId: state.customiseRecipe?.edamamId || '-1'
+        libraryId: state.customiseRecipe?.libraryId || '-1'
       }
 
       //* if already saved, update, otherwise save

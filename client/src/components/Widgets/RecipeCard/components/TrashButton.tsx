@@ -7,14 +7,14 @@ export const TrashButton: FC<{
   removeRecipeLoading: unknown
   handleRemove: () => void
   savedRecipes: ClientRecipe[]
-  edamamId: unknown
-}> = ({ removeRecipeLoading, handleRemove, savedRecipes, edamamId }) => {
+  libraryId: unknown
+}> = ({ removeRecipeLoading, handleRemove, savedRecipes, libraryId }) => {
   const isDisabled = React.useMemo(() => {
     const disabled =
       removeRecipeLoading ||
-      !savedRecipes.some((r: ClientRecipe) => r.edamamId === edamamId)
+      !savedRecipes.some((r: ClientRecipe) => r.libraryId === libraryId)
     return disabled
-  }, [removeRecipeLoading, savedRecipes, edamamId])
+  }, [removeRecipeLoading, savedRecipes, libraryId])
   return removeRecipeLoading ? (
     <IngreIconSpin />
   ) : (

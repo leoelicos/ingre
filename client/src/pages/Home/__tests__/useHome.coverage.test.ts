@@ -2,8 +2,7 @@ import { renderHook, act } from '@testing-library/react'
 import { useHome } from '../useHome'
 
 const mockDispatch = jest.fn()
-const mockQuery = jest.fn()
-const mockFetchEdamam = jest.fn()
+const mockSearchLibrary = jest.fn()
 const mockAuth: {
   loggedIn: boolean
   profile: { data: { firstName: string } } | null
@@ -12,13 +11,6 @@ const mockStore: { homeRecipes: never[]; homeDidMount: boolean } = {
   homeRecipes: [],
   homeDidMount: true
 }
-
-jest.mock('@apollo/client', () => ({
-  useApolloClient: () => ({
-    query: (...args: unknown[]) => mockQuery(...args)
-  }),
-  gql: (s: TemplateStringsArray) => s
-}))
 
 jest.mock('../../../utils/auth/AuthContext', () => ({
   useAuthContext: () => [mockAuth, jest.fn()]
@@ -29,20 +21,16 @@ jest.mock('../../../utils/state/GlobalState', () => ({
 }))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-jest.mock('../../../utils/api/edamam', () => ({
+jest.mock('../../../utils/library/recipeLibrary', () => ({
   __esModule: true,
-  default: (...args: unknown[]) => mockFetchEdamam(...args)
+  default: (...args: unknown[]) => mockSearchLibrary(...args)
 }))
 
 describe('useHome coverage', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
-    mockQuery.mockReset()
-    mockFetchEdamam.mockReset()
-    mockQuery.mockResolvedValue({
-      data: { getApiKey: { appId: 'id', appKey: 'key' } }
-    })
-    mockFetchEdamam.mockResolvedValue([])
+    mockSearchLibrary.mockReset()
+    mockSearchLibrary.mockReturnValue([])
     mockAuth.loggedIn = true
     mockAuth.profile = { data: { firstName: 'Test' } }
     mockStore.homeDidMount = true
@@ -51,7 +39,6 @@ describe('useHome coverage', () => {
   it('uses the profile name and falls back to chef', () => {
     const { result, rerender } = renderHook(() => useHome())
     expect(result.current.firstName).toBe('Test')
-    expect(result.current.loggedIn).toBe(true)
     mockAuth.profile = null
     mockAuth.loggedIn = false
     rerender()
@@ -61,58 +48,40 @@ describe('useHome coverage', () => {
     expect(result.current.firstName).toBe('chef')
   })
 
-  it('refreshes every preset query and stores the hits', async () => {
+  it('maps preset queries to tags and stores the hits', async () => {
     const { result } = renderHook(() => useHome())
-    for (const query of [
-      'vegetarian',
-      'vegan',
-      'balanced',
-      'breakfast',
-      'lunch',
-      'dinner',
-      'yum'
-    ]) {
+    for (const query of ['vegetarian', 'dinner', 'balanced', 'yum']) {
       await act(async () => {
         await result.current.handleRefresh(query)
       })
     }
-    expect(mockFetchEdamam).toHaveBeenCalledWith({
-      search: { health: ['vegetarian'] },
-      appId: 'id',
-      appKey: 'key'
-    })
-    expect(mockFetchEdamam).toHaveBeenCalledWith({
-      search: { q: 'yum' },
-      appId: 'id',
-      appKey: 'key'
-    })
+    expect(mockSearchLibrary).toHaveBeenCalledWith({ tags: ['vegetarian'] })
+    expect(mockSearchLibrary).toHaveBeenCalledWith({ tags: ['dinner'] })
+    expect(mockSearchLibrary).toHaveBeenCalledWith({ tags: [] })
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'UPDATE_HOME_RECIPES',
       data: []
     })
-    expect(result.current.loadingEdamam).toBe(false)
+    expect(result.current.loadingRecipes).toBe(false)
   })
 
-  it('logs and stops loading when credentials are missing or the query throws', async () => {
+  it('logs and stops loading when the library search throws', async () => {
     const error = jest
       .spyOn(console, 'error')
       .mockImplementation(() => undefined)
-    mockStore.homeDidMount = true
     const { result } = renderHook(() => useHome())
-    mockQuery.mockResolvedValueOnce(null)
-    await act(async () => {
-      await result.current.handleRefresh('vegetarian')
+    mockSearchLibrary.mockImplementationOnce(() => {
+      throw new Error('bad data')
     })
-    mockQuery.mockRejectedValueOnce(new Error('down'))
     await act(async () => {
       await result.current.handleRefresh('vegan')
     })
-    expect(result.current.loadingEdamam).toBe(false)
+    expect(result.current.loadingRecipes).toBe(false)
     expect(error).toHaveBeenCalled()
     error.mockRestore()
   })
 
-  it('fetches on first mount and logs a failed first load', async () => {
+  it('loads on first mount and logs a failed first load', async () => {
     const error = jest
       .spyOn(console, 'error')
       .mockImplementation(() => undefined)
@@ -124,19 +93,15 @@ describe('useHome coverage', () => {
       type: 'FLAG_HOME_MOUNTED',
       data: undefined
     })
-    expect(mockFetchEdamam).toHaveBeenCalledWith({
-      search: {},
-      appId: 'id',
-      appKey: 'key'
-    })
+    expect(mockSearchLibrary).toHaveBeenCalledWith({})
 
-    mockFetchEdamam.mockClear()
-    mockQuery.mockRejectedValue(new Error('down'))
+    mockSearchLibrary.mockImplementationOnce(() => {
+      throw new Error('bad data')
+    })
     mockStore.homeDidMount = false
     await act(async () => {
       renderHook(() => useHome())
     })
-    expect(mockFetchEdamam).not.toHaveBeenCalled()
     expect(error).toHaveBeenCalled()
     error.mockRestore()
   })

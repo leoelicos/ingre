@@ -88,7 +88,7 @@ describe('useCustomiseForm coverage', () => {
     mockState.customiseRecipe = recipe({
       _id: 'saved-id',
       picture_url: '',
-      edamamId: undefined
+      libraryId: undefined
     })
     const saveRecipe = jest.fn()
     const updateRecipe = jest.fn()
@@ -108,7 +108,7 @@ describe('useCustomiseForm coverage', () => {
         input: expect.objectContaining({
           name: 'Custom recipe',
           portions: 1,
-          edamamId: '-1'
+          libraryId: '-1'
         })
       }
     })

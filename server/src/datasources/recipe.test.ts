@@ -39,7 +39,7 @@ const mockRecipe = {
   name: 'Test Recipe',
   portions: 4,
   picture_url: 'http://example.com/image.jpg',
-  edamamId: 'some-edamam-id',
+  libraryId: 'some-library-id',
   instructions: 'Test instructions'
 }
 
@@ -89,11 +89,11 @@ describe('recipeApi', () => {
       portions: mockRecipe.portions,
       ingredients: [chicken._id, broccoli._id],
       picture_url: mockRecipe.picture_url,
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions
     })
     expect(result).toMatchObject({
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions,
       name: mockRecipe.name,
       picture_url: mockRecipe.picture_url,
@@ -117,7 +117,7 @@ describe('recipeApi', () => {
       portions: mockRecipe.portions,
       ingredients: [chicken._id],
       picture_url: mockRecipe.picture_url,
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions
     })
     if (!recipe) return
@@ -149,7 +149,7 @@ describe('recipeApi', () => {
       portions: mockRecipe.portions,
       ingredients: [chicken._id],
       picture_url: mockRecipe.picture_url,
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions
     })
     const numRecipes = await recipeApi.getAllRecipes()
@@ -171,7 +171,7 @@ describe('recipeApi', () => {
       portions: mockRecipe.portions,
       ingredients: [chicken._id],
       picture_url: mockRecipe.picture_url,
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions
     })
     await recipeApi.deleteAllRecipes()
@@ -194,7 +194,7 @@ describe('recipeApi', () => {
       portions: mockRecipe.portions,
       ingredients: [chicken._id],
       picture_url: mockRecipe.picture_url,
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions
     }
     const createdRecipe = await recipeApi.createRecipe(payload)
@@ -220,7 +220,7 @@ describe('recipeApi', () => {
       portions: mockRecipe.portions,
       ingredients: [chicken._id],
       picture_url: mockRecipe.picture_url,
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions
     }
     const createdRecipe = await recipeApi.createRecipe(payload)
@@ -347,7 +347,7 @@ describe('recipeApi', () => {
       portions: mockRecipe.portions,
       ingredients: [chicken._id],
       picture_url: mockRecipe.picture_url,
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions
     }
     await recipeApi.createRecipe(payload)
@@ -379,14 +379,14 @@ describe('recipeApi', () => {
       portions: mockRecipe.portions,
       ingredients: [chicken._id],
       picture_url: mockRecipe.picture_url,
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions
     }
     const createdRecipe = await recipeApi.createRecipe(payload)
     if (!createdRecipe) return
     expect(createdRecipe).toStrictEqual(
       expect.objectContaining({
-        edamamId: 'some-edamam-id',
+        libraryId: 'some-library-id',
         ingredients: [
           expect.objectContaining({
             category: expect.objectContaining({
@@ -409,7 +409,7 @@ describe('recipeApi', () => {
       name: 'Test Recipe 2',
       portions: 8,
       picture_url: 'http://example2.com/image2.jpg',
-      edamamId: 'some-edamam-id-2',
+      libraryId: 'some-library-id-2',
       instructions: 'Test instructions 2',
       ingredients: [
         {
@@ -426,7 +426,7 @@ describe('recipeApi', () => {
     })
     expect(result).toStrictEqual(
       expect.objectContaining({
-        edamamId: updatedInput.edamamId,
+        libraryId: updatedInput.libraryId,
         instructions: updatedInput.instructions,
         name: updatedInput.name,
         picture_url: updatedInput.picture_url,
@@ -460,7 +460,7 @@ describe('recipeApi', () => {
       portions: mockRecipe.portions,
       ingredients: [chicken._id],
       picture_url: mockRecipe.picture_url,
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions
     }
     const createdRecipe = await recipeApi.createRecipe(payload)
@@ -477,7 +477,7 @@ describe('recipeApi', () => {
       name: 'Test Recipe 2',
       portions: 8,
       picture_url: 'http://example2.com/image2.jpg',
-      edamamId: 'some-edamam-id-2',
+      libraryId: 'some-library-id-2',
       instructions: 'Test instructions 2',
       ingredients: [
         {

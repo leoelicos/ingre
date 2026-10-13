@@ -19,7 +19,7 @@ export const SAVE_RECIPE = gql`
         }
       }
       picture_url
-      edamamId
+      libraryId
       instructions
     }
   }

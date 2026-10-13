@@ -5,8 +5,8 @@ import Home from '../Home'
 const mockHome = {
   loggedIn: true,
   firstName: 'Test',
-  loadingEdamam: false,
-  edamamRecipes: [],
+  loadingRecipes: false,
+  libraryRecipes: [],
   handleRefresh: jest.fn()
 }
 
@@ -22,7 +22,7 @@ jest.mock(
 describe('Home', () => {
   it('renders welcome message when logged in', () => {
     mockHome.loggedIn = true
-    mockHome.loadingEdamam = false
+    mockHome.loadingRecipes = false
     mockHome.firstName = 'Test'
     render(<Home />)
     expect(screen.getByText(/welcome test/i)).toBeInTheDocument()
@@ -31,14 +31,14 @@ describe('Home', () => {
 
   it('hides the welcome message when logged out', () => {
     mockHome.loggedIn = false
-    mockHome.loadingEdamam = false
+    mockHome.loadingRecipes = false
     render(<Home />)
     expect(screen.queryByText(/welcome/i)).not.toBeInTheDocument()
   })
 
   it('shows a loading message', () => {
     mockHome.loggedIn = true
-    mockHome.loadingEdamam = true
+    mockHome.loadingRecipes = true
     render(<Home />)
     expect(screen.getByText(/loading/i)).toBeInTheDocument()
   })

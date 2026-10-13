@@ -1,8 +1,6 @@
-import { useApolloClient } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import type { ClientRecipe } from '../../types/client'
-import { GET_APP_CREDENTIALS } from '../../lib/apollo/graphQL/queries'
-import fetchEdamam from '../../utils/api/edamam'
+import searchLibrary from '../../utils/library/recipeLibrary'
 import { changeTitle } from '../../utils/changeTitle'
 import { useStoreContext } from '../../utils/state/GlobalState'
 import { UPDATE_SEARCH_RECIPES } from '../../utils/state/actions'
@@ -131,10 +129,9 @@ export function buildFilterState(value: unknown): filterTypes {
 type SearchHandlerType = (value: string, event?: { target?: unknown }) => void
 
 export const useSearch = () => {
-  const client = useApolloClient()
   const [state, dispatch] = useStoreContext()
-  const [loadingEdamam, setLoadingEdamam] = useState(false)
-  const [edamamRecipes, setEdamamRecipes] = useState<ClientRecipe[]>(
+  const [loadingRecipes, setLoadingRecipes] = useState(false)
+  const [libraryRecipes, setLibraryRecipes] = useState<ClientRecipe[]>(
     state.searchRecipes
   )
   const blankForm = {
@@ -151,19 +148,21 @@ export const useSearch = () => {
   const handleFormSubmit: SearchHandlerType = async (q, event) => {
     if (!event) return
     try {
-      setLoadingEdamam(true)
-      const res = await client.query({ query: GET_APP_CREDENTIALS })
-      if (!res) throw new Error('[handleRefresh] GET_APP_CREDENTIALS error')
-      const hits = await fetchEdamam({
-        search: { ...filterState, q },
-        appId: res.data.getApiKey.appId,
-        appKey: res.data.getApiKey.appKey
-      })
-      setEdamamRecipes(hits)
+      setLoadingRecipes(true)
+      const tags = [
+        ...filterState.diet,
+        ...filterState.health,
+        ...filterState.cuisineType,
+        ...filterState.mealType,
+        ...filterState.dishType
+      ]
+      const hits = searchLibrary({ q, tags })
+      setLibraryRecipes(hits)
       setUpdateRecipes(true)
-      setLoadingEdamam(false)
+      setLoadingRecipes(false)
     } catch (e) {
       console.error(e)
+      setLoadingRecipes(false)
     }
   }
 
@@ -177,10 +176,10 @@ export const useSearch = () => {
   // Store results in global state
   useEffect(() => {
     if (updateRecipes) {
-      dispatch({ type: UPDATE_SEARCH_RECIPES, data: edamamRecipes })
+      dispatch({ type: UPDATE_SEARCH_RECIPES, data: libraryRecipes })
       setUpdateRecipes(false)
     }
-  }, [updateRecipes, edamamRecipes, dispatch])
+  }, [updateRecipes, libraryRecipes, dispatch])
 
   useEffect(() => {
     changeTitle('Search')
@@ -188,8 +187,8 @@ export const useSearch = () => {
   return {
     searchText,
     onSearchChange,
-    loadingEdamam,
-    edamamRecipes,
+    loadingRecipes,
+    libraryRecipes,
     handleFormSubmit,
     handleFilterChange
   }

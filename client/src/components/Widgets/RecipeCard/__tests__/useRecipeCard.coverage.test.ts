@@ -120,7 +120,7 @@ describe('useRecipeCard coverage', () => {
           name: '',
           portions: 0,
           picture_url: '',
-          edamamId: undefined,
+          libraryId: undefined,
           instructions: undefined,
           ingredients: [
             ingredient({ name: '', quantity: 0, measure: '', category: '' })
@@ -136,7 +136,7 @@ describe('useRecipeCard coverage', () => {
         input: expect.objectContaining({
           name: 'Untitled Recipe',
           portions: 1,
-          edamamId: undefined,
+          libraryId: undefined,
           instructions: undefined
         })
       }
@@ -145,7 +145,7 @@ describe('useRecipeCard coverage', () => {
     const blankInstructions = renderHook(() =>
       useRecipeCard({
         onSavedPage: false,
-        recipe: recipe({ instructions: '', edamamId: '' })
+        recipe: recipe({ instructions: '', libraryId: '' })
       })
     )
     await act(async () => {
@@ -175,11 +175,11 @@ describe('useRecipeCard coverage', () => {
     error.mockRestore()
   })
 
-  it('removes a recipe from the saved page or by edamam id', async () => {
+  it('removes a recipe from the saved page or by library id', async () => {
     const error = jest
       .spyOn(console, 'error')
       .mockImplementation(() => undefined)
-    mockSaved.savedRecipes = [recipe({ _id: 'saved-id', edamamId: 'ed1' })]
+    mockSaved.savedRecipes = [recipe({ _id: 'saved-id', libraryId: 'ed1' })]
     const saved = renderHook(() =>
       useRecipeCard({ onSavedPage: true, recipe: recipe() })
     )

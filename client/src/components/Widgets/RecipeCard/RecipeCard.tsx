@@ -62,7 +62,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           handleSave={handleSave}
           savedRecipes={savedRecipes}
           saveRecipeLoading={saveRecipeLoading}
-          edamamId={recipe.edamamId ?? ''}
+          libraryId={recipe.libraryId ?? ''}
           loggedIn={loggedIn}
         />
       </td>

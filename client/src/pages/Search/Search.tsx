@@ -4,7 +4,7 @@ import { options } from './options'
 import { useSearch } from './useSearch'
 
 const Search: FC = () => {
-  const { searchText, onSearchChange, loadingEdamam, edamamRecipes } =
+  const { searchText, onSearchChange, loadingRecipes, libraryRecipes } =
     useSearch()
   return (
     <>
@@ -35,12 +35,12 @@ const Search: FC = () => {
           ))}
         </ul>
       </form>
-      {loadingEdamam ? (
+      {loadingRecipes ? (
         'Loading…'
       ) : (
         <RecipeCardContainer
-          results={edamamRecipes}
-          loading={loadingEdamam}
+          results={libraryRecipes}
+          loading={loadingRecipes}
           onSavedPage={false}
         />
       )}

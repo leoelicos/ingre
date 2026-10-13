@@ -5,8 +5,8 @@ import Search from '../Search'
 const mockSearch = {
   searchText: 'noodles',
   onSearchChange: jest.fn(),
-  loadingEdamam: false,
-  edamamRecipes: []
+  loadingRecipes: false,
+  libraryRecipes: []
 }
 
 jest.mock('../useSearch', () => ({
@@ -20,11 +20,11 @@ jest.mock(
 
 describe('Search states', () => {
   it('shows recipes or a loading message', () => {
-    mockSearch.loadingEdamam = false
+    mockSearch.loadingRecipes = false
     const { rerender } = render(<Search />)
     expect(screen.getByTestId('cards')).toBeInTheDocument()
     expect(screen.getByDisplayValue('noodles')).toBeInTheDocument()
-    mockSearch.loadingEdamam = true
+    mockSearch.loadingRecipes = true
     rerender(<Search />)
     expect(screen.getByText('Loading…')).toBeInTheDocument()
   })

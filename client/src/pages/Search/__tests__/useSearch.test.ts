@@ -1,21 +1,11 @@
 import { renderHook, act } from '@testing-library/react'
 import { useSearch } from '../useSearch'
 
-jest.mock('@apollo/client', () => ({
-  useApolloClient: () => ({
-    query: jest.fn().mockResolvedValue({
-      data: { getAppCredentials: { appId: 'id', appKey: 'key' } }
-    })
-  }),
-  gql: (s: TemplateStringsArray) => s
-}))
-
 jest.mock('../../../utils/state/GlobalState', () => ({
   useStoreContext: () => [{ searchRecipes: [] }, jest.fn()]
 }))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-jest.mock('../../../utils/api/edamam', () => jest.fn().mockResolvedValue([]))
 
 describe('useSearch', () => {
   it('returns expected shape', () => {
@@ -31,5 +21,15 @@ describe('useSearch', () => {
       result.current.onSearchChange({ target: { value: 'pasta' } })
     })
     expect(result.current.searchText).toBe('pasta')
+  })
+
+  it('searches the real local library', async () => {
+    const { result } = renderHook(() => useSearch())
+    await act(async () => {
+      await result.current.handleFormSubmit('bolognese', { target: {} })
+    })
+    expect(result.current.libraryRecipes.map((r) => r.name)).toEqual([
+      'Spaghetti bolognese'
+    ])
   })
 })

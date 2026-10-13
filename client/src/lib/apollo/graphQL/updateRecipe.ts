@@ -18,7 +18,7 @@ export const UPDATE_RECIPE = gql`
         }
       }
       picture_url
-      edamamId
+      libraryId
     }
   }
 `

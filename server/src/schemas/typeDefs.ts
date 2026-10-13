@@ -24,7 +24,7 @@ export const typeDefs = gql`
     portions: Int
     ingredients: [Ingredient]
     picture_url: String
-    edamamId: String
+    libraryId: String
     instructions: String
   }
 
@@ -33,7 +33,7 @@ export const typeDefs = gql`
     portions: Int
     ingredients: [IngredientInput]
     picture_url: String
-    edamamId: String
+    libraryId: String
     instructions: String
   }
   type Ingredient {
@@ -84,11 +84,6 @@ export const typeDefs = gql`
     user: User
   }
 
-  type EdamamCredentials {
-    appId: String
-    appKey: String
-  }
-
   # recipe
   type Query {
     getRecipe(_id: ID!): Recipe
@@ -102,7 +97,6 @@ export const typeDefs = gql`
 
   # session
   type Query {
-    getApiKey: EdamamCredentials
     checkout: Checkout
   }
 

@@ -78,14 +78,14 @@ export class RecipeApi {
     instructions,
     ingredients,
     picture_url,
-    edamamId
+    libraryId
   }: {
     name: string
     portions: number
     instructions: string
     ingredients: unknown[]
     picture_url: string
-    edamamId: string
+    libraryId: string
   }) => {
     const recipe = await Recipe.create({
       name,
@@ -93,7 +93,7 @@ export class RecipeApi {
       instructions,
       ingredients,
       picture_url,
-      edamamId
+      libraryId
     })
     return await Recipe.findById(recipe._id)
       .select('-__v')
@@ -201,7 +201,7 @@ export class RecipeApi {
         dbRecipe.portions = input.portions
         dbRecipe.ingredients = generatedIngredients
         dbRecipe.picture_url = input.picture_url
-        dbRecipe.edamamId = input.edamamId
+        dbRecipe.libraryId = input.libraryId
         dbRecipe.instructions = input.instructions
         await dbRecipe.save()
         await dbRecipe.populate({ path: 'ingredients', populate: 'category' })

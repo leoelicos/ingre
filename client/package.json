@@ -30,17 +30,16 @@
     "@typescript-eslint/eslint-plugin": "^8.71.2",
     "@typescript-eslint/parser": "^8.71.2",
     "@vitejs/plugin-react": "^6.1.2",
-    "eslint": "^8.42.0",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
     "jest-util": "^30.5.1",
     "prettier": "^2.8.8",
-    "react-app-polyfill": "^3.0.0",
     "ts-jest": "^29.4.14",
     "typescript": "6",
     "vite": "^8.3.4"
@@ -49,24 +48,7 @@
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "jest --watchAll=false --forceExit"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "test": "jest --watchAll=false --forceExit",
+    "lint": "eslint src --ext .ts,.tsx"
   }
 }

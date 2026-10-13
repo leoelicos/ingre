@@ -4,7 +4,6 @@ import { getRecipe } from './resolvers/recipe/getRecipe'
 // user
 import { getUser } from './resolvers/user/getUser'
 import { checkEmailAlreadyExists } from './resolvers/user/checkEmailAlreadyExists'
-import { getApiKey } from './resolvers/session/getApiKey'
 import { getNumSavedRecipes } from './resolvers/user/getNumSavedRecipes'
 import { getSavedRecipes } from './resolvers/recipe/getSavedRecipes'
 import { checkout } from './resolvers/session/checkout'
@@ -19,7 +18,6 @@ import { login } from './resolvers/session/login'
 export const resolvers = {
   Query: {
     checkEmailAlreadyExists,
-    getApiKey,
     getUser,
     getRecipe,
     getNumSavedRecipes,

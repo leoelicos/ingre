@@ -2,24 +2,16 @@ import { renderHook, act } from '@testing-library/react'
 import { buildFilterState, useSearch } from '../useSearch'
 
 const mockDispatch = jest.fn()
-const mockQuery = jest.fn()
-const mockFetchEdamam = jest.fn()
-
-jest.mock('@apollo/client', () => ({
-  useApolloClient: () => ({
-    query: (...args: unknown[]) => mockQuery(...args)
-  }),
-  gql: (s: TemplateStringsArray) => s
-}))
+const mockSearchLibrary = jest.fn()
 
 jest.mock('../../../utils/state/GlobalState', () => ({
   useStoreContext: () => [{ searchRecipes: [] }, mockDispatch]
 }))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-jest.mock('../../../utils/api/edamam', () => ({
+jest.mock('../../../utils/library/recipeLibrary', () => ({
   __esModule: true,
-  default: (...args: unknown[]) => mockFetchEdamam(...args)
+  default: (...args: unknown[]) => mockSearchLibrary(...args)
 }))
 
 describe('buildFilterState', () => {
@@ -83,12 +75,8 @@ describe('buildFilterState', () => {
 describe('useSearch coverage', () => {
   beforeEach(() => {
     mockDispatch.mockClear()
-    mockQuery.mockReset()
-    mockFetchEdamam.mockReset()
-    mockQuery.mockResolvedValue({
-      data: { getApiKey: { appId: 'id', appKey: 'key' } }
-    })
-    mockFetchEdamam.mockResolvedValue([{ name: 'Pasta' }])
+    mockSearchLibrary.mockReset()
+    mockSearchLibrary.mockReturnValue([{ name: 'Pasta' }])
   })
 
   it('returns early without an event and searches when one is provided', async () => {
@@ -96,7 +84,7 @@ describe('useSearch coverage', () => {
     await act(async () => {
       await result.current.handleFormSubmit('pasta')
     })
-    expect(mockQuery).not.toHaveBeenCalled()
+    expect(mockSearchLibrary).not.toHaveBeenCalled()
 
     act(() => {
       result.current.onSearchChange({ target: { value: 'pasta' } })
@@ -109,17 +97,9 @@ describe('useSearch coverage', () => {
         target: { value: 'pasta' }
       })
     })
-    expect(mockFetchEdamam).toHaveBeenCalledWith({
-      search: {
-        diet: ['low-sodium'],
-        health: [],
-        cuisineType: [],
-        mealType: [],
-        dishType: [],
-        q: 'pasta'
-      },
-      appId: 'id',
-      appKey: 'key'
+    expect(mockSearchLibrary).toHaveBeenCalledWith({
+      q: 'pasta',
+      tags: ['low-sodium']
     })
     expect(result.current.searchText).toBe('pasta')
     expect(mockDispatch).toHaveBeenCalledWith({
@@ -128,30 +108,21 @@ describe('useSearch coverage', () => {
     })
   })
 
-  it('logs credential and network failures', async () => {
+  it('logs library failures and stops loading', async () => {
     const error = jest
       .spyOn(console, 'error')
       .mockImplementation(() => undefined)
     const { result } = renderHook(() => useSearch())
-    mockQuery.mockResolvedValueOnce(null)
-    await act(async () => {
-      await result.current.handleFormSubmit('pasta', {
-        target: { value: 'pasta' }
-      })
+    mockSearchLibrary.mockImplementationOnce(() => {
+      throw new Error('bad data')
     })
-    mockQuery.mockRejectedValueOnce(new Error('down'))
-    await act(async () => {
-      await result.current.handleFormSubmit('pasta', {
-        target: { value: 'pasta' }
-      })
-    })
-    mockFetchEdamam.mockRejectedValueOnce(new Error('edamam'))
     await act(async () => {
       await result.current.handleFormSubmit('pasta', {
         target: { value: 'pasta' }
       })
     })
     expect(error).toHaveBeenCalled()
+    expect(result.current.loadingRecipes).toBe(false)
     error.mockRestore()
   })
 })

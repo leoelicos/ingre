@@ -102,7 +102,7 @@ describe('RecipeCard states', () => {
     rerender(
       <MemoryRouter>
         <RecipeCard
-          recipe={recipe({ edamamId: undefined })}
+          recipe={recipe({ libraryId: undefined })}
           onSavedPage={false}
           pro={true}
         />

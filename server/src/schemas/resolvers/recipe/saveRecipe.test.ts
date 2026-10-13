@@ -23,7 +23,7 @@ const mockIngredient = {
 
 const mockRecipe = {
   name: 'Roast chicken',
-  edamamId: '4bd3f94346ff2cb493285199f5f06f71',
+  libraryId: '4bd3f94346ff2cb493285199f5f06f71',
   ingredients: [mockIngredient],
   instructions: 'Make it',
   picture_url: 'www.google.com',
@@ -47,7 +47,7 @@ const mockCreatedRecipe = {
   portions: 2,
   ingredients: [mockCreatedIngredient],
   picture_url: 'www.google.com',
-  edamamId: '4bd3f94346ff2cb493285199f5f06f71',
+  libraryId: '4bd3f94346ff2cb493285199f5f06f71',
   instructions: 'Make it',
   _id: '67544a5ab3028edaf0bcc023'
 }
@@ -86,7 +86,7 @@ export const SAVE_RECIPE = gql`
         }
       }
       picture_url
-      edamamId
+      libraryId
       instructions
     }
   }
@@ -165,7 +165,7 @@ describe('saveRecipe', () => {
         }
       ],
       picture_url: 'www.google.com',
-      edamamId: '4bd3f94346ff2cb493285199f5f06f71',
+      libraryId: '4bd3f94346ff2cb493285199f5f06f71',
       instructions: 'Make it',
       _id: '67544a5ab3028edaf0bcc023'
     })

@@ -54,7 +54,7 @@ describe('reducer', () => {
   })
 
   it('updates saved recipes and treats undefined as an empty list', () => {
-    const recipes = [recipe({ edamamId: 'saved' })]
+    const recipes = [recipe({ libraryId: 'saved' })]
     expect(
       reducer(initialState, { type: UPDATE_SAVED_RECIPES, data: recipes })
         .savedRecipes
@@ -93,13 +93,13 @@ describe('reducer', () => {
   })
 
   it('adds a saved recipe once and ignores invalid payloads', () => {
-    const first = recipe({ edamamId: 'a' })
+    const first = recipe({ libraryId: 'a' })
     const added = reducer(initialState, { type: ADD_SAVED_RECIPE, data: first })
     expect(added.savedRecipes).toEqual([first])
     expect(
       reducer(added, {
         type: ADD_SAVED_RECIPE,
-        data: recipe({ edamamId: 'a' })
+        data: recipe({ libraryId: 'a' })
       }).savedRecipes
     ).toHaveLength(1)
     expect(
@@ -107,14 +107,14 @@ describe('reducer', () => {
     ).toBe(initialState)
   })
 
-  it('removes a saved recipe by edamam id', () => {
+  it('removes a saved recipe by library id', () => {
     const state = {
       ...initialState,
-      savedRecipes: [recipe({ edamamId: 'keep' }), recipe()]
+      savedRecipes: [recipe({ libraryId: 'keep' }), recipe()]
     }
     expect(
       reducer(state, { type: REMOVE_SAVED_RECIPE, data: 'ed1' }).savedRecipes
-    ).toEqual([recipe({ edamamId: 'keep' })])
+    ).toEqual([recipe({ libraryId: 'keep' })])
     expect(reducer(state, { type: REMOVE_SAVED_RECIPE, data: 4 })).toBe(state)
   })
 

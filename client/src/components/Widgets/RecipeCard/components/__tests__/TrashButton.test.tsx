@@ -11,8 +11,8 @@ describe('TrashButton', () => {
   const defaultProps = {
     removeRecipeLoading: false,
     handleRemove: jest.fn(),
-    savedRecipes: [recipe({ edamamId: 'ed1' })],
-    edamamId: 'ed1'
+    savedRecipes: [recipe({ libraryId: 'ed1' })],
+    libraryId: 'ed1'
   }
 
   it('renders delete button when recipe is saved', () => {

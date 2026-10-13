@@ -9,16 +9,16 @@ export const SaveButton: FC<{
   handleSave: () => void
   savedRecipes: ClientRecipe[]
   saveRecipeLoading: boolean
-  edamamId: string
+  libraryId: string
   loggedIn?: boolean
-}> = ({ handleSave, savedRecipes, saveRecipeLoading, edamamId, loggedIn }) => {
+}> = ({ handleSave, savedRecipes, saveRecipeLoading, libraryId, loggedIn }) => {
   const isDisabled = React.useMemo(() => {
     return (
       saveRecipeLoading ||
       (savedRecipes.length > 0 &&
-        savedRecipes.some((r) => r.edamamId === edamamId))
+        savedRecipes.some((r) => r.libraryId === libraryId))
     )
-  }, [saveRecipeLoading, savedRecipes, edamamId])
+  }, [saveRecipeLoading, savedRecipes, libraryId])
   const navigate = useNavigate()
   return saveRecipeLoading ? (
     <IngreIconSpin />

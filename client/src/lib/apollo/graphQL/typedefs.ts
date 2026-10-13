@@ -22,7 +22,7 @@ export type Recipe = {
   portions: number
   ingredients: Ingredient[]
   picture_url: string
-  edamamId: string
+  libraryId: string
   instructions: string
 }
 
@@ -31,7 +31,7 @@ export type RecipeInput = {
   portions: number
   ingredients: IngredientInput[]
   picture_url: string
-  edamamId: string
+  libraryId: string
   instructions: string
 }
 export type Ingredient = {
@@ -82,15 +82,9 @@ export type Auth = {
   user: User
 }
 
-export type EdamamCredentials = {
-  appId: string
-  appKey: string
-}
-
 // not being used
 export type Query = {
   checkEmailAlreadyExists: (email: string) => Promise<boolean | undefined>
-  getApiKey: () => Promise<EdamamCredentials | undefined>
   getUser: () => Promise<User | undefined>
   getRecipe: (_id: string) => Promise<Recipe | undefined>
   getSavedRecipes: () => Promise<Recipe[] | undefined>

@@ -75,7 +75,7 @@ export const createSaveIngredients = async ({
 export const saveRecipe = async (
   _: unknown,
   {
-    input: { name, portions, ingredients, picture_url, edamamId, instructions }
+    input: { name, portions, ingredients, picture_url, libraryId, instructions }
   }: { input: RecipeInput },
   { user, dataSources }: MyContext
 ): Promise<RecipePopulated | undefined> => {
@@ -86,7 +86,7 @@ export const saveRecipe = async (
       portions,
       ingredients,
       picture_url,
-      edamamId,
+      libraryId,
       instructions
     })
     if (!user) throw new Error('Not logged in!')
@@ -105,7 +105,7 @@ export const saveRecipe = async (
       picture_url:
         picture_url ||
         'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc',
-      edamamId
+      libraryId
     })
     if (recipe) {
       await dataSources.userApi.addRecipeToUser({
@@ -125,7 +125,7 @@ export const saveRecipe = async (
           quantity: i.quantity
         })),
         picture_url: recipe.picture_url,
-        edamamId: recipe.edamamId
+        libraryId: recipe.libraryId
       }
     }
   } catch (error) {

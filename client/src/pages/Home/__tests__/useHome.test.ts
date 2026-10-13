@@ -2,14 +2,6 @@ import { renderHook, act } from '@testing-library/react'
 import { useHome } from '../useHome'
 
 const mockDispatch = jest.fn()
-jest.mock('@apollo/client', () => ({
-  useApolloClient: () => ({
-    query: jest.fn().mockResolvedValue({
-      data: { getAppCredentials: { appId: 'id', appKey: 'key' } }
-    })
-  }),
-  gql: (s: TemplateStringsArray) => s
-}))
 
 jest.mock('../../../utils/auth/AuthContext', () => ({
   useAuthContext: () => [
@@ -26,22 +18,20 @@ jest.mock('../../../utils/state/GlobalState', () => ({
 }))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-jest.mock('../../../utils/api/edamam', () =>
-  jest.fn().mockResolvedValue([{ name: 'Pasta' }])
-)
 
 describe('useHome', () => {
-  it('returns expected shape and calls changeTitle', () => {
+  it('returns expected shape', () => {
     const { result } = renderHook(() => useHome())
     expect(result.current.loggedIn).toBe(true)
     expect(result.current.firstName).toBe('Test')
   })
 
-  it('handleRefresh fetches recipes', async () => {
+  it('handleRefresh loads recipes from the local library', async () => {
     const { result } = renderHook(() => useHome())
     await act(async () => {
-      await result.current.handleRefresh('pasta')
+      await result.current.handleRefresh('vegetarian')
     })
-    expect(result.current.loadingEdamam).toBe(false)
+    expect(result.current.loadingRecipes).toBe(false)
+    expect(result.current.libraryRecipes.length).toBeGreaterThan(0)
   })
 })

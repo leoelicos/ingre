@@ -15,7 +15,7 @@ const mockUser = {
 const mockUpdateRecipeInput = {
   recipeId: '67179523a5b4544355ebab56',
   input: {
-    edamamId: '4bd3f94346ff2cb493285199f5f06f71',
+    libraryId: '4bd3f94346ff2cb493285199f5f06f71',
     ingredients: [
       {
         category: 'Meat',
@@ -47,7 +47,7 @@ const UPDATE_RECIPE = gql`
         }
       }
       picture_url
-      edamamId
+      libraryId
       instructions
     }
   }
@@ -78,7 +78,7 @@ const mockUpdatedRecipe = {
     }
   ],
   picture_url: 'www.duck3.com',
-  edamamId: '4bd3f94346ff2cb493285199f5f06f71',
+  libraryId: '4bd3f94346ff2cb493285199f5f06f71',
   instructions: 'Cook it3'
 }
 mockUpdateRecipe.mockReturnValue(mockUpdatedRecipe)

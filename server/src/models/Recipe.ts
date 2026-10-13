@@ -8,7 +8,7 @@ export interface RecipeSchema extends Document {
   portions: number
   ingredients: Array<Types.Subdocument & IngredientSchema> // before population
   picture_url: string
-  edamamId?: string
+  libraryId?: string
   instructions?: string
 }
 
@@ -36,7 +36,7 @@ const recipeSchema = new Schema<RecipeSchema>({
     type: String,
     required: true
   },
-  edamamId: {
+  libraryId: {
     type: String,
     default: null
   },

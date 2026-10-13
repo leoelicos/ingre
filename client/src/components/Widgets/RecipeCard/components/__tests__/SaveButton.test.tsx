@@ -19,7 +19,7 @@ describe('SaveButton', () => {
     handleSave: jest.fn(),
     savedRecipes: [],
     saveRecipeLoading: false,
-    edamamId: 'ed1',
+    libraryId: 'ed1',
     loggedIn: true
   }
 
@@ -54,7 +54,7 @@ describe('SaveButton', () => {
       <MemoryRouter>
         <SaveButton
           {...defaultProps}
-          savedRecipes={[recipe({ edamamId: 'ed1' })]}
+          savedRecipes={[recipe({ libraryId: 'ed1' })]}
         />
       </MemoryRouter>
     )

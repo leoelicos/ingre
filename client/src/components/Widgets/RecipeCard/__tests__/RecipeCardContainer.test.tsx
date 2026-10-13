@@ -42,7 +42,7 @@ describe('RecipeCardContainer', () => {
   })
 
   it('renders recipe cards when results exist', () => {
-    const results = [recipe({ name: 'Pasta', edamamId: '1' })]
+    const results = [recipe({ name: 'Pasta', libraryId: '1' })]
     render(
       <MemoryRouter>
         <RecipeCardContainer

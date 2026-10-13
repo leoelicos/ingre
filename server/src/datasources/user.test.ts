@@ -75,7 +75,7 @@ describe('userApi', () => {
       name: 'Test Recipe',
       portions: 4,
       picture_url: 'http://example.com/image.jpg',
-      edamamId: 'some-edamam-id',
+      libraryId: 'some-library-id',
       instructions: 'Test instructions'
     }
 
@@ -100,7 +100,7 @@ describe('userApi', () => {
       portions: mockRecipe.portions,
       ingredients: [chicken._id, broccoli._id],
       picture_url: mockRecipe.picture_url,
-      edamamId: mockRecipe.edamamId,
+      libraryId: mockRecipe.libraryId,
       instructions: mockRecipe.instructions
     })
     if (!recipe) return
@@ -111,7 +111,7 @@ describe('userApi', () => {
     const userSavedRecipes = await userApi.getUserSavedRecipes({ id: userId })
     const expectedObject = [
       {
-        edamamId: 'some-edamam-id',
+        libraryId: 'some-library-id',
         ingredients: [
           {
             category: { name: 'Meat' },

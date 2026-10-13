@@ -4,7 +4,7 @@ export interface ClientRecipe {
   portions: number
   picture_url: string
   instructions: string | undefined // will not have one if not from server
-  edamamId: string | undefined
+  libraryId: string | undefined
   ingredients: ClientIngredient[]
 }
 

@@ -25,7 +25,7 @@ export const getRecipe = async (
         }
       }),
       picture_url: recipe.picture_url,
-      edamamId: recipe.edamamId
+      libraryId: recipe.libraryId
     }
   } catch (error) {
     throw error

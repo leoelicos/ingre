@@ -47,7 +47,7 @@ export const reducer = (state: Store, action: StoreAction): Store => {
     case ADD_SAVED_RECIPE: {
       if (!isClientRecipe(action.data)) return state
       const incoming = action.data
-      if (state.savedRecipes.some((r) => r.edamamId === incoming.edamamId)) {
+      if (state.savedRecipes.some((r) => r.libraryId === incoming.libraryId)) {
         return state
       }
       return { ...state, savedRecipes: [...state.savedRecipes, incoming] }
@@ -55,10 +55,12 @@ export const reducer = (state: Store, action: StoreAction): Store => {
 
     case REMOVE_SAVED_RECIPE: {
       if (typeof action.data !== 'string') return state
-      const edamamId = action.data
+      const libraryId = action.data
       return {
         ...state,
-        savedRecipes: state.savedRecipes.filter((r) => r.edamamId !== edamamId)
+        savedRecipes: state.savedRecipes.filter(
+          (r) => r.libraryId !== libraryId
+        )
       }
     }
 

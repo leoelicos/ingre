@@ -20,7 +20,7 @@ export function recipe(overrides: Partial<ClientRecipe> = {}): ClientRecipe {
     portions: 2,
     picture_url: 'http://pic.example/pasta.jpg',
     instructions: 'Boil',
-    edamamId: 'ed1',
+    libraryId: 'ed1',
     ingredients: [ingredient()],
     ...overrides
   }

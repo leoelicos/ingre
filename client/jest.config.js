@@ -2,7 +2,7 @@
 module.exports = {
   testEnvironment: 'jsdom',
   roots: ['<rootDir>/src'],
-  setupFiles: ['react-app-polyfill/jsdom'],
+  setupFiles: ['<rootDir>/src/test/fetchPolyfill.js'],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
@@ -17,7 +17,8 @@ module.exports = {
           module: 'commonjs',
           esModuleInterop: true,
           jsx: 'react-jsx',
-          isolatedModules: true
+          isolatedModules: true,
+          resolveJsonModule: true
         }
       }
     ]

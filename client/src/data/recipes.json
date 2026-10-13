@@ -1,0 +1,995 @@
+{
+  "_note": "STARTER DATA for the product owner to expand. Generic, brand-free everyday dishes cookable in under an hour from Coles/Woolworths/Aldi ingredients. Ingredients reference ingredients.json by id; tags are many-to-many (cuisines, diets, meals).",
+  "recipes": [
+    {
+      "id": "spaghetti-bolognese",
+      "name": "Spaghetti bolognese",
+      "portions": 4,
+      "tags": ["Italian", "Australian", "dinner"],
+      "ingredients": [
+        {
+          "ingredientId": "spaghetti",
+          "quantity": 400,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "beef-mince",
+          "quantity": 500,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "carrot",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "celery",
+          "quantity": 1,
+          "measure": "stalk"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 2,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "crushed-tomatoes",
+          "quantity": 800,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "tomato-paste",
+          "quantity": 2,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "olive-oil",
+          "quantity": 2,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "parmesan",
+          "quantity": 50,
+          "measure": "g"
+        }
+      ],
+      "method": [
+        "Finely dice the onion, carrot, celery and garlic and soften in olive oil.",
+        "Brown the mince, then stir in tomato paste and crushed tomatoes; simmer 30 minutes.",
+        "Cook spaghetti, toss with sauce and serve with grated parmesan."
+      ]
+    },
+    {
+      "id": "egg-fried-rice",
+      "name": "Egg fried rice",
+      "portions": 2,
+      "tags": ["Chinese", "vegetarian", "lunch", "dinner"],
+      "ingredients": [
+        {
+          "ingredientId": "jasmine-rice",
+          "quantity": 2,
+          "measure": "cup"
+        },
+        {
+          "ingredientId": "egg",
+          "quantity": 3,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "frozen-peas",
+          "quantity": 0.5,
+          "measure": "cup"
+        },
+        {
+          "ingredientId": "carrot",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "spring-onion",
+          "quantity": 3,
+          "measure": "stalk"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 2,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "soy-sauce",
+          "quantity": 2,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "sesame-oil",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 2,
+          "measure": "tbsp"
+        }
+      ],
+      "method": [
+        "Use cooked, cooled rice (ideally day-old).",
+        "Scramble eggs in a hot wok, remove; stir-fry garlic, carrot and peas.",
+        "Add rice, soy sauce, sesame oil, egg and spring onion; toss until hot."
+      ]
+    },
+    {
+      "id": "butter-chicken",
+      "name": "Butter chicken",
+      "portions": 4,
+      "tags": ["Indian", "dinner", "gluten-free"],
+      "ingredients": [
+        {
+          "ingredientId": "chicken-thigh",
+          "quantity": 700,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "natural-yoghurt",
+          "quantity": 0.5,
+          "measure": "cup"
+        },
+        {
+          "ingredientId": "garam-masala",
+          "quantity": 2,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "ground-cumin",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "chilli-powder",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "butter",
+          "quantity": 50,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 3,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "ginger",
+          "quantity": 1,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "crushed-tomatoes",
+          "quantity": 400,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "cream",
+          "quantity": 0.5,
+          "measure": "cup"
+        },
+        {
+          "ingredientId": "basmati-rice",
+          "quantity": 1.5,
+          "measure": "cup"
+        }
+      ],
+      "method": [
+        "Marinate diced chicken in yoghurt and half the spices for 15 minutes.",
+        "Sear chicken in butter; remove. Soften onion, garlic and ginger, add remaining spices and tomatoes; simmer 10 minutes.",
+        "Blend sauce if desired, return chicken, stir in cream and simmer until cooked. Serve with basmati rice."
+      ]
+    },
+    {
+      "id": "greek-salad-haloumi",
+      "name": "Greek salad with haloumi",
+      "portions": 2,
+      "tags": ["Greek", "Mediterranean", "vegetarian", "gluten-free", "lunch"],
+      "ingredients": [
+        {
+          "ingredientId": "haloumi",
+          "quantity": 180,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "tomato",
+          "quantity": 3,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "cucumber",
+          "quantity": 2,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "red-onion",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "capsicum",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "kalamata-olives",
+          "quantity": 0.5,
+          "measure": "cup"
+        },
+        {
+          "ingredientId": "feta",
+          "quantity": 100,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "dried-oregano",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "olive-oil",
+          "quantity": 3,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "red-wine-vinegar",
+          "quantity": 1,
+          "measure": "tbsp"
+        }
+      ],
+      "method": [
+        "Chop tomato, cucumber, capsicum and onion; add olives and crumbled feta.",
+        "Dress with olive oil, vinegar and oregano.",
+        "Pan-fry sliced haloumi until golden and serve on top."
+      ]
+    },
+    {
+      "id": "san-choy-bau",
+      "name": "San choy bau",
+      "portions": 4,
+      "tags": ["Chinese", "Cantonese", "dinner", "lunch"],
+      "ingredients": [
+        {
+          "ingredientId": "pork-mince",
+          "quantity": 500,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "iceberg-lettuce",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "water-chestnuts",
+          "quantity": 225,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 2,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "ginger",
+          "quantity": 1,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "spring-onion",
+          "quantity": 3,
+          "measure": "stalk"
+        },
+        {
+          "ingredientId": "oyster-sauce",
+          "quantity": 2,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "soy-sauce",
+          "quantity": 1,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "sesame-oil",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 1,
+          "measure": "tbsp"
+        }
+      ],
+      "method": [
+        "Stir-fry garlic and ginger, add pork mince and cook until browned.",
+        "Add diced water chestnuts, oyster sauce, soy sauce and sesame oil.",
+        "Spoon into lettuce cups and top with spring onion."
+      ]
+    },
+    {
+      "id": "chicken-korma",
+      "name": "Chicken korma",
+      "portions": 4,
+      "tags": ["Indian", "dinner"],
+      "ingredients": [
+        {
+          "ingredientId": "chicken-thigh",
+          "quantity": 800,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 2,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 4,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "ginger",
+          "quantity": 20,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "natural-yoghurt",
+          "quantity": 200,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "ground-almonds",
+          "quantity": 50,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "cream",
+          "quantity": 150,
+          "measure": "ml"
+        },
+        {
+          "ingredientId": "garam-masala",
+          "quantity": 2,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "ground-coriander",
+          "quantity": 2,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "ground-turmeric",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 2,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "basmati-rice",
+          "quantity": 300,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 1,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Fry the sliced onion in oil until soft and golden.",
+        "Add grated garlic and ginger, then the spices, and cook for a minute.",
+        "Add diced chicken and brown it.",
+        "Stir in the yoghurt and almond meal with a splash of water and simmer for 20 minutes.",
+        "Stir through the cream, season, and serve with basmati rice."
+      ]
+    },
+    {
+      "id": "dahl",
+      "name": "Red lentil dahl",
+      "portions": 4,
+      "tags": ["Indian", "dinner", "vegetarian"],
+      "ingredients": [
+        {
+          "ingredientId": "red-lentils",
+          "quantity": 300,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 4,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "ginger",
+          "quantity": 20,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "tomato",
+          "quantity": 2,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "ground-turmeric",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "cumin-seeds",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "garam-masala",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "butter",
+          "quantity": 30,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "fresh-coriander",
+          "quantity": 1,
+          "measure": "bunch"
+        },
+        {
+          "ingredientId": "basmati-rice",
+          "quantity": 300,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 1,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Rinse the lentils and simmer with turmeric and 1 litre of water for 20 minutes until soft.",
+        "In a separate pan, melt the butter and fry the cumin seeds until they crackle.",
+        "Add diced onion, garlic and ginger and cook until golden, then add chopped tomato.",
+        "Stir the onion mixture and garam masala into the lentils and season.",
+        "Serve with rice and chopped coriander."
+      ]
+    },
+    {
+      "id": "beef-keema",
+      "name": "Beef keema with peas",
+      "portions": 4,
+      "tags": ["Indian", "dinner"],
+      "ingredients": [
+        {
+          "ingredientId": "beef-mince",
+          "quantity": 500,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 3,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "ginger",
+          "quantity": 20,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "green-chilli",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "crushed-tomatoes",
+          "quantity": 400,
+          "measure": "g tin"
+        },
+        {
+          "ingredientId": "frozen-peas",
+          "quantity": 200,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "ground-cumin",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "ground-coriander",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "garam-masala",
+          "quantity": 2,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 1,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "fresh-coriander",
+          "quantity": 1,
+          "measure": "bunch"
+        },
+        {
+          "ingredientId": "basmati-rice",
+          "quantity": 300,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 1,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Fry the diced onion in oil until golden.",
+        "Add garlic, ginger and chilli, then the cumin and ground coriander.",
+        "Add the mince and brown it, breaking it up.",
+        "Stir in the tomatoes and simmer for 20 minutes.",
+        "Add the peas and garam masala and cook for 5 minutes more.",
+        "Season, top with coriander and serve with rice."
+      ]
+    },
+    {
+      "id": "vegetable-curry",
+      "name": "Potato, cauliflower and chickpea curry",
+      "portions": 4,
+      "tags": ["Indian", "dinner", "vegetarian", "vegan"],
+      "ingredients": [
+        {
+          "ingredientId": "potato",
+          "quantity": 2,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "cauliflower",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "chickpeas",
+          "quantity": 400,
+          "measure": "g tin"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 3,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "ginger",
+          "quantity": 20,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "crushed-tomatoes",
+          "quantity": 400,
+          "measure": "g tin"
+        },
+        {
+          "ingredientId": "coconut-milk",
+          "quantity": 270,
+          "measure": "ml tin"
+        },
+        {
+          "ingredientId": "baby-spinach",
+          "quantity": 60,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "ground-turmeric",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "ground-cumin",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "chilli-powder",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "garam-masala",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 2,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "basmati-rice",
+          "quantity": 300,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 1,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Fry the diced onion in oil, then add garlic, ginger and the ground spices.",
+        "Add diced potato and cauliflower florets and stir to coat.",
+        "Add the tomatoes and coconut milk and simmer for 20 minutes until the potato is tender.",
+        "Stir in the drained chickpeas, spinach and garam masala until the spinach wilts.",
+        "Season and serve with rice."
+      ]
+    },
+    {
+      "id": "shaking-beef",
+      "name": "Shaking beef (bò lúc lắc)",
+      "portions": 4,
+      "tags": ["Vietnamese", "dinner"],
+      "ingredients": [
+        {
+          "ingredientId": "beef-rump",
+          "quantity": 700,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 6,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "red-onion",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "oyster-sauce",
+          "quantity": 2,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "soy-sauce",
+          "quantity": 1,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "fish-sauce",
+          "quantity": 1,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "white-sugar",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "black-pepper",
+          "quantity": 1,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "butter",
+          "quantity": 20,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 2,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "iceberg-lettuce",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "tomato",
+          "quantity": 2,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "lime",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "jasmine-rice",
+          "quantity": 300,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 1,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Cut the beef into 3 cm cubes and marinate with half the garlic, oyster sauce, soy sauce, fish sauce, sugar and pepper for 15 minutes.",
+        "Cook the jasmine rice.",
+        "Arrange shredded lettuce, sliced tomato and thinly sliced red onion on a platter.",
+        "Heat oil in a wok until smoking and sear the beef in batches, shaking the pan, for 2 to 3 minutes.",
+        "Add the butter and remaining garlic for the last 30 seconds.",
+        "Pile the beef over the salad and serve with rice and a lime, salt and pepper dipping mix."
+      ]
+    },
+    {
+      "id": "lemongrass-chilli-chicken",
+      "name": "Lemongrass chilli chicken (gà xào sả ớt)",
+      "portions": 4,
+      "tags": ["Vietnamese", "dinner"],
+      "ingredients": [
+        {
+          "ingredientId": "chicken-thigh",
+          "quantity": 800,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "lemongrass",
+          "quantity": 3,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 4,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "red-chilli",
+          "quantity": 2,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "fish-sauce",
+          "quantity": 2,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "white-sugar",
+          "quantity": 1,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "ground-turmeric",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 2,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "fresh-coriander",
+          "quantity": 1,
+          "measure": "bunch"
+        },
+        {
+          "ingredientId": "jasmine-rice",
+          "quantity": 300,
+          "measure": "g"
+        }
+      ],
+      "method": [
+        "Finely chop the white part of the lemongrass, the garlic and the chilli.",
+        "Toss bite-sized chicken pieces with half the lemongrass, the fish sauce, sugar and turmeric, and rest for 15 minutes.",
+        "Cook the jasmine rice.",
+        "Fry the remaining lemongrass, garlic and chilli in oil until fragrant.",
+        "Add the chicken and sliced onion and stir-fry until caramelised and cooked through.",
+        "Top with coriander and serve with rice."
+      ]
+    },
+    {
+      "id": "lemongrass-beef-noodle-salad",
+      "name": "Lemongrass beef noodle salad (bún bò xào)",
+      "portions": 4,
+      "tags": ["Vietnamese", "dinner"],
+      "ingredients": [
+        {
+          "ingredientId": "beef-rump",
+          "quantity": 500,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "lemongrass",
+          "quantity": 2,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 3,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "rice-vermicelli",
+          "quantity": 250,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "iceberg-lettuce",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "cucumber",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "carrot",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "bean-sprouts",
+          "quantity": 150,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "fresh-mint",
+          "quantity": 1,
+          "measure": "bunch"
+        },
+        {
+          "ingredientId": "roasted-peanuts",
+          "quantity": 50,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "fish-sauce",
+          "quantity": 4,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "white-sugar",
+          "quantity": 3,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "lime",
+          "quantity": 2,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "red-chilli",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "white-vinegar",
+          "quantity": 1,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 2,
+          "measure": "tbsp"
+        }
+      ],
+      "method": [
+        "Make the dressing (nước chấm) by stirring 3 tbsp fish sauce, the sugar, lime juice, vinegar, sliced chilli, half the garlic and 125 ml water until the sugar dissolves.",
+        "Thinly slice the beef and marinate with chopped lemongrass, the remaining garlic and 1 tbsp fish sauce for 15 minutes.",
+        "Cook the vermicelli, rinse in cold water and drain.",
+        "Shred the lettuce, julienne the carrot and cucumber, and pick the mint leaves.",
+        "Stir-fry the beef and sliced onion in hot oil for 2 to 3 minutes.",
+        "Build bowls of salad, noodles and beef, and top with crushed peanuts and dressing."
+      ]
+    },
+    {
+      "id": "rice-paper-rolls",
+      "name": "Prawn and pork rice paper rolls (gỏi cuốn)",
+      "portions": 4,
+      "tags": ["Vietnamese", "dinner"],
+      "ingredients": [
+        {
+          "ingredientId": "cooked-prawns",
+          "quantity": 300,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "pork-belly",
+          "quantity": 300,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "rice-paper",
+          "quantity": 16,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "rice-vermicelli",
+          "quantity": 100,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "iceberg-lettuce",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "fresh-mint",
+          "quantity": 1,
+          "measure": "bunch"
+        },
+        {
+          "ingredientId": "fresh-coriander",
+          "quantity": 1,
+          "measure": "bunch"
+        },
+        {
+          "ingredientId": "cucumber",
+          "quantity": 1,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "hoisin-sauce",
+          "quantity": 4,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "roasted-peanuts",
+          "quantity": 30,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 1,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Simmer the pork belly in salted water for 20 minutes, cool, then slice thinly.",
+        "Cook the vermicelli, rinse in cold water and drain.",
+        "Peel and halve the prawns lengthways, and cut the cucumber into sticks.",
+        "Dip a rice paper sheet in warm water for a few seconds and lay it flat.",
+        "Layer lettuce, noodles, herbs, cucumber and pork, add 3 prawn halves, then fold in the sides and roll tightly.",
+        "For the dip, loosen the hoisin with a little warm water and top with crushed peanuts."
+      ]
+    }
+  ]
+}

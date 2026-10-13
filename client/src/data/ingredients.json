@@ -1,0 +1,350 @@
+{
+  "_note": "STARTER DATA for the product owner to expand. One entry per generic, brand-free item available at Coles/Woolworths/Aldi. `category` is the supermarket aisle.",
+  "ingredients": [
+    {
+      "id": "beef-mince",
+      "name": "beef mince",
+      "category": "meat"
+    },
+    {
+      "id": "pork-mince",
+      "name": "pork mince",
+      "category": "meat"
+    },
+    {
+      "id": "chicken-thigh",
+      "name": "chicken thigh fillets",
+      "category": "meat"
+    },
+    {
+      "id": "egg",
+      "name": "eggs",
+      "category": "dairy & eggs"
+    },
+    {
+      "id": "butter",
+      "name": "butter",
+      "category": "dairy & eggs"
+    },
+    {
+      "id": "cream",
+      "name": "thickened cream",
+      "category": "dairy & eggs"
+    },
+    {
+      "id": "natural-yoghurt",
+      "name": "natural yoghurt",
+      "category": "dairy & eggs"
+    },
+    {
+      "id": "haloumi",
+      "name": "haloumi",
+      "category": "dairy & eggs"
+    },
+    {
+      "id": "feta",
+      "name": "feta",
+      "category": "dairy & eggs"
+    },
+    {
+      "id": "parmesan",
+      "name": "parmesan",
+      "category": "dairy & eggs"
+    },
+    {
+      "id": "onion",
+      "name": "brown onion",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "red-onion",
+      "name": "red onion",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "garlic",
+      "name": "garlic",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "ginger",
+      "name": "ginger",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "carrot",
+      "name": "carrot",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "celery",
+      "name": "celery",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "spring-onion",
+      "name": "spring onions",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "iceberg-lettuce",
+      "name": "iceberg lettuce",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "tomato",
+      "name": "tomatoes",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "cucumber",
+      "name": "Lebanese cucumber",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "capsicum",
+      "name": "green capsicum",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "frozen-peas",
+      "name": "frozen peas",
+      "category": "frozen"
+    },
+    {
+      "id": "water-chestnuts",
+      "name": "water chestnuts",
+      "category": "international"
+    },
+    {
+      "id": "spaghetti",
+      "name": "spaghetti",
+      "category": "pasta & rice"
+    },
+    {
+      "id": "jasmine-rice",
+      "name": "jasmine rice",
+      "category": "pasta & rice"
+    },
+    {
+      "id": "basmati-rice",
+      "name": "basmati rice",
+      "category": "pasta & rice"
+    },
+    {
+      "id": "crushed-tomatoes",
+      "name": "canned crushed tomatoes",
+      "category": "canned food"
+    },
+    {
+      "id": "tomato-paste",
+      "name": "tomato paste",
+      "category": "canned food"
+    },
+    {
+      "id": "kalamata-olives",
+      "name": "kalamata olives",
+      "category": "canned food"
+    },
+    {
+      "id": "olive-oil",
+      "name": "olive oil",
+      "category": "oils & vinegar",
+      "staple": true
+    },
+    {
+      "id": "vegetable-oil",
+      "name": "vegetable oil",
+      "category": "oils & vinegar",
+      "staple": true
+    },
+    {
+      "id": "sesame-oil",
+      "name": "sesame oil",
+      "category": "oils & vinegar",
+      "staple": true
+    },
+    {
+      "id": "red-wine-vinegar",
+      "name": "red wine vinegar",
+      "category": "oils & vinegar"
+    },
+    {
+      "id": "soy-sauce",
+      "name": "soy sauce",
+      "category": "sauces"
+    },
+    {
+      "id": "oyster-sauce",
+      "name": "oyster sauce",
+      "category": "sauces"
+    },
+    {
+      "id": "garam-masala",
+      "name": "garam masala",
+      "category": "herbs & spices"
+    },
+    {
+      "id": "ground-cumin",
+      "name": "ground cumin",
+      "category": "herbs & spices"
+    },
+    {
+      "id": "chilli-powder",
+      "name": "chilli powder",
+      "category": "herbs & spices"
+    },
+    {
+      "id": "dried-oregano",
+      "name": "dried oregano",
+      "category": "herbs & spices"
+    },
+    {
+      "id": "salt",
+      "name": "salt",
+      "category": "herbs & spices",
+      "staple": true
+    },
+    {
+      "id": "fresh-coriander",
+      "name": "fresh coriander",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "potato",
+      "name": "potato",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "cauliflower",
+      "name": "cauliflower",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "baby-spinach",
+      "name": "baby spinach",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "green-chilli",
+      "name": "green chilli",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "red-lentils",
+      "name": "red lentils",
+      "category": "pasta & rice"
+    },
+    {
+      "id": "coconut-milk",
+      "name": "coconut milk",
+      "category": "international"
+    },
+    {
+      "id": "chickpeas",
+      "name": "chickpeas",
+      "category": "canned food"
+    },
+    {
+      "id": "ground-almonds",
+      "name": "almond meal",
+      "category": "baking"
+    },
+    {
+      "id": "cumin-seeds",
+      "name": "cumin seeds",
+      "category": "herbs & spices"
+    },
+    {
+      "id": "ground-coriander",
+      "name": "ground coriander",
+      "category": "herbs & spices"
+    },
+    {
+      "id": "ground-turmeric",
+      "name": "ground turmeric",
+      "category": "herbs & spices"
+    },
+    {
+      "id": "beef-rump",
+      "name": "beef rump steak",
+      "category": "meat"
+    },
+    {
+      "id": "pork-belly",
+      "name": "pork belly slices",
+      "category": "meat"
+    },
+    {
+      "id": "cooked-prawns",
+      "name": "cooked prawns",
+      "category": "meat"
+    },
+    {
+      "id": "lemongrass",
+      "name": "lemongrass",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "red-chilli",
+      "name": "red chilli",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "lime",
+      "name": "lime",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "fresh-mint",
+      "name": "fresh mint",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "bean-sprouts",
+      "name": "bean sprouts",
+      "category": "fruit & veg"
+    },
+    {
+      "id": "fish-sauce",
+      "name": "fish sauce",
+      "category": "sauces"
+    },
+    {
+      "id": "hoisin-sauce",
+      "name": "hoisin sauce",
+      "category": "sauces"
+    },
+    {
+      "id": "rice-paper",
+      "name": "rice paper sheets",
+      "category": "international"
+    },
+    {
+      "id": "rice-vermicelli",
+      "name": "rice vermicelli noodles",
+      "category": "pasta & rice"
+    },
+    {
+      "id": "roasted-peanuts",
+      "name": "roasted unsalted peanuts",
+      "category": "baking"
+    },
+    {
+      "id": "white-sugar",
+      "name": "white sugar",
+      "category": "baking"
+    },
+    {
+      "id": "white-vinegar",
+      "name": "white vinegar",
+      "category": "oils & vinegar"
+    },
+    {
+      "id": "black-pepper",
+      "name": "black pepper",
+      "category": "herbs & spices",
+      "staple": true
+    }
+  ]
+}

@@ -6,15 +6,6 @@ export const CHECK_EMAIL_ALREADY_EXISTS = gql`
   }
 `
 
-export const GET_APP_CREDENTIALS = gql`
-  query GetApiKey {
-    getApiKey {
-      appId
-      appKey
-    }
-  }
-`
-
 export const GET_USER = gql`
   query GetUser($includeSavedRecipes: Boolean) {
     getUser(includeSavedRecipes: $includeSavedRecipes) {
@@ -52,7 +43,7 @@ export const GET_SAVED_RECIPES = gql`
         }
       }
       picture_url
-      edamamId
+      libraryId
       instructions
     }
   }
@@ -72,7 +63,7 @@ export const GET_RECIPE = gql`
         category
       }
       picture_url
-      edamamId
+      libraryId
       instructions
     }
   }

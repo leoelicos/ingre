@@ -25,7 +25,7 @@ export type Recipe = {
   portions: number
   ingredients: Array<Types.ObjectId>
   picture_url: string
-  edamamId?: string
+  libraryId?: string
   instructions?: string
 }
 
@@ -44,7 +44,7 @@ export type RecipeInput = {
   portions: number
   ingredients: Array<IngredientInput>
   picture_url: string
-  edamamId: string
+  libraryId: string
   instructions: string
 }
 
@@ -94,11 +94,6 @@ export type Checkout = {
 export type Auth = {
   token: string
   user: User
-}
-
-export type EdamamCredentials = {
-  appId: string
-  appKey: string
 }
 
 export interface MyContext {
