@@ -25,6 +25,8 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-common-types": "^6.7.2",
+    "@testing-library/jest-dom": "5",
+    "@testing-library/react": "14",
     "@types/node": "^26.6.5",
     "@types/pluralize": "^0.0.29",
     "@types/react": "^18.2.14",
