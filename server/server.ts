@@ -1,7 +1,7 @@
 import express, { json, urlencoded } from 'express'
 import cors from 'cors'
 import { ApolloServer } from '@apollo/server'
-import { expressMiddleware } from '@apollo/server/express4'
+import { expressMiddleware } from '@as-integrations/express4'
 import { createDataSources } from './src/datasources'
 import { resolvers } from './src/schemas/resolvers'
 import { typeDefs } from './src/schemas/typeDefs'
