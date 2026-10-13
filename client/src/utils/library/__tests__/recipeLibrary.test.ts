@@ -1,16 +1,21 @@
 import searchLibrary, {
   PLACEHOLDER_PICTURE,
+  catalogue,
+  library,
   getLibraryTags,
   matchesSearch,
   toClientRecipe
 } from '../recipeLibrary'
-import ingredientData from '../../../data/ingredients.json'
-import recipeData from '../../../data/recipes.json'
+import { libIngredient } from '../../../test/fixtures'
 import type { LibraryIngredient, LibraryRecipe } from '../../../types/library'
 
 const ingredients: LibraryIngredient[] = [
-  { id: 'rice', name: 'jasmine rice', category: 'pasta & rice' },
-  { id: 'chicken', name: 'chicken thigh fillets', category: 'meat' }
+  libIngredient({ id: 'rice', name: 'jasmine rice', category: 'pasta & rice' }),
+  libIngredient({
+    id: 'chicken',
+    name: 'chicken thigh fillets',
+    category: 'meat'
+  })
 ]
 const chickenRice: LibraryRecipe = {
   id: 'hainan-chicken-rice',
@@ -35,24 +40,25 @@ const salad: LibraryRecipe = {
 const fixtures = [chickenRice, salad]
 
 const firstBundledRecipe = (): LibraryRecipe => {
-  const [first] = recipeData.recipes
+  const [first] = library
   if (!first) throw new Error('bundled library is empty')
   return first
 }
 
 describe('recipe library data', () => {
   it('every recipe ingredient references the catalogue', () => {
-    const ids = new Set(ingredientData.ingredients.map((i) => i.id))
-    for (const r of recipeData.recipes) {
+    const ids = new Set(catalogue.map((i) => i.id))
+    for (const r of library) {
       for (const ri of r.ingredients)
         expect(ids.has(ri.ingredientId)).toBe(true)
       expect(r.tags.length).toBeGreaterThan(0)
+      expect(r.portions).toBe(1)
     }
   })
 
   it('flags salt and cooking oils as staples and nothing else', () => {
-    const staples = ingredientData.ingredients
-      .filter((i: LibraryIngredient) => i.staple)
+    const staples = catalogue
+      .filter((i) => i.staple)
       .map((i) => i.id)
       .sort()
     expect(staples).toEqual(
@@ -66,13 +72,12 @@ describe('recipe library data', () => {
     )
   })
 
-  it('uses a known set of aisle categories', () => {
-    const aisles = new Set(ingredientData.ingredients.map((i) => i.category))
+  it('uses a known set of aisles', () => {
+    const aisles = new Set(catalogue.map((i) => i.category))
     expect([...aisles].sort()).toEqual([
       'baking',
       'canned food',
       'dairy & eggs',
-      'frozen',
       'fruit & veg',
       'herbs & spices',
       'international',
@@ -85,8 +90,8 @@ describe('recipe library data', () => {
   })
 
   it('has unique recipe and ingredient ids', () => {
-    const rIds = recipeData.recipes.map((r) => r.id)
-    const iIds = ingredientData.ingredients.map((i) => i.id)
+    const rIds = library.map((r) => r.id)
+    const iIds = catalogue.map((i) => i.id)
     expect(new Set(rIds).size).toBe(rIds.length)
     expect(new Set(iIds).size).toBe(iIds.length)
   })
@@ -168,7 +173,7 @@ describe('matchesSearch / searchLibrary', () => {
   })
 
   it('uses the bundled data by default', () => {
-    expect(searchLibrary().length).toBe(recipeData.recipes.length)
+    expect(searchLibrary().length).toBe(library.length)
     expect(searchLibrary({ q: 'haloumi' }).map((r) => r.name)).toEqual([
       'Greek salad with haloumi'
     ])

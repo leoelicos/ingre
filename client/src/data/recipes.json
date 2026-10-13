@@ -1,60 +1,60 @@
 {
-  "_note": "STARTER DATA for the product owner to expand. Generic, brand-free everyday dishes cookable in under an hour from Coles/Woolworths/Aldi ingredients. Ingredients reference ingredients.json by id; tags are many-to-many (cuisines, diets, meals).",
+  "_note": "Generic, brand-free everyday dishes cookable in under an hour. All quantities are PER SERVE (portions: 1); the app multiplies by the number of people. Ingredients reference ingredients.json by id; tags are many-to-many (cuisines, diets, meals).",
   "recipes": [
     {
       "id": "spaghetti-bolognese",
       "name": "Spaghetti bolognese",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Italian", "Australian", "dinner"],
       "ingredients": [
         {
           "ingredientId": "spaghetti",
-          "quantity": 400,
+          "quantity": 100.0,
           "measure": "g"
         },
         {
           "ingredientId": "beef-mince",
-          "quantity": 500,
+          "quantity": 125.0,
           "measure": "g"
         },
         {
           "ingredientId": "onion",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "carrot",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "celery",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "stalk"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "clove"
         },
         {
           "ingredientId": "crushed-tomatoes",
-          "quantity": 800,
+          "quantity": 200.0,
           "measure": "g"
         },
         {
           "ingredientId": "tomato-paste",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tbsp"
         },
         {
           "ingredientId": "olive-oil",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tbsp"
         },
         {
           "ingredientId": "parmesan",
-          "quantity": 50,
+          "quantity": 12.5,
           "measure": "g"
         }
       ],
@@ -67,52 +67,52 @@
     {
       "id": "egg-fried-rice",
       "name": "Egg fried rice",
-      "portions": 2,
+      "portions": 1,
       "tags": ["Chinese", "vegetarian", "lunch", "dinner"],
       "ingredients": [
         {
           "ingredientId": "jasmine-rice",
-          "quantity": 2,
+          "quantity": 1.0,
           "measure": "cup"
         },
         {
           "ingredientId": "egg",
-          "quantity": 3,
+          "quantity": 1.5,
           "measure": "whole"
         },
         {
-          "ingredientId": "frozen-peas",
-          "quantity": 0.5,
+          "ingredientId": "tinned-peas",
+          "quantity": 0.25,
           "measure": "cup"
         },
         {
           "ingredientId": "carrot",
-          "quantity": 1,
+          "quantity": 0.5,
           "measure": "whole"
         },
         {
           "ingredientId": "spring-onion",
-          "quantity": 3,
+          "quantity": 1.5,
           "measure": "stalk"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 2,
+          "quantity": 1.0,
           "measure": "clove"
         },
         {
           "ingredientId": "soy-sauce",
-          "quantity": 2,
+          "quantity": 1.0,
           "measure": "tbsp"
         },
         {
           "ingredientId": "sesame-oil",
-          "quantity": 1,
+          "quantity": 0.5,
           "measure": "tsp"
         },
         {
           "ingredientId": "vegetable-oil",
-          "quantity": 2,
+          "quantity": 1.0,
           "measure": "tbsp"
         }
       ],
@@ -125,67 +125,67 @@
     {
       "id": "butter-chicken",
       "name": "Butter chicken",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Indian", "dinner", "gluten-free"],
       "ingredients": [
         {
           "ingredientId": "chicken-thigh",
-          "quantity": 700,
+          "quantity": 175.0,
           "measure": "g"
         },
         {
           "ingredientId": "natural-yoghurt",
-          "quantity": 0.5,
+          "quantity": 0.125,
           "measure": "cup"
         },
         {
           "ingredientId": "garam-masala",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tsp"
         },
         {
           "ingredientId": "ground-cumin",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "chilli-powder",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "butter",
-          "quantity": 50,
+          "quantity": 12.5,
           "measure": "g"
         },
         {
           "ingredientId": "onion",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 3,
+          "quantity": 0.75,
           "measure": "clove"
         },
         {
           "ingredientId": "ginger",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tbsp"
         },
         {
           "ingredientId": "crushed-tomatoes",
-          "quantity": 400,
+          "quantity": 100.0,
           "measure": "g"
         },
         {
           "ingredientId": "cream",
-          "quantity": 0.5,
+          "quantity": 0.125,
           "measure": "cup"
         },
         {
           "ingredientId": "basmati-rice",
-          "quantity": 1.5,
+          "quantity": 0.375,
           "measure": "cup"
         }
       ],
@@ -198,57 +198,57 @@
     {
       "id": "greek-salad-haloumi",
       "name": "Greek salad with haloumi",
-      "portions": 2,
+      "portions": 1,
       "tags": ["Greek", "Mediterranean", "vegetarian", "gluten-free", "lunch"],
       "ingredients": [
         {
           "ingredientId": "haloumi",
-          "quantity": 180,
+          "quantity": 90.0,
           "measure": "g"
         },
         {
           "ingredientId": "tomato",
-          "quantity": 3,
+          "quantity": 1.5,
           "measure": "whole"
         },
         {
           "ingredientId": "cucumber",
-          "quantity": 2,
+          "quantity": 1.0,
           "measure": "whole"
         },
         {
           "ingredientId": "red-onion",
-          "quantity": 0.5,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "capsicum",
-          "quantity": 1,
+          "quantity": 0.5,
           "measure": "whole"
         },
         {
           "ingredientId": "kalamata-olives",
-          "quantity": 0.5,
+          "quantity": 0.25,
           "measure": "cup"
         },
         {
           "ingredientId": "feta",
-          "quantity": 100,
+          "quantity": 50.0,
           "measure": "g"
         },
         {
           "ingredientId": "dried-oregano",
-          "quantity": 1,
+          "quantity": 0.5,
           "measure": "tsp"
         },
         {
           "ingredientId": "olive-oil",
-          "quantity": 3,
+          "quantity": 1.5,
           "measure": "tbsp"
         },
         {
           "ingredientId": "red-wine-vinegar",
-          "quantity": 1,
+          "quantity": 0.5,
           "measure": "tbsp"
         }
       ],
@@ -261,57 +261,57 @@
     {
       "id": "san-choy-bau",
       "name": "San choy bau",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Chinese", "Cantonese", "dinner", "lunch"],
       "ingredients": [
         {
           "ingredientId": "pork-mince",
-          "quantity": 500,
+          "quantity": 125.0,
           "measure": "g"
         },
         {
           "ingredientId": "iceberg-lettuce",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "water-chestnuts",
-          "quantity": 225,
+          "quantity": 56.25,
           "measure": "g"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "clove"
         },
         {
           "ingredientId": "ginger",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tbsp"
         },
         {
           "ingredientId": "spring-onion",
-          "quantity": 3,
+          "quantity": 0.75,
           "measure": "stalk"
         },
         {
           "ingredientId": "oyster-sauce",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tbsp"
         },
         {
           "ingredientId": "soy-sauce",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tbsp"
         },
         {
           "ingredientId": "sesame-oil",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "vegetable-oil",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tbsp"
         }
       ],
@@ -324,72 +324,72 @@
     {
       "id": "chicken-korma",
       "name": "Chicken korma",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Indian", "dinner"],
       "ingredients": [
         {
           "ingredientId": "chicken-thigh",
-          "quantity": 800,
+          "quantity": 200.0,
           "measure": "g"
         },
         {
           "ingredientId": "onion",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "whole"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 4,
+          "quantity": 1.0,
           "measure": "clove"
         },
         {
           "ingredientId": "ginger",
-          "quantity": 20,
+          "quantity": 5.0,
           "measure": "g"
         },
         {
           "ingredientId": "natural-yoghurt",
-          "quantity": 200,
+          "quantity": 50.0,
           "measure": "g"
         },
         {
           "ingredientId": "ground-almonds",
-          "quantity": 50,
+          "quantity": 12.5,
           "measure": "g"
         },
         {
           "ingredientId": "cream",
-          "quantity": 150,
+          "quantity": 37.5,
           "measure": "ml"
         },
         {
           "ingredientId": "garam-masala",
-          "quantity": 2,
-          "measure": "tsp"
-        },
-        {
-          "ingredientId": "ground-coriander",
-          "quantity": 2,
-          "measure": "tsp"
-        },
-        {
-          "ingredientId": "ground-turmeric",
           "quantity": 0.5,
           "measure": "tsp"
         },
         {
+          "ingredientId": "ground-coriander",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "ground-turmeric",
+          "quantity": 0.125,
+          "measure": "tsp"
+        },
+        {
           "ingredientId": "vegetable-oil",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tbsp"
         },
         {
           "ingredientId": "basmati-rice",
-          "quantity": 300,
+          "quantity": 75.0,
           "measure": "g"
         },
         {
           "ingredientId": "salt",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         }
       ],
@@ -404,67 +404,67 @@
     {
       "id": "dahl",
       "name": "Red lentil dahl",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Indian", "dinner", "vegetarian"],
       "ingredients": [
         {
           "ingredientId": "red-lentils",
-          "quantity": 300,
+          "quantity": 75.0,
           "measure": "g"
         },
         {
           "ingredientId": "onion",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 4,
+          "quantity": 1.0,
           "measure": "clove"
         },
         {
           "ingredientId": "ginger",
-          "quantity": 20,
+          "quantity": 5.0,
           "measure": "g"
         },
         {
           "ingredientId": "tomato",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "whole"
         },
         {
           "ingredientId": "ground-turmeric",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "cumin-seeds",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "garam-masala",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "butter",
-          "quantity": 30,
+          "quantity": 7.5,
           "measure": "g"
         },
         {
           "ingredientId": "fresh-coriander",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "bunch"
         },
         {
           "ingredientId": "basmati-rice",
-          "quantity": 300,
+          "quantity": 75.0,
           "measure": "g"
         },
         {
           "ingredientId": "salt",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         }
       ],
@@ -479,77 +479,77 @@
     {
       "id": "beef-keema",
       "name": "Beef keema with peas",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Indian", "dinner"],
       "ingredients": [
         {
           "ingredientId": "beef-mince",
-          "quantity": 500,
+          "quantity": 125.0,
           "measure": "g"
         },
         {
           "ingredientId": "onion",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 3,
+          "quantity": 0.75,
           "measure": "clove"
         },
         {
           "ingredientId": "ginger",
-          "quantity": 20,
+          "quantity": 5.0,
           "measure": "g"
         },
         {
           "ingredientId": "green-chilli",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "crushed-tomatoes",
-          "quantity": 400,
+          "quantity": 100.0,
           "measure": "g tin"
         },
         {
-          "ingredientId": "frozen-peas",
-          "quantity": 200,
+          "ingredientId": "tinned-peas",
+          "quantity": 50.0,
           "measure": "g"
         },
         {
           "ingredientId": "ground-cumin",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "ground-coriander",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "garam-masala",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tsp"
         },
         {
           "ingredientId": "vegetable-oil",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tbsp"
         },
         {
           "ingredientId": "fresh-coriander",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "bunch"
         },
         {
           "ingredientId": "basmati-rice",
-          "quantity": 300,
+          "quantity": 75.0,
           "measure": "g"
         },
         {
           "ingredientId": "salt",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         }
       ],
@@ -565,87 +565,87 @@
     {
       "id": "vegetable-curry",
       "name": "Potato, cauliflower and chickpea curry",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Indian", "dinner", "vegetarian", "vegan"],
       "ingredients": [
         {
           "ingredientId": "potato",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "whole"
         },
         {
           "ingredientId": "cauliflower",
-          "quantity": 0.5,
+          "quantity": 0.125,
           "measure": "whole"
         },
         {
           "ingredientId": "chickpeas",
-          "quantity": 400,
+          "quantity": 100.0,
           "measure": "g tin"
         },
         {
           "ingredientId": "onion",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 3,
+          "quantity": 0.75,
           "measure": "clove"
         },
         {
           "ingredientId": "ginger",
-          "quantity": 20,
+          "quantity": 5.0,
           "measure": "g"
         },
         {
           "ingredientId": "crushed-tomatoes",
-          "quantity": 400,
+          "quantity": 100.0,
           "measure": "g tin"
         },
         {
           "ingredientId": "coconut-milk",
-          "quantity": 270,
+          "quantity": 67.5,
           "measure": "ml tin"
         },
         {
           "ingredientId": "baby-spinach",
-          "quantity": 60,
+          "quantity": 15.0,
           "measure": "g"
         },
         {
           "ingredientId": "ground-turmeric",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "ground-cumin",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "chilli-powder",
-          "quantity": 0.5,
+          "quantity": 0.125,
           "measure": "tsp"
         },
         {
           "ingredientId": "garam-masala",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "vegetable-oil",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tbsp"
         },
         {
           "ingredientId": "basmati-rice",
-          "quantity": 300,
+          "quantity": 75.0,
           "measure": "g"
         },
         {
           "ingredientId": "salt",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         }
       ],
@@ -660,82 +660,82 @@
     {
       "id": "shaking-beef",
       "name": "Shaking beef (bò lúc lắc)",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Vietnamese", "dinner"],
       "ingredients": [
         {
           "ingredientId": "beef-rump",
-          "quantity": 700,
+          "quantity": 175.0,
           "measure": "g"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 6,
+          "quantity": 1.5,
           "measure": "clove"
         },
         {
           "ingredientId": "red-onion",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "oyster-sauce",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tbsp"
         },
         {
           "ingredientId": "soy-sauce",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tbsp"
         },
         {
           "ingredientId": "fish-sauce",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tbsp"
         },
         {
           "ingredientId": "white-sugar",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "black-pepper",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         },
         {
           "ingredientId": "butter",
-          "quantity": 20,
+          "quantity": 5.0,
           "measure": "g"
         },
         {
           "ingredientId": "vegetable-oil",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tbsp"
         },
         {
           "ingredientId": "iceberg-lettuce",
-          "quantity": 0.5,
+          "quantity": 0.125,
           "measure": "whole"
         },
         {
           "ingredientId": "tomato",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "whole"
         },
         {
           "ingredientId": "lime",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "jasmine-rice",
-          "quantity": 300,
+          "quantity": 75.0,
           "measure": "g"
         },
         {
           "ingredientId": "salt",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         }
       ],
@@ -751,62 +751,62 @@
     {
       "id": "lemongrass-chilli-chicken",
       "name": "Lemongrass chilli chicken (gà xào sả ớt)",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Vietnamese", "dinner"],
       "ingredients": [
         {
           "ingredientId": "chicken-thigh",
-          "quantity": 800,
+          "quantity": 200.0,
           "measure": "g"
         },
         {
           "ingredientId": "lemongrass",
-          "quantity": 3,
-          "measure": "whole"
+          "quantity": 7.5,
+          "measure": "g"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 4,
+          "quantity": 1.0,
           "measure": "clove"
         },
         {
           "ingredientId": "red-chilli",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "whole"
         },
         {
           "ingredientId": "onion",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "fish-sauce",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tbsp"
         },
         {
           "ingredientId": "white-sugar",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tbsp"
         },
         {
           "ingredientId": "ground-turmeric",
-          "quantity": 0.5,
+          "quantity": 0.125,
           "measure": "tsp"
         },
         {
           "ingredientId": "vegetable-oil",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tbsp"
         },
         {
           "ingredientId": "fresh-coriander",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "bunch"
         },
         {
           "ingredientId": "jasmine-rice",
-          "quantity": 300,
+          "quantity": 75.0,
           "measure": "g"
         }
       ],
@@ -822,92 +822,92 @@
     {
       "id": "lemongrass-beef-noodle-salad",
       "name": "Lemongrass beef noodle salad (bún bò xào)",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Vietnamese", "dinner"],
       "ingredients": [
         {
           "ingredientId": "beef-rump",
-          "quantity": 500,
+          "quantity": 125.0,
           "measure": "g"
         },
         {
           "ingredientId": "lemongrass",
-          "quantity": 2,
-          "measure": "whole"
+          "quantity": 5.0,
+          "measure": "g"
         },
         {
           "ingredientId": "garlic",
-          "quantity": 3,
+          "quantity": 0.75,
           "measure": "clove"
         },
         {
           "ingredientId": "onion",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "rice-vermicelli",
-          "quantity": 250,
+          "quantity": 62.5,
           "measure": "g"
         },
         {
           "ingredientId": "iceberg-lettuce",
-          "quantity": 0.5,
+          "quantity": 0.125,
           "measure": "whole"
         },
         {
           "ingredientId": "cucumber",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "carrot",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "bean-sprouts",
-          "quantity": 150,
+          "quantity": 37.5,
           "measure": "g"
         },
         {
           "ingredientId": "fresh-mint",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "bunch"
         },
         {
           "ingredientId": "roasted-peanuts",
-          "quantity": 50,
+          "quantity": 12.5,
           "measure": "g"
         },
         {
           "ingredientId": "fish-sauce",
-          "quantity": 4,
+          "quantity": 1.0,
           "measure": "tbsp"
         },
         {
           "ingredientId": "white-sugar",
-          "quantity": 3,
+          "quantity": 0.75,
           "measure": "tbsp"
         },
         {
           "ingredientId": "lime",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "whole"
         },
         {
           "ingredientId": "red-chilli",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "white-vinegar",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tbsp"
         },
         {
           "ingredientId": "vegetable-oil",
-          "quantity": 2,
+          "quantity": 0.5,
           "measure": "tbsp"
         }
       ],
@@ -923,62 +923,62 @@
     {
       "id": "rice-paper-rolls",
       "name": "Prawn and pork rice paper rolls (gỏi cuốn)",
-      "portions": 4,
+      "portions": 1,
       "tags": ["Vietnamese", "dinner", "lunch"],
       "ingredients": [
         {
           "ingredientId": "cooked-prawns",
-          "quantity": 300,
+          "quantity": 75.0,
           "measure": "g"
         },
         {
           "ingredientId": "pork-belly",
-          "quantity": 300,
+          "quantity": 75.0,
           "measure": "g"
         },
         {
           "ingredientId": "rice-paper",
-          "quantity": 16,
+          "quantity": 4.0,
           "measure": "whole"
         },
         {
           "ingredientId": "rice-vermicelli",
-          "quantity": 100,
+          "quantity": 25.0,
           "measure": "g"
         },
         {
           "ingredientId": "iceberg-lettuce",
-          "quantity": 0.5,
+          "quantity": 0.125,
           "measure": "whole"
         },
         {
           "ingredientId": "fresh-mint",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "bunch"
         },
         {
           "ingredientId": "fresh-coriander",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "bunch"
         },
         {
           "ingredientId": "cucumber",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "whole"
         },
         {
           "ingredientId": "hoisin-sauce",
-          "quantity": 4,
+          "quantity": 1.0,
           "measure": "tbsp"
         },
         {
           "ingredientId": "roasted-peanuts",
-          "quantity": 30,
+          "quantity": 7.5,
           "measure": "g"
         },
         {
           "ingredientId": "salt",
-          "quantity": 1,
+          "quantity": 0.25,
           "measure": "tsp"
         }
       ],

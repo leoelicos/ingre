@@ -7,11 +7,12 @@ import type {
   LibraryRecipe,
   LibrarySearch
 } from '../../types/library'
+import { parseCatalogue, parseRecipes } from './parseLibrary'
 
 export const PLACEHOLDER_PICTURE = '/ingre.png'
 
-const catalogue: LibraryIngredient[] = ingredientData.ingredients
-const library: LibraryRecipe[] = recipeData.recipes
+export const catalogue: LibraryIngredient[] = parseCatalogue(ingredientData)
+export const library: LibraryRecipe[] = parseRecipes(recipeData)
 
 export function toClientRecipe(
   recipe: LibraryRecipe,

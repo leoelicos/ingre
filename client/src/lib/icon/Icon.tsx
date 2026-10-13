@@ -117,16 +117,7 @@ export const IngreIconClearSearch = () => (
 )
 
 /* ingredients */
-export const IngreIconAddIngredient = () => (
-  <Icon
-    icon={['fas', 'add']}
-    small={true}
-  />
-)
-
-export const IngreIconClearCustom = () => (
-  <Icon
-    icon={['fas', 'eraser']}
-    small={true}
-  />
-)
+/* shopping list */
+export const IngreIconHouse = () => <Icon icon={['fas', 'house']} />
+export const IngreIconBasket = () => <Icon icon={['fas', 'basket-shopping']} />
+export const IngreIconLocation = () => <Icon icon={['fas', 'location-dot']} />

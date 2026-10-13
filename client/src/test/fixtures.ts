@@ -1,3 +1,4 @@
+import type { LibraryIngredient } from '../types/library'
 import type { ClientIngredient, ClientRecipe } from '../types/client'
 import type { Recipe as ServerRecipe } from '../lib/apollo/graphQL/typedefs'
 
@@ -60,4 +61,29 @@ export function serverRecipe(
     ],
     ...overrides
   }
+}
+
+/** A valid catalogue item for library/shopping tests. */
+export function libIngredient(
+  overrides: Partial<LibraryIngredient> = {}
+): LibraryIngredient {
+  return {
+    id: 'onion',
+    name: 'brown onion',
+    category: 'fruit & veg',
+    sold: [{ type: 'each', size: { amount: 1, unit: 'count' } }],
+    pantry: 'Cupboard',
+    ...overrides
+  }
+}
+
+/** An unsigned JWT that jwt-decode accepts, expiring at `exp` (seconds). */
+export function jwt(exp = Math.floor(Date.now() / 1000) + 3600): string {
+  const payload = Buffer.from(
+    JSON.stringify({
+      exp,
+      data: { firstName: 'Ada', email: 'a@b.c', _id: '1', pro: false }
+    })
+  ).toString('base64url')
+  return `e30.${payload}.sig`
 }

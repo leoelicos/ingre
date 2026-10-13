@@ -1,9 +1,4 @@
-import {
-  isClientRecipe,
-  isClientRecipeList,
-  savedIngredientsFromUnknown,
-  toSavedIngredient
-} from '../guards'
+import { isClientRecipe, isClientRecipeList } from '../guards'
 import { recipe, ingredient, omit } from '../../../test/fixtures'
 
 describe('recipe guards', () => {
@@ -48,39 +43,6 @@ describe('recipe guards', () => {
     ).toBe(false)
     expect(isClientRecipeList('nope')).toBe(false)
     expect(isClientRecipeList([recipe(), { name: 'bad' }])).toBe(false)
-  })
-})
-
-describe('savedIngredientsFromUnknown', () => {
-  const valid = {
-    _id: '1',
-    name: 'Tomato',
-    quantity: '2',
-    measure: 'cup',
-    category: { name: 'Produce' },
-    recipe: 'Salad',
-    recipeId: 'r1'
-  }
-
-  it('normalises string and numeric quantities', () => {
-    expect(toSavedIngredient(valid)).toEqual(valid)
-    expect(toSavedIngredient({ ...valid, quantity: 3 })?.quantity).toBe('3')
-    expect(savedIngredientsFromUnknown([valid, { nope: true }, 'x'])).toEqual([
-      valid
-    ])
-  })
-
-  it('rejects malformed values', () => {
-    expect(toSavedIngredient(null)).toBeNull()
-    expect(toSavedIngredient({ ...valid, _id: 1 })).toBeNull()
-    expect(toSavedIngredient({ ...valid, name: 1 })).toBeNull()
-    expect(toSavedIngredient({ ...valid, quantity: true })).toBeNull()
-    expect(toSavedIngredient({ ...valid, measure: 1 })).toBeNull()
-    expect(toSavedIngredient({ ...valid, category: null })).toBeNull()
-    expect(toSavedIngredient({ ...valid, category: { name: 1 } })).toBeNull()
-    expect(toSavedIngredient({ ...valid, recipe: 1 })).toBeNull()
-    expect(toSavedIngredient({ ...valid, recipeId: 1 })).toBeNull()
-    expect(savedIngredientsFromUnknown('nope')).toEqual([])
   })
 })
 

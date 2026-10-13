@@ -7,8 +7,8 @@ jest.mock('../pages/Search/Search', () => () => <div>Search page</div>)
 jest.mock('../pages/Saved/Saved', () => ({
   Saved: () => <div>Saved page</div>
 }))
-jest.mock('../pages/Ingredients/Ingredients', () => ({
-  Ingredients: () => <div>Ingredients page</div>
+jest.mock('../pages/ShoppingList/ShoppingListPage', () => ({
+  ShoppingListPage: () => <div>Ingredients page</div>
 }))
 jest.mock('../pages/TapOff/TapOff', () => () => <div>Tapoff page</div>)
 jest.mock('../pages/Admin/Login', () => ({

@@ -2,12 +2,13 @@ import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import {
   Icon,
-  IngreIconAddIngredient,
   IngreIconChevronDown,
-  IngreIconClearCustom,
   IngreIconClearSearch,
   IngreIconHelp,
   IngreIconIngredients,
+  IngreIconBasket,
+  IngreIconHouse,
+  IngreIconLocation,
   IngreIconLogoEgg,
   IngreIconLogoMenuCollapsed,
   IngreIconPortion,
@@ -30,6 +31,9 @@ describe('Icon', () => {
         icon={['fas', 'egg']}
         key="plain"
       />,
+      <IngreIconHouse key="house" />,
+      <IngreIconBasket key="basket" />,
+      <IngreIconLocation key="location" />,
       <IngreIconLogoEgg key="egg" />,
       <IngreIconLogoMenuCollapsed key="menu" />,
       <IngreIconChevronDown key="chevron" />,
@@ -42,9 +46,7 @@ describe('Icon', () => {
       <IngreIconSave key="save" />,
       <IngreIconSpin key="spin" />,
       <IngreIconPortion key="portion" />,
-      <IngreIconClearSearch key="clear-search" />,
-      <IngreIconAddIngredient key="add" />,
-      <IngreIconClearCustom key="clear" />
+      <IngreIconClearSearch key="clear-search" />
     ]
     icons.forEach((icon) => {
       expect(() => render(icon)).not.toThrow()

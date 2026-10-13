@@ -19,39 +19,6 @@
   color: var(--color-text);
 }
 
-.segmented {
-  display: inline-flex;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  overflow: hidden;
-  background: var(--color-surface);
-}
-.segmented__option {
-  margin: 0;
-  cursor: pointer;
-}
-.segmented__option input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-.segmented__option span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
-  color: var(--color-text);
-}
-.segmented__option input:checked + span {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-}
-.segmented__option input:focus-visible + span {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -4px;
-}
-
 .chip-row {
   display: flex;
   flex-wrap: wrap;

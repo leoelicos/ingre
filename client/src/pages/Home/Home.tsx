@@ -2,6 +2,7 @@ import type { FC } from 'react'
 import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardContainer'
 import { PEOPLE_OPTIONS } from '../../utils/storage/people'
 import { useHome } from './useHome'
+import '../../styles/segmented.css'
 import './home.css'
 
 const Home: FC = () => {

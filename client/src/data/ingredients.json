@@ -1,350 +1,1424 @@
 {
-  "_note": "STARTER DATA for the product owner to expand. One entry per generic, brand-free item available at Coles/Woolworths/Aldi. `category` is the supermarket aisle.",
+  "_note": "Generic, brand-free items available at Coles/Woolworths/Aldi. `category` is the supermarket aisle. `sold` lists how the item is sold: {type, size: {amount, unit: g|ml|count} | null for weighed, label?}. `approxGrams` is the weight of one counted item (each/bunch); `measureGrams` converts recipe-only measures (clove, stalk). `pantry` is the default home location (Fridge, Cupboard, Spice rack, Bench; from the PO's home-locations draft with Fruit bowl folded into Bench); users can override it in the app. PROVISIONAL: frozen peas replaced by tinned peas (420 g tin, unverified) as there is no freezer location. Verified against Coles (PO, 2026-10): apple, black-pepper, celery, chilli-powder, cumin-seeds, garam-masala, garlic, ground-coriander, ground-cumin, ground-turmeric, lemongrass, parmesan, rice-paper (spice jars 25-50 g; parmesan blocks and grated/shaved; pepper 50 g grinder or ground; rice paper 250/375 g packs, recipes count sheets so one pack is bought; lemongrass punnet or paste tube, not per stalk). UNVERIFIED draft sizes, to be checked by the PO: baby-spinach, basmati-rice, bean-sprouts, beef-mince, beef-rump, butter, capsicum, carrot, cauliflower, chicken-thigh, chickpeas, coconut-milk, cooked-prawns, cream, crushed-tomatoes, cucumber, dried-oregano, egg, feta, fish-sauce, fresh-coriander, fresh-mint, ginger, green-chilli, ground-almonds, haloumi, hoisin-sauce, iceberg-lettuce, jasmine-rice, kalamata-olives, lime, natural-yoghurt, olive-oil, onion, oyster-sauce, pork-belly, pork-mince, potato, red-chilli, red-lentils, red-onion, red-wine-vinegar, rice-vermicelli, roasted-peanuts, salt, sesame-oil, soy-sauce, spaghetti, spring-onion, tinned-peas, tomato, tomato-paste, vegetable-oil, water-chestnuts, white-sugar, white-vinegar. Estimates: celery bunch 800 g / trimmed head 500 g, celery stalk 40 g, spring onion stalk 10 g, garlic clove 6 g, salt shaker 125 g, dried oregano 10 g jar (below the verified 25-50 g spice-jar range).",
   "ingredients": [
     {
       "id": "beef-mince",
       "name": "beef mince",
-      "category": "meat"
+      "category": "meat",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "pork-mince",
       "name": "pork mince",
-      "category": "meat"
+      "category": "meat",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "chicken-thigh",
       "name": "chicken thigh fillets",
-      "category": "meat"
+      "category": "meat",
+      "sold": [
+        {
+          "type": "weighed",
+          "size": null
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "egg",
       "name": "eggs",
-      "category": "dairy & eggs"
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "carton",
+          "size": {
+            "amount": 6,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "carton",
+          "size": {
+            "amount": 12,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 55,
+      "pantry": "Fridge"
     },
     {
       "id": "butter",
       "name": "butter",
-      "category": "dairy & eggs"
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 250,
+            "unit": "g"
+          },
+          "label": "block"
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          },
+          "label": "block"
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "cream",
       "name": "thickened cream",
-      "category": "dairy & eggs"
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "carton",
+          "size": {
+            "amount": 300,
+            "unit": "ml"
+          }
+        },
+        {
+          "type": "carton",
+          "size": {
+            "amount": 600,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "natural-yoghurt",
       "name": "natural yoghurt",
-      "category": "dairy & eggs"
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          },
+          "label": "tub"
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          },
+          "label": "tub"
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "haloumi",
       "name": "haloumi",
-      "category": "dairy & eggs"
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 180,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 250,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "feta",
       "name": "feta",
-      "category": "dairy & eggs"
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 200,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "parmesan",
       "name": "parmesan",
-      "category": "dairy & eggs"
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 200,
+            "unit": "g"
+          },
+          "label": "block"
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 250,
+            "unit": "g"
+          },
+          "label": "block"
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 100,
+            "unit": "g"
+          },
+          "label": "grated"
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 125,
+            "unit": "g"
+          },
+          "label": "shaved"
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "onion",
       "name": "brown onion",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        }
+      ],
+      "approxGrams": 150,
+      "pantry": "Bench"
     },
     {
       "id": "red-onion",
       "name": "red onion",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        }
+      ],
+      "approxGrams": 150,
+      "pantry": "Bench"
     },
     {
       "id": "garlic",
       "name": "garlic",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          },
+          "label": "loose bulb"
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 3,
+            "unit": "count"
+          },
+          "label": "3-pack"
+        }
+      ],
+      "approxGrams": 60,
+      "measureGrams": {
+        "clove": 6
+      },
+      "pantry": "Bench"
     },
     {
       "id": "ginger",
       "name": "ginger",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "carrot",
       "name": "carrot",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        }
+      ],
+      "approxGrams": 120,
+      "pantry": "Fridge"
     },
     {
       "id": "celery",
       "name": "celery",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "bunch",
+          "size": {
+            "amount": 800,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "each",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          },
+          "label": "trimmed head"
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 300,
+            "unit": "g"
+          },
+          "label": "sticks"
+        }
+      ],
+      "approxGrams": 500,
+      "measureGrams": {
+        "stalk": 40
+      },
+      "pantry": "Fridge"
     },
     {
       "id": "spring-onion",
       "name": "spring onions",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "bunch",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 100,
+      "measureGrams": {
+        "stalk": 10
+      },
+      "pantry": "Fridge"
     },
     {
       "id": "iceberg-lettuce",
       "name": "iceberg lettuce",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 600,
+      "pantry": "Fridge"
     },
     {
       "id": "tomato",
       "name": "tomatoes",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "approxGrams": 120,
+      "pantry": "Bench"
     },
     {
       "id": "cucumber",
       "name": "Lebanese cucumber",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 350,
+      "pantry": "Fridge"
     },
     {
       "id": "capsicum",
       "name": "green capsicum",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 180,
+      "pantry": "Fridge"
     },
     {
-      "id": "frozen-peas",
-      "name": "frozen peas",
-      "category": "frozen"
+      "id": "tinned-peas",
+      "name": "tinned peas",
+      "category": "canned food",
+      "sold": [
+        {
+          "type": "tin",
+          "size": {
+            "amount": 420,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "water-chestnuts",
       "name": "water chestnuts",
-      "category": "international"
+      "category": "international",
+      "sold": [
+        {
+          "type": "tin",
+          "size": {
+            "amount": 227,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "spaghetti",
       "name": "spaghetti",
-      "category": "pasta & rice"
+      "category": "pasta & rice",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "jasmine-rice",
       "name": "jasmine rice",
-      "category": "pasta & rice"
+      "category": "pasta & rice",
+      "sold": [
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 2000,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 5000,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "basmati-rice",
       "name": "basmati rice",
-      "category": "pasta & rice"
+      "category": "pasta & rice",
+      "sold": [
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 2000,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "crushed-tomatoes",
       "name": "canned crushed tomatoes",
-      "category": "canned food"
+      "category": "canned food",
+      "sold": [
+        {
+          "type": "tin",
+          "size": {
+            "amount": 400,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "tomato-paste",
       "name": "tomato paste",
-      "category": "canned food"
+      "category": "canned food",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 140,
+            "unit": "g"
+          },
+          "label": "tub"
+        },
+        {
+          "type": "jar",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "kalamata-olives",
       "name": "kalamata olives",
-      "category": "canned food"
+      "category": "canned food",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 350,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "olive-oil",
       "name": "olive oil",
       "category": "oils & vinegar",
-      "staple": true
+      "staple": true,
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 500,
+            "unit": "ml"
+          }
+        },
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 1000,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "vegetable-oil",
       "name": "vegetable oil",
       "category": "oils & vinegar",
-      "staple": true
+      "staple": true,
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 750,
+            "unit": "ml"
+          }
+        },
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 1000,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "sesame-oil",
       "name": "sesame oil",
       "category": "oils & vinegar",
-      "staple": true
+      "staple": true,
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 150,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "red-wine-vinegar",
       "name": "red wine vinegar",
-      "category": "oils & vinegar"
+      "category": "oils & vinegar",
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 250,
+            "unit": "ml"
+          }
+        },
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 500,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "soy-sauce",
       "name": "soy sauce",
-      "category": "sauces"
+      "category": "sauces",
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 250,
+            "unit": "ml"
+          }
+        },
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 500,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "oyster-sauce",
       "name": "oyster sauce",
-      "category": "sauces"
+      "category": "sauces",
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 255,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 510,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "garam-masala",
       "name": "garam masala",
-      "category": "herbs & spices"
+      "category": "herbs & spices",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 30,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Spice rack"
     },
     {
       "id": "ground-cumin",
       "name": "ground cumin",
-      "category": "herbs & spices"
+      "category": "herbs & spices",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 30,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Spice rack"
     },
     {
       "id": "chilli-powder",
       "name": "chilli powder",
-      "category": "herbs & spices"
+      "category": "herbs & spices",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 30,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Spice rack"
     },
     {
       "id": "dried-oregano",
       "name": "dried oregano",
-      "category": "herbs & spices"
+      "category": "herbs & spices",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 10,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Spice rack"
     },
     {
       "id": "salt",
       "name": "salt",
       "category": "herbs & spices",
-      "staple": true
+      "staple": true,
+      "sold": [
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "jar",
+          "size": {
+            "amount": 125,
+            "unit": "g"
+          },
+          "label": "shaker"
+        }
+      ],
+      "pantry": "Spice rack"
     },
     {
       "id": "fresh-coriander",
       "name": "fresh coriander",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "bunch",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 60,
+      "pantry": "Fridge"
     },
     {
       "id": "potato",
       "name": "potato",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 2000,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "approxGrams": 200,
+      "pantry": "Bench"
     },
     {
       "id": "cauliflower",
       "name": "cauliflower",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "each",
+          "size": {
+            "amount": 0.5,
+            "unit": "count"
+          },
+          "label": "half"
+        }
+      ],
+      "approxGrams": 1000,
+      "pantry": "Fridge"
     },
     {
       "id": "baby-spinach",
       "name": "baby spinach",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "bag",
+          "size": {
+            "amount": 120,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 280,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "green-chilli",
       "name": "green chilli",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "approxGrams": 10,
+      "pantry": "Fridge"
     },
     {
       "id": "red-lentils",
       "name": "red lentils",
-      "category": "pasta & rice"
+      "category": "pasta & rice",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "coconut-milk",
       "name": "coconut milk",
-      "category": "international"
+      "category": "international",
+      "sold": [
+        {
+          "type": "tin",
+          "size": {
+            "amount": 270,
+            "unit": "ml"
+          }
+        },
+        {
+          "type": "tin",
+          "size": {
+            "amount": 400,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "chickpeas",
       "name": "chickpeas",
-      "category": "canned food"
+      "category": "canned food",
+      "sold": [
+        {
+          "type": "tin",
+          "size": {
+            "amount": 400,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "ground-almonds",
       "name": "almond meal",
-      "category": "baking"
+      "category": "baking",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 200,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "cumin-seeds",
       "name": "cumin seeds",
-      "category": "herbs & spices"
+      "category": "herbs & spices",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 30,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Spice rack"
     },
     {
       "id": "ground-coriander",
       "name": "ground coriander",
-      "category": "herbs & spices"
+      "category": "herbs & spices",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 30,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Spice rack"
     },
     {
       "id": "ground-turmeric",
       "name": "ground turmeric",
-      "category": "herbs & spices"
+      "category": "herbs & spices",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 30,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Spice rack"
     },
     {
       "id": "beef-rump",
       "name": "beef rump steak",
-      "category": "meat"
+      "category": "meat",
+      "sold": [
+        {
+          "type": "weighed",
+          "size": null
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "pork-belly",
       "name": "pork belly slices",
-      "category": "meat"
+      "category": "meat",
+      "sold": [
+        {
+          "type": "weighed",
+          "size": null
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "cooked-prawns",
       "name": "cooked prawns",
-      "category": "seafood"
+      "category": "seafood",
+      "sold": [
+        {
+          "type": "weighed",
+          "size": null
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "lemongrass",
       "name": "lemongrass",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 30,
+            "unit": "g"
+          },
+          "label": "punnet"
+        },
+        {
+          "type": "tube",
+          "size": {
+            "amount": 80,
+            "unit": "g"
+          },
+          "label": "paste"
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "red-chilli",
       "name": "red chilli",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "approxGrams": 10,
+      "pantry": "Fridge"
     },
     {
       "id": "lime",
       "name": "lime",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 70,
+      "pantry": "Bench"
     },
     {
       "id": "fresh-mint",
       "name": "fresh mint",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "bunch",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 50,
+      "pantry": "Fridge"
     },
     {
       "id": "bean-sprouts",
       "name": "bean sprouts",
-      "category": "fruit & veg"
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 250,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
     },
     {
       "id": "fish-sauce",
       "name": "fish sauce",
-      "category": "sauces"
+      "category": "sauces",
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 200,
+            "unit": "ml"
+          }
+        },
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 750,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "hoisin-sauce",
       "name": "hoisin sauce",
-      "category": "sauces"
+      "category": "sauces",
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 250,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "rice-paper",
       "name": "rice paper sheets",
-      "category": "international"
+      "category": "international",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 250,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 375,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "rice-vermicelli",
       "name": "rice vermicelli noodles",
-      "category": "pasta & rice"
+      "category": "pasta & rice",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 250,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 400,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "roasted-peanuts",
       "name": "roasted unsalted peanuts",
-      "category": "baking"
+      "category": "baking",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 200,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 375,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "white-sugar",
       "name": "white sugar",
-      "category": "baking"
+      "category": "baking",
+      "sold": [
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 2000,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "white-vinegar",
       "name": "white vinegar",
-      "category": "oils & vinegar"
+      "category": "oils & vinegar",
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 750,
+            "unit": "ml"
+          }
+        },
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 2000,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
     },
     {
       "id": "black-pepper",
       "name": "black pepper",
       "category": "herbs & spices",
-      "staple": true
+      "staple": true,
+      "sold": [
+        {
+          "type": "grinder",
+          "size": {
+            "amount": 50,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "jar",
+          "size": {
+            "amount": 50,
+            "unit": "g"
+          },
+          "label": "ground"
+        }
+      ],
+      "pantry": "Spice rack"
+    },
+    {
+      "id": "apple",
+      "name": "apples",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          },
+          "label": "loose"
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        }
+      ],
+      "approxGrams": 185,
+      "pantry": "Cupboard"
     }
   ]
 }

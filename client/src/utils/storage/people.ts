@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { readStored, writeStored } from './storage'
+import { useStored } from './useStored'
 
 export type People = 1 | 2 | 3
 export const PEOPLE_OPTIONS: readonly People[] = [1, 2, 3]
@@ -11,12 +10,6 @@ export const parsePeople = (value: unknown): People | null =>
 
 /** Number of people to cook for, persisted so every page shares it. */
 export const usePeople = (): [People, (people: People) => void] => {
-  const [people, setPeopleState] = useState<People>(() =>
-    readStored(PEOPLE_KEY, parsePeople, DEFAULT_PEOPLE)
-  )
-  const setPeople = (next: People) => {
-    writeStored(PEOPLE_KEY, next)
-    setPeopleState(next)
-  }
-  return [people, setPeople]
+  const [people, update] = useStored(PEOPLE_KEY, parsePeople, DEFAULT_PEOPLE)
+  return [people, (next) => update(() => next)]
 }

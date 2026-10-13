@@ -9,10 +9,7 @@ export interface Store {
   leftSidebarCollapsed: boolean
   searchRecipes: ClientRecipe[]
   savedRecipes: ClientRecipe[]
-  savedIngredients: unknown[]
   savedDidMount: boolean
-  ingredientsDidGenerate: boolean
-  tapOff: unknown[]
 }
 
 type StoreContextType = [state: Store, dispatch: Dispatch<StoreAction>]
@@ -22,10 +19,7 @@ const initialState: Store = {
   leftSidebarCollapsed: false,
   searchRecipes: [],
   savedRecipes: [],
-  savedIngredients: [],
-  savedDidMount: false,
-  ingredientsDidGenerate: false,
-  tapOff: []
+  savedDidMount: false
 }
 const StoreContext = createContext<StoreContextType>([initialState, () => {}])
 

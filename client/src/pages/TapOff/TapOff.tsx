@@ -1,97 +1,42 @@
 import type { FC } from 'react'
-import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import NotLoggedIn from '../../components/NotLoggedIn'
-import { useAuthContext } from '../../utils/auth/AuthContext'
-import { changeTitle } from '../../utils/changeTitle'
-import type {
-  compressedCategoriesType,
-  compressedCategoryType
-} from '../../utils/compress'
-import compress from '../../utils/compress'
-import { useStoreContext } from '../../utils/state/GlobalState'
-import { savedIngredientsFromUnknown } from '../../utils/state/guards'
-import { UPDATE_TAP_OFF } from '../../utils/state/actions'
-import './style.css'
+import type { LibraryRecipe } from '../../types/library'
+import { LineGroups } from '../ShoppingList/LineGroups'
+import { SavedRecipesGate } from '../ShoppingList/SavedRecipesGate'
+import { useShoppingList } from '../../utils/shopping/useShoppingList'
 
-const TapOff: FC = () => {
-  changeTitle('tapoff')
-
-  const [auth] = useAuthContext()
-  const loggedIn = auth.loggedIn
-
-  const [state, dispatch] = useStoreContext()
-  const { savedIngredients } = state
-  const [compressedRecipes, setCompressedRecipes] =
-    useState<compressedCategoriesType>(() => {
-      const initialState = [
-        {
-          items: [
-            {
-              description: 'Loading',
-              checked: false
-            }
-          ],
-          category: { name: 'Loading' }
-        }
-      ]
-      return initialState
-    })
-
-  const handleChange = (ri: number, ii: number, checked: boolean) => {
-    const x = JSON.parse(JSON.stringify(compressedRecipes))
-    x[ri].items[ii].checked = checked
-    setCompressedRecipes(x)
-  }
-
-  useEffect(() => {
-    const compressed = compress(savedIngredientsFromUnknown(savedIngredients))
-    setCompressedRecipes(compressed)
-    dispatch({ type: UPDATE_TAP_OFF, data: compressed })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
+/** At the shop: the to-buy items by section; ticks share the list's basket. */
+export const TapOffList: FC<{ recipes: readonly LibraryRecipe[] }> = ({
+  recipes
+}) => {
+  const list = useShoppingList(recipes)
+  const left = list.toBuy.filter((l) => !list.basketIds.has(l.ingredientId))
+  if (list.toBuy.length === 0)
+    return (
+      <p className="list-empty">
+        Nothing to tap off yet. <Link to="/ingredients">Shopping list</Link>
+      </p>
+    )
   return (
-    <div>
-      <p>Tap Off</p>
-      {!loggedIn ? (
-        <NotLoggedIn />
-      ) : (
-        <>
-          {compressedRecipes.length ? (
-            compressedRecipes.map((r: compressedCategoryType, ri: number) => (
-              <>
-                <p>{r.category.name}</p>
-                {r.items.map(
-                  (
-                    i: { description: string; checked: boolean },
-                    ii: number
-                  ) => (
-                    <>
-                      {' '}
-                      <input
-                        key={r.category + i.description}
-                        type="checkbox"
-                        checked={i.checked}
-                        onChange={(e) => handleChange(ri, ii, e.target.checked)}
-                      />
-                      <label htmlFor={r.category + i.description}>
-                        {i.description}
-                      </label>
-                    </>
-                  )
-                )}
-              </>
-            ))
-          ) : (
-            <>
-              Generate an ingredient list first
-              <Link to="/ingredients">Ingredients</Link>
-            </>
-          )}
-        </>
-      )}
-    </div>
+    <>
+      <p className="list-note">
+        {left.length === 0 ? 'All done!' : `${left.length} left to find`}
+      </p>
+      <LineGroups
+        lines={list.toBuy}
+        grouping="shop"
+        checkedIds={list.basketIds}
+        struck={true}
+        onToggle={list.toggleBasket}
+        onLocation={null}
+      />
+    </>
   )
 }
+
+const TapOff: FC = () => (
+  <SavedRecipesGate title="Tap Off">
+    {(recipes) => <TapOffList recipes={recipes} />}
+  </SavedRecipesGate>
+)
 export default TapOff

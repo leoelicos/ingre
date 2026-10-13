@@ -25,7 +25,11 @@ import {
   faMagnifyingGlassChart,
   faUserGroup,
   faSpinner,
-  faBookOpen
+  faBookOpen,
+  faHouse,
+  faBasketShopping,
+  faChevronDown,
+  faLocationDot
 } from '@fortawesome/free-solid-svg-icons'
 
 export const addFontAwesome = () =>
@@ -54,5 +58,9 @@ export const addFontAwesome = () =>
     faMagnifyingGlassChart,
     faUserGroup,
     faSpinner,
-    faBookOpen
+    faBookOpen,
+    faHouse,
+    faBasketShopping,
+    faChevronDown,
+    faLocationDot
   )

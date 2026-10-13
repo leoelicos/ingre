@@ -1,13 +1,10 @@
 import { reducer, useGlobalReducer } from '../reducers'
 import {
   ADD_SAVED_RECIPE,
-  FLAG_INGREDIENTS_GENERATED,
   FLAG_SAVED_MOUNTED,
   REMOVE_SAVED_RECIPE,
-  UPDATE_SAVED_INGREDIENTS,
   UPDATE_SAVED_RECIPES,
-  UPDATE_SEARCH_RECIPES,
-  UPDATE_TAP_OFF
+  UPDATE_SEARCH_RECIPES
 } from '../actions'
 import type { Store } from '../GlobalState'
 import { recipe } from '../../../test/fixtures'
@@ -18,10 +15,7 @@ const initialState: Store = {
   leftSidebarCollapsed: false,
   searchRecipes: [],
   savedRecipes: [],
-  savedIngredients: [],
-  savedDidMount: false,
-  ingredientsDidGenerate: false,
-  tapOff: []
+  savedDidMount: false
 }
 
 describe('reducer', () => {
@@ -57,27 +51,6 @@ describe('reducer', () => {
     ).toEqual([])
   })
 
-  it('updates saved ingredients and tap off lists', () => {
-    expect(
-      reducer(initialState, { type: UPDATE_SAVED_INGREDIENTS, data: ['a'] })
-        .savedIngredients
-    ).toEqual(['a'])
-    expect(
-      reducer(initialState, { type: UPDATE_SAVED_INGREDIENTS, data: undefined })
-        .savedIngredients
-    ).toEqual([])
-    expect(
-      reducer(initialState, { type: UPDATE_SAVED_INGREDIENTS, data: 'nope' })
-        .savedIngredients
-    ).toEqual([])
-    expect(
-      reducer(initialState, { type: UPDATE_TAP_OFF, data: [1] }).tapOff
-    ).toEqual([1])
-    expect(
-      reducer(initialState, { type: UPDATE_TAP_OFF, data: 'nope' }).tapOff
-    ).toEqual([])
-  })
-
   it('adds a saved recipe once and ignores invalid payloads', () => {
     const first = recipe({ libraryId: 'a' })
     const added = reducer(initialState, { type: ADD_SAVED_RECIPE, data: first })
@@ -104,13 +77,9 @@ describe('reducer', () => {
     expect(reducer(state, { type: REMOVE_SAVED_RECIPE, data: 4 })).toBe(state)
   })
 
-  it('flags pages as mounted or generated', () => {
+  it('flags the saved page as mounted', () => {
     expect(
       reducer(initialState, { type: FLAG_SAVED_MOUNTED }).savedDidMount
-    ).toBe(true)
-    expect(
-      reducer(initialState, { type: FLAG_INGREDIENTS_GENERATED })
-        .ingredientsDidGenerate
     ).toBe(true)
   })
 
