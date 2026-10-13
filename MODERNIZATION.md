@@ -21,10 +21,10 @@
 - [x] Re-enable DB-dependent tests
 - [x] Get MongoDB working (mongodb-memory-server with Jest 29)
 - [x] All server unit tests pass (97/97)
-- [ ] Achieve 100% statement coverage
-- [ ] Achieve 100% branch coverage
-- [ ] Achieve 100% function coverage
-- [ ] Achieve 100% line coverage
+- [ ] Achieve 100% statement coverage (currently 99.47%)
+- [ ] Achieve 100% branch coverage (currently 98.46%)
+- [ ] Achieve 100% function coverage (currently 100%)
+- [ ] Achieve 100% line coverage (currently 99.7%)
 
 ## Phase 4: Frontend Tests + Coverage
 - [ ] Add initial frontend unit tests
