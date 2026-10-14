@@ -105,15 +105,6 @@
     var(--color-bg)
   );
   --list-tap-dim-fg: color-mix(in srgb, #fff 45%, var(--color-bg));
-  --bs-btn-bg: var(--list-tap-dim-bg);
-  --bs-btn-border-color: var(--list-tap-dim-bg);
-  --bs-btn-color: var(--list-tap-dim-fg);
-  --bs-btn-hover-bg: var(--list-tap-dim-bg);
-  --bs-btn-hover-border-color: var(--list-tap-dim-bg);
-  --bs-btn-hover-color: var(--list-tap-dim-fg);
-  --bs-btn-active-bg: var(--list-tap-dim-bg);
-  --bs-btn-active-border-color: var(--list-tap-dim-bg);
-  --bs-btn-active-color: var(--list-tap-dim-fg);
   cursor: not-allowed;
 }
 /* .list-tap raises specificity above Bootstrap's .btn:focus-visible { outline: 0 }, which loads later */

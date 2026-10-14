@@ -63,30 +63,7 @@
   --space-nav-gap: 24px;
 }
 
-/* Feed tokens into Bootstrap so its components follow the theme. */
 html body {
-  --bs-body-bg: var(--color-bg);
-  --bs-body-color: var(--color-text);
-  --bs-secondary-color: var(--color-text-secondary);
-  --bs-link-color: var(--color-primary);
-  --bs-link-color-rgb: 47, 125, 79;
-  --bs-link-hover-color: var(--color-primary);
-  --bs-link-hover-color-rgb: 47, 125, 79;
   background-color: var(--color-bg);
   color: var(--color-text);
-}
-
-html body .btn-primary {
-  --bs-btn-bg: var(--color-primary);
-  --bs-btn-border-color: var(--color-primary);
-  --bs-btn-color: var(--color-on-primary);
-  --bs-btn-hover-bg: var(--color-primary);
-  --bs-btn-hover-border-color: var(--color-primary);
-  --bs-btn-hover-color: var(--color-on-primary);
-  --bs-btn-active-bg: var(--color-primary);
-  --bs-btn-active-border-color: var(--color-primary);
-  --bs-btn-active-color: var(--color-on-primary);
-  --bs-btn-disabled-bg: var(--color-primary);
-  --bs-btn-disabled-border-color: var(--color-primary);
-  --bs-btn-disabled-color: var(--color-on-primary);
 }
