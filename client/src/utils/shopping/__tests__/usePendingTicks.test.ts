@@ -52,6 +52,24 @@ describe('useDelayedTicks', () => {
     expect(now().leavingIds.size).toBe(0)
   })
 
+  it('fires exactly 2000ms after the last tick despite re-renders and pointer events', () => {
+    const { committed, hook, now } = setup()
+    act(() => now().onToggle('a'))
+    for (let i = 0; i < 19; i += 1) {
+      wait(100)
+      hook.rerender()
+      document.body.dispatchEvent(new Event('pointermove', { bubbles: true }))
+      document.body.dispatchEvent(new Event('mouseover', { bubbles: true }))
+      document.body.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+    }
+    wait(99)
+    expect([...now().pendingIds]).toEqual(['a'])
+    wait(1)
+    expect([...now().leavingIds]).toEqual(['a'])
+    wait(FADE_MS)
+    expect(committed.commits).toEqual([['a']])
+  })
+
   it('undoes one without resetting the clock or cancelling others', () => {
     const { committed, now } = setup()
     act(() => now().onToggle('a'))

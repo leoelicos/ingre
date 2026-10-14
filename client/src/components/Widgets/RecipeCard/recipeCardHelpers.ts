@@ -33,10 +33,13 @@ export const tintFor = (tags: readonly string[]): Tint =>
     : 'dinner'
 
 /** Ingredient id -> card illustration; the first mapped ingredient of a recipe wins. */
-export const HERO_ICONS: Readonly<Record<string, IconName>> = {
+/** A Font Awesome icon, or our own steak (FA's free set has no beef cut, and its cow has an udder). */
+export type Hero = IconName | 'steak'
+
+export const HERO_ICONS: Readonly<Record<string, Hero>> = {
   'chicken-thigh': 'drumstick-bite',
-  'beef-mince': 'cow',
-  'beef-rump': 'cow',
+  'beef-mince': 'steak',
+  'beef-rump': 'steak',
   'pork-mince': 'bacon',
   'pork-belly': 'bacon',
   'cooked-prawns': 'shrimp',
@@ -48,9 +51,9 @@ export const HERO_ICONS: Readonly<Record<string, IconName>> = {
   potato: 'carrot',
   cauliflower: 'carrot'
 }
-export const DEFAULT_HERO_ICON: IconName = 'utensils'
+export const DEFAULT_HERO_ICON: Hero = 'utensils'
 
-export const heroIcon = (ingredientIds: readonly string[]): IconName =>
+export const heroIcon = (ingredientIds: readonly string[]): Hero =>
   ingredientIds.flatMap((id) => {
     const icon = HERO_ICONS[id]
     return icon === undefined ? [] : [icon]

@@ -11,6 +11,9 @@ import { SHOP_SECTIONS, placeInShop } from '../sections'
 import {
   buildShoppingList,
   printLine,
+  fraction,
+  pluralise,
+  usesLabel,
   chooseBuy,
   collectNeeds,
   forLabel,
@@ -352,21 +355,58 @@ describe('real library', () => {
 describe('partLabel', () => {
   it('shows the recipe title and amount, dropping "whole"', () => {
     expect(
-      partLabel({
-        ingredientId: 'x',
-        recipe: 'Shaking beef (bò lúc lắc)',
-        quantity: 1.333333,
-        measure: 'tbsp'
-      })
+      partLabel(
+        {
+          ingredientId: 'x',
+          recipe: 'Shaking beef (bò lúc lắc)',
+          quantity: 1.333333,
+          measure: 'tbsp'
+        },
+        'soy sauce'
+      )
     ).toBe('Shaking beef: 1.33 tbsp')
     expect(
-      partLabel({
-        ingredientId: 'x',
-        recipe: 'Dahl',
-        quantity: 2,
-        measure: 'whole'
+      partLabel(
+        {
+          ingredientId: 'x',
+          recipe: 'Dahl',
+          quantity: 2,
+          measure: 'whole'
+        },
+        'brown onion'
+      )
+    ).toBe('Dahl: 2 brown onions')
+  })
+})
+
+describe('fractions and plurals', () => {
+  it('shows quarters as glyphs, other decimals as numbers', () => {
+    expect(fraction(0.25)).toBe('¼')
+    expect(fraction(0.5)).toBe('½')
+    expect(fraction(0.75)).toBe('¾')
+    expect(fraction(1.5)).toBe('1½')
+    expect(fraction(2)).toBe('2')
+    expect(fraction(0.3)).toBe('0.3')
+  })
+  it('pluralises English nouns', () => {
+    expect(pluralise('tomato')).toBe('tomatoes')
+    expect(pluralise('bunch')).toBe('bunches')
+    expect(pluralise('berry')).toBe('berries')
+    expect(pluralise('clove')).toBe('cloves')
+    expect(pluralise('day')).toBe('days')
+    expect(pluralise('bamboo')).toBe('bamboos')
+  })
+  it('names counted uses: ½ onion, 3 cloves, ½ tbsp, 2 cups', () => {
+    const uses = (quantity: number, measure: string, name = 'brown onion') =>
+      usesLabel({
+        name,
+        parts: [{ ingredientId: 'x', recipe: 'r', quantity, measure }]
       })
-    ).toBe('Dahl: 2')
+    expect(uses(0.5, 'whole')).toBe('uses ½ brown onion')
+    expect(uses(3, 'clove', 'garlic')).toBe('uses 3 cloves')
+    expect(uses(0.5, 'tbsp')).toBe('uses ½ tbsp')
+    expect(uses(2, 'tbsp')).toBe('uses 2 tbsp')
+    expect(uses(2, 'cup')).toBe('uses 2 cups')
   })
 })
 

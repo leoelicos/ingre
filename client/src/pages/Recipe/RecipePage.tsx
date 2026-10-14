@@ -8,7 +8,8 @@ import {
   splitTitle,
   tintFor
 } from '../../components/Widgets/RecipeCard/recipeCardHelpers'
-import { Icon, IngreIconBack } from '../../lib/icon/Icon'
+import { IngreIconBack } from '../../lib/icon/Icon'
+import { HeroIcon } from '../../components/Widgets/RecipeCard/HeroIcon'
 import type { LibraryRecipe } from '../../types/library'
 import { changeTitle } from '../../utils/changeTitle'
 import { catalogue, library } from '../../utils/library/recipeLibrary'
@@ -86,11 +87,8 @@ const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
             className="recipe-panel__hero"
             aria-hidden="true"
           >
-            <Icon
-              icon={[
-                'fas',
-                heroIcon(recipe.ingredients.map((i) => i.ingredientId))
-              ]}
+            <HeroIcon
+              hero={heroIcon(recipe.ingredients.map((i) => i.ingredientId))}
             />
           </span>
           <SaveButton
@@ -108,11 +106,7 @@ const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
           </p>
         )}
         <p className="recipe-meta">{recipeMeta(recipe.tags)}</p>
-        {/* Fixed slot for the amber "Contains: …" line; the library has no allergen data yet. */}
-        <p
-          className="recipe-allergens"
-          aria-live="polite"
-        />
+        {/* The amber "Contains: …" line goes here once recipes carry allergen data; hidden until then. */}
         <ServesPicker
           people={people}
           onChange={setPeople}
@@ -162,6 +156,7 @@ const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
           >
             Method
           </h2>
+          <p className="recipe-method__note">Amounts are in the buy list</p>
           <ol>
             {recipe.method.map((step) => (
               <li key={step}>{step}</li>
@@ -177,10 +172,17 @@ const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
 const RecipePage: FC = () => {
   const recipe = findRecipe(useParams()['id'])
   return recipe === null ? (
-    <main className="recipe-page">
-      <p className="list-empty">
-        Recipe not found. <Link to="/">All recipes</Link>
+    <main className="recipe-page recipe-missing">
+      <h1 className="recipe-title">We couldn&apos;t find that recipe</h1>
+      <p className="list-note">
+        The link may be old or mistyped. Have a look through what we have.
       </p>
+      <Link
+        to="/"
+        className="btn btn-primary recipe-missing__link"
+      >
+        Back to Recipes
+      </Link>
     </main>
   ) : (
     <RecipeView recipe={recipe} />

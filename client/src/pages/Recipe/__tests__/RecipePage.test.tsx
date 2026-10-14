@@ -48,19 +48,22 @@ describe('recipe helpers', () => {
     expect(findRecipe('nope')).toBeNull()
     expect(
       usesLabel({
+        name: 'egg',
         parts: [
           { ingredientId: 'x', recipe: 'a', quantity: 1.5, measure: 'tbsp' },
           { ingredientId: 'x', recipe: 'b', quantity: 2, measure: 'whole' }
         ]
       })
-    ).toBe('uses 1.5 tbsp + 2')
+    ).toBe('uses 1½ tbsp + 2 eggs')
   })
 })
 
 describe('RecipePage', () => {
   it('opens from a card, shows the recipe, and goes back', () => {
     renderAt('/')
+    // the title is a link to the recipe; tapping it never picks the recipe
     fireEvent.click(screen.getByRole('link', { name: 'Shaking beef' }))
+    expect(localStorage.getItem(PICKED_KEY)).toBeNull()
     expect(
       screen.getByRole('heading', { level: 1, name: 'Shaking beef' })
     ).toBeInTheDocument()
@@ -76,7 +79,9 @@ describe('RecipePage', () => {
     expect(
       screen.getByText('Indian · dinner · gluten-free')
     ).toBeInTheDocument()
-    expect(document.querySelector('.recipe-allergens')).toBeEmptyDOMElement()
+    expect(screen.queryByText(/^Contains:/)).toBeNull()
+    expect(document.querySelector('.recipe-allergens')).toBeNull()
+    expect(screen.getByText('Amounts are in the buy list')).toBeInTheDocument()
     const buy = within(screen.getByRole('region', { name: 'What to buy' }))
     expect(buy.getAllByText(/^uses /).length).toBeGreaterThan(0)
     expect(buy.queryByText(/^You'll also need: /)).toBeNull()
@@ -105,7 +110,13 @@ describe('RecipePage', () => {
     expect(
       screen.getByRole('link', { name: 'Red lentil dahl' })
     ).toBeInTheDocument()
-    renderAt('/recipe/nope')
-    expect(screen.getByText(/Recipe not found/)).toBeInTheDocument()
+    renderAt('/recipe/1')
+    expect(
+      screen.getByRole('heading', { name: "We couldn't find that recipe" })
+    ).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('link', { name: 'Back to Recipes' }))
+    expect(
+      screen.getAllByRole('link', { name: 'Red lentil dahl' }).length
+    ).toBeGreaterThan(0)
   })
 })

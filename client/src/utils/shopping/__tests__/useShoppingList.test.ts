@@ -46,8 +46,7 @@ describe('useShoppingList', () => {
     act(() => result.current.togglePicked('dahl'))
     expect(result.current.recipes.map((r) => r.id)).toEqual(['dahl'])
     expect(result.current.alreadyHave).toEqual([])
-    expect(result.current.assumed.every((l) => l.staple)).toBe(true)
-    expect(result.current.assumed.length).toBeGreaterThan(0)
+    expect(result.current.assumed).toBe('oil, salt, pepper')
     expect(result.current.toBuy.some((l) => l.staple)).toBe(false)
     const first = result.current.toBuy[0]
     act(() => result.current.toggleHave(first?.ingredientId ?? ''))

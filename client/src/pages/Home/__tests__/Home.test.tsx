@@ -29,8 +29,7 @@ const cardTitles = () =>
     .getAllByRole('heading', { level: 3 })
     .map((heading) => heading.textContent)
 
-const search = () =>
-  screen.getByPlaceholderText("What's on the shelf? e.g. apples")
+const search = () => screen.getByPlaceholderText('Search ingredients')
 
 describe('Home', () => {
   beforeEach(() => localStorage.clear())

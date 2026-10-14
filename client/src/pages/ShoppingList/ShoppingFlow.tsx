@@ -6,6 +6,7 @@ import { useShoppingList } from '../../utils/shopping/useShoppingList'
 import type { FlowStep } from '../../utils/storage/shoppingState'
 import { FLOW_STEPS } from '../../utils/storage/shoppingState'
 import { PickStep } from './PickStep'
+import { STEPS_BAR, measureBar } from '../../utils/measureBar'
 import { ClearedNote } from './StartNewList'
 import { useStartNewList } from '../../utils/shopping/useStartNewList'
 import { browserTimers } from '../../utils/shopping/usePendingTicks'
@@ -95,6 +96,7 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
     <main className="flow">
       <div
         className="flow-steps"
+        ref={measureBar(STEPS_BAR)}
         role="tablist"
         aria-label="Shopping steps"
         onKeyDown={onTabKey}
@@ -146,30 +148,31 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
               : {}
           }
         >
-          {FLOW_STEPS.map((step, i) => (
-            <section
-              key={step}
-              id={`flow-panel-${step}`}
-              role="tabpanel"
-              aria-labelledby={`flow-tab-${step}`}
-              className={
-                step === 'pick' ? 'flow-panel' : 'flow-panel flow-panel--list'
-              }
-              hidden={!(i === index || (dragging && Math.abs(i - index) === 1))}
-            >
-              {step === 'pick' ? (
-                <PickStep list={list} />
-              ) : (
-                <ShoppingListView
-                  list={list}
-                  view={step}
-                  onStartNew={startNew.start}
-                  timers={timers}
-                  onPrint={print}
-                />
-              )}
-            </section>
-          ))}
+          {FLOW_STEPS.map((step, i) =>
+            !(i === index || (dragging && Math.abs(i - index) === 1)) ? null : (
+              <section
+                key={step}
+                id={`flow-panel-${step}`}
+                role="tabpanel"
+                aria-labelledby={`flow-tab-${step}`}
+                className={
+                  step === 'pick' ? 'flow-panel' : 'flow-panel flow-panel--list'
+                }
+              >
+                {step === 'pick' ? (
+                  <PickStep list={list} />
+                ) : (
+                  <ShoppingListView
+                    list={list}
+                    view={step}
+                    onStartNew={startNew.start}
+                    timers={timers}
+                    onPrint={print}
+                  />
+                )}
+              </section>
+            )
+          )}
         </div>
       </div>
       {previous !== null && (

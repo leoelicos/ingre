@@ -167,8 +167,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  box-sizing: content-box;
-  min-height: calc(var(--list-bar-height) - 24px);
   padding: 12px var(--layout-gutter)
     calc(12px + env(safe-area-inset-bottom, 0px));
   background: var(--color-bg);

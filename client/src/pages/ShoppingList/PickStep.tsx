@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { BOTTOM_BAR, measureBar } from '../../utils/measureBar'
 import { useMemo } from 'react'
 import { ServesPicker } from '../../components/ServesPicker'
 import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardContainer'
@@ -24,7 +25,10 @@ export const PickStep: FC<{ list: ShoppingListState }> = ({ list }) => {
         loading={false}
         pick={{ pickedIds: list.pickedIds, onToggle: list.togglePicked }}
       />
-      <div className="list-tap list-tap--split">
+      <div
+        className="list-tap list-tap--split"
+        ref={measureBar(BOTTOM_BAR)}
+      >
         <span className="list-tap__count">
           {recipeCount(list.recipes.length)}
         </span>

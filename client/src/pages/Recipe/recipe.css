@@ -48,12 +48,13 @@
   margin: 6px 0 0;
   color: var(--color-text-secondary);
 }
-/* fixed slot: keeps the layout stable whether or not allergens are known */
-.recipe-allergens {
-  min-height: 1.5em;
-  margin: 4px 0 12px;
-  color: var(--color-allergen);
-  font-weight: 600;
+.recipe-page__side .serves {
+  margin-top: 16px;
+}
+.recipe-method__note {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--color-text-secondary); /* #6B6460 */
 }
 .recipe-heading {
   margin: 24px 0 8px;
@@ -113,21 +114,51 @@
     padding-top: 24px;
     padding-bottom: 48px;
   }
+  /* the column scrolls inside itself when taller than the window; Add stays pinned at its foot */
   .recipe-page__side {
     position: sticky;
     top: 16px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+  .recipe-method li {
+    font-size: 17px;
+    line-height: 1.6;
   }
   .recipe-panel {
     margin: 0 0 16px;
     border-radius: var(--radius-card);
   }
   .recipe-add-bar {
-    position: static;
-    padding: 16px 0 0;
-    background: none;
+    position: sticky;
+    bottom: 0;
+    padding: 12px 0;
+    background: var(--color-bg);
     box-shadow: none;
   }
-  .recipe-method .recipe-heading {
+  .recipe-method .recipe-page__side .serves {
+    margin-top: 16px;
+  }
+  .recipe-method__note {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: var(--color-text-secondary); /* #6B6460 */
+  }
+  .recipe-heading {
     margin-top: 0;
   }
+}
+
+.recipe-missing {
+  display: block;
+  padding-top: 48px;
+  text-align: center;
+}
+.recipe-missing__link {
+  display: inline-flex;
+  margin-top: 16px;
+  min-height: 48px;
+  align-items: center;
+  padding: 0 24px;
+  border-radius: var(--radius-card);
 }

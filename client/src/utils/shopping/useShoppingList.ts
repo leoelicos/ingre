@@ -1,5 +1,6 @@
 import { catalogue, library } from '../library/recipeLibrary'
 import { usePeople } from '../storage/people'
+import { assumedNames } from './shoppingList'
 import type { Extra, FlowStep } from '../storage/shoppingState'
 import {
   useBasketIds,
@@ -71,6 +72,11 @@ export const EMPTY_LIST: ListSnapshot = {
   step: 'pick'
 }
 
+/** Every catalogue staple, e.g. "oil, salt, pepper". */
+export const ASSUMED_AT_HOME = assumedNames(
+  catalogue.filter((i) => i.staple === true)
+)
+
 export const useShoppingList = () => {
   const [people, setPeople] = usePeople()
   const [pickedIds, togglePicked, , , replacePicked] = usePickedIds()
@@ -127,8 +133,8 @@ export const useShoppingList = () => {
     },
     setExtraQuantity: (lineId: string, quantity: number) =>
       updateExtras((previous) => setExtraQuantity(previous, lineId, quantity)),
-    /** staples are assumed at home: never counted or listed as to buy */
-    assumed: lines.filter((l) => l.staple),
+    /** staples are assumed at home: never auto-added, counted or listed as to buy */
+    assumed: ASSUMED_AT_HOME,
     ...splitByHave(
       lines.filter((l) => !l.staple),
       haveIds

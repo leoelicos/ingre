@@ -1,7 +1,8 @@
 import type { FC } from 'react'
 import { Link } from 'react-router-dom'
 import type { ClientRecipe } from '../../../types/client'
-import { Icon, IngreIconPro } from '../../../lib/icon/Icon'
+import { IngreIconPro } from '../../../lib/icon/Icon'
+import { HeroIcon } from './HeroIcon'
 import { library } from '../../../utils/library/recipeLibrary'
 import { useAuthContext } from '../../../utils/auth/AuthContext'
 import type { PickControls } from './RecipeCardContainer'
@@ -55,7 +56,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, pro, pick }) => {
           className="recipe-card__hero"
           aria-hidden="true"
         >
-          <Icon icon={['fas', heroFor(recipe.libraryId)]} />
+          <HeroIcon hero={heroFor(recipe.libraryId)} />
         </span>
         <SaveButton
           recipeName={title}

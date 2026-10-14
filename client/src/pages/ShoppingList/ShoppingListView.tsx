@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { BOTTOM_BAR, measureBar } from '../../utils/measureBar'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ServesPicker } from '../../components/ServesPicker'
@@ -6,7 +7,6 @@ import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
 import { IngreIconPrint } from '../../lib/icon/Icon'
 import { AddItem } from './AddItem'
 import { AllDone, StartNewList } from './StartNewList'
-import { assumedNames } from '../../utils/shopping/shoppingList'
 import { LineGroups } from './LineGroups'
 import type { LocationMode } from './ListRow'
 import {
@@ -128,14 +128,15 @@ export const ShoppingListView: FC<{
         </section>
       )}
 
-      {list.assumed.length > 0 && (
-        <p className="list-assumed">
-          Assumed at home: {assumedNames(list.assumed)}
-        </p>
+      {list.lineCount > 0 && (
+        <p className="list-assumed">Assumed at home: {list.assumed}</p>
       )}
       {list.lineCount > 0 && <StartNewList onStart={onStartNew} />}
 
-      <div className="list-tap">
+      <div
+        className="list-tap"
+        ref={measureBar(BOTTOM_BAR)}
+      >
         {atHome ? (
           <button
             type="button"

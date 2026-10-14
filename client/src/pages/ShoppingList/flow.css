@@ -55,6 +55,7 @@
   flex: 0 0 100%;
   min-width: 0;
   padding: 16px var(--layout-gutter) var(--list-bar-space);
+  scroll-margin-top: var(--flow-steps-height);
 }
 /* list steps read best as a single centred column on wide screens */
 .flow-panel--list > * {

@@ -164,7 +164,7 @@ export const ListRow: FC<RowProps> = ({
             line.parts.length > 0 && (
               <ul className="list-row__breakdown">
                 {line.parts.map((part) => (
-                  <li key={part.recipe}>{partLabel(part)}</li>
+                  <li key={part.recipe}>{partLabel(part, line.name)}</li>
                 ))}
                 {need !== null && <li>{need} in total</li>}
               </ul>

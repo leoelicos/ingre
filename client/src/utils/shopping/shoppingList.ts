@@ -324,22 +324,58 @@ export const forLabel = (recipeNames: readonly string[]): string => {
     : `for ${names.slice(0, -1).join(', ')} and ${last}`
 }
 
-const tidy = (n: number) => String(Math.round(n * 100) / 100)
+const FRACTIONS: readonly (readonly [number, string])[] = [
+  [0.25, '¼'],
+  [0.5, '½'],
+  [0.75, '¾']
+]
 
-/** "Butter chicken: 1.5 tbsp" / "Dahl: 2" (whole items show just the count). */
-export const partLabel = (part: NeedPart): string =>
-  `${splitTitle(part.recipe).title}: ${partAmount(part)}`
+/** 0.5 -> "½", 1.25 -> "1¼", 0.3 -> "0.3" (two decimals at most). */
+export const fraction = (n: number): string => {
+  const rounded = Math.round(n * 100) / 100
+  const whole = Math.floor(rounded)
+  const part = Math.round((rounded - whole) * 100) / 100
+  const glyph = FRACTIONS.find(([value]) => value === part)?.[1]
+  return glyph === undefined
+    ? String(rounded)
+    : whole === 0
+    ? glyph
+    : `${whole}${glyph}`
+}
 
-/** "1.5 tbsp" / "2" (whole items show just the count). */
-export const partAmount = ({
-  quantity,
-  measure
-}: Pick<NeedPart, 'quantity' | 'measure'>): string =>
-  `${tidy(quantity)}${measure === 'whole' ? '' : ` ${measure}`}`
+/** English plural: tomato -> tomatoes, bunch -> bunches, berry -> berries, clove -> cloves. */
+export const pluralise = (word: string): string =>
+  /([^o]o|s|x|ch|sh)$/.test(word)
+    ? `${word}es`
+    : /[^aeiou]y$/.test(word)
+    ? `${word.slice(0, -1)}ies`
+    : `${word}s`
 
-/** Recipe page: "uses 1.5 tbsp" (several uses joined with +). */
-export const usesLabel = ({ parts }: Pick<ShopLine, 'parts'>): string =>
-  `uses ${parts.map(partAmount).join(' + ')}`
+/** Measures that take a plural (spoons, g and ml never do). */
+const COUNTED_MEASURES: readonly string[] = ['cup', 'clove', 'stalk', 'bunch']
+
+/** "½ tbsp", "3 cloves", "½ brown onion", "2 brown onions". */
+export const partAmount = (
+  { quantity, measure }: Pick<NeedPart, 'quantity' | 'measure'>,
+  name: string
+): string => {
+  const noun = measure === 'whole' ? name : measure
+  const counted = measure === 'whole' || COUNTED_MEASURES.includes(measure)
+  return `${fraction(quantity)} ${
+    counted && quantity > 1 ? pluralise(noun) : noun
+  }`
+}
+
+/** "Butter chicken: ½ tbsp" / "Dahl: 2 brown onions". */
+export const partLabel = (part: NeedPart, name: string): string =>
+  `${splitTitle(part.recipe).title}: ${partAmount(part, name)}`
+
+/** Recipe page: "uses ½ tbsp" (several uses joined with +). */
+export const usesLabel = ({
+  parts,
+  name
+}: Pick<ShopLine, 'parts' | 'name'>): string =>
+  `uses ${parts.map((part) => partAmount(part, name)).join(' + ')}`
 
 /** Short staple names, e.g. "oil, salt, pepper" (oils collapse to one). */
 export const assumedNames = (lines: readonly { name: string }[]): string =>
@@ -383,6 +419,9 @@ const boughtAmount = (buy: Buy): Amount => {
     : { amount: buy.count, unit: 'count' }
 }
 
+/** Where a typed staple lives at home (its shop section stays Pantry). */
+export const STAPLE_EXTRA_LOCATION: HomeLocation = 'Cupboard'
+
 /** Hand-added items: one pack (or 500 g loose) per step; free text goes to Other. */
 export const extraLines = (
   extras: readonly Extra[],
@@ -390,8 +429,10 @@ export const extraLines = (
 ): ShopLine[] =>
   extras.map((extra) => {
     const item = catalogue.find((i) => i.id === extra.ingredientId)
+    // typed staples (salt, oil, pepper) are a plain count: stepper only, no pack size
+    const staple = item?.staple === true
     const buy: Buy =
-      item === undefined
+      item === undefined || staple
         ? { kind: 'count', count: extra.quantity }
         : extraBuy(item, extra.quantity)
     return {
@@ -400,7 +441,7 @@ export const extraLines = (
       ...(item === undefined
         ? { section: FREE_TEXT_SECTION, subsection: null }
         : placeInShop(item.category)),
-      location: item?.pantry ?? null,
+      location: staple ? STAPLE_EXTRA_LOCATION : item?.pantry ?? null,
       staple: false,
       need: boughtAmount(buy),
       buy,

@@ -171,7 +171,7 @@ describe('ShoppingFlow', () => {
       document.getElementById(have.getAttribute('aria-controls') ?? '')
     ).not.toBeNull()
     expect(p.getByText(/^Assumed at home: /)).toHaveTextContent(
-      /oil, salt|salt/
+      'Assumed at home: oil, salt, pepper'
     )
     expect(
       p.getAllByRole('checkbox', { name: /Brown onion/, checked: true })
@@ -280,8 +280,8 @@ describe('ShoppingFlow', () => {
     settle()
     expect(within(panel()).getByText(/Nothing to buy/)).toBeInTheDocument()
     expect(
-      within(panel()).queryByText(/^Assumed at home/)
-    ).not.toBeInTheDocument()
+      within(panel()).getByText('Assumed at home: oil, salt, pepper')
+    ).toBeInTheDocument()
     fireEvent.click(tab('At the shop'))
     expect(
       screen.queryByRole('button', { name: /^Tap/ })
@@ -470,5 +470,51 @@ describe('Start a new list', () => {
     const done = within(screen.getByRole('region', { name: 'All done' }))
     fireEvent.click(done.getByRole('button', { name: 'Start a new list' }))
     expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+  })
+})
+
+describe('PO shopper pass', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('typing a staple adds it: Pantry at the shop, Cupboard at home, stepper only', () => {
+    renderFlow([], 'shop')
+    const input = screen.getByRole('textbox', { name: 'Add an item' })
+    fireEvent.change(input, { target: { value: 'salt' } })
+    fireEvent.submit(input)
+    const pantry = within(screen.getByRole('region', { name: 'Pantry' }))
+    expect(pantry.getByRole('checkbox', { name: /Salt/ })).toBeInTheDocument()
+    expect(
+      pantry.getByRole('group', { name: 'Quantity of salt' })
+    ).toBeInTheDocument()
+    expect(pantry.queryByText(/×/)).toBeNull()
+    expect(tapCount()).toBe(1)
+    fireEvent.click(tab('At home'))
+    const cupboard = within(screen.getByRole('region', { name: 'Cupboard' }))
+    expect(cupboard.getByRole('checkbox', { name: /Salt/ })).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Spice rack' })).toBeNull()
+  })
+
+  it('renders each step once: no hidden duplicate inputs or buttons', () => {
+    localStorage.setItem(
+      EXTRAS_KEY,
+      '[{"id":"free-x","name":"x","ingredientId":null,"quantity":1}]'
+    )
+    const { container } = renderFlow(['dahl'], 'home')
+    expect(
+      container.querySelectorAll('input[aria-label="Add an item"], #add-item')
+        .length
+    ).toBeLessThanOrEqual(1)
+    expect(
+      screen.getAllByRole('textbox', { name: 'Add an item' })
+    ).toHaveLength(1)
+    expect(
+      [...container.querySelectorAll('button')].filter(
+        (b) =>
+          b.textContent === ' Start a new list' ||
+          b.textContent === 'Start a new list'
+      )
+    ).toHaveLength(1)
+    expect(container.querySelectorAll('[role=tabpanel]')).toHaveLength(1)
+    expect(container.querySelectorAll('[hidden]')).toHaveLength(0)
   })
 })
