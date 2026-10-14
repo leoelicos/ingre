@@ -97,13 +97,30 @@
   font-size: 0.875rem;
   text-align: center;
 }
-.list-tap__button[aria-disabled='true'] {
-  opacity: 0.45;
+/* dim the colours rather than the element, so the focus ring keeps full strength */
+.list-tap .list-tap__button[aria-disabled='true'] {
+  --list-tap-dim-bg: color-mix(
+    in srgb,
+    var(--color-primary) 45%,
+    var(--color-bg)
+  );
+  --list-tap-dim-fg: color-mix(in srgb, #fff 45%, var(--color-bg));
+  --bs-btn-bg: var(--list-tap-dim-bg);
+  --bs-btn-border-color: var(--list-tap-dim-bg);
+  --bs-btn-color: var(--list-tap-dim-fg);
+  --bs-btn-hover-bg: var(--list-tap-dim-bg);
+  --bs-btn-hover-border-color: var(--list-tap-dim-bg);
+  --bs-btn-hover-color: var(--list-tap-dim-fg);
+  --bs-btn-active-bg: var(--list-tap-dim-bg);
+  --bs-btn-active-border-color: var(--list-tap-dim-bg);
+  --bs-btn-active-color: var(--list-tap-dim-fg);
   cursor: not-allowed;
 }
-.list-tap__button:focus-visible {
-  outline: 2px solid var(--color-primary);
+/* .list-tap raises specificity above Bootstrap's .btn:focus-visible { outline: 0 }, which loads later */
+.list-tap .list-tap__button:focus-visible {
+  outline: 3px solid var(--color-primary);
   outline-offset: 2px;
+  box-shadow: none;
 }
 .link-button {
   border: 0;
