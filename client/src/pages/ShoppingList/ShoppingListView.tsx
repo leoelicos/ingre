@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { IngreIconBasket, IngreIconHouse } from '../../lib/icon/Icon'
 import type { LibraryRecipe } from '../../types/library'
 import { useShoppingList } from '../../utils/shopping/useShoppingList'
-import { PEOPLE_OPTIONS } from '../../utils/storage/people'
+import { ServesPicker } from '../../components/ServesPicker'
 import { LineGroups } from './LineGroups'
 
 const VIEWS = [
@@ -55,29 +55,16 @@ export const ShoppingListView: FC<{ recipes: readonly LibraryRecipe[] }> = ({
             </label>
           ))}
         </div>
-        <div
-          className="segmented"
-          role="radiogroup"
-          aria-label="People"
-        >
-          {PEOPLE_OPTIONS.map((option) => (
-            <label
-              key={option}
-              className="segmented__option"
-            >
-              <input
-                type="radio"
-                name="list-people"
-                checked={list.people === option}
-                onChange={() => list.setPeople(option)}
-              />
-              <span>{option}</span>
-            </label>
-          ))}
-        </div>
+        <ServesPicker
+          people={list.people}
+          onChange={list.setPeople}
+        />
       </div>
 
-      <h2 className="list-heading">To buy</h2>
+      <h2 className="list-heading">
+        {atHome ? 'Check your kitchen' : 'To buy'}
+      </h2>
+      {atHome && <p className="list-note">Tick what you already have</p>}
       {list.toBuy.length === 0 ? (
         <p className="list-empty">Nothing to buy. You have it all.</p>
       ) : (
@@ -87,7 +74,8 @@ export const ShoppingListView: FC<{ recipes: readonly LibraryRecipe[] }> = ({
           checkedIds={atHome ? new Set() : list.basketIds}
           struck={!atHome}
           onToggle={atHome ? list.toggleHave : list.toggleBasket}
-          onLocation={atHome ? list.setLocation : null}
+          locationMode={atHome ? 'move' : 'chip'}
+          onLocation={list.setLocation}
         />
       )}
 
@@ -116,7 +104,8 @@ export const ShoppingListView: FC<{ recipes: readonly LibraryRecipe[] }> = ({
                 checkedIds={list.haveIds}
                 struck={false}
                 onToggle={list.toggleHave}
-                onLocation={atHome ? list.setLocation : null}
+                locationMode={atHome ? 'move' : 'chip'}
+                onLocation={list.setLocation}
               />
             </>
           )}

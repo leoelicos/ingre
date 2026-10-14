@@ -16,7 +16,8 @@ import {
   groupBy,
   mergeById,
   needLabel,
-  shopLabel,
+  buyAmount,
+  displayName,
   splitByHave,
   toShopUnits,
   totalNeed,
@@ -280,30 +281,24 @@ const sized = (
 describe('labels', () => {
   const name = 'brown onion'
   const packs = (option: SoldOption & { size: Amount }, count: number) =>
-    shopLabel({ name, buy: { kind: 'packs', option, count } })
+    buyAmount({ buy: { kind: 'packs', option, count } })
   it('formats each, labelled each, bunch, packs, counted packs and weighed', () => {
-    expect(packs(sized('each', 1, 'count'), 2)).toBe('Brown onion, 2')
-    expect(packs(sized('each', 0.5, 'count', 'half'), 1)).toBe(
-      'Brown onion, 1 × half'
-    )
-    expect(packs(sized('bunch', 1, 'count'), 1)).toBe('Brown onion, 1 bunch')
-    expect(packs(sized('bunch', 1, 'count'), 2)).toBe('Brown onion, 2 bunches')
-    expect(packs(sized('tin', 400, 'g'), 3)).toBe('Brown onion, 3 × 400 g tin')
-    expect(packs(sized('pack', 400, 'g', 'block'), 1)).toBe(
-      'Brown onion, 1 × 400 g block'
-    )
-    expect(packs(sized('carton', 6, 'count'), 1)).toBe(
-      'Brown onion, 1 × carton of 6'
-    )
-    expect(packs(sized('pack', 3, 'count', '3-pack'), 1)).toBe(
-      'Brown onion, 1 × 3-pack'
-    )
+    expect(packs(sized('each', 1, 'count'), 2)).toBe('2')
+    expect(packs(sized('each', 0.5, 'count', 'half'), 1)).toBe('1 × half')
+    expect(packs(sized('bunch', 1, 'count'), 1)).toBe('1 bunch')
+    expect(packs(sized('bunch', 1, 'count'), 2)).toBe('2 bunches')
+    expect(packs(sized('tin', 400, 'g'), 3)).toBe('3 × 400 g')
+    expect(packs(sized('pack', 400, 'g', 'block'), 1)).toBe('1 × 400 g block')
+    expect(packs(sized('carton', 6, 'count'), 1)).toBe('1 × carton of 6')
+    expect(packs(sized('pack', 3, 'count', '3-pack'), 1)).toBe('1 × 3-pack')
     expect(
-      shopLabel({
-        name,
+      buyAmount({
         buy: { kind: 'weighed', amount: { amount: 100, unit: 'g' } }
       })
-    ).toBe('Brown onion, 100 g')
+    ).toBe('100 g')
+  })
+  it('capitalises names', () => {
+    expect(displayName({ name })).toBe('Brown onion')
   })
   it('formats need and recipe lists', () => {
     expect(needLabel({ need: { amount: 1.5, unit: 'count' } })).toBe('need 1.5')
@@ -324,9 +319,9 @@ describe('real library', () => {
     expect(lines.length).toBeGreaterThan(50)
     for (const line of lines) expect(SHOP_SECTIONS).toContain(line.section)
     const garlic = lines.find((l) => l.ingredientId === 'garlic')
-    expect(garlic && shopLabel(garlic)).toMatch(/^Garlic, \d/)
+    expect(garlic && buyAmount(garlic)).toMatch(/^\d/)
     const paper = lines.find((l) => l.ingredientId === 'rice-paper')
-    expect(paper && shopLabel(paper)).toBe('Rice paper sheets, 1 × 250 g pack')
+    expect(paper && buyAmount(paper)).toBe('1 × 250 g')
   })
   it('maps every aisle into a section, Pantry aisles as subsections', () => {
     expect(placeInShop('meat')).toEqual({

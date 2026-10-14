@@ -56,8 +56,30 @@ describe('ShoppingListView', () => {
     expect(tapCount()).toBe(before)
   })
 
-  it('overrides a home location from the chip menu', () => {
+  it('moves an item to another home location from the expanded row', () => {
     renderView(['dahl'])
+    expect(screen.getByText('Tick what you already have')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Check your kitchen' })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /is kept in/ })
+    ).not.toBeInTheDocument()
+    fireEvent.click(
+      screen.getAllByRole('button', { name: /^Details for/ })[0] ??
+        document.body
+    )
+    const move = within(screen.getByRole('group', { name: /^Move .* to$/ }))
+    expect(move.getAllByRole('button')).toHaveLength(4)
+    fireEvent.click(move.getByRole('button', { name: 'Bench' }))
+    expect(move.getAllByRole('button', { pressed: true })).toHaveLength(1)
+    expect(screen.getByRole('region', { name: 'Bench' })).toBeInTheDocument()
+  })
+
+  it('changes a location from the chip menu at the shop', () => {
+    renderView(['dahl'])
+    fireEvent.click(screen.getByRole('radio', { name: 'At the shop' }))
+    expect(screen.getByRole('heading', { name: 'To buy' })).toBeInTheDocument()
     const chip = screen.getAllByRole('button', {
       name: /is kept in .*\. Change/
     })[0]
@@ -66,7 +88,9 @@ describe('ShoppingListView', () => {
     expect(within(menu).getAllByRole('menuitemradio')).toHaveLength(4)
     fireEvent.click(within(menu).getByRole('menuitemradio', { name: 'Bench' }))
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-    expect(screen.getByRole('region', { name: 'Bench' })).toBeInTheDocument()
+    expect(
+      screen.getAllByRole('button', { name: /is kept in Bench/ }).length
+    ).toBeGreaterThan(0)
 
     fireEvent.click(
       screen.getAllByRole('button', { name: /is kept in/ })[0] ?? document.body
@@ -88,9 +112,6 @@ describe('ShoppingListView', () => {
     expect(
       within(pantry).getAllByRole('heading', { level: 4 }).length
     ).toBeGreaterThan(0)
-    expect(
-      screen.queryByRole('button', { name: /is kept in/ })
-    ).not.toBeInTheDocument()
     const before = tapCount()
     const box = screen.getAllByRole('checkbox', { checked: false })[0]
     fireEvent.click(box ?? document.body)

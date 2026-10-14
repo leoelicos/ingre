@@ -29,7 +29,20 @@ import {
   faHouse,
   faBasketShopping,
   faChevronDown,
-  faLocationDot
+  faLocationDot,
+  faDrumstickBite,
+  faCow,
+  faBacon,
+  faShrimp,
+  faBowlFood,
+  faCheese,
+  faBowlRice,
+  faCarrot,
+  faUtensils,
+  faPlus,
+  faCheck,
+  faPrint,
+  faMinus
 } from '@fortawesome/free-solid-svg-icons'
 
 export const addFontAwesome = () =>
@@ -62,5 +75,18 @@ export const addFontAwesome = () =>
     faHouse,
     faBasketShopping,
     faChevronDown,
-    faLocationDot
+    faLocationDot,
+    faDrumstickBite,
+    faCow,
+    faBacon,
+    faShrimp,
+    faBowlFood,
+    faCheese,
+    faBowlRice,
+    faCarrot,
+    faUtensils,
+    faPlus,
+    faCheck,
+    faPrint,
+    faMinus
   )

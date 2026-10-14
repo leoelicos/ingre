@@ -4,7 +4,7 @@ import searchLibrary, {
 } from '../../utils/library/recipeLibrary'
 import { changeTitle } from '../../utils/changeTitle'
 import { usePeople } from '../../utils/storage/people'
-import { toggleTag } from './homeFilters'
+import { orderTags, toggleTag } from './homeFilters'
 
 export const useHome = () => {
   useEffect(() => {
@@ -14,7 +14,7 @@ export const useHome = () => {
   const [query, setQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [people, setPeople] = usePeople()
-  const tags = useMemo(() => getLibraryTags(), [])
+  const tags = useMemo(() => orderTags(getLibraryTags()), [])
   const recipes = useMemo(
     () => searchLibrary({ q: query, tags: selectedTags }),
     [query, selectedTags]

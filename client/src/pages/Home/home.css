@@ -40,14 +40,3 @@
   background: var(--color-chip-active);
   color: var(--color-primary);
 }
-
-@media (max-width: 767px) {
-  .chip-row {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-  .chip {
-    white-space: nowrap;
-  }
-}

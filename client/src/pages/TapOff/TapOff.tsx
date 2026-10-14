@@ -28,7 +28,8 @@ export const TapOffList: FC<{ recipes: readonly LibraryRecipe[] }> = ({
         checkedIds={list.basketIds}
         struck={true}
         onToggle={list.toggleBasket}
-        onLocation={null}
+        locationMode="none"
+        onLocation={list.setLocation}
       />
     </>
   )

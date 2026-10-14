@@ -1,6 +1,8 @@
 import type { FC } from 'react'
 import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardContainer'
-import { PEOPLE_OPTIONS } from '../../utils/storage/people'
+import { ServesPicker } from '../../components/ServesPicker'
+import { NARROW_QUERY, useMediaQuery } from '../../utils/useMediaQuery'
+import { tagLabel } from './homeFilters'
 import { useHome } from './useHome'
 import '../../styles/segmented.css'
 import './home.css'
@@ -16,6 +18,7 @@ const Home: FC = () => {
     setPeople,
     recipes
   } = useHome()
+  const narrow = useMediaQuery(NARROW_QUERY)
   return (
     <main className="ingre-page">
       <div className="home-strip">
@@ -27,32 +30,19 @@ const Home: FC = () => {
           <input
             id="home-search"
             type="search"
-            placeholder="What's on the shelf? e.g. apples"
+            placeholder={
+              narrow
+                ? 'Search an ingredient'
+                : "What's on the shelf? e.g. apples"
+            }
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
         </label>
-        <div
-          className="segmented"
-          role="radiogroup"
-          aria-label="People"
-        >
-          {PEOPLE_OPTIONS.map((option) => (
-            <label
-              key={option}
-              className="segmented__option"
-            >
-              <input
-                type="radio"
-                name="people"
-                value={option}
-                checked={people === option}
-                onChange={() => setPeople(option)}
-              />
-              <span>{option}</span>
-            </label>
-          ))}
-        </div>
+        <ServesPicker
+          people={people}
+          onChange={setPeople}
+        />
       </div>
       <ul
         className="chip-row"
@@ -66,7 +56,7 @@ const Home: FC = () => {
               aria-pressed={selectedTags.includes(tag)}
               onClick={() => onToggleTag(tag)}
             >
-              {tag}
+              {tagLabel(tag)}
             </button>
           </li>
         ))}

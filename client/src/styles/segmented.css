@@ -31,3 +31,16 @@
   outline: 2px solid var(--color-primary);
   outline-offset: -4px;
 }
+
+.serves {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.serves__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}

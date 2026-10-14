@@ -40,6 +40,9 @@
   /* meal tints (photo-free card headers) */
   --color-tint-dinner: #e6f2ea;
   --color-tint-lunch: #fde8e3;
+  /* darker shades of the tints for card illustrations */
+  --color-tint-dinner-ink: #8fbf9f;
+  --color-tint-lunch-ink: #e9a597;
   --color-chip-active: var(--color-tint-dinner);
 
   /* elevation */

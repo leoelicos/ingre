@@ -55,7 +55,7 @@ describe('Home', () => {
     fireEvent.click(indian)
     expect(indian).toHaveAttribute('aria-pressed', 'true')
     const indianCount = cardTitles().length
-    fireEvent.click(chips.getByRole('button', { name: 'vegan' }))
+    fireEvent.click(chips.getByRole('button', { name: 'Vegan' }))
     expect(cardTitles().length).toBeLessThan(indianCount)
     fireEvent.click(indian)
     expect(indian).toHaveAttribute('aria-pressed', 'false')
@@ -63,10 +63,45 @@ describe('Home', () => {
 
   it('selects people in an accessible radio group, default 2, persisted', () => {
     renderHome()
-    const group = within(screen.getByRole('radiogroup', { name: 'People' }))
+    const group = within(screen.getByRole('radiogroup', { name: 'Serves' }))
     expect(group.getByRole('radio', { name: '2' })).toBeChecked()
     fireEvent.click(group.getByRole('radio', { name: '1' }))
     expect(group.getByRole('radio', { name: '1' })).toBeChecked()
     expect(localStorage.getItem(PEOPLE_KEY)).toBe('1')
+  })
+
+  it('orders chips meal/diet first then cuisines, capitalised', () => {
+    renderHome()
+    const chips = within(
+      screen.getByRole('list', { name: 'Filter by tag' })
+    ).getAllByRole('button')
+    const names = chips.map((c) => c.textContent)
+    expect(names.slice(0, 5)).toEqual([
+      'Lunch',
+      'Dinner',
+      'Vegetarian',
+      'Vegan',
+      'Gluten-free'
+    ])
+    expect(names).toContain('Vietnamese')
+  })
+
+  it('uses a short placeholder on narrow screens', () => {
+    const original = window.matchMedia
+    window.matchMedia = (query: string) => ({
+      matches: true,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false
+    })
+    renderHome()
+    expect(
+      screen.getByPlaceholderText('Search an ingredient')
+    ).toBeInTheDocument()
+    window.matchMedia = original
   })
 })

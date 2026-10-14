@@ -1,10 +1,18 @@
 import type { FC } from 'react'
 import type { ClientRecipe } from '../../../types/client'
-import { IngreIconPro } from '../../../lib/icon/Icon'
+import { Icon, IngreIconPro } from '../../../lib/icon/Icon'
+import { library } from '../../../utils/library/recipeLibrary'
 import { useAuthContext } from '../../../utils/auth/AuthContext'
 import { useRecipeCard } from './useRecipeCard'
 import { SaveButton } from './components/SaveButton'
-import { splitTitle, tintFor } from './recipeCardHelpers'
+import { heroIcon, splitTitle, tintFor } from './recipeCardHelpers'
+
+const heroFor = (libraryId: string | undefined) =>
+  heroIcon(
+    library
+      .filter((r) => r.id === libraryId)
+      .flatMap((r) => r.ingredients.map((i) => i.ingredientId))
+  )
 
 interface RecipeCardProps {
   recipe: ClientRecipe
@@ -27,6 +35,12 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           recipe.tags
         )}`}
       >
+        <span
+          className="recipe-card__hero"
+          aria-hidden="true"
+        >
+          <Icon icon={['fas', heroFor(recipe.libraryId)]} />
+        </span>
         <SaveButton
           recipeName={title}
           handleSave={handleSave}

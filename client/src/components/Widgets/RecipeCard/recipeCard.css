@@ -32,14 +32,23 @@
 }
 .recipe-card__tint {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   border-radius: var(--radius-control);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.recipe-card__hero {
+  font-size: 2.5rem;
+  line-height: 1;
 }
 .recipe-card__tint--dinner {
   background: var(--color-tint-dinner);
+  color: var(--color-tint-dinner-ink);
 }
 .recipe-card__tint--lunch {
   background: var(--color-tint-lunch);
+  color: var(--color-tint-lunch-ink);
 }
 .recipe-card__title {
   margin: 0;

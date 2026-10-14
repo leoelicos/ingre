@@ -211,22 +211,27 @@ export const buildShoppingList = (
 
 const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
-/** "Brown onion, 2" / "Crushed tomatoes, 1 × 400 g tin" / "Eggs, 1 × carton of 6". */
-export const shopLabel = ({ name, buy }: Pick<ShopLine, 'name' | 'buy'>) => {
-  const title = capitalise(name)
-  if (buy.kind === 'weighed') return `${title}, ${formatAmount(buy.amount)}`
+/** Display name: "Brown onion". */
+export const displayName = ({ name }: Pick<ShopLine, 'name'>) =>
+  capitalise(name)
+
+/** What to put in the trolley: "2", "1 × 500 g", "1 bunch", "1 × carton of 6", "100 g". */
+export const buyAmount = ({ buy }: Pick<ShopLine, 'buy'>): string => {
+  if (buy.kind === 'weighed') return formatAmount(buy.amount)
   const { option, count } = buy
   if (option.type === 'each')
     return option.label === undefined
-      ? `${title}, ${count}`
-      : `${title}, ${count} × ${option.label}`
+      ? `${count}`
+      : `${count} × ${option.label}`
   if (option.type === 'bunch')
-    return `${title}, ${count} ${count === 1 ? 'bunch' : 'bunches'}`
+    return `${count} ${count === 1 ? 'bunch' : 'bunches'}`
   const what =
     option.size.unit === 'count'
       ? option.label ?? `${option.type} of ${option.size.amount}`
-      : `${formatAmount(option.size)} ${option.label ?? option.type}`
-  return `${title}, ${count} × ${what}`
+      : option.label === undefined
+      ? formatAmount(option.size)
+      : `${formatAmount(option.size)} ${option.label}`
+  return `${count} × ${what}`
 }
 
 export const needLabel = ({ need }: Pick<ShopLine, 'need'>) =>

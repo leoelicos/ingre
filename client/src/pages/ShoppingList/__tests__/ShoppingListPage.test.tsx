@@ -59,7 +59,7 @@ describe('Shopping list page', () => {
     renderPage(<ShoppingListPage />, [saved(['dahl'])])
     expect(screen.getByText(/Loading your saved recipes/)).toBeInTheDocument()
     expect(
-      await screen.findByRole('heading', { name: 'To buy' })
+      await screen.findByRole('heading', { name: 'Check your kitchen' })
     ).toBeInTheDocument()
   })
 

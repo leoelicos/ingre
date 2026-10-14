@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import type { HomeLocation } from '../../types/library'
+import type { LocationMode } from './ListRow'
 import { HOME_LOCATIONS } from '../../utils/library/parseLibrary'
 import { SHOP_SECTIONS } from '../../utils/shopping/sections'
 import type { ShopLine } from '../../utils/shopping/shoppingList'
@@ -15,7 +16,8 @@ interface Props {
   /** shop ticks strike through in place; home ticks move the row away */
   struck: boolean
   onToggle: (ingredientId: string) => void
-  onLocation: ((id: string, location: HomeLocation) => void) | null
+  locationMode: LocationMode
+  onLocation: (id: string, location: HomeLocation) => void
 }
 
 /** Lines grouped by home location or shop section (Pantry keeps its aisle). */
@@ -46,6 +48,7 @@ export const LineGroups: FC<Props> = ({ lines, grouping, ...row }) => {
                     checked={row.checkedIds.has(line.ingredientId)}
                     struck={row.struck}
                     onToggle={row.onToggle}
+                    locationMode={row.locationMode}
                     onLocation={row.onLocation}
                   />
                 ))}

@@ -1,4 +1,10 @@
-import { recipeKey, splitTitle, tintFor } from '../recipeCardHelpers'
+import {
+  DEFAULT_HERO_ICON,
+  heroIcon,
+  recipeKey,
+  splitTitle,
+  tintFor
+} from '../recipeCardHelpers'
 
 describe('splitTitle', () => {
   it.each([
@@ -39,5 +45,12 @@ describe('tintFor', () => {
   it('defaults to the dinner tint', () => {
     expect(tintFor(['dinner', 'Indian'])).toBe('dinner')
     expect(tintFor([])).toBe('dinner')
+  })
+})
+
+describe('heroIcon', () => {
+  it('uses the first mapped ingredient, else the default', () => {
+    expect(heroIcon(['onion', 'chicken-thigh', 'egg'])).toBe('drumstick-bite')
+    expect(heroIcon(['onion'])).toBe(DEFAULT_HERO_ICON)
   })
 })

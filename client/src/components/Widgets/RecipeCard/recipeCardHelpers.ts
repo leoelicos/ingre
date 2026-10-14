@@ -1,3 +1,4 @@
+import type { IconName } from '@fortawesome/fontawesome-svg-core'
 /** Splits "Shaking beef (bò lúc lắc)" into its title and trailing bracketed local name. */
 export const splitTitle = (
   name: string
@@ -30,3 +31,27 @@ export const tintFor = (tags: readonly string[]): Tint =>
   tags.some((tag) => LUNCH_TAGS.includes(tag.toLowerCase()))
     ? 'lunch'
     : 'dinner'
+
+/** Ingredient id -> card illustration; the first mapped ingredient of a recipe wins. */
+export const HERO_ICONS: Readonly<Record<string, IconName>> = {
+  'chicken-thigh': 'drumstick-bite',
+  'beef-mince': 'cow',
+  'beef-rump': 'cow',
+  'pork-mince': 'bacon',
+  'pork-belly': 'bacon',
+  'cooked-prawns': 'shrimp',
+  egg: 'egg',
+  spaghetti: 'bowl-food',
+  haloumi: 'cheese',
+  'red-lentils': 'bowl-rice',
+  'jasmine-rice': 'bowl-rice',
+  potato: 'carrot',
+  cauliflower: 'carrot'
+}
+export const DEFAULT_HERO_ICON: IconName = 'utensils'
+
+export const heroIcon = (ingredientIds: readonly string[]): IconName =>
+  ingredientIds.flatMap((id) => {
+    const icon = HERO_ICONS[id]
+    return icon === undefined ? [] : [icon]
+  })[0] ?? DEFAULT_HERO_ICON

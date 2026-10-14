@@ -2,25 +2,64 @@ import type { FC } from 'react'
 import { useState } from 'react'
 import { IngreIconChevronDown } from '../../lib/icon/Icon'
 import type { HomeLocation } from '../../types/library'
+import { HOME_LOCATIONS } from '../../utils/library/parseLibrary'
 import type { ShopLine } from '../../utils/shopping/shoppingList'
 import {
+  buyAmount,
+  displayName,
   forLabel,
   needLabel,
-  partLabel,
-  shopLabel
+  partLabel
 } from '../../utils/shopping/shoppingList'
 import { LocationMenu } from './LocationMenu'
 
-/** One list item: the whole row toggles; the chevron shows the breakdown. */
-export const ListRow: FC<{
+/** How a row offers home-location changes: in the breakdown, as a chip, or not at all. */
+export type LocationMode = 'move' | 'chip' | 'none'
+
+export interface RowProps {
   line: ShopLine
   checked: boolean
   struck: boolean
   onToggle: (ingredientId: string) => void
-  onLocation: ((id: string, location: HomeLocation) => void) | null
-}> = ({ line, checked, struck, onToggle, onLocation }) => {
+  locationMode: LocationMode
+  onLocation: (id: string, location: HomeLocation) => void
+}
+
+const MoveTo: FC<Pick<RowProps, 'line' | 'onLocation'>> = ({
+  line,
+  onLocation
+}) => (
+  <div
+    className="move-to"
+    role="group"
+    aria-label={`Move ${line.name} to`}
+  >
+    <span className="move-to__label">Move to:</span>
+    {HOME_LOCATIONS.map((location) => (
+      <button
+        key={location}
+        type="button"
+        className="move-to__option"
+        aria-pressed={line.location === location}
+        onClick={() => onLocation(line.ingredientId, location)}
+      >
+        {location}
+      </button>
+    ))}
+  </div>
+)
+
+/** One list item: the whole row toggles; the chevron shows the breakdown. */
+export const ListRow: FC<RowProps> = ({
+  line,
+  checked,
+  struck,
+  onToggle,
+  locationMode,
+  onLocation
+}) => {
   const [expanded, setExpanded] = useState(false)
-  const label = shopLabel(line)
+  const name = displayName(line)
   return (
     <li className={struck && checked ? 'list-row list-row--done' : 'list-row'}>
       <div className="list-row__main">
@@ -31,11 +70,14 @@ export const ListRow: FC<{
             onChange={() => onToggle(line.ingredientId)}
           />
           <span className="list-row__text">
-            <strong>{label}</strong>
+            <span className="list-row__line">
+              <span className="list-row__name">{name}</span>
+              <span className="list-row__amount">{buyAmount(line)}</span>
+            </span>
             <small>{forLabel(line.recipes)}</small>
           </span>
         </label>
-        {onLocation !== null && (
+        {locationMode === 'chip' && (
           <LocationMenu
             name={line.name}
             location={line.location}
@@ -53,12 +95,20 @@ export const ListRow: FC<{
         </button>
       </div>
       {expanded && (
-        <ul className="list-row__breakdown">
-          {line.parts.map((part) => (
-            <li key={part.recipe}>{partLabel(part)}</li>
-          ))}
-          <li>{needLabel(line)} in total</li>
-        </ul>
+        <div className="list-row__details">
+          <ul className="list-row__breakdown">
+            {line.parts.map((part) => (
+              <li key={part.recipe}>{partLabel(part)}</li>
+            ))}
+            <li>{needLabel(line)} in total</li>
+          </ul>
+          {locationMode === 'move' && (
+            <MoveTo
+              line={line}
+              onLocation={onLocation}
+            />
+          )}
+        </div>
       )}
     </li>
   )
