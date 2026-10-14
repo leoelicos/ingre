@@ -161,3 +161,9 @@
 .print-button:disabled {
   opacity: 0.5;
 }
+/* the last row of picks scrolls fully clear of the pinned bar and the home indicator */
+.pick-grid {
+  padding-bottom: calc(
+    var(--list-bar-height) + env(safe-area-inset-bottom, 0px)
+  );
+}

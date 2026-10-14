@@ -5,6 +5,7 @@
   padding: 0;
   margin: 0;
   list-style: none;
+  isolation: isolate;
 }
 @media (min-width: 768px) {
   .recipe-grid {
@@ -22,6 +23,8 @@
 
 .recipe-card {
   position: relative;
+  /* keep the heart and pill z-index inside the card, never above pinned bars */
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   height: 100%;
