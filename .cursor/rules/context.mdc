@@ -1,0 +1,8 @@
+---
+description: Where atomized ingre context lives
+alwaysApply: true
+---
+
+Before a non-trivial change, open `.cursor/README.md` and only the context file for that area.
+
+Do not add type assertions (`as`, non-null `!`) to silence the checker. Keep new context files under 50 lines.
