@@ -56,6 +56,7 @@ describe('recipeAllergens', () => {
       'wheat'
     ])
     expect(of('beef-keema')).toEqual([])
+    expect(containsLine(of('pork-chops-apple-onion'))).toBe('Contains: milk')
   })
 })
 

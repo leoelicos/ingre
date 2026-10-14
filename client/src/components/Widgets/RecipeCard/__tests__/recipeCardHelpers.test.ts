@@ -52,5 +52,6 @@ describe('heroIcon', () => {
   it('uses the first mapped ingredient, else the default', () => {
     expect(heroIcon(['onion', 'chicken-thigh', 'egg'])).toBe('drumstick-bite')
     expect(heroIcon(['onion'])).toBe(DEFAULT_HERO_ICON)
+    expect(heroIcon(['pork-loin-chop', 'apple'])).toBe('bacon')
   })
 })

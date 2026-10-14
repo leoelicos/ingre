@@ -121,6 +121,14 @@ describe('RecipePage', () => {
     expect(container.querySelectorAll('.recipe-allergens')).toHaveLength(1)
   })
 
+  it("Jess's apple recipe contains milk from the butter", () => {
+    renderAt('/recipe/pork-chops-apple-onion')
+    expect(
+      screen.getByRole('heading', { name: 'Pork chops with apples and onion' })
+    ).toBeInTheDocument()
+    expect(screen.getByText('Contains: milk')).toHaveClass('recipe-allergens')
+  })
+
   it('renders nothing for a recipe without allergens', () => {
     const { container } = renderAt('/recipe/beef-keema')
     expect(container.querySelector('.recipe-allergens')).toBeNull()

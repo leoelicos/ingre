@@ -121,7 +121,8 @@ describe('recipe library data', () => {
 
   it('merges the everyday extras with sized options and loose weights', () => {
     const byId = new Map(catalogue.map((i) => [i.id, i]))
-    expect(catalogue).toHaveLength(110)
+    expect(catalogue).toHaveLength(111)
+
     expect(byId.get('apple')?.pantry).toBe('Bench')
     expect(byId.get('apple')?.approxGrams).toBe(185)
     expect(byId.get('hummus')?.sold).toEqual([
@@ -131,6 +132,16 @@ describe('recipe library data', () => {
     catalogue
       .filter((i) => i.sold.some((o) => o.type === 'each'))
       .forEach((i) => expect(i.approxGrams).toBeGreaterThan(0))
+  })
+
+  it('search ignores case and plurals', () => {
+    const titles = (q: string) => searchLibrary({ q }).map((r) => r.name)
+    for (const q of ['apple', 'Apples', 'apples'])
+      expect(titles(q)).toEqual(['Pork chops with apples and onion'])
+    expect(titles('tomatoes')).toEqual(titles('Tomato'))
+    expect(titles('tomatoes').length).toBeGreaterThan(0)
+    expect(titles('chillies')).toEqual(titles('CHILLI'))
+    expect(titles('chillies').length).toBeGreaterThan(0)
   })
 
   it('has unique recipe and ingredient ids', () => {

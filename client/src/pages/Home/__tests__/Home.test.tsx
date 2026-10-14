@@ -8,6 +8,7 @@ import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { StoreProvider } from '../../../utils/state/GlobalState'
 import { PEOPLE_KEY } from '../../../utils/storage/people'
+import { EXTRAS_KEY } from '../../../utils/storage/shoppingState'
 
 addFontAwesome()
 
@@ -47,7 +48,59 @@ describe('Home', () => {
     renderHome()
     fireEvent.change(search(), { target: { value: 'lemongrass' } })
     expect(cardTitles().every((t) => t?.startsWith('Lemongrass'))).toBe(true)
-    fireEvent.change(search(), { target: { value: 'zzzz' } })
+  })
+
+  it('finds the apple recipe when searching apples', () => {
+    renderHome()
+    fireEvent.change(search(), { target: { value: 'apples' } })
+    expect(cardTitles()).toEqual(['Pork chops with apples and onion'])
+  })
+
+  it('an unmatched empty search says so, with no button', () => {
+    renderHome()
+    fireEvent.change(search(), { target: { value: '  zzzz ' } })
+    expect(screen.getByRole('status')).toHaveTextContent(
+      /^No recipes with zzzz yet\.$/
+    )
+    expect(screen.queryByRole('button', { name: /^\+ Add/ })).toBeNull()
+  })
+
+  it('a catalogue item can be added to the list as an extra', () => {
+    renderHome()
+    fireEvent.change(search(), { target: { value: 'Banana' } })
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'No recipes with banana yet. You can add banana to your list'
+    )
+    fireEvent.click(screen.getByRole('button', { name: '+ Add banana' }))
+    expect(JSON.parse(localStorage.getItem(EXTRAS_KEY) ?? '[]')).toEqual([
+      { id: 'banana', name: 'banana', ingredientId: 'banana', quantity: 1 }
+    ])
+    const view = screen.getByRole('link', {
+      name: '✓ banana is on your list. View list'
+    })
+    expect(view).toHaveAttribute('href', '/ingredients')
+    expect(screen.queryByRole('button', { name: '+ Add banana' })).toBeNull()
+  })
+
+  it('shows the confirmed state when the item is already on the list', () => {
+    localStorage.setItem(
+      EXTRAS_KEY,
+      JSON.stringify([
+        { id: 'banana', name: 'banana', ingredientId: 'banana', quantity: 2 }
+      ])
+    )
+    renderHome()
+    fireEvent.change(search(), { target: { value: 'bananas' } })
+    expect(
+      screen.getByRole('link', { name: '✓ banana is on your list. View list' })
+    ).toBeInTheDocument()
+  })
+
+  it('a tag filter with no results keeps the plain message', () => {
+    renderHome()
+    const chips = within(screen.getByRole('list', { name: 'Filter by tag' }))
+    for (const name of ['Indian', 'Vietnamese'])
+      fireEvent.click(chips.getByRole('button', { name }))
     expect(screen.getByText('No recipes')).toBeInTheDocument()
   })
 

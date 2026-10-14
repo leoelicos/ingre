@@ -6,6 +6,7 @@ import { PHONE_QUERY, useMediaQuery } from '../../utils/useMediaQuery'
 import { IngreIconSearch } from '../../lib/icon/Icon'
 import { tagLabel, visibleTags } from './homeFilters'
 import { useHome } from './useHome'
+import { EmptySearch } from './EmptySearch'
 import '../../styles/segmented.css'
 import './home.css'
 
@@ -84,11 +85,15 @@ const Home: FC = () => {
           </button>
         )}
       </div>
-      <RecipeCardContainer
-        results={recipes}
-        loading={false}
-        pick={pick}
-      />
+      {recipes.length === 0 && query.trim() !== '' ? (
+        <EmptySearch query={query} />
+      ) : (
+        <RecipeCardContainer
+          results={recipes}
+          loading={false}
+          pick={pick}
+        />
+      )}
     </main>
   )
 }

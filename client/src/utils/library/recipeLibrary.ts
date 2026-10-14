@@ -8,6 +8,7 @@ import type {
   LibrarySearch
 } from '../../types/library'
 import { parseCatalogue, parseRecipes } from './parseLibrary'
+import { normaliseTerm } from './searchTerms'
 
 export const PLACEHOLDER_PICTURE = '/ingre.png'
 
@@ -48,14 +49,14 @@ export function matchesSearch(
   if (tags && tags.length > 0) {
     if (!tags.every((t) => recipeTags.includes(norm(t)))) return false
   }
-  const query = q ? norm(q) : ''
+  const query = normaliseTerm(q ?? '')
   if (!query) return true
   const byId = new Map(ingredients.map((i) => [i.id, i.name]))
   const haystack = [
     recipe.name,
     ...recipe.tags,
     ...recipe.ingredients.map((ri) => byId.get(ri.ingredientId) ?? '')
-  ].map(norm)
+  ].map(normaliseTerm)
   return query
     .split(/\s+/)
     .every((word) => haystack.some((field) => field.includes(word)))

@@ -42,6 +42,7 @@ export const HERO_ICONS: Readonly<Record<string, Hero>> = {
   'beef-rump': 'steak',
   'pork-mince': 'bacon',
   'pork-belly': 'bacon',
+  'pork-loin-chop': 'bacon',
   'cooked-prawns': 'shrimp',
   egg: 'egg',
   spaghetti: 'bowl-food',

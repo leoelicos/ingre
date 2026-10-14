@@ -188,6 +188,14 @@ if unmapped or untagged:
 for item in out:
     item['allergens'] = list(ALLERGENS[item['id']]['allergens'])
 note += " ALLERGENS (PO draft 2026-10): `allergens` lists FSANZ mandatory allergens per item (empty when none); recipes derive theirs from their ingredients."
+# Jess's apple recipe (draft 2026-10-14): one new catalogue item, carrying its own allergens.
+APPLE_RECIPE = json.load(open('/workspace/ingre-data/apple-recipe-draft.json'))
+for item in APPLE_RECIPE['newIngredients']:
+    if item['id'] in ids:
+        sys.exit(f"{item['id']} is already in the catalogue")
+    out.append(dict(item))
+note += (" APPLE RECIPE (draft 2026-10-14): pork-loin-chop added (no allergens); its 500 g pack size and"
+         " 250 g per chop are UNVERIFIED.")
 json.dump({'_note': note, 'ingredients': out}, open(OUT + 'ingredients.json', 'w'), ensure_ascii=False, indent=2)
 recipes = json.load(open(RECIPES))
 for r in recipes['recipes']:
@@ -196,6 +204,9 @@ for r in recipes['recipes']:
             g['ingredientId'] = 'tinned-peas'
     # PO 2026-10-14: the catalogue calls it almond meal, so the methods do too.
     r['method'] = [re.sub(r'ground almonds?', 'almond meal', m, flags=re.I) for m in r['method']]
+if any(r['id'] == APPLE_RECIPE['recipe']['id'] for r in recipes['recipes']):
+    sys.exit('apple recipe already in the recipes draft')
+recipes['recipes'].append(APPLE_RECIPE['recipe'])
 recipes['_note'] = ("Generic, brand-free everyday dishes cookable in under an hour. All quantities are PER SERVE "
                     "(portions: 1); the app multiplies by the number of people. Ingredients reference ingredients.json by id; "
                     "tags are many-to-many (cuisines, diets, meals).")

@@ -991,6 +991,57 @@
         "Layer lettuce, noodles, herbs, cucumber and pork, add 3 prawn halves, then fold in the sides and roll tightly.",
         "For the dip, loosen the hoisin with a little warm water and top with crushed peanuts."
       ]
+    },
+    {
+      "id": "pork-chops-apple-onion",
+      "name": "Pork chops with apples and onion",
+      "portions": 1,
+      "tags": ["Australian", "dinner"],
+      "ingredients": [
+        {
+          "ingredientId": "pork-loin-chop",
+          "quantity": 1.0,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "apple",
+          "quantity": 1.0,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "butter",
+          "quantity": 10.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "olive-oil",
+          "quantity": 0.5,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "black-pepper",
+          "quantity": 0.25,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Take the chops out of the fridge 15 minutes early, pat them dry, snip the fat edge in a couple of spots so they sit flat, and season both sides with salt and pepper.",
+        "Core the apples and cut them into thick wedges, skin on. Slice the onion into thin half-moons.",
+        "Heat the oil in a large frying pan over medium-high heat and cook the chops for 3 to 4 minutes a side until golden and just cooked through. Move them to a plate to rest.",
+        "Turn the heat down to medium, add the butter, then the onion, and cook for about 5 minutes until soft and starting to colour.",
+        "Add the apple wedges and cook, turning now and then, for 5 to 6 minutes until tender and caramelised at the edges but still holding their shape.",
+        "Splash in a few tablespoons of water and scrape up the browned bits, then return the chops and any resting juices to the pan and warm through for a minute. Season to taste and serve with the apples and onion spooned over."
+      ]
     }
   ]
 }
