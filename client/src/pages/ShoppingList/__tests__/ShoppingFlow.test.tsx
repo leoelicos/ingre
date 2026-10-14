@@ -276,3 +276,66 @@ describe('Tap Off', () => {
     expect(screen.getByText(/Nothing to tap off yet/)).toBeInTheDocument()
   })
 })
+
+describe('Print', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('prints to-buy items by section, without already-have', () => {
+    localStorage.setItem(PICKED_KEY, JSON.stringify(['dahl']))
+    localStorage.setItem(STEP_KEY, JSON.stringify('shop'))
+    let printed = 0
+    render(
+      <MockedProvider mocks={[]}>
+        <MemoryRouter>
+          <AuthProvider>
+            <StoreProvider>
+              <ShoppingFlow print={() => (printed += 1)} />
+            </StoreProvider>
+          </AuthProvider>
+        </MemoryRouter>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Print' }))
+    expect(printed).toBe(1)
+    const sheet = within(screen.getByTestId('print-sheet'))
+    expect(sheet.getByText('Red lentil dahl · Serves 2')).toBeInTheDocument()
+    expect(sheet.getByRole('heading', { name: 'Pantry' })).toBeInTheDocument()
+    expect(sheet.getAllByRole('heading', { level: 3 }).length).toBeGreaterThan(
+      0
+    )
+    expect(sheet.queryByText(/Salt/)).not.toBeInTheDocument()
+    expect(sheet.getAllByText(/^need /).length).toBeGreaterThan(0)
+  })
+
+  it('defaults to window.print and lists extras without a need line', () => {
+    localStorage.setItem(STEP_KEY, JSON.stringify('home'))
+    localStorage.setItem(
+      'ingre.list.extras',
+      JSON.stringify([
+        { id: 'free-x', name: 'candles', ingredientId: null, quantity: 1 }
+      ])
+    )
+    const original = window.print
+    let printed = 0
+    window.print = () => {
+      printed += 1
+    }
+    render(
+      <MockedProvider mocks={[]}>
+        <MemoryRouter>
+          <AuthProvider>
+            <StoreProvider>
+              <ShoppingFlow />
+            </StoreProvider>
+          </AuthProvider>
+        </MemoryRouter>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Print' }))
+    expect(printed).toBe(1)
+    window.print = original
+    const sheet = within(screen.getByTestId('print-sheet'))
+    expect(sheet.getByText('Serves 2')).toBeInTheDocument()
+    expect(sheet.queryByText(/^need /)).not.toBeInTheDocument()
+  })
+})

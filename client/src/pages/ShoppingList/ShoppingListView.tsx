@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ServesPicker } from '../../components/ServesPicker'
 import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
+import { IngreIconPrint } from '../../lib/icon/Icon'
 import { AddItem } from './AddItem'
 import { LineGroups } from './LineGroups'
 import type { LocationMode } from './ListRow'
@@ -13,7 +14,8 @@ export const tapLabel = (n: number) => `Tap ${n} ${n === 1 ? 'item' : 'items'}`
 export const ShoppingListView: FC<{
   list: ShoppingListState
   view: 'home' | 'shop'
-}> = ({ list, view }) => {
+  onPrint: () => void
+}> = ({ list, view, onPrint }) => {
   const [haveOpen, setHaveOpen] = useState(false)
   const atHome = view === 'home'
   const locationMode: LocationMode = atHome ? 'move' : 'chip'
@@ -31,6 +33,14 @@ export const ShoppingListView: FC<{
           people={list.people}
           onChange={list.setPeople}
         />
+        <button
+          type="button"
+          className="print-button"
+          onClick={onPrint}
+          disabled={list.toBuy.length === 0}
+        >
+          <IngreIconPrint /> Print
+        </button>
       </div>
       <AddItem onAdd={list.addExtra} />
 

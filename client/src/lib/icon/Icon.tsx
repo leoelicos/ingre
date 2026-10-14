@@ -122,3 +122,4 @@ export const IngreIconHouse = () => <Icon icon={['fas', 'house']} />
 export const IngreIconBasket = () => <Icon icon={['fas', 'basket-shopping']} />
 export const IngreIconLocation = () => <Icon icon={['fas', 'location-dot']} />
 export const IngreIconServes = () => <Icon icon={['fas', 'user-group']} />
+export const IngreIconPrint = () => <Icon icon={['fas', 'print']} />

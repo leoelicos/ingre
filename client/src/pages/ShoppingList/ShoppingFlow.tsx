@@ -5,6 +5,7 @@ import { useShoppingList } from '../../utils/shopping/useShoppingList'
 import type { FlowStep } from '../../utils/storage/shoppingState'
 import { FLOW_STEPS } from '../../utils/storage/shoppingState'
 import { PickStep } from './PickStep'
+import { PrintSheet } from './PrintSheet'
 import { ShoppingListView } from './ShoppingListView'
 import { dragOffset, stepAt, swipeTarget } from './swipe'
 import '../../styles/segmented.css'
@@ -26,7 +27,9 @@ interface Drag {
 }
 
 /** Pick · At home · At the shop: tabs everywhere, plus swipe between steps on touch screens. */
-export const ShoppingFlow: FC = () => {
+export const ShoppingFlow: FC<{ print?: () => void }> = ({
+  print = () => window.print()
+}) => {
   useEffect(() => changeTitle('Shopping list'), [])
   const list = useShoppingList()
   const index = FLOW_STEPS.indexOf(list.step)
@@ -133,12 +136,18 @@ export const ShoppingFlow: FC = () => {
                 <ShoppingListView
                   list={list}
                   view={step}
+                  onPrint={print}
                 />
               )}
             </section>
           ))}
         </div>
       </div>
+      <PrintSheet
+        recipes={list.recipes}
+        people={list.people}
+        toBuy={list.toBuy}
+      />
     </main>
   )
 }

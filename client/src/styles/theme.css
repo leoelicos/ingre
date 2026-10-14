@@ -45,6 +45,10 @@
   --color-tint-lunch-ink: #e9a597;
   --color-chip-active: var(--color-tint-dinner);
 
+  /* print: black on white */
+  --color-print-ink: #000000;
+  --color-print-paper: #ffffff;
+
   /* elevation */
   --shadow-card: 0 2px 8px rgba(43, 43, 43, 0.08);
 
