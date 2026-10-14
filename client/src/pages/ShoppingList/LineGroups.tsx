@@ -21,6 +21,19 @@ interface Props {
   onQuantity: (lineId: string, quantity: number) => void
 }
 
+/** At the shop, ticked rows sink to the bottom of their section (stable order). */
+export const ticksLast = (
+  lines: readonly ShopLine[],
+  struck: boolean,
+  checkedIds: ReadonlySet<string>
+): ShopLine[] =>
+  struck
+    ? [
+        ...lines.filter((l) => !checkedIds.has(l.ingredientId)),
+        ...lines.filter((l) => checkedIds.has(l.ingredientId))
+      ]
+    : [...lines]
+
 /** Lines grouped by home location or shop section (Pantry keeps its aisle). */
 export const LineGroups: FC<Props> = ({ lines, grouping, ...row }) => {
   const groups =
@@ -42,18 +55,20 @@ export const LineGroups: FC<Props> = ({ lines, grouping, ...row }) => {
             <div key={sub.key}>
               {sub.key !== '' && <h4 className="list-group__sub">{sub.key}</h4>}
               <ul className="list-rows">
-                {sub.items.map((line) => (
-                  <ListRow
-                    key={line.ingredientId}
-                    line={line}
-                    checked={row.checkedIds.has(line.ingredientId)}
-                    struck={row.struck}
-                    onToggle={row.onToggle}
-                    locationMode={row.locationMode}
-                    onLocation={row.onLocation}
-                    onQuantity={row.onQuantity}
-                  />
-                ))}
+                {ticksLast(sub.items, row.struck, row.checkedIds).map(
+                  (line) => (
+                    <ListRow
+                      key={line.ingredientId}
+                      line={line}
+                      checked={row.checkedIds.has(line.ingredientId)}
+                      struck={row.struck}
+                      onToggle={row.onToggle}
+                      locationMode={row.locationMode}
+                      onLocation={row.onLocation}
+                      onQuantity={row.onQuantity}
+                    />
+                  )
+                )}
               </ul>
             </div>
           ))}

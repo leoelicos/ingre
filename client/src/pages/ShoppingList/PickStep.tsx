@@ -34,7 +34,7 @@ export const PickStep: FC<{ list: ShoppingListState }> = ({ list }) => {
           className="btn btn-primary list-tap__button"
           onClick={() => list.setStep('home')}
         >
-          Next: check your kitchen ({list.lineCount} items)
+          Next: your kitchen ({list.lineCount})
         </button>
       </div>
     </>

@@ -60,7 +60,7 @@ describe('ShoppingFlow', () => {
     expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
     fireEvent.click(
       screen.getByRole('button', {
-        name: /^Next: check your kitchen \(\d+ items\)$/
+        name: /^Next: your kitchen \(\d+\)$/
       })
     )
     expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
@@ -144,6 +144,7 @@ describe('ShoppingFlow', () => {
     fireEvent.click(
       p.getAllByRole('button', { name: /^Details for/ })[0] ?? document.body
     )
+    expect(p.queryByText(/in total$/)).not.toBeInTheDocument()
     const move = within(p.getByRole('group', { name: /^Move .* to$/ }))
     expect(move.getAllByRole('button', { pressed: true })).toHaveLength(1)
     fireEvent.click(move.getByRole('button', { name: 'Bench' }))
@@ -151,9 +152,8 @@ describe('ShoppingFlow', () => {
       0
     )
 
-    fireEvent.click(
-      p.getAllByRole('button', { name: /^Details for/ })[0] ?? document.body
-    )
+    fireEvent.click(p.getByRole('button', { name: 'Details for ginger' }))
+    expect(p.getByText(/^Butter chicken: /)).toBeInTheDocument()
     const total = p.getByText(/in total$/).textContent
     fireEvent.click(p.getByRole('radio', { name: '3' }))
     expect(p.getByText(/in total$/).textContent).not.toBe(total)
@@ -175,6 +175,12 @@ describe('ShoppingFlow', () => {
     fireEvent.click(box ?? document.body)
     expect(box).toBeChecked()
     expect(box?.closest('li')).toHaveClass('list-row--done')
+    const rows = box?.closest('ul')?.querySelectorAll('li.list-row') ?? []
+    expect(rows[rows.length - 1]).toBe(box?.closest('li'))
+    fireEvent.click(
+      p.getAllByRole('button', { name: /^Details for/ })[0] ?? document.body
+    )
+    expect(p.getAllByText(/^need |in total$/).length).toBeGreaterThan(0)
     expect(tapCount()).toBe(before)
 
     fireEvent.click(

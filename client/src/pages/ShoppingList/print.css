@@ -16,10 +16,21 @@
     display: block;
     color: var(--color-print-ink);
     background: var(--color-print-paper);
-    font-size: 11pt;
+    font-size: 14px;
+    column-count: 2;
+    column-gap: 24px;
+  }
+  .print-sheet__brand {
+    font-size: 10px;
+    margin: 0;
+    column-span: all;
+  }
+  .print-sheet h1,
+  .print-sheet__meta {
+    column-span: all;
   }
   .print-sheet h1 {
-    font-size: 16pt;
+    font-size: 18px;
     margin: 0 0 4pt;
   }
   .print-sheet__meta {
@@ -31,12 +42,13 @@
     margin-bottom: 8pt;
   }
   .print-sheet h2 {
-    font-size: 12pt;
-    margin: 0 0 2pt;
+    font-size: 15px;
+    margin: 0 0 6px;
+    padding-bottom: 2px;
     border-bottom: 1px solid var(--color-print-ink);
   }
   .print-sheet h3 {
-    font-size: 9pt;
+    font-size: 12px;
     font-weight: normal;
     font-style: italic;
     margin: 4pt 0 0;
@@ -46,18 +58,21 @@
     margin: 0;
     padding: 0;
   }
+  .print-sheet ul {
+    padding-top: 4px;
+  }
   .print-sheet li {
-    padding: 2pt 0;
+    padding: 1px 0;
   }
   .print-sheet__box {
     display: inline-block;
-    width: 10pt;
-    height: 10pt;
+    width: 16px;
+    height: 16px;
     margin-right: 6pt;
     border: 1px solid var(--color-print-ink);
     vertical-align: middle;
   }
   .print-sheet small {
-    font-size: 8pt;
+    font-size: 11px;
   }
 }

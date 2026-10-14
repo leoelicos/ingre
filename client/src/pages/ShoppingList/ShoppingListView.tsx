@@ -114,7 +114,7 @@ export const ShoppingListView: FC<{
             className="btn btn-primary list-tap__button"
             onClick={() => list.setStep('shop')}
           >
-            Next: at the shop ({list.toBuy.length} to buy)
+            Next: at the shop ({list.toBuy.length})
           </button>
         ) : (
           list.toBuy.length > 0 && (

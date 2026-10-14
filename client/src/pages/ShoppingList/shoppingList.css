@@ -95,8 +95,12 @@
 .list-row__text small {
   color: var(--color-text-secondary);
 }
-.list-row--done .list-row__text {
+.list-row--done .list-row__name {
   text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+.list-row--done .list-row__amount,
+.list-row--done .list-row__text small {
   color: var(--color-text-secondary);
 }
 .list-row__more {

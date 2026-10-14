@@ -240,8 +240,60 @@ export const buyAmount = ({ buy }: Pick<ShopLine, 'buy'>): string => {
   return `${count} × ${what}`
 }
 
-export const needLabel = ({ need }: Pick<ShopLine, 'need'>) =>
-  `need ${formatAmount(need)}`
+const BIG_UNIT: Readonly<Record<'g' | 'ml', string>> = { g: 'kg', ml: 'L' }
+
+/** Shopper-friendly weight/volume: <100 to 5, <1000 to 10, else kg/L to one decimal. */
+export const roundMeasure = (amount: number, unit: 'g' | 'ml'): string => {
+  const step = amount < 100 ? 5 : 10
+  const rounded = Math.max(step, Math.round(amount / step) * step)
+  return rounded >= 1000
+    ? `${Math.round(amount / 100) / 10} ${BIG_UNIT[unit]}`
+    : `${rounded} ${unit}`
+}
+
+/** Recipe measures counted in whole units, with their singular/plural nouns. */
+const COUNT_NOUNS: Readonly<Record<string, readonly [string, string]>> = {
+  whole: ['', ''],
+  clove: ['clove', 'cloves'],
+  stalk: ['stalk', 'stalks'],
+  bunch: ['bunch', 'bunches']
+}
+
+/** True when buying `buy` is literally `count` of the thing (need adds nothing). */
+const sameAsBuy = (buy: Buy, count: number, measure: string) =>
+  buy.kind === 'packs' &&
+  buy.option.size.unit === 'count' &&
+  buy.count * buy.option.size.amount === count &&
+  ((buy.option.type === 'each' && measure === 'whole') ||
+    (buy.option.type === 'bunch' && measure === 'bunch'))
+
+/**
+ * "need 2 cloves", "need 3 stalks", "need 340 g", "need 1.2 kg"; null when the need says
+ * nothing the buy amount doesn't (2 onions to buy 2 onions) or for hand-added extras.
+ */
+export const needLabel = ({
+  need,
+  parts,
+  buy
+}: Pick<ShopLine, 'need' | 'parts' | 'buy'>): string | null => {
+  if (parts.length === 0) return null
+  const measures = [...new Set(parts.map((p) => p.measure))]
+  const measure = measures.length === 1 ? measures.join('') : ''
+  const nouns = COUNT_NOUNS[measure]
+  if (nouns !== undefined) {
+    const count = Math.ceil(
+      parts.reduce((sum, p) => sum + p.quantity, 0) - 1e-9
+    )
+    if (sameAsBuy(buy, count, measure)) return null
+    const noun = count === 1 ? nouns[0] : nouns[1]
+    return noun === '' ? `need ${count}` : `need ${count} ${noun}`
+  }
+  if (need.unit === 'count') {
+    const count = Math.ceil(need.amount - 1e-9)
+    return sameAsBuy(buy, count, 'whole') ? null : `need ${count}`
+  }
+  return `need ${roundMeasure(need.amount, need.unit)}`
+}
 
 /** "for butter chicken and dahl". */
 export const forLabel = (recipeNames: readonly string[]): string => {

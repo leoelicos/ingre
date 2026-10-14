@@ -23,6 +23,7 @@ export const PrintSheet: FC<{
       className="print-sheet"
       data-testid="print-sheet"
     >
+      <p className="print-sheet__brand">ingré</p>
       <h1>Shopping list</h1>
       <p className="print-sheet__meta">
         {recipes.length > 0 &&
@@ -46,9 +47,7 @@ export const PrintSheet: FC<{
                       aria-hidden="true"
                     />
                     <strong>{buyAmount(line)}</strong> {displayName(line)}{' '}
-                    {line.extraQuantity === null && (
-                      <small>{needLabel(line)}</small>
-                    )}
+                    <small>{needLabel(line)}</small>
                   </li>
                 ))}
               </ul>

@@ -16,6 +16,7 @@ import {
   groupBy,
   mergeById,
   needLabel,
+  roundMeasure,
   buyAmount,
   displayName,
   splitByHave,
@@ -25,7 +26,8 @@ import {
   partLabel,
   EXTRA_WEIGHED_GRAMS,
   extraLines,
-  sourceLabel
+  sourceLabel,
+  type Buy
 } from '../shoppingList'
 
 const recipe = (
@@ -304,7 +306,6 @@ describe('labels', () => {
     expect(displayName({ name })).toBe('Brown onion')
   })
   it('formats need and recipe lists', () => {
-    expect(needLabel({ need: { amount: 1.5, unit: 'count' } })).toBe('need 1.5')
     expect(forLabel([])).toBe('')
     expect(forLabel(['Butter chicken'])).toBe('for butter chicken')
     expect(forLabel(['Butter chicken', 'Red lentil dahl'])).toBe(
@@ -415,5 +416,96 @@ describe('extraLines', () => {
     expect(sourceLabel({ recipes: ['Dahl'], extraQuantity: null })).toBe(
       'for dahl'
     )
+  })
+})
+
+describe('need formatting', () => {
+  const part = (measure: string, quantity: number, recipe = 'A') => ({
+    ingredientId: 'x',
+    recipe,
+    quantity,
+    measure
+  })
+  const each = sized('each', 1, 'count')
+  const packs = (
+    option: SoldOption & { size: Amount },
+    count: number
+  ): Buy => ({
+    kind: 'packs',
+    option,
+    count
+  })
+  const weighed: Buy = { kind: 'weighed', amount: { amount: 100, unit: 'g' } }
+  const g = (amount: number): Amount => ({ amount, unit: 'g' })
+
+  it('rounds weights and volumes for shoppers', () => {
+    expect(roundMeasure(2.5, 'g')).toBe('5 g')
+    expect(roundMeasure(1, 'g')).toBe('5 g')
+    expect(roundMeasure(62.5, 'ml')).toBe('65 ml')
+    expect(roundMeasure(337.5, 'g')).toBe('340 g')
+    expect(roundMeasure(996, 'g')).toBe('1 kg')
+    expect(roundMeasure(1240, 'g')).toBe('1.2 kg')
+    expect(roundMeasure(1500, 'ml')).toBe('1.5 L')
+  })
+
+  it('counts cloves, stalks and bunches in whole units, rounding up', () => {
+    expect(
+      needLabel({
+        need: g(18),
+        parts: [part('clove', 1.5), part('clove', 1, 'B')],
+        buy: weighed
+      })
+    ).toBe('need 3 cloves')
+    expect(
+      needLabel({ need: g(40), parts: [part('stalk', 0.5)], buy: weighed })
+    ).toBe('need 1 stalk')
+    expect(
+      needLabel({
+        need: g(1),
+        parts: [part('bunch', 1.5)],
+        buy: packs(sized('bunch', 1, 'count'), 1)
+      })
+    ).toBe('need 2 bunches')
+    expect(
+      needLabel({
+        need: g(1),
+        parts: [part('whole', 1.5)],
+        buy: packs(sized('pack', 6, 'count'), 1)
+      })
+    ).toBe('need 2')
+  })
+
+  it('omits need when it repeats the buy amount, and for extras', () => {
+    const count: Amount = { amount: 2, unit: 'count' }
+    expect(
+      needLabel({ need: count, parts: [part('whole', 2)], buy: packs(each, 2) })
+    ).toBeNull()
+    expect(
+      needLabel({
+        need: count,
+        parts: [part('bunch', 0.5)],
+        buy: packs(sized('bunch', 1, 'count'), 1)
+      })
+    ).toBeNull()
+    expect(
+      needLabel({ need: count, parts: [], buy: packs(each, 2) })
+    ).toBeNull()
+    expect(
+      needLabel({
+        need: count,
+        parts: [part('whole', 1), part('g', 50, 'B')],
+        buy: packs(each, 2)
+      })
+    ).toBeNull()
+    expect(
+      needLabel({
+        need: { amount: 1.2, unit: 'count' },
+        parts: [part('g', 1)],
+        buy: weighed
+      })
+    ).toBe('need 2')
+    expect(
+      needLabel({ need: g(337.5), parts: [part('g', 1)], buy: weighed })
+    ).toBe('need 340 g')
   })
 })

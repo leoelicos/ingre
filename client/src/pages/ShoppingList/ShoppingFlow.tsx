@@ -127,7 +127,9 @@ export const ShoppingFlow: FC<{ print?: () => void }> = ({
               id={`flow-panel-${step}`}
               role="tabpanel"
               aria-labelledby={`flow-tab-${step}`}
-              className="flow-panel"
+              className={
+                step === 'pick' ? 'flow-panel' : 'flow-panel flow-panel--list'
+              }
               hidden={!(i === index || (dragging && Math.abs(i - index) === 1))}
             >
               {step === 'pick' ? (

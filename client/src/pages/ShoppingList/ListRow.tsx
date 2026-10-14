@@ -91,6 +91,7 @@ export const ListRow: FC<RowProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(false)
   const name = displayName(line)
+  const need = needLabel(line)
   return (
     <li className={struck && checked ? 'list-row list-row--done' : 'list-row'}>
       <div className="list-row__main">
@@ -134,12 +135,15 @@ export const ListRow: FC<RowProps> = ({
       </div>
       {expanded && (
         <div className="list-row__details">
-          <ul className="list-row__breakdown">
-            {line.parts.map((part) => (
-              <li key={part.recipe}>{partLabel(part)}</li>
-            ))}
-            <li>{needLabel(line)} in total</li>
-          </ul>
+          {(locationMode !== 'move' || line.recipes.length >= 2) &&
+            line.parts.length > 0 && (
+              <ul className="list-row__breakdown">
+                {line.parts.map((part) => (
+                  <li key={part.recipe}>{partLabel(part)}</li>
+                ))}
+                {need !== null && <li>{need} in total</li>}
+              </ul>
+            )}
           {locationMode === 'move' && (
             <MoveTo
               line={line}
