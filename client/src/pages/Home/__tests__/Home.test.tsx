@@ -3,9 +3,13 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter } from 'react-router-dom'
 import Home from '../Home'
+import { PRIMARY_TAGS } from '../homeFilters'
+import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { StoreProvider } from '../../../utils/state/GlobalState'
 import { PEOPLE_KEY } from '../../../utils/storage/people'
+
+addFontAwesome()
 
 const renderHome = () =>
   render(
@@ -106,7 +110,9 @@ describe('Home', () => {
       within(screen.getByRole('list', { name: 'Filter by tag' }))
         .getAllByRole('button')
         .map((b) => b.textContent)
-    expect(chips().at(-1)).toBe('More ▾')
+    expect(
+      chips().every((c) => PRIMARY_TAGS.includes((c ?? '').toLowerCase()))
+    ).toBe(true)
     expect(chips()).toContain('Dinner')
     expect(chips()).not.toContain('Vietnamese')
     const more = screen.getByRole('button', { name: 'More ▾' })
@@ -116,7 +122,7 @@ describe('Home', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Vietnamese' }))
     fireEvent.click(screen.getByRole('button', { name: 'Less ▴' }))
     expect(chips()).toContain('Vietnamese')
-    expect(chips()).toContain('More ▾')
+    expect(screen.getByRole('button', { name: 'More ▾' })).toBeInTheDocument()
     window.matchMedia = original
   })
 })
