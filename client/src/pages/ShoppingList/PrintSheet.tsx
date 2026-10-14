@@ -6,7 +6,7 @@ import { SHOP_SECTIONS } from '../../utils/shopping/sections'
 import type { ShopLine } from '../../utils/shopping/shoppingList'
 import {
   buyAmount,
-  displayName,
+  printLine,
   groupBy,
   needLabel
 } from '../../utils/shopping/shoppingList'
@@ -46,7 +46,8 @@ export const PrintSheet: FC<{
                       className="print-sheet__box"
                       aria-hidden="true"
                     />
-                    <strong>{buyAmount(line)}</strong> {displayName(line)}{' '}
+                    <strong>{buyAmount(line)}</strong>
+                    {printLine(line).slice(buyAmount(line).length)}{' '}
                     <small>{needLabel(line)}</small>
                   </li>
                 ))}

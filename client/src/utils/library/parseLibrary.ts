@@ -83,9 +83,13 @@ const parseSold = (v: unknown, path: string): SoldOption => {
   if ((type === 'weighed') !== (size === null))
     fail(`${path}.size`, 'null exactly when weighed')
   const label = r['label']
-  return label === undefined
-    ? { type, size }
-    : { type, size, label: str(label, `${path}.label`) }
+  const plural = r['plural']
+  return {
+    type,
+    size,
+    ...(label === undefined ? {} : { label: str(label, `${path}.label`) }),
+    ...(plural === undefined ? {} : { plural: str(plural, `${path}.plural`) })
+  }
 }
 
 const parseMeasureGrams = (v: unknown, path: string): Record<string, number> =>

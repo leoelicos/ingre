@@ -12,10 +12,12 @@ LIQUID_TYPE = {'cream': 'carton'}
 def size(amount, unit):
     return {'amount': amount, 'unit': unit}
 
-def opt(type_, s, label=None):
+def opt(type_, s, label=None, plural=None):
     o = {'type': type_, 'size': s}
     if label:
         o['label'] = label
+    if plural:
+        o['plural'] = plural
     return o
 
 def convert(item, text):
@@ -26,7 +28,7 @@ def convert(item, text):
     if text == 'half bunch':
         return opt('bunch', size(0.5, 'count'), 'half bunch')
     if text == 'half':
-        return opt('each', size(0.5, 'count'), 'half')
+        return opt('each', size(0.5, 'count'), 'half', 'halves')
     if text == 'weighed':
         return opt('weighed', None)
     m = re.fullmatch(r'(\d+) pack', text)
@@ -49,7 +51,7 @@ def convert(item, text):
 
 # Verified Coles facts supplied by the PO (override the draft for these ids).
 VERIFIED = {
-    'garlic': {'sold': [opt('each', size(1, 'count'), 'loose bulb'), opt('pack', size(3, 'count'), '3-pack')],
+    'garlic': {'sold': [opt('each', size(1, 'count'), 'garlic bulb'), opt('pack', size(3, 'count'), '3-pack')],
                'approxGrams': 60, 'measureGrams': {'clove': 6}},
     'celery': {'sold': [opt('bunch', size(800, 'g')), opt('each', size(500, 'g'), 'trimmed head'),
                         opt('pack', size(300, 'g'), 'sticks')], 'measureGrams': {'stalk': 40}},
@@ -59,9 +61,11 @@ VERIFIED = {
     'black-pepper': {'sold': [opt('grinder', size(50, 'g')), opt('jar', size(50, 'g'), 'ground')]},
     'rice-paper': {'sold': [opt('pack', size(250, 'g')), opt('pack', size(375, 'g'))]},
 }
+# PO 2026-10: how these read on the list ("1 small piece ginger", "1 garlic bulb"). Ginger piece ~50 g is an estimate.
+PO_DISPLAY = {'ginger': {'sold': [opt('each', size(1, 'count'), 'small piece')], 'approxGrams': 50}}
 SPICE_JARS = {'garam-masala', 'ground-cumin', 'chilli-powder', 'cumin-seeds', 'ground-coriander', 'ground-turmeric'}
 APPLE = {'id': 'apple', 'name': 'apples', 'category': 'fruit & veg',
-         'sold': [opt('each', size(1, 'count'), 'loose'), opt('bag', size(1000, 'g'))], 'approxGrams': 185}
+         'sold': [opt('each', size(1, 'count')), opt('bag', size(1000, 'g'))], 'approxGrams': 185}
 # Unverified estimates we had to add so every recipe measure converts.
 ESTIMATES = {'spring-onion': {'measureGrams': {'stalk': 10}}}
 
@@ -80,6 +84,7 @@ for item in catalogue:
     if 'approxGrams' in item:
         new['approxGrams'] = item['approxGrams']
     new.update(VERIFIED.get(item['id'], {}))
+    new.update(PO_DISPLAY.get(item['id'], {}))
     new.update(ESTIMATES.get(item['id'], {}))
     if item['id'] == 'lemongrass':
         new.pop('approxGrams', None)
@@ -115,7 +120,7 @@ note = (
     "pepper 50 g grinder or ground; rice paper 250/375 g packs, recipes count sheets so one pack is bought; lemongrass "
     "punnet or paste tube, not per stalk). UNVERIFIED draft sizes, to be checked by the PO: "
     f"{', '.join(unverified)}. Estimates: celery bunch 800 g / trimmed head 500 g, celery stalk 40 g, spring onion stalk 10 g, "
-    "garlic clove 6 g, salt shaker 125 g, dried oregano 10 g jar (below the verified 25-50 g spice-jar range)."
+    "garlic clove 6 g, ginger small piece 50 g, salt shaker 125 g, dried oregano 10 g jar (below the verified 25-50 g spice-jar range)."
 )
 # Everyday extras (PO draft, 2026-10): non-recipe items for "Add an item". The draft gives a shop
 # section; we store an aisle that maps to that section (Pantry items get a quiet sub-aisle).

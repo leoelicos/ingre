@@ -10,6 +10,7 @@ import { catalogue, library } from '../../library/recipeLibrary'
 import { SHOP_SECTIONS, placeInShop } from '../sections'
 import {
   buildShoppingList,
+  printLine,
   chooseBuy,
   collectNeeds,
   forLabel,
@@ -290,7 +291,15 @@ describe('labels', () => {
     buyAmount({ buy: { kind: 'packs', option, count } })
   it('formats each, labelled each, bunch, packs, counted packs and weighed', () => {
     expect(packs(sized('each', 1, 'count'), 2)).toBe('2')
-    expect(packs(sized('each', 0.5, 'count', 'half'), 1)).toBe('1 × half')
+    expect(packs(sized('each', 1, 'count', 'garlic bulb'), 1)).toBe(
+      '1 garlic bulb'
+    )
+    expect(packs(sized('each', 1, 'count', 'small piece'), 2)).toBe(
+      '2 small pieces'
+    )
+    expect(
+      packs({ ...sized('each', 0.5, 'count', 'half'), plural: 'halves' }, 2)
+    ).toBe('2 halves')
     expect(packs(sized('bunch', 1, 'count'), 1)).toBe('1 bunch')
     expect(packs(sized('bunch', 1, 'count'), 2)).toBe('2 bunches')
     expect(packs(sized('tin', 400, 'g'), 3)).toBe('3 × 400 g')
@@ -515,5 +524,22 @@ describe('homeGroup', () => {
   it('uses the location, or Other for free text', () => {
     expect(homeGroup({ location: libIngredient().pantry })).toBe('Cupboard')
     expect(homeGroup({ location: null })).toBe('Other')
+  })
+})
+
+describe('catalogue display (PO)', () => {
+  const line = (id: string, grams: number) =>
+    buildShoppingList(
+      [recipe('r', [{ ingredientId: id, quantity: grams, measure: 'g' }])],
+      1,
+      catalogue
+    )[0]
+  it('ginger reads "1 small piece", garlic "1 garlic bulb"', () => {
+    const ginger = line('ginger', 10)
+    const garlic = line('garlic', 12)
+    expect(ginger && buyAmount(ginger)).toBe('1 small piece')
+    expect(garlic && buyAmount(garlic)).toBe('1 garlic bulb')
+    expect(ginger && printLine(ginger)).toBe('1 small piece ginger')
+    expect(garlic && printLine(garlic)).toBe('1 garlic bulb')
   })
 })

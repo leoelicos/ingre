@@ -25,7 +25,10 @@ export type SoldType =
 export interface SoldOption {
   type: SoldType
   size: Amount | null
+  /** e.g. "garlic bulb": reads "1 garlic bulb" */
   label?: string
+  /** plural of label when it isn't label + "s" (e.g. "halves") */
+  plural?: string
 }
 
 export type HomeLocation = 'Fridge' | 'Cupboard' | 'Spice rack' | 'Bench'

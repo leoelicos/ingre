@@ -231,7 +231,7 @@ const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 export const displayName = ({ name }: Pick<ShopLine, 'name'>) =>
   capitalise(name)
 
-/** What to put in the trolley: "2", "1 × 500 g", "1 bunch", "1 × carton of 6", "100 g". */
+/** What to put in the trolley: "2", "1 garlic bulb", "1 × 500 g", "1 bunch", "1 × carton of 6", "100 g". */
 export const buyAmount = ({ buy }: Pick<ShopLine, 'buy'>): string => {
   if (buy.kind === 'weighed') return formatAmount(buy.amount)
   if (buy.kind === 'count') return `${buy.count}`
@@ -239,7 +239,9 @@ export const buyAmount = ({ buy }: Pick<ShopLine, 'buy'>): string => {
   if (option.type === 'each')
     return option.label === undefined
       ? `${count}`
-      : `${count} × ${option.label}`
+      : `${count} ${
+          count === 1 ? option.label : option.plural ?? `${option.label}s`
+        }`
   if (option.type === 'bunch')
     return `${count} ${count === 1 ? 'bunch' : 'bunches'}`
   const what =
@@ -249,6 +251,12 @@ export const buyAmount = ({ buy }: Pick<ShopLine, 'buy'>): string => {
       ? formatAmount(option.size)
       : `${formatAmount(option.size)} ${option.label}`
   return `${count} × ${what}`
+}
+
+/** Print line: "1 small piece ginger", or just "1 garlic bulb" when the amount names it. */
+export const printLine = (line: Pick<ShopLine, 'buy' | 'name'>): string => {
+  const amount = buyAmount(line)
+  return amount.includes(line.name) ? amount : `${amount} ${line.name}`
 }
 
 const BIG_UNIT: Readonly<Record<'g' | 'ml', string>> = { g: 'kg', ml: 'L' }

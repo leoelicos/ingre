@@ -179,7 +179,7 @@ describe('ShoppingFlow', () => {
       0
     )
 
-    fireEvent.click(p.getByRole('button', { name: 'Details for ginger' }))
+    fireEvent.click(p.getByRole('button', { name: 'Details for garlic' }))
     expect(p.getByText(/^Butter chicken: /)).toBeInTheDocument()
     const total = p.getByText(/in total$/).textContent
     fireEvent.click(p.getByRole('radio', { name: '3' }))
