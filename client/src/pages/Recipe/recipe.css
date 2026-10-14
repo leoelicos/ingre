@@ -118,7 +118,8 @@
   .recipe-page__side {
     position: sticky;
     top: 16px;
-    max-height: calc(100vh - 32px);
+    /* below the site header at the top of the page, so the pinned Add is always on screen */
+    max-height: calc(100vh - 140px);
     overflow-y: auto;
   }
   .recipe-method li {
