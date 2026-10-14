@@ -178,6 +178,16 @@ note += (" EVERYDAY EXTRAS (PO draft, 2026-10, all sizes UNVERIFIED): " + ', '.j
          " The draft's shop section is stored as an aisle (deli, bakery, breakfast & spreads, tea & coffee are new aisles)."
          " AUDIT (PO 2026-10-14): sesame-oil is no longer a staple, so it goes on shopping lists; olive and vegetable oil stay staples.")
 
+# Allergens (PO draft 2026-10, FSANZ PEAL mandatory list): tags kept exactly as drafted; `note`s ignored.
+ALLERGENS = json.load(open('/workspace/ingre-data/allergens-draft.json'))['ingredients']
+ids = {item['id'] for item in out}
+unmapped = sorted(k for k in ALLERGENS if k not in ids)
+untagged = sorted(i for i in ids if i not in ALLERGENS)
+if unmapped or untagged:
+    sys.exit(f'allergen draft mismatch: unmapped {unmapped}, missing {untagged}')
+for item in out:
+    item['allergens'] = list(ALLERGENS[item['id']]['allergens'])
+note += " ALLERGENS (PO draft 2026-10): `allergens` lists FSANZ mandatory allergens per item (empty when none); recipes derive theirs from their ingredients."
 json.dump({'_note': note, 'ingredients': out}, open(OUT + 'ingredients.json', 'w'), ensure_ascii=False, indent=2)
 recipes = json.load(open(RECIPES))
 for r in recipes['recipes']:

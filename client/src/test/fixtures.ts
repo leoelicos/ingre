@@ -1,4 +1,4 @@
-import type { LibraryIngredient } from '../types/library'
+import type { LibraryIngredient, LibraryRecipe } from '../types/library'
 import type { ClientIngredient, ClientRecipe } from '../types/client'
 
 export function ingredient(
@@ -48,6 +48,20 @@ export function libIngredient(
     category: 'fruit & veg',
     sold: [{ type: 'each', size: { amount: 1, unit: 'count' } }],
     pantry: 'Cupboard',
+    allergens: [],
+    ...overrides
+  }
+}
+
+/** A valid library recipe for library/allergen tests. */
+export function libRecipe(overrides: Partial<LibraryRecipe>): LibraryRecipe {
+  return {
+    id: 'r',
+    name: 'Recipe',
+    portions: 1,
+    tags: [],
+    ingredients: [],
+    method: [],
     ...overrides
   }
 }

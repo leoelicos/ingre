@@ -48,6 +48,11 @@
   margin: 6px 0 0;
   color: var(--color-text-secondary);
 }
+.recipe-allergens {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--color-allergen);
+}
 .recipe-page__side .serves {
   margin-top: 16px;
 }

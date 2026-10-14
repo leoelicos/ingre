@@ -1,5 +1,5 @@
 {
-  "_note": "Generic, brand-free items available at Coles/Woolworths/Aldi. `category` is the supermarket aisle. `sold` lists how the item is sold: {type, size: {amount, unit: g|ml|count} | null for weighed, label?}. `approxGrams` is the weight of one counted item (each/bunch); `measureGrams` converts recipe-only measures (clove, stalk). `pantry` is the default home location (Fridge, Cupboard, Spice rack, Bench; from the PO's home-locations draft with Fruit bowl folded into Bench); users can override it in the app. Frozen peas replaced by tinned peas (confirmed by the PO; 420 g tin size unverified) as there is no freezer location. Verified against Coles (PO, 2026-10): apple, black-pepper, celery, chilli-powder, cumin-seeds, garam-masala, garlic, ground-coriander, ground-cumin, ground-turmeric, lemongrass, parmesan, rice-paper (spice jars 25-50 g; parmesan blocks and grated/shaved; pepper 50 g grinder or ground; rice paper 250/375 g packs, recipes count sheets so one pack is bought; lemongrass punnet or paste tube, not per stalk). UNVERIFIED draft sizes, to be checked by the PO: baby-spinach, basmati-rice, bean-sprouts, beef-mince, beef-rump, butter, capsicum, carrot, cauliflower, chicken-thigh, chickpeas, coconut-milk, cooked-prawns, cream, crushed-tomatoes, cucumber, dried-oregano, egg, feta, fish-sauce, fresh-coriander, fresh-mint, ginger, green-chilli, ground-almonds, haloumi, hoisin-sauce, iceberg-lettuce, jasmine-rice, kalamata-olives, lime, natural-yoghurt, olive-oil, onion, oyster-sauce, pork-belly, pork-mince, potato, red-chilli, red-lentils, red-onion, red-wine-vinegar, rice-vermicelli, roasted-peanuts, salt, sesame-oil, soy-sauce, spaghetti, spring-onion, tinned-peas, tomato, tomato-paste, vegetable-oil, water-chestnuts, white-sugar, white-vinegar. Estimates: celery bunch 800 g / trimmed head 500 g, celery stalk 40 g, spring onion stalk 10 g, garlic clove 6 g, ginger small piece 50 g, salt shaker 125 g, dried oregano 10 g jar (below the verified 25-50 g spice-jar range). EVERYDAY EXTRAS (PO draft, 2026-10, all sizes UNVERIFIED): banana, orange, mandarin, pear, lemon, avocado, grapes, strawberries, blueberries, kiwifruit, watermelon, broccoli, zucchini, sweet-potato, pumpkin, mushrooms, corn, salad-mix, full-cream-milk, light-milk, cheddar, greek-yoghurt, orange-juice, sliced-ham, hummus, chicken-breast, sausages, bacon, white-bread, wholemeal-bread, bread-rolls, wraps, rolled-oats, breakfast-cereal, peanut-butter, honey, jam, coffee, tea-bags, plain-flour, canned-tuna. Extras estimates: breakfast cereal 500 g pack, coffee 200 g jar/pack, whole watermelon 3 kg. The draft's shop section is stored as an aisle (deli, bakery, breakfast & spreads, tea & coffee are new aisles). AUDIT (PO 2026-10-14): sesame-oil is no longer a staple, so it goes on shopping lists; olive and vegetable oil stay staples.",
+  "_note": "Generic, brand-free items available at Coles/Woolworths/Aldi. `category` is the supermarket aisle. `sold` lists how the item is sold: {type, size: {amount, unit: g|ml|count} | null for weighed, label?}. `approxGrams` is the weight of one counted item (each/bunch); `measureGrams` converts recipe-only measures (clove, stalk). `pantry` is the default home location (Fridge, Cupboard, Spice rack, Bench; from the PO's home-locations draft with Fruit bowl folded into Bench); users can override it in the app. Frozen peas replaced by tinned peas (confirmed by the PO; 420 g tin size unverified) as there is no freezer location. Verified against Coles (PO, 2026-10): apple, black-pepper, celery, chilli-powder, cumin-seeds, garam-masala, garlic, ground-coriander, ground-cumin, ground-turmeric, lemongrass, parmesan, rice-paper (spice jars 25-50 g; parmesan blocks and grated/shaved; pepper 50 g grinder or ground; rice paper 250/375 g packs, recipes count sheets so one pack is bought; lemongrass punnet or paste tube, not per stalk). UNVERIFIED draft sizes, to be checked by the PO: baby-spinach, basmati-rice, bean-sprouts, beef-mince, beef-rump, butter, capsicum, carrot, cauliflower, chicken-thigh, chickpeas, coconut-milk, cooked-prawns, cream, crushed-tomatoes, cucumber, dried-oregano, egg, feta, fish-sauce, fresh-coriander, fresh-mint, ginger, green-chilli, ground-almonds, haloumi, hoisin-sauce, iceberg-lettuce, jasmine-rice, kalamata-olives, lime, natural-yoghurt, olive-oil, onion, oyster-sauce, pork-belly, pork-mince, potato, red-chilli, red-lentils, red-onion, red-wine-vinegar, rice-vermicelli, roasted-peanuts, salt, sesame-oil, soy-sauce, spaghetti, spring-onion, tinned-peas, tomato, tomato-paste, vegetable-oil, water-chestnuts, white-sugar, white-vinegar. Estimates: celery bunch 800 g / trimmed head 500 g, celery stalk 40 g, spring onion stalk 10 g, garlic clove 6 g, ginger small piece 50 g, salt shaker 125 g, dried oregano 10 g jar (below the verified 25-50 g spice-jar range). EVERYDAY EXTRAS (PO draft, 2026-10, all sizes UNVERIFIED): banana, orange, mandarin, pear, lemon, avocado, grapes, strawberries, blueberries, kiwifruit, watermelon, broccoli, zucchini, sweet-potato, pumpkin, mushrooms, corn, salad-mix, full-cream-milk, light-milk, cheddar, greek-yoghurt, orange-juice, sliced-ham, hummus, chicken-breast, sausages, bacon, white-bread, wholemeal-bread, bread-rolls, wraps, rolled-oats, breakfast-cereal, peanut-butter, honey, jam, coffee, tea-bags, plain-flour, canned-tuna. Extras estimates: breakfast cereal 500 g pack, coffee 200 g jar/pack, whole watermelon 3 kg. The draft's shop section is stored as an aisle (deli, bakery, breakfast & spreads, tea & coffee are new aisles). AUDIT (PO 2026-10-14): sesame-oil is no longer a staple, so it goes on shopping lists; olive and vegetable oil stay staples. ALLERGENS (PO draft 2026-10): `allergens` lists FSANZ mandatory allergens per item (empty when none); recipes derive theirs from their ingredients.",
   "ingredients": [
     {
       "id": "beef-mince",
@@ -25,7 +25,8 @@
           "size": null
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "pork-mince",
@@ -44,7 +45,8 @@
           "size": null
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "chicken-thigh",
@@ -70,7 +72,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "egg",
@@ -93,7 +96,8 @@
         }
       ],
       "approxGrams": 55,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["egg"]
     },
     {
       "id": "butter",
@@ -117,7 +121,8 @@
           "label": "block"
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["milk"]
     },
     {
       "id": "cream",
@@ -139,7 +144,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["milk"]
     },
     {
       "id": "natural-yoghurt",
@@ -161,7 +167,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["milk"]
     },
     {
       "id": "haloumi",
@@ -183,7 +190,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["milk"]
     },
     {
       "id": "feta",
@@ -202,7 +210,8 @@
           "size": null
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["milk"]
     },
     {
       "id": "parmesan",
@@ -242,7 +251,8 @@
           "label": "shaved"
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["milk"]
     },
     {
       "id": "onion",
@@ -265,7 +275,8 @@
         }
       ],
       "approxGrams": 150,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "red-onion",
@@ -288,7 +299,8 @@
         }
       ],
       "approxGrams": 150,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "garlic",
@@ -316,7 +328,8 @@
       "measureGrams": {
         "clove": 6
       },
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "ginger",
@@ -333,7 +346,8 @@
         }
       ],
       "approxGrams": 50,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "carrot",
@@ -356,7 +370,8 @@
         }
       ],
       "approxGrams": 120,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "celery",
@@ -391,7 +406,8 @@
       "measureGrams": {
         "stalk": 40
       },
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "spring-onion",
@@ -410,7 +426,8 @@
       "measureGrams": {
         "stalk": 10
       },
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "iceberg-lettuce",
@@ -426,7 +443,8 @@
         }
       ],
       "approxGrams": 600,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "tomato",
@@ -446,7 +464,8 @@
         }
       ],
       "approxGrams": 120,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "cucumber",
@@ -462,7 +481,8 @@
         }
       ],
       "approxGrams": 350,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "capsicum",
@@ -478,7 +498,8 @@
         }
       ],
       "approxGrams": 180,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "tinned-peas",
@@ -493,7 +514,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "water-chestnuts",
@@ -508,7 +530,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "spaghetti",
@@ -523,7 +546,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["wheat"]
     },
     {
       "id": "jasmine-rice",
@@ -552,7 +576,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "basmati-rice",
@@ -574,7 +599,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "crushed-tomatoes",
@@ -589,7 +615,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "tomato-paste",
@@ -611,7 +638,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "kalamata-olives",
@@ -630,7 +658,8 @@
           "size": null
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "olive-oil",
@@ -653,7 +682,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "vegetable-oil",
@@ -676,7 +706,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "sesame-oil",
@@ -691,7 +722,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["sesame"]
     },
     {
       "id": "red-wine-vinegar",
@@ -713,7 +745,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "soy-sauce",
@@ -735,7 +768,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["soy", "wheat"]
     },
     {
       "id": "oyster-sauce",
@@ -757,7 +791,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["mollusc", "soy", "wheat"]
     },
     {
       "id": "garam-masala",
@@ -772,7 +807,8 @@
           }
         }
       ],
-      "pantry": "Spice rack"
+      "pantry": "Spice rack",
+      "allergens": []
     },
     {
       "id": "ground-cumin",
@@ -787,7 +823,8 @@
           }
         }
       ],
-      "pantry": "Spice rack"
+      "pantry": "Spice rack",
+      "allergens": []
     },
     {
       "id": "chilli-powder",
@@ -802,7 +839,8 @@
           }
         }
       ],
-      "pantry": "Spice rack"
+      "pantry": "Spice rack",
+      "allergens": []
     },
     {
       "id": "dried-oregano",
@@ -817,7 +855,8 @@
           }
         }
       ],
-      "pantry": "Spice rack"
+      "pantry": "Spice rack",
+      "allergens": []
     },
     {
       "id": "salt",
@@ -841,7 +880,8 @@
           "label": "shaker"
         }
       ],
-      "pantry": "Spice rack"
+      "pantry": "Spice rack",
+      "allergens": []
     },
     {
       "id": "fresh-coriander",
@@ -857,7 +897,8 @@
         }
       ],
       "approxGrams": 60,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "potato",
@@ -884,7 +925,8 @@
         }
       ],
       "approxGrams": 200,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "cauliflower",
@@ -909,7 +951,8 @@
         }
       ],
       "approxGrams": 1000,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "baby-spinach",
@@ -931,7 +974,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "green-chilli",
@@ -951,7 +995,8 @@
         }
       ],
       "approxGrams": 10,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "red-lentils",
@@ -973,7 +1018,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "coconut-milk",
@@ -995,7 +1041,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "chickpeas",
@@ -1010,7 +1057,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "ground-almonds",
@@ -1032,7 +1080,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["tree nut (almond)"]
     },
     {
       "id": "cumin-seeds",
@@ -1047,7 +1096,8 @@
           }
         }
       ],
-      "pantry": "Spice rack"
+      "pantry": "Spice rack",
+      "allergens": []
     },
     {
       "id": "ground-coriander",
@@ -1062,7 +1112,8 @@
           }
         }
       ],
-      "pantry": "Spice rack"
+      "pantry": "Spice rack",
+      "allergens": []
     },
     {
       "id": "ground-turmeric",
@@ -1077,7 +1128,8 @@
           }
         }
       ],
-      "pantry": "Spice rack"
+      "pantry": "Spice rack",
+      "allergens": []
     },
     {
       "id": "beef-rump",
@@ -1096,7 +1148,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "pork-belly",
@@ -1115,7 +1168,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "cooked-prawns",
@@ -1134,7 +1188,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["crustacean"]
     },
     {
       "id": "lemongrass",
@@ -1158,7 +1213,8 @@
           "label": "paste"
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "red-chilli",
@@ -1178,7 +1234,8 @@
         }
       ],
       "approxGrams": 10,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "lime",
@@ -1194,7 +1251,8 @@
         }
       ],
       "approxGrams": 70,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "fresh-mint",
@@ -1210,7 +1268,8 @@
         }
       ],
       "approxGrams": 50,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "bean-sprouts",
@@ -1225,7 +1284,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "fish-sauce",
@@ -1247,7 +1307,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["fish"]
     },
     {
       "id": "hoisin-sauce",
@@ -1262,7 +1323,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["soy", "wheat"]
     },
     {
       "id": "rice-paper",
@@ -1284,7 +1346,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "rice-vermicelli",
@@ -1306,7 +1369,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "roasted-peanuts",
@@ -1328,7 +1392,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["peanut"]
     },
     {
       "id": "white-sugar",
@@ -1350,7 +1415,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "white-vinegar",
@@ -1372,7 +1438,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "black-pepper",
@@ -1396,7 +1463,8 @@
           "label": "ground"
         }
       ],
-      "pantry": "Spice rack"
+      "pantry": "Spice rack",
+      "allergens": []
     },
     {
       "id": "apple",
@@ -1419,7 +1487,8 @@
         }
       ],
       "approxGrams": 185,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "banana",
@@ -1435,7 +1504,8 @@
         }
       ],
       "approxGrams": 120,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "orange",
@@ -1458,7 +1528,8 @@
         }
       ],
       "approxGrams": 200,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "mandarin",
@@ -1481,7 +1552,8 @@
         }
       ],
       "approxGrams": 90,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "pear",
@@ -1497,7 +1569,8 @@
         }
       ],
       "approxGrams": 180,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "lemon",
@@ -1513,7 +1586,8 @@
         }
       ],
       "approxGrams": 120,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "avocado",
@@ -1529,7 +1603,8 @@
         }
       ],
       "approxGrams": 200,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "grapes",
@@ -1541,7 +1616,8 @@
           "size": null
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "strawberries",
@@ -1556,7 +1632,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "blueberries",
@@ -1571,7 +1648,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "kiwifruit",
@@ -1587,7 +1665,8 @@
         }
       ],
       "approxGrams": 80,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "watermelon",
@@ -1607,7 +1686,8 @@
         }
       ],
       "approxGrams": 3000,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "broccoli",
@@ -1627,7 +1707,8 @@
         }
       ],
       "approxGrams": 350,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "zucchini",
@@ -1643,7 +1724,8 @@
         }
       ],
       "approxGrams": 200,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "sweet-potato",
@@ -1663,7 +1745,8 @@
         }
       ],
       "approxGrams": 400,
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "pumpkin",
@@ -1675,7 +1758,8 @@
           "size": null
         }
       ],
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": []
     },
     {
       "id": "mushrooms",
@@ -1694,7 +1778,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "corn",
@@ -1710,7 +1795,8 @@
         }
       ],
       "approxGrams": 250,
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "salad-mix",
@@ -1725,7 +1811,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "full-cream-milk",
@@ -1747,7 +1834,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["milk"]
     },
     {
       "id": "light-milk",
@@ -1769,7 +1857,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["milk"]
     },
     {
       "id": "cheddar",
@@ -1791,7 +1880,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["milk"]
     },
     {
       "id": "greek-yoghurt",
@@ -1813,7 +1903,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["milk"]
     },
     {
       "id": "orange-juice",
@@ -1828,7 +1919,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "sliced-ham",
@@ -1847,7 +1939,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "hummus",
@@ -1862,7 +1955,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["sesame"]
     },
     {
       "id": "chicken-breast",
@@ -1881,7 +1975,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "sausages",
@@ -1896,7 +1991,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": ["wheat"]
     },
     {
       "id": "bacon",
@@ -1911,7 +2007,8 @@
           }
         }
       ],
-      "pantry": "Fridge"
+      "pantry": "Fridge",
+      "allergens": []
     },
     {
       "id": "white-bread",
@@ -1926,7 +2023,8 @@
           }
         }
       ],
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": ["wheat", "soy"]
     },
     {
       "id": "wholemeal-bread",
@@ -1941,7 +2039,8 @@
           }
         }
       ],
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": ["wheat", "soy"]
     },
     {
       "id": "bread-rolls",
@@ -1957,7 +2056,8 @@
           "label": "6-pack"
         }
       ],
-      "pantry": "Bench"
+      "pantry": "Bench",
+      "allergens": ["wheat", "soy"]
     },
     {
       "id": "wraps",
@@ -1973,7 +2073,8 @@
           "label": "8-pack"
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["wheat"]
     },
     {
       "id": "rolled-oats",
@@ -1995,7 +2096,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["gluten (oats)"]
     },
     {
       "id": "breakfast-cereal",
@@ -2010,7 +2112,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["wheat", "gluten (barley)"]
     },
     {
       "id": "peanut-butter",
@@ -2025,7 +2128,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["peanut"]
     },
     {
       "id": "honey",
@@ -2040,7 +2144,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "jam",
@@ -2055,7 +2160,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "coffee",
@@ -2077,7 +2183,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "tea-bags",
@@ -2093,7 +2200,8 @@
           "label": "100-pack"
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": []
     },
     {
       "id": "plain-flour",
@@ -2108,7 +2216,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["wheat"]
     },
     {
       "id": "canned-tuna",
@@ -2130,7 +2239,8 @@
           }
         }
       ],
-      "pantry": "Cupboard"
+      "pantry": "Cupboard",
+      "allergens": ["fish"]
     }
   ]
 }

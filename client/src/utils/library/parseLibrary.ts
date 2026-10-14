@@ -116,6 +116,9 @@ export const parseIngredient = (
     category: oneOf(AISLES, r['category'], `${path}.category`),
     sold,
     pantry: oneOf(HOME_LOCATIONS, r['pantry'], `${path}.pantry`),
+    allergens: arr(r['allergens'], `${path}.allergens`).map((a, i) =>
+      str(a, `${path}.allergens[${i}]`)
+    ),
     ...(r['staple'] === true ? { staple: true } : {}),
     ...(r['approxGrams'] === undefined
       ? {}

@@ -27,7 +27,7 @@
   --color-success: var(--palette-green); /* completed/checked state */
   --color-allergen: var(
     --palette-amber
-  ); /* allergen warnings (token only for now) */
+  ); /* allergen warnings (.recipe-allergens) */
 
   /* text */
   --color-text: var(--palette-ink);

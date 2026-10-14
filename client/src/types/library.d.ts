@@ -47,6 +47,8 @@ export interface LibraryIngredient {
   measureGrams?: Record<string, number>
   /** default home location (user can override) */
   pantry: HomeLocation
+  /** FSANZ mandatory allergens, e.g. 'milk', 'tree nut (almond)'; empty when none */
+  allergens: string[]
 }
 
 export interface LibraryRecipeIngredient {

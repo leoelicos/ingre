@@ -19,7 +19,8 @@ const validIngredient = {
   ],
   approxGrams: 60,
   measureGrams: { clove: 6 },
-  pantry: 'Bench'
+  pantry: 'Bench',
+  allergens: ['sesame']
 }
 const validRecipe = {
   id: 'r',
@@ -59,6 +60,16 @@ describe('parseIngredient', () => {
       'bad location',
       { ...validIngredient, pantry: 'Pantry' },
       'ingredient.pantry'
+    ],
+    [
+      'allergens missing',
+      { ...validIngredient, allergens: null },
+      'ingredient.allergens: expected an array'
+    ],
+    [
+      'blank allergen',
+      { ...validIngredient, allergens: [''] },
+      'ingredient.allergens[0]'
     ],
     ['sold not array', { ...validIngredient, sold: {} }, 'ingredient.sold'],
     [

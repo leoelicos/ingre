@@ -8,7 +8,7 @@ import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { StoreProvider } from '../../../utils/state/GlobalState'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
-import { PICKED_KEY } from '../../../utils/storage/shoppingState'
+import { HAVE_KEY, PICKED_KEY } from '../../../utils/storage/shoppingState'
 import { usesLabel } from '../../../utils/shopping/shoppingList'
 
 addFontAwesome()
@@ -79,8 +79,7 @@ describe('RecipePage', () => {
     expect(
       screen.getByText('Indian · dinner · gluten-free')
     ).toBeInTheDocument()
-    expect(screen.queryByText(/^Contains:/)).toBeNull()
-    expect(document.querySelector('.recipe-allergens')).toBeNull()
+    expect(screen.getByText('Contains: milk')).toHaveClass('recipe-allergens')
     expect(screen.getByText('Amounts are in the buy list')).toBeInTheDocument()
     const buy = within(screen.getByRole('region', { name: 'What to buy' }))
     expect(buy.getAllByText(/^uses /).length).toBeGreaterThan(0)
@@ -107,6 +106,30 @@ describe('RecipePage', () => {
     expect(view).toHaveTextContent('✓ Added · View list')
     fireEvent.click(view)
     expect(screen.getByText('List page')).toBeInTheDocument()
+  })
+
+  it('shows the amber allergen line under the meta, from every ingredient', () => {
+    window.localStorage.setItem(PICKED_KEY, JSON.stringify(['chicken-korma']))
+    window.localStorage.setItem(
+      HAVE_KEY,
+      JSON.stringify(['butter', 'cream', 'natural-yoghurt', 'ground-almonds'])
+    )
+    const { container } = renderAt('/recipe/chicken-korma')
+    const line = screen.getByText('Contains: milk, tree nut (almond)')
+    expect(line).toHaveClass('recipe-allergens')
+    expect(line.previousElementSibling).toHaveClass('recipe-meta')
+    expect(container.querySelectorAll('.recipe-allergens')).toHaveLength(1)
+  })
+
+  it('renders nothing for a recipe without allergens', () => {
+    const { container } = renderAt('/recipe/beef-keema')
+    expect(container.querySelector('.recipe-allergens')).toBeNull()
+    expect(screen.queryByText(/contains:|allergen/i)).toBeNull()
+  })
+
+  it('keeps allergens off the recipe cards', () => {
+    renderAt('/')
+    expect(screen.queryByText(/contains:/i)).toBeNull()
   })
 
   it('opened directly, back goes home; unknown ids say so', () => {

@@ -13,6 +13,7 @@ import { HeroIcon } from '../../components/Widgets/RecipeCard/HeroIcon'
 import type { LibraryRecipe } from '../../types/library'
 import { changeTitle } from '../../utils/changeTitle'
 import { catalogue, library } from '../../utils/library/recipeLibrary'
+import { containsLine, recipeAllergens } from '../../utils/library/allergens'
 import {
   assumedNames,
   buildShoppingList,
@@ -78,6 +79,7 @@ const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
   const lines = buildShoppingList([recipe], people, catalogue)
   const toBuy = lines.filter((l) => !l.staple)
   const staples = lines.filter((l) => l.staple)
+  const contains = containsLine(recipeAllergens(recipe, catalogue))
   return (
     <main className="recipe-page">
       <div className="recipe-page__side">
@@ -108,7 +110,7 @@ const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
           </p>
         )}
         <p className="recipe-meta">{recipeMeta(recipe.tags)}</p>
-        {/* The amber "Contains: …" line goes here once recipes carry allergen data; hidden until then. */}
+        {contains !== '' && <p className="recipe-allergens">{contains}</p>}
         <ServesPicker
           people={people}
           onChange={setPeople}
