@@ -26,31 +26,34 @@ export const useSignup = () => {
     {
       data: checkEmailData,
       loading: checkEmailLoading,
-      error: checkEmailError //
+      error: checkEmailError
     }
   ] = useLazyQuery(CHECK_EMAIL_ALREADY_EXISTS, {
     fetchPolicy: 'network-only'
-    // nextFetchPolicy: 'cache-first'
   })
 
-  const [addUser, { error: addUserError }] = useMutation(ADD_USER)
+  const [addUser, { error: addUserError, loading: addUserLoading }] =
+    useMutation(ADD_USER)
 
   const navigate = useNavigate()
 
   const [state, dispatch] = useAuthContext()
   const loggedIn = state.loggedIn
 
-  const emailAlreadyExists = async (e: string) => {
-    await checkEmailAlreadyExists({ variables: { email: e } })
-    return checkEmailData
-  }
+  const emailExists = !!checkEmailData?.checkEmailAlreadyExists
 
   const handleFormSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
     const { firstName, lastName, email, password } = fields
-    const variables = { input: { email, password, firstName, lastName } }
+    if (!email || !password || !firstName) return
+
     try {
-      await emailAlreadyExists(email) // debug this
+      const result = await checkEmailAlreadyExists({ variables: { email } })
+      if (result.data?.checkEmailAlreadyExists) {
+        return // UI will show the exists message
+      }
+
+      const variables = { input: { email, password, firstName, lastName } }
       const res = await addUser({ variables })
       if (!res.data) throw new Error('Sign up returned no data')
       const token = res.data.addUser.token
@@ -76,13 +79,16 @@ export const useSignup = () => {
 
   return {
     loggedIn,
+    fields,
     handleFormSubmit,
     onFirstNameChange,
     onLastNameChange,
     onEmailChange,
+    onPasswordChange,
     checkEmailLoading,
     checkEmailError,
-    onPasswordChange,
-    addUserError
+    emailExists,
+    addUserError,
+    addUserLoading
   }
 }

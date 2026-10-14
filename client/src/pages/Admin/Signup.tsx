@@ -1,62 +1,150 @@
-import type { FC } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import type { FC, FormEvent } from 'react'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSignup } from './useSignup'
+import './auth.css'
 
 export const Signup: FC = () => {
+  const navigate = useNavigate()
   const {
     loggedIn,
+    fields,
     handleFormSubmit,
     onFirstNameChange,
     onLastNameChange,
     onEmailChange,
+    onPasswordChange,
     checkEmailLoading,
     checkEmailError,
-    onPasswordChange,
-    addUserError
+    emailExists,
+    addUserError,
+    addUserLoading
   } = useSignup()
-  if (!loggedIn) return <Navigate to="/" />
-  return (
-    <div>
-      <div>
-        <p>Sign up</p>
-      </div>
-      <form onSubmit={handleFormSubmit}>
-        <input
-          type="text"
-          onChange={onFirstNameChange}
-        />
-        <input
-          type="text"
-          onChange={onLastNameChange}
-        />
-        <input
-          type="text"
-          onChange={onEmailChange}
-        />
-        {checkEmailLoading ? (
-          <p>Checking email</p>
-        ) : checkEmailError ? (
-          <p>Check email error</p>
-        ) : (
-          <>
-            A user with this email already exists!
-            <Link to="/login">
-              <button>Log in?</button>
-            </Link>
-          </>
-        )}
-        <input
-          type="text"
-          onChange={onPasswordChange}
-        />
-        {addUserError && <p>Couldn't sign you up.</p>}
 
-        <button type="submit">Submit</button>
-        <div>
-          <p>Already have an account?</p>
-          <Link to="/login">Log&nbsp;in</Link>
-        </div>
-      </form>
-    </div>
+  const [showPassword, setShowPassword] = useState(false)
+
+  // If already logged in when the page opens, go back (same behaviour as Log in).
+  useEffect(() => {
+    if (loggedIn) navigate(-1)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    handleFormSubmit(e)
+  }
+
+  return (
+    <main className="auth-page">
+      <h1 className="auth-page__title">Sign up</h1>
+      {addUserLoading ? (
+        <p>Creating your account…</p>
+      ) : addUserError ? (
+        <p className="auth-page__error">Couldn't sign you up.</p>
+      ) : (
+        <form
+          className="auth-form"
+          onSubmit={onSubmit}
+        >
+          <label
+            className="auth-form__label"
+            htmlFor="firstName"
+          >
+            First name
+          </label>
+          <input
+            id="firstName"
+            name="firstName"
+            type="text"
+            className="auth-form__input"
+            value={fields.firstName}
+            onChange={onFirstNameChange}
+            autoComplete="given-name"
+            required
+          />
+
+          <label
+            className="auth-form__label"
+            htmlFor="lastName"
+          >
+            Last name
+          </label>
+          <input
+            id="lastName"
+            name="lastName"
+            type="text"
+            className="auth-form__input"
+            value={fields.lastName}
+            onChange={onLastNameChange}
+            autoComplete="family-name"
+          />
+
+          <label
+            className="auth-form__label"
+            htmlFor="email"
+          >
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            className="auth-form__input"
+            value={fields.email}
+            onChange={onEmailChange}
+            autoComplete="email"
+            required
+          />
+          {checkEmailLoading && <p>Checking email…</p>}
+          {checkEmailError && (
+            <p className="auth-page__error">Couldn't check that email.</p>
+          )}
+          {emailExists && (
+            <p className="auth-page__error">
+              A user with this email already exists.{' '}
+              <Link to="/login">Log in?</Link>
+            </p>
+          )}
+
+          <label
+            className="auth-form__label"
+            htmlFor="password"
+          >
+            Password
+          </label>
+          <div className="auth-form__password">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              className="auth-form__input"
+              value={fields.password}
+              onChange={onPasswordChange}
+              autoComplete="new-password"
+              required
+            />
+            <button
+              type="button"
+              className="auth-form__show"
+              aria-pressed={showPassword}
+              aria-controls="password"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            className="btn btn-primary auth-form__submit"
+            disabled={checkEmailLoading || emailExists}
+          >
+            Sign up
+          </button>
+        </form>
+      )}
+      <p className="auth-page__alt">
+        Have an account? <Link to="/login">Log in</Link>
+      </p>
+    </main>
   )
 }

@@ -25,6 +25,15 @@ jest.mock('../../../utils/auth/AuthContext', () => ({
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
 
+const fillFields = (result: { current: ReturnType<typeof useSignup> }) => {
+  act(() => {
+    result.current.onFirstNameChange({ target: { value: 'Ada' } })
+    result.current.onLastNameChange({ target: { value: 'Lovelace' } })
+    result.current.onEmailChange({ target: { value: 'ada@b.c' } })
+    result.current.onPasswordChange({ target: { value: 'secret' } })
+  })
+}
+
 describe('useSignup coverage', () => {
   beforeEach(() => {
     mockNavigate.mockClear()
@@ -37,12 +46,7 @@ describe('useSignup coverage', () => {
 
   it('updates each field and logs the user in', async () => {
     const { result } = renderHook(() => useSignup())
-    act(() => {
-      result.current.onFirstNameChange({ target: { value: 'Ada' } })
-      result.current.onLastNameChange({ target: { value: 'Lovelace' } })
-      result.current.onEmailChange({ target: { value: 'ada@b.c' } })
-      result.current.onPasswordChange({ target: { value: 'secret' } })
-    })
+    fillFields(result)
     await act(async () => {
       await result.current.handleFormSubmit({ preventDefault: () => undefined })
     })
@@ -58,6 +62,7 @@ describe('useSignup coverage', () => {
       .mockImplementation(() => undefined)
     mockAddUser.mockRejectedValue(new Error('exists'))
     const { result } = renderHook(() => useSignup())
+    fillFields(result)
     await act(async () => {
       await result.current.handleFormSubmit({ preventDefault: () => undefined })
     })
@@ -71,6 +76,7 @@ describe('useSignup coverage', () => {
       .mockImplementation(() => undefined)
     mockAddUser.mockResolvedValue({ data: null })
     const { result } = renderHook(() => useSignup())
+    fillFields(result)
     await act(async () => {
       await result.current.handleFormSubmit({ preventDefault: () => undefined })
     })
