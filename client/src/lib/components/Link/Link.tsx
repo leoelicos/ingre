@@ -5,10 +5,12 @@ export const Link: FC<{
   to: string
   children: React.ReactNode
   className?: string
-}> = ({ to, children, className }) => {
+  state?: unknown
+}> = ({ to, children, className, state }) => {
   return (
     <ReactRouterDomLink
       to={to}
+      state={state}
       children={children}
       {...(className === undefined ? {} : { className })}
     />

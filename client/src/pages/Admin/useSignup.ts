@@ -1,10 +1,23 @@
 import React from 'react'
 import { useLazyQuery, useMutation } from '@apollo/client'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ADD_USER } from '../../lib/apollo/graphQL/mutations'
 import { CHECK_EMAIL_ALREADY_EXISTS } from '../../lib/apollo/graphQL/queries'
 import { useAuthContext } from '../../utils/auth/AuthContext'
+import { returnPath } from '../../utils/auth/returnPath'
 import { changeTitle } from '../../utils/changeTitle'
+
+type SignupResult =
+  | { ok: true }
+  | {
+      ok: false
+      reason: 'validation' | 'email-exists' | 'error'
+      message: string
+    }
+
+const EMAIL_EXISTS = 'A user with this email already exists.'
+const CHECK_FAILED = "Couldn't check that email."
+const SIGNUP_FAILED = "Couldn't sign you up."
 
 export const useSignup = () => {
   changeTitle('Sign up')
@@ -21,44 +34,82 @@ export const useSignup = () => {
     password: ''
   })
 
+  const [validationMessage, setValidationMessage] = React.useState<
+    string | null
+  >(null)
+
   const [
     checkEmailAlreadyExists,
-    {
-      data: checkEmailData,
-      loading: checkEmailLoading,
-      error: checkEmailError //
-    }
+    { data: checkEmailData, loading: checkEmailLoading, error: checkEmailError }
   ] = useLazyQuery(CHECK_EMAIL_ALREADY_EXISTS, {
     fetchPolicy: 'network-only'
-    // nextFetchPolicy: 'cache-first'
   })
 
-  const [addUser, { error: addUserError }] = useMutation(ADD_USER)
+  const [addUser, { error: addUserError, loading: addUserLoading }] =
+    useMutation(ADD_USER)
 
   const navigate = useNavigate()
+  const location = useLocation()
+  const from = returnPath(location.state)
 
   const [state, dispatch] = useAuthContext()
   const loggedIn = state.loggedIn
 
-  const emailAlreadyExists = async (e: string) => {
-    await checkEmailAlreadyExists({ variables: { email: e } })
-    return checkEmailData
-  }
+  const emailExists = !!checkEmailData?.checkEmailAlreadyExists
 
-  const handleFormSubmit = async (e: { preventDefault: () => void }) => {
+  const handleFormSubmit = async (e: {
+    preventDefault: () => void
+  }): Promise<SignupResult> => {
     e.preventDefault()
+    setValidationMessage(null)
+
     const { firstName, lastName, email, password } = fields
-    const variables = { input: { email, password, firstName, lastName } }
+    if (!firstName.trim()) {
+      const message = 'Please enter your first name.'
+      setValidationMessage(message)
+      return { ok: false, reason: 'validation', message }
+    }
+    if (!email.trim()) {
+      const message = 'Please enter an email address.'
+      setValidationMessage(message)
+      return { ok: false, reason: 'validation', message }
+    }
+    if (!password) {
+      const message = 'Please enter a password.'
+      setValidationMessage(message)
+      return { ok: false, reason: 'validation', message }
+    }
+
     try {
-      await emailAlreadyExists(email) // debug this
+      const result = await checkEmailAlreadyExists({ variables: { email } })
+      if (result.error || !result.data) {
+        throw new Error(CHECK_FAILED)
+      }
+      if (result.data.checkEmailAlreadyExists) {
+        return {
+          ok: false,
+          reason: 'email-exists',
+          message: EMAIL_EXISTS
+        }
+      }
+    } catch {
+      return { ok: false, reason: 'error', message: CHECK_FAILED }
+    }
+
+    try {
+      const variables = { input: { email, password, firstName, lastName } }
       const res = await addUser({ variables })
-      if (!res.data) throw new Error('Sign up returned no data')
+      if (!res.data) {
+        throw new Error('Sign up returned no data')
+      }
       const token = res.data.addUser.token
       dispatch({ type: 'LOGIN', data: token })
 
-      navigate(-1)
-    } catch (_e) {
-      console.error(_e)
+      navigate(from, { replace: true })
+      return { ok: true }
+    } catch {
+      setValidationMessage(SIGNUP_FAILED)
+      return { ok: false, reason: 'error', message: SIGNUP_FAILED }
     }
   }
 
@@ -76,13 +127,18 @@ export const useSignup = () => {
 
   return {
     loggedIn,
+    fields,
     handleFormSubmit,
     onFirstNameChange,
     onLastNameChange,
     onEmailChange,
+    onPasswordChange,
     checkEmailLoading,
     checkEmailError,
-    onPasswordChange,
-    addUserError
+    emailExists,
+    addUserError,
+    addUserLoading,
+    validationMessage,
+    from
   }
 }

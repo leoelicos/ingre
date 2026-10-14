@@ -4,13 +4,15 @@ import { useAuth } from '../useAuth'
 const mockDispatch = jest.fn()
 const mockNavigate = jest.fn()
 const mockLoginMutation = jest.fn()
+const mockLocation: { state: unknown } = { state: { from: '/saved' } }
 const mockLoginOptions: {
   onCompleted?: ((data: { login: { token: string } }) => void) | undefined
   onError?: ((error: Error) => void) | undefined
 } = {}
 
 jest.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigate
+  useNavigate: () => mockNavigate,
+  useLocation: () => mockLocation
 }))
 
 jest.mock('@apollo/client', () => ({
@@ -35,6 +37,9 @@ jest.mock('../../utils/auth/AuthContext', () => ({
 describe('useAuth', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockLocation.state = { from: '/saved' }
+    mockLoginOptions.onCompleted = undefined
+    mockLoginOptions.onError = undefined
   })
 
   it('returns login and logout functions', () => {
@@ -56,10 +61,12 @@ describe('useAuth', () => {
     act(() => {
       result.current.login({ email: 'test@example.com', password: 'pass' })
     })
-    expect(mockLoginMutation).toHaveBeenCalled()
+    expect(mockLoginMutation).toHaveBeenCalledWith({
+      variables: { email: 'test@example.com', password: 'pass' }
+    })
   })
 
-  it('onCompleted dispatches LOGIN with the token and navigates back', () => {
+  it('onCompleted dispatches LOGIN and returns to the starting page', () => {
     renderHook(() => useAuth())
     const onCompleted = mockLoginOptions.onCompleted
     if (!onCompleted) throw new Error('missing onCompleted')
@@ -67,7 +74,18 @@ describe('useAuth', () => {
       onCompleted({ login: { token: 'abc123' } })
     })
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'LOGIN', data: 'abc123' })
-    expect(mockNavigate).toHaveBeenCalledWith(-1)
+    expect(mockNavigate).toHaveBeenCalledWith('/saved', { replace: true })
+  })
+
+  it('returns home when no starting page was stored', () => {
+    mockLocation.state = null
+    renderHook(() => useAuth())
+    const onCompleted = mockLoginOptions.onCompleted
+    if (!onCompleted) throw new Error('missing onCompleted')
+    act(() => {
+      onCompleted({ login: { token: 'abc123' } })
+    })
+    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true })
   })
 
   it('onError logs error', () => {

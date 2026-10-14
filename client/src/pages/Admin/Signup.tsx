@@ -1,62 +1,171 @@
 import type { FC } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSignup } from './useSignup'
+import './auth.css'
 
 export const Signup: FC = () => {
+  const navigate = useNavigate()
   const {
     loggedIn,
+    fields,
     handleFormSubmit,
     onFirstNameChange,
     onLastNameChange,
     onEmailChange,
+    onPasswordChange,
     checkEmailLoading,
     checkEmailError,
-    onPasswordChange,
-    addUserError
+    emailExists,
+    addUserLoading,
+    validationMessage,
+    from
   } = useSignup()
-  if (!loggedIn) return <Navigate to="/" />
-  return (
-    <div>
-      <div>
-        <p>Sign up</p>
-      </div>
-      <form onSubmit={handleFormSubmit}>
-        <input
-          type="text"
-          onChange={onFirstNameChange}
-        />
-        <input
-          type="text"
-          onChange={onLastNameChange}
-        />
-        <input
-          type="text"
-          onChange={onEmailChange}
-        />
-        {checkEmailLoading ? (
-          <p>Checking email</p>
-        ) : checkEmailError ? (
-          <p>Check email error</p>
-        ) : (
-          <>
-            A user with this email already exists!
-            <Link to="/login">
-              <button>Log in?</button>
-            </Link>
-          </>
-        )}
-        <input
-          type="text"
-          onChange={onPasswordChange}
-        />
-        {addUserError && <p>Couldn't sign you up.</p>}
 
-        <button type="submit">Submit</button>
-        <div>
-          <p>Already have an account?</p>
-          <Link to="/login">Log&nbsp;in</Link>
+  const [showPassword, setShowPassword] = useState(false)
+
+  // If already logged in when the page opens, return to the starting page.
+  useEffect(() => {
+    if (loggedIn) {
+      navigate(from, { replace: true })
+    }
+  }, [loggedIn, from, navigate])
+
+  return (
+    <main className="auth-page">
+      <h1 className="auth-page__title">Sign up</h1>
+      <form
+        className="auth-form"
+        onSubmit={handleFormSubmit}
+      >
+        <label
+          className="auth-form__label"
+          htmlFor="firstName"
+        >
+          First name
+        </label>
+        <input
+          id="firstName"
+          name="firstName"
+          type="text"
+          className="auth-form__input"
+          value={fields.firstName}
+          onChange={onFirstNameChange}
+          autoComplete="given-name"
+          required
+        />
+
+        <label
+          className="auth-form__label"
+          htmlFor="lastName"
+        >
+          Last name
+        </label>
+        <input
+          id="lastName"
+          name="lastName"
+          type="text"
+          className="auth-form__input"
+          value={fields.lastName}
+          onChange={onLastNameChange}
+          autoComplete="family-name"
+        />
+
+        <label
+          className="auth-form__label"
+          htmlFor="email"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          className="auth-form__input"
+          value={fields.email}
+          onChange={onEmailChange}
+          autoComplete="email"
+          required
+        />
+        {checkEmailLoading && <p role="status">Checking email…</p>}
+        {checkEmailError && (
+          <p
+            className="auth-page__error"
+            role="alert"
+          >
+            Couldn't check that email.
+          </p>
+        )}
+        {emailExists && (
+          <p
+            className="auth-page__error"
+            role="alert"
+          >
+            A user with this email already exists.{' '}
+            <Link
+              to="/login"
+              state={{ from }}
+            >
+              Log in?
+            </Link>
+          </p>
+        )}
+
+        <label
+          className="auth-form__label"
+          htmlFor="password"
+        >
+          Password
+        </label>
+        <div className="auth-form__password">
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            className="auth-form__input"
+            value={fields.password}
+            onChange={onPasswordChange}
+            autoComplete="new-password"
+            required
+          />
+          <button
+            type="button"
+            className="auth-form__show"
+            aria-pressed={showPassword}
+            aria-controls="password"
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </button>
         </div>
+
+        {validationMessage && (
+          <p
+            className="auth-page__error"
+            role="alert"
+          >
+            {validationMessage}
+          </p>
+        )}
+        {addUserLoading && <p role="status">Creating your account…</p>}
+
+        <button
+          type="submit"
+          className="btn btn-primary auth-form__submit"
+          disabled={checkEmailLoading || emailExists || addUserLoading}
+        >
+          Sign up
+        </button>
       </form>
-    </div>
+      <p className="auth-page__alt">
+        Have an account?{' '}
+        <Link
+          to="/login"
+          state={{ from }}
+        >
+          Log in
+        </Link>
+      </p>
+    </main>
   )
 }
