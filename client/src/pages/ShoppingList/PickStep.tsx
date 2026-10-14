@@ -22,7 +22,6 @@ export const PickStep: FC<{ list: ShoppingListState }> = ({ list }) => {
   const recipes = useMemo(() => searchLibrary(), [])
   const canContinue = list.recipes.length > 0
   const goHome = () => {
-    if (!canContinue) return
     list.setStep('home')
   }
   return (
