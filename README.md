@@ -4,4 +4,10 @@
 
 _Recipes have traditionally been based on ingredients. We take the opposite approach and make ingredients from recipes._
 
-[Website](https://ingre.herokuapp.com/)
+[Website](https://ingre.vercel.app/)
+
+## Hosting
+
+- Frontend (Vite + React): [Vercel](https://ingre.vercel.app/), deployed from `main`, with a preview for each pull request.
+- Backend (Express + Apollo GraphQL): [Render](https://ingre-backend.onrender.com/graphql). It uses the free tier, so the first request after it has been idle can take around 30 seconds.
+- Database: MongoDB via Mongoose.
