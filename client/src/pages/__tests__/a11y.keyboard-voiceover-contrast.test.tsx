@@ -130,8 +130,10 @@ describe('High contrast / focus visibility', () => {
     renderAt(<Home />, '/')
     const links = screen.getAllByRole('link')
     expect(links.length).toBeGreaterThan(0)
-    links[0].focus()
-    expect(links[0]).toHaveFocus()
+    const first = links[0]
+    if (!first) throw new Error('expected at least one link')
+    first.focus()
+    expect(first).toHaveFocus()
   })
 
   it('Login inputs are focusable and use token-based classes', () => {
