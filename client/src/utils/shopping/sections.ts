@@ -34,6 +34,10 @@ export type Aisle =
   | 'oils & vinegar'
   | 'pasta & rice'
   | 'sauces'
+  | 'deli'
+  | 'bakery'
+  | 'breakfast & spreads'
+  | 'tea & coffee'
 
 export const AISLES: readonly Aisle[] = [
   'fruit & veg',
@@ -46,7 +50,11 @@ export const AISLES: readonly Aisle[] = [
   'international',
   'oils & vinegar',
   'pasta & rice',
-  'sauces'
+  'sauces',
+  'deli',
+  'bakery',
+  'breakfast & spreads',
+  'tea & coffee'
 ]
 
 const AISLE_SECTION: Readonly<Record<Aisle, ShopSection>> = {
@@ -60,7 +68,11 @@ const AISLE_SECTION: Readonly<Record<Aisle, ShopSection>> = {
   international: 'Pantry',
   'oils & vinegar': 'Pantry',
   'pasta & rice': 'Pantry',
-  sauces: 'Pantry'
+  sauces: 'Pantry',
+  deli: 'Deli',
+  bakery: 'Bakery',
+  'breakfast & spreads': 'Pantry',
+  'tea & coffee': 'Pantry'
 }
 
 /** Section for an aisle, plus the aisle as a subsection when the section groups several. */

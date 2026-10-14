@@ -1,5 +1,5 @@
 {
-  "_note": "Generic, brand-free items available at Coles/Woolworths/Aldi. `category` is the supermarket aisle. `sold` lists how the item is sold: {type, size: {amount, unit: g|ml|count} | null for weighed, label?}. `approxGrams` is the weight of one counted item (each/bunch); `measureGrams` converts recipe-only measures (clove, stalk). `pantry` is the default home location (Fridge, Cupboard, Spice rack, Bench; from the PO's home-locations draft with Fruit bowl folded into Bench); users can override it in the app. PROVISIONAL: frozen peas replaced by tinned peas (420 g tin, unverified) as there is no freezer location. Verified against Coles (PO, 2026-10): apple, black-pepper, celery, chilli-powder, cumin-seeds, garam-masala, garlic, ground-coriander, ground-cumin, ground-turmeric, lemongrass, parmesan, rice-paper (spice jars 25-50 g; parmesan blocks and grated/shaved; pepper 50 g grinder or ground; rice paper 250/375 g packs, recipes count sheets so one pack is bought; lemongrass punnet or paste tube, not per stalk). UNVERIFIED draft sizes, to be checked by the PO: baby-spinach, basmati-rice, bean-sprouts, beef-mince, beef-rump, butter, capsicum, carrot, cauliflower, chicken-thigh, chickpeas, coconut-milk, cooked-prawns, cream, crushed-tomatoes, cucumber, dried-oregano, egg, feta, fish-sauce, fresh-coriander, fresh-mint, ginger, green-chilli, ground-almonds, haloumi, hoisin-sauce, iceberg-lettuce, jasmine-rice, kalamata-olives, lime, natural-yoghurt, olive-oil, onion, oyster-sauce, pork-belly, pork-mince, potato, red-chilli, red-lentils, red-onion, red-wine-vinegar, rice-vermicelli, roasted-peanuts, salt, sesame-oil, soy-sauce, spaghetti, spring-onion, tinned-peas, tomato, tomato-paste, vegetable-oil, water-chestnuts, white-sugar, white-vinegar. Estimates: celery bunch 800 g / trimmed head 500 g, celery stalk 40 g, spring onion stalk 10 g, garlic clove 6 g, salt shaker 125 g, dried oregano 10 g jar (below the verified 25-50 g spice-jar range).",
+  "_note": "Generic, brand-free items available at Coles/Woolworths/Aldi. `category` is the supermarket aisle. `sold` lists how the item is sold: {type, size: {amount, unit: g|ml|count} | null for weighed, label?}. `approxGrams` is the weight of one counted item (each/bunch); `measureGrams` converts recipe-only measures (clove, stalk). `pantry` is the default home location (Fridge, Cupboard, Spice rack, Bench; from the PO's home-locations draft with Fruit bowl folded into Bench); users can override it in the app. Frozen peas replaced by tinned peas (confirmed by the PO; 420 g tin size unverified) as there is no freezer location. Verified against Coles (PO, 2026-10): apple, black-pepper, celery, chilli-powder, cumin-seeds, garam-masala, garlic, ground-coriander, ground-cumin, ground-turmeric, lemongrass, parmesan, rice-paper (spice jars 25-50 g; parmesan blocks and grated/shaved; pepper 50 g grinder or ground; rice paper 250/375 g packs, recipes count sheets so one pack is bought; lemongrass punnet or paste tube, not per stalk). UNVERIFIED draft sizes, to be checked by the PO: baby-spinach, basmati-rice, bean-sprouts, beef-mince, beef-rump, butter, capsicum, carrot, cauliflower, chicken-thigh, chickpeas, coconut-milk, cooked-prawns, cream, crushed-tomatoes, cucumber, dried-oregano, egg, feta, fish-sauce, fresh-coriander, fresh-mint, ginger, green-chilli, ground-almonds, haloumi, hoisin-sauce, iceberg-lettuce, jasmine-rice, kalamata-olives, lime, natural-yoghurt, olive-oil, onion, oyster-sauce, pork-belly, pork-mince, potato, red-chilli, red-lentils, red-onion, red-wine-vinegar, rice-vermicelli, roasted-peanuts, salt, sesame-oil, soy-sauce, spaghetti, spring-onion, tinned-peas, tomato, tomato-paste, vegetable-oil, water-chestnuts, white-sugar, white-vinegar. Estimates: celery bunch 800 g / trimmed head 500 g, celery stalk 40 g, spring onion stalk 10 g, garlic clove 6 g, salt shaker 125 g, dried oregano 10 g jar (below the verified 25-50 g spice-jar range). EVERYDAY EXTRAS (PO draft, 2026-10, all sizes UNVERIFIED): banana, orange, mandarin, pear, lemon, avocado, grapes, strawberries, blueberries, kiwifruit, watermelon, broccoli, zucchini, sweet-potato, pumpkin, mushrooms, corn, salad-mix, full-cream-milk, light-milk, cheddar, greek-yoghurt, orange-juice, sliced-ham, hummus, chicken-breast, sausages, bacon, white-bread, wholemeal-bread, bread-rolls, wraps, rolled-oats, breakfast-cereal, peanut-butter, honey, jam, coffee, tea-bags, plain-flour, canned-tuna. Extras estimates: breakfast cereal 500 g pack, coffee 200 g jar/pack, whole watermelon 3 kg. The draft's shop section is stored as an aisle (deli, bakery, breakfast & spreads, tea & coffee are new aisles).",
   "ingredients": [
     {
       "id": "beef-mince",
@@ -147,20 +147,18 @@
       "category": "dairy & eggs",
       "sold": [
         {
-          "type": "pack",
+          "type": "tub",
           "size": {
             "amount": 500,
             "unit": "g"
-          },
-          "label": "tub"
+          }
         },
         {
-          "type": "pack",
+          "type": "tub",
           "size": {
             "amount": 1000,
             "unit": "g"
-          },
-          "label": "tub"
+          }
         }
       ],
       "pantry": "Fridge"
@@ -594,12 +592,11 @@
       "category": "canned food",
       "sold": [
         {
-          "type": "pack",
+          "type": "tub",
           "size": {
             "amount": 140,
             "unit": "g"
-          },
-          "label": "tub"
+          }
         },
         {
           "type": "jar",
@@ -1418,6 +1415,717 @@
         }
       ],
       "approxGrams": 185,
+      "pantry": "Bench"
+    },
+    {
+      "id": "banana",
+      "name": "banana",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 120,
+      "pantry": "Bench"
+    },
+    {
+      "id": "orange",
+      "name": "orange",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 2000,
+            "unit": "g"
+          }
+        }
+      ],
+      "approxGrams": 200,
+      "pantry": "Bench"
+    },
+    {
+      "id": "mandarin",
+      "name": "mandarin",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        }
+      ],
+      "approxGrams": 90,
+      "pantry": "Bench"
+    },
+    {
+      "id": "pear",
+      "name": "pear",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 180,
+      "pantry": "Bench"
+    },
+    {
+      "id": "lemon",
+      "name": "lemon",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 120,
+      "pantry": "Bench"
+    },
+    {
+      "id": "avocado",
+      "name": "avocado",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 200,
+      "pantry": "Bench"
+    },
+    {
+      "id": "grapes",
+      "name": "grapes",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "strawberries",
+      "name": "strawberries",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 250,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "blueberries",
+      "name": "blueberries",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 125,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "kiwifruit",
+      "name": "kiwifruit",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 80,
+      "pantry": "Bench"
+    },
+    {
+      "id": "watermelon",
+      "name": "watermelon",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "approxGrams": 3000,
+      "pantry": "Fridge"
+    },
+    {
+      "id": "broccoli",
+      "name": "broccoli",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "approxGrams": 350,
+      "pantry": "Fridge"
+    },
+    {
+      "id": "zucchini",
+      "name": "zucchini",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 200,
+      "pantry": "Fridge"
+    },
+    {
+      "id": "sweet-potato",
+      "name": "sweet potato",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        },
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "approxGrams": 400,
+      "pantry": "Bench"
+    },
+    {
+      "id": "pumpkin",
+      "name": "pumpkin",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "weighed",
+          "size": null
+        }
+      ],
+      "pantry": "Bench"
+    },
+    {
+      "id": "mushrooms",
+      "name": "mushrooms",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "weighed",
+          "size": null
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 200,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "corn",
+      "name": "sweet corn",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "each",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "approxGrams": 250,
+      "pantry": "Fridge"
+    },
+    {
+      "id": "salad-mix",
+      "name": "salad leaves",
+      "category": "fruit & veg",
+      "sold": [
+        {
+          "type": "bag",
+          "size": {
+            "amount": 120,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "full-cream-milk",
+      "name": "full cream milk",
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 1000,
+            "unit": "ml"
+          }
+        },
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 2000,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "light-milk",
+      "name": "light milk",
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 1000,
+            "unit": "ml"
+          }
+        },
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 2000,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "cheddar",
+      "name": "cheddar cheese",
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 250,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "greek-yoghurt",
+      "name": "Greek yoghurt",
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "tub",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "tub",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "orange-juice",
+      "name": "orange juice",
+      "category": "dairy & eggs",
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 2000,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "sliced-ham",
+      "name": "sliced ham",
+      "category": "deli",
+      "sold": [
+        {
+          "type": "weighed",
+          "size": null
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 100,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "hummus",
+      "name": "hummus",
+      "category": "deli",
+      "sold": [
+        {
+          "type": "tub",
+          "size": {
+            "amount": 200,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "chicken-breast",
+      "name": "chicken breast",
+      "category": "meat",
+      "sold": [
+        {
+          "type": "weighed",
+          "size": null
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "sausages",
+      "name": "beef sausages",
+      "category": "meat",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "bacon",
+      "name": "bacon",
+      "category": "meat",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 250,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Fridge"
+    },
+    {
+      "id": "white-bread",
+      "name": "white sandwich bread",
+      "category": "bakery",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 700,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Bench"
+    },
+    {
+      "id": "wholemeal-bread",
+      "name": "wholemeal bread",
+      "category": "bakery",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 700,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Bench"
+    },
+    {
+      "id": "bread-rolls",
+      "name": "bread rolls",
+      "category": "bakery",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 6,
+            "unit": "count"
+          },
+          "label": "6-pack"
+        }
+      ],
+      "pantry": "Bench"
+    },
+    {
+      "id": "wraps",
+      "name": "wraps",
+      "category": "bakery",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 8,
+            "unit": "count"
+          },
+          "label": "8-pack"
+        }
+      ],
+      "pantry": "Cupboard"
+    },
+    {
+      "id": "rolled-oats",
+      "name": "rolled oats",
+      "category": "breakfast & spreads",
+      "sold": [
+        {
+          "type": "bag",
+          "size": {
+            "amount": 750,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
+    },
+    {
+      "id": "breakfast-cereal",
+      "name": "breakfast cereal",
+      "category": "breakfast & spreads",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
+    },
+    {
+      "id": "peanut-butter",
+      "name": "peanut butter",
+      "category": "breakfast & spreads",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 375,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
+    },
+    {
+      "id": "honey",
+      "name": "honey",
+      "category": "breakfast & spreads",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
+    },
+    {
+      "id": "jam",
+      "name": "jam",
+      "category": "breakfast & spreads",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 500,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
+    },
+    {
+      "id": "coffee",
+      "name": "coffee",
+      "category": "tea & coffee",
+      "sold": [
+        {
+          "type": "jar",
+          "size": {
+            "amount": 200,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "pack",
+          "size": {
+            "amount": 200,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
+    },
+    {
+      "id": "tea-bags",
+      "name": "tea bags",
+      "category": "tea & coffee",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 100,
+            "unit": "count"
+          },
+          "label": "100-pack"
+        }
+      ],
+      "pantry": "Cupboard"
+    },
+    {
+      "id": "plain-flour",
+      "name": "plain flour",
+      "category": "baking",
+      "sold": [
+        {
+          "type": "bag",
+          "size": {
+            "amount": 1000,
+            "unit": "g"
+          }
+        }
+      ],
+      "pantry": "Cupboard"
+    },
+    {
+      "id": "canned-tuna",
+      "name": "canned tuna",
+      "category": "canned food",
+      "sold": [
+        {
+          "type": "tin",
+          "size": {
+            "amount": 95,
+            "unit": "g"
+          }
+        },
+        {
+          "type": "tin",
+          "size": {
+            "amount": 425,
+            "unit": "g"
+          }
+        }
+      ],
       "pantry": "Cupboard"
     }
   ]

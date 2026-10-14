@@ -18,6 +18,7 @@ export type SoldType =
   | 'bottle'
   | 'carton'
   | 'tube'
+  | 'tub'
   | 'grinder'
 
 /** One way a shop sells an item; `size` is null for loose, weighed items. */

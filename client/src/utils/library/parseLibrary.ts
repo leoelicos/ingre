@@ -23,6 +23,7 @@ export const SOLD_TYPES: readonly SoldType[] = [
   'bottle',
   'carton',
   'tube',
+  'tub',
   'grinder'
 ]
 export const HOME_LOCATIONS: readonly HomeLocation[] = [

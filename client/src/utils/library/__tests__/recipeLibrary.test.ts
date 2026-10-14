@@ -75,9 +75,12 @@ describe('recipe library data', () => {
   it('uses a known set of aisles', () => {
     const aisles = new Set(catalogue.map((i) => i.category))
     expect([...aisles].sort()).toEqual([
+      'bakery',
       'baking',
+      'breakfast & spreads',
       'canned food',
       'dairy & eggs',
+      'deli',
       'fruit & veg',
       'herbs & spices',
       'international',
@@ -85,8 +88,23 @@ describe('recipe library data', () => {
       'oils & vinegar',
       'pasta & rice',
       'sauces',
-      'seafood'
+      'seafood',
+      'tea & coffee'
     ])
+  })
+
+  it('merges the everyday extras with sized options and loose weights', () => {
+    const byId = new Map(catalogue.map((i) => [i.id, i]))
+    expect(catalogue).toHaveLength(110)
+    expect(byId.get('apple')?.pantry).toBe('Bench')
+    expect(byId.get('apple')?.approxGrams).toBe(185)
+    expect(byId.get('hummus')?.sold).toEqual([
+      { type: 'tub', size: { amount: 200, unit: 'g' } }
+    ])
+    expect(byId.get('bread-rolls')?.sold[0]?.label).toBe('6-pack')
+    catalogue
+      .filter((i) => i.sold.some((o) => o.type === 'each'))
+      .forEach((i) => expect(i.approxGrams).toBeGreaterThan(0))
   })
 
   it('has unique recipe and ingredient ids', () => {
