@@ -157,53 +157,7 @@
   background: var(--color-chip-active);
   color: var(--color-primary);
 }
-.location-menu {
-  position: relative;
-}
-.location-chip {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
-  font-size: 0.8rem;
-  padding: 4px 10px;
-  min-height: 32px;
-  white-space: nowrap;
-}
-.location-menu__list {
-  position: absolute;
-  right: 0;
-  z-index: 10;
-  list-style: none;
-  margin: 4px 0 0;
-  padding: 4px;
-  background: var(--color-surface);
-  border-radius: var(--radius-control);
-  box-shadow: var(--shadow-card);
-}
-.location-menu__list button {
-  display: block;
-  width: 100%;
-  min-height: 44px;
-  padding: 0 16px;
-  border: 0;
-  background: none;
-  text-align: left;
-  white-space: nowrap;
-  color: var(--color-text);
-}
-.location-menu__list button[aria-checked='true'] {
-  background: var(--color-chip-active);
-  font-weight: 600;
-}
-.list-have__toggle {
-  border: 0;
-  background: none;
-  padding: 0;
-  font: inherit;
-  color: var(--color-text);
-  min-height: 44px;
-}
+
 .list-note,
 .list-empty {
   color: var(--color-text-secondary);

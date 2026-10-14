@@ -5,6 +5,7 @@ import { ServesPicker } from '../../components/ServesPicker'
 import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
 import { IngreIconPrint } from '../../lib/icon/Icon'
 import { AddItem } from './AddItem'
+import { assumedNames } from '../../utils/shopping/shoppingList'
 import { LineGroups } from './LineGroups'
 import type { LocationMode } from './ListRow'
 import {
@@ -14,20 +15,6 @@ import {
 import type { Timers } from '../../utils/shopping/usePendingTicks'
 
 export const tapLabel = (n: number) => `Tap ${n} ${n === 1 ? 'item' : 'items'}`
-
-/** Short staple names, e.g. "oil, salt, pepper" (oils collapse to one). */
-export const assumedNames = (lines: readonly { name: string }[]): string =>
-  [
-    ...new Set(
-      lines.map(({ name }) =>
-        name.endsWith(' oil')
-          ? 'oil'
-          : name.endsWith('pepper')
-          ? 'pepper'
-          : name.toLowerCase()
-      )
-    )
-  ].join(', ')
 
 /** "At home" (check your kitchen) or "At the shop" (to buy) over the same list. */
 export const ShoppingListView: FC<{
@@ -53,7 +40,7 @@ export const ShoppingListView: FC<{
     'In basket',
     timers
   )
-  const locationMode: LocationMode = atHome ? 'move' : 'chip'
+  const locationMode: LocationMode = atHome ? 'move' : 'none'
   const rowActions = {
     grouping: view,
     locationMode,

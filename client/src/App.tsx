@@ -10,6 +10,7 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { Header } from './components/Header'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
+import RecipePage from './pages/Recipe/RecipePage'
 import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
@@ -80,6 +81,10 @@ export const Ingre: FC = () => {
               <Route
                 path="/ingredients"
                 element={<ShoppingFlow />}
+              />
+              <Route
+                path="/recipe/:id"
+                element={<RecipePage />}
               />
               <Route
                 path="/tapoff"

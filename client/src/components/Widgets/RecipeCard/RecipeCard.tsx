@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { Link } from 'react-router-dom'
 import type { ClientRecipe } from '../../../types/client'
 import { Icon, IngreIconPro } from '../../../lib/icon/Icon'
 import { library } from '../../../utils/library/recipeLibrary'
@@ -62,7 +63,18 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, pro, pick }) => {
         />
       </div>
       <div className="recipe-card__body">
-        <h3 className="recipe-card__title">{title}</h3>
+        <h3 className="recipe-card__title">
+          {recipe.libraryId === undefined ? (
+            title
+          ) : (
+            <Link
+              to={`/recipe/${recipe.libraryId}`}
+              className="recipe-card__link"
+            >
+              {title}
+            </Link>
+          )}
+        </h3>
         {localName !== null && (
           <p
             className="recipe-card__local-name"

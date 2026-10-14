@@ -11,11 +11,16 @@ import {
   partLabel,
   sourceLabel
 } from '../../utils/shopping/shoppingList'
-import { LocationMenu } from './LocationMenu'
 import type { TickState } from '../../utils/shopping/usePendingTicks'
 
-/** How a row offers home-location changes: in the breakdown, as a chip, or not at all. */
-export type LocationMode = 'move' | 'chip' | 'none'
+/** How a row offers home-location changes: in the breakdown (at home), or not at all. */
+export type LocationMode = 'move' | 'none'
+
+/** An extra whose buy amount is just its stepper count: show the stepper only. */
+export const amountInStepper = (
+  line: Pick<ShopLine, 'buy' | 'extraQuantity'>
+): boolean =>
+  line.extraQuantity !== null && buyAmount(line) === String(line.extraQuantity)
 
 export interface RowProps {
   line: ShopLine
@@ -113,7 +118,9 @@ export const ListRow: FC<RowProps> = ({
           <span className="list-row__text">
             <span className="list-row__line">
               <span className="list-row__name">{name}</span>
-              <span className="list-row__amount">{buyAmount(line)}</span>
+              {!amountInStepper(line) && (
+                <span className="list-row__amount">{buyAmount(line)}</span>
+              )}
             </span>
             <small>{sourceLabel(line)}</small>
           </span>
@@ -123,13 +130,6 @@ export const ListRow: FC<RowProps> = ({
             name={line.name}
             quantity={line.extraQuantity}
             onChange={(quantity) => onQuantity(line.ingredientId, quantity)}
-          />
-        )}
-        {locationMode === 'chip' && location !== null && (
-          <LocationMenu
-            name={line.name}
-            location={location}
-            onChange={(location) => onLocation(line.ingredientId, location)}
           />
         )}
         <button

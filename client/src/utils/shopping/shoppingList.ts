@@ -327,10 +327,33 @@ export const forLabel = (recipeNames: readonly string[]): string => {
 const tidy = (n: number) => String(Math.round(n * 100) / 100)
 
 /** "Butter chicken: 1.5 tbsp" / "Dahl: 2" (whole items show just the count). */
-export const partLabel = ({ recipe, quantity, measure }: NeedPart): string =>
-  `${splitTitle(recipe).title}: ${tidy(quantity)}${
-    measure === 'whole' ? '' : ` ${measure}`
-  }`
+export const partLabel = (part: NeedPart): string =>
+  `${splitTitle(part.recipe).title}: ${partAmount(part)}`
+
+/** "1.5 tbsp" / "2" (whole items show just the count). */
+export const partAmount = ({
+  quantity,
+  measure
+}: Pick<NeedPart, 'quantity' | 'measure'>): string =>
+  `${tidy(quantity)}${measure === 'whole' ? '' : ` ${measure}`}`
+
+/** Recipe page: "uses 1.5 tbsp" (several uses joined with +). */
+export const usesLabel = ({ parts }: Pick<ShopLine, 'parts'>): string =>
+  `uses ${parts.map(partAmount).join(' + ')}`
+
+/** Short staple names, e.g. "oil, salt, pepper" (oils collapse to one). */
+export const assumedNames = (lines: readonly { name: string }[]): string =>
+  [
+    ...new Set(
+      lines.map(({ name }) =>
+        name.endsWith(' oil')
+          ? 'oil'
+          : name.endsWith('pepper')
+          ? 'pepper'
+          : name.toLowerCase()
+      )
+    )
+  ].join(', ')
 
 /** Grams per stepper step for extras sold only loose by weight. */
 export const EXTRA_WEIGHED_GRAMS = 500

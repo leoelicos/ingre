@@ -8,7 +8,8 @@ import { PICKED_KEY, STEP_KEY } from '../../../utils/storage/shoppingState'
 import TapOff from '../../TapOff/TapOff'
 import { recipeCount } from '../PickStep'
 import { ShoppingFlow } from '../ShoppingFlow'
-import { assumedNames, tapLabel } from '../ShoppingListView'
+import { tapLabel } from '../ShoppingListView'
+import { assumedNames } from '../../../utils/shopping/shoppingList'
 
 const renderFlow = (picked: string[] = [], step = 'pick') => {
   localStorage.setItem(PICKED_KEY, JSON.stringify(picked))
@@ -221,20 +222,8 @@ describe('ShoppingFlow', () => {
     expect(tapCount()).toBe(before - 1)
     fireEvent.click(p.getByRole('button', { name: /^Tap \d+ items?$/ }))
 
-    fireEvent.click(
-      p.getAllByRole('button', { name: /is kept in .*\. Change/ })[0] ??
-        document.body
-    )
-    const menu = screen.getByRole('menu')
-    expect(within(menu).getAllByRole('menuitemradio')).toHaveLength(4)
-    fireEvent.click(within(menu).getByRole('menuitemradio', { name: 'Bench' }))
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-    fireEvent.click(
-      p.getAllByRole('button', { name: /is kept in/ })[0] ?? document.body
-    )
-    fireEvent.keyDown(screen.getByRole('menu'), { key: 'a' })
-    fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' })
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+    expect(p.queryByRole('button', { name: /is kept in/ })).toBeNull()
+    expect(p.queryByRole('group', { name: /^Move / })).toBeNull()
   })
 
   it('adds catalogue and free-text extras with a stepper', () => {

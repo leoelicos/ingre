@@ -18,7 +18,8 @@ const Home: FC = () => {
     onToggleTag,
     people,
     setPeople,
-    recipes
+    recipes,
+    pick
   } = useHome()
   const phone = useMediaQuery(PHONE_QUERY)
   const [moreOpen, setMoreOpen] = useState(false)
@@ -88,6 +89,7 @@ const Home: FC = () => {
       <RecipeCardContainer
         results={recipes}
         loading={false}
+        pick={pick}
       />
     </main>
   )
