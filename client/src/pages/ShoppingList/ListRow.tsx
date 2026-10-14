@@ -12,15 +12,15 @@ import {
   sourceLabel
 } from '../../utils/shopping/shoppingList'
 import { LocationMenu } from './LocationMenu'
+import type { TickState } from '../../utils/shopping/usePendingTicks'
 
 /** How a row offers home-location changes: in the breakdown, as a chip, or not at all. */
 export type LocationMode = 'move' | 'chip' | 'none'
 
 export interface RowProps {
   line: ShopLine
-  checked: boolean
+  ticks: TickState
   struck: boolean
-  onToggle: (ingredientId: string) => void
   locationMode: LocationMode
   onLocation: (id: string, location: HomeLocation) => void
   onQuantity: (lineId: string, quantity: number) => void
@@ -82,9 +82,8 @@ const Stepper: FC<{
 /** One list item: the whole row toggles; the chevron shows the breakdown. */
 export const ListRow: FC<RowProps> = ({
   line,
-  checked,
+  ticks,
   struck,
-  onToggle,
   locationMode,
   onLocation,
   onQuantity
@@ -93,14 +92,23 @@ export const ListRow: FC<RowProps> = ({
   const name = displayName(line)
   const need = needLabel(line)
   const location = line.location
+  const id = line.ingredientId
+  const checked = ticks.checkedIds.has(id)
+  const className = [
+    'list-row',
+    struck && checked ? 'list-row--done' : '',
+    ticks.leavingIds.has(id) ? 'list-row--leaving' : ''
+  ]
+    .filter((c) => c !== '')
+    .join(' ')
   return (
-    <li className={struck && checked ? 'list-row list-row--done' : 'list-row'}>
+    <li className={className}>
       <div className="list-row__main">
         <label className="list-row__toggle">
           <input
             type="checkbox"
             checked={checked}
-            onChange={() => onToggle(line.ingredientId)}
+            onChange={() => ticks.onToggle(id)}
           />
           <span className="list-row__text">
             <span className="list-row__line">
@@ -134,6 +142,22 @@ export const ListRow: FC<RowProps> = ({
           <IngreIconChevronDown />
         </button>
       </div>
+      {ticks.pendingIds.has(id) && (
+        <p
+          className="list-row__pending"
+          role="status"
+        >
+          {ticks.pendingLabel} ·{' '}
+          <button
+            type="button"
+            className="link-button"
+            aria-label={`Undo ${line.name}`}
+            onClick={() => ticks.onUndo(id)}
+          >
+            Undo
+          </button>
+        </p>
+      )}
       {expanded && (
         <div className="list-row__details">
           {(locationMode !== 'move' || line.recipes.length >= 2) &&

@@ -58,8 +58,8 @@ export const useShoppingList = () => {
   const [people, setPeople] = usePeople()
   const [pickedIds, togglePicked] = usePickedIds()
   const [extras, updateExtras] = useExtras()
-  const [haveIds, toggleHave, unHave] = useHaveIds()
-  const [basketIds, toggleBasket, unBasket] = useBasketIds()
+  const [haveIds, toggleHave, unHave, addHave] = useHaveIds()
+  const [basketIds, toggleBasket, unBasket, addBasket] = useBasketIds()
   const [overrides, setLocation] = useLocationOverrides()
   const [step, setStep] = useFlowStep()
   const recipes = library.filter((r) => pickedIds.has(r.id))
@@ -80,8 +80,10 @@ export const useShoppingList = () => {
     togglePicked,
     haveIds,
     toggleHave,
+    addHave,
     basketIds,
     toggleBasket,
+    addBasket,
     setLocation,
     lineCount: lines.filter((l) => !l.staple).length,
     /** new extras start unticked: not had, not in the basket */

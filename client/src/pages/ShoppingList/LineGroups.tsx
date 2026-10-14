@@ -9,22 +9,22 @@ import {
   homeGroup
 } from '../../utils/shopping/shoppingList'
 import { ListRow } from './ListRow'
+import type { TickState } from '../../utils/shopping/usePendingTicks'
 
 export type Grouping = 'home' | 'shop'
 
 interface Props {
   lines: readonly ShopLine[]
   grouping: Grouping
-  checkedIds: ReadonlySet<string>
-  /** shop ticks strike through in place; home ticks move the row away */
+  ticks: TickState
+  /** shop ticks strike through and sink; home ticks move the row away */
   struck: boolean
-  onToggle: (ingredientId: string) => void
   locationMode: LocationMode
   onLocation: (id: string, location: HomeLocation) => void
   onQuantity: (lineId: string, quantity: number) => void
 }
 
-/** At the shop, ticked rows sink to the bottom of their section (stable order). */
+/** At the shop, moved (committed) ticks sink to the bottom of their section (stable order). */
 export const ticksLast = (
   lines: readonly ShopLine[],
   struck: boolean,
@@ -58,14 +58,13 @@ export const LineGroups: FC<Props> = ({ lines, grouping, ...row }) => {
             <div key={sub.key}>
               {sub.key !== '' && <h4 className="list-group__sub">{sub.key}</h4>}
               <ul className="list-rows">
-                {ticksLast(sub.items, row.struck, row.checkedIds).map(
+                {ticksLast(sub.items, row.struck, row.ticks.movedIds).map(
                   (line) => (
                     <ListRow
                       key={line.ingredientId}
                       line={line}
-                      checked={row.checkedIds.has(line.ingredientId)}
+                      ticks={row.ticks}
                       struck={row.struck}
-                      onToggle={row.onToggle}
                       locationMode={row.locationMode}
                       onLocation={row.onLocation}
                       onQuantity={row.onQuantity}

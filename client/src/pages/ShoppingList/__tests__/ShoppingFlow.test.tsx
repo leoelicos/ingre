@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
@@ -25,6 +25,12 @@ const renderFlow = (picked: string[] = [], step = 'pick') => {
     </MockedProvider>
   )
 }
+
+/** Lets the shared tick clock run out and the fade finish. */
+const settle = () => act(() => jest.advanceTimersByTime(2500))
+
+beforeEach(() => jest.useFakeTimers())
+afterEach(() => jest.useRealTimers())
 
 const tab = (name: string) => screen.getByRole('tab', { name })
 const panel = () => screen.getByRole('tabpanel')
@@ -142,6 +148,11 @@ describe('ShoppingFlow', () => {
     ).toBeGreaterThan(0)
     const onion = p.getAllByRole('checkbox', { name: /Brown onion/ })[0]
     fireEvent.click(onion ?? document.body)
+    expect(p.getByText(/^Moved to Already have/)).toBeInTheDocument()
+    expect(p.queryByRole('button', { name: /Already have/ })).toBeNull()
+    act(() => jest.advanceTimersByTime(2000))
+    expect(onion?.closest('li')).toHaveClass('list-row--leaving')
+    settle()
     const have = p.getByRole('button', { name: /Already have/ })
     expect(have).toHaveTextContent('Already have (1)')
     expect(have).toHaveAttribute('aria-expanded', 'false')
@@ -191,6 +202,16 @@ describe('ShoppingFlow', () => {
     fireEvent.click(box ?? document.body)
     expect(box).toBeChecked()
     expect(box?.closest('li')).toHaveClass('list-row--done')
+    expect(p.getByText(/^In basket/)).toBeInTheDocument()
+    expect(tapCount()).toBe(before)
+    const second = p.getAllByRole('checkbox', { checked: false })[0]
+    fireEvent.click(second ?? document.body)
+    fireEvent.click(
+      p.getAllByRole('button', { name: /^Undo / })[1] ?? document.body
+    )
+    expect(second).not.toBeChecked()
+    expect(p.getAllByRole('button', { name: /^Undo / })).toHaveLength(1)
+    settle()
     const rows = box?.closest('ul')?.querySelectorAll('li.list-row') ?? []
     expect(rows[rows.length - 1]).toBe(box?.closest('li'))
     fireEvent.click(
@@ -247,6 +268,7 @@ describe('ShoppingFlow', () => {
     expect(p.queryByRole('region', { name: 'Deli' })).not.toBeInTheDocument()
 
     fireEvent.click(p.getByRole('checkbox', { name: /Birthday candles/ }))
+    settle()
     fireEvent.click(tab('At home'))
     const other = within(within(panel()).getByRole('region', { name: 'Other' }))
     fireEvent.click(
@@ -258,6 +280,7 @@ describe('ShoppingFlow', () => {
     fireEvent.click(
       within(panel()).getByRole('checkbox', { name: /Birthday candles/ })
     )
+    settle()
     expect(within(panel()).getByText(/Nothing to buy/)).toBeInTheDocument()
     expect(
       within(panel()).queryByText(/^Assumed at home/)
@@ -296,6 +319,7 @@ describe('In the shop', () => {
       screen.queryByRole('region', { name: 'Fridge' })
     ).not.toBeInTheDocument()
     screen.getAllByRole('checkbox').forEach((box) => fireEvent.click(box))
+    settle()
     expect(screen.getByText('All done!')).toBeInTheDocument()
   })
 

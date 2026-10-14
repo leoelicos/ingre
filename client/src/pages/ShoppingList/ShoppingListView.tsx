@@ -7,6 +7,11 @@ import { IngreIconPrint } from '../../lib/icon/Icon'
 import { AddItem } from './AddItem'
 import { LineGroups } from './LineGroups'
 import type { LocationMode } from './ListRow'
+import {
+  instantTicks,
+  useDelayedTicks
+} from '../../utils/shopping/usePendingTicks'
+import type { Timers } from '../../utils/shopping/usePendingTicks'
 
 export const tapLabel = (n: number) => `Tap ${n} ${n === 1 ? 'item' : 'items'}`
 
@@ -29,10 +34,25 @@ export const ShoppingListView: FC<{
   list: ShoppingListState
   view: 'home' | 'shop'
   onPrint: () => void
-}> = ({ list, view, onPrint }) => {
+  timers?: Timers
+}> = ({ list, view, onPrint, timers }) => {
   const [haveOpen, setHaveOpen] = useState(false)
   const navigate = useNavigate()
   const atHome = view === 'home'
+  const homeTicks = useDelayedTicks(
+    list.haveIds,
+    list.addHave,
+    list.toggleHave,
+    'Moved to Already have',
+    timers
+  )
+  const shopTicks = useDelayedTicks(
+    list.basketIds,
+    list.addBasket,
+    list.toggleBasket,
+    'In basket',
+    timers
+  )
   const locationMode: LocationMode = atHome ? 'move' : 'chip'
   const rowActions = {
     grouping: view,
@@ -83,9 +103,8 @@ export const ShoppingListView: FC<{
             <LineGroups
               {...rowActions}
               lines={list.toBuy}
-              checkedIds={atHome ? new Set() : list.basketIds}
+              ticks={atHome ? homeTicks : shopTicks}
               struck={!atHome}
-              onToggle={atHome ? list.toggleHave : list.toggleBasket}
             />
           )}
         </>
@@ -109,9 +128,8 @@ export const ShoppingListView: FC<{
               <LineGroups
                 {...rowActions}
                 lines={list.alreadyHave}
-                checkedIds={list.haveIds}
+                ticks={instantTicks(list.haveIds, list.toggleHave)}
                 struck={false}
-                onToggle={list.toggleHave}
               />
             </div>
           )}

@@ -4,14 +4,23 @@ import { Link } from 'react-router-dom'
 import { LineGroups } from '../ShoppingList/LineGroups'
 import { useShoppingList } from '../../utils/shopping/useShoppingList'
 import { changeTitle } from '../../utils/changeTitle'
+import { useDelayedTicks } from '../../utils/shopping/usePendingTicks'
+import type { Timers } from '../../utils/shopping/usePendingTicks'
 import '../../styles/segmented.css'
 import '../ShoppingList/shoppingList.css'
 
 /** At the shop: the to-buy items by section; ticks share the list's basket. */
-const TapOff: FC = () => {
+const TapOff: FC<{ timers?: Timers }> = ({ timers }) => {
   useEffect(() => changeTitle('In the shop'), [])
   const list = useShoppingList()
   const left = list.leftToBuy
+  const ticks = useDelayedTicks(
+    list.basketIds,
+    list.addBasket,
+    list.toggleBasket,
+    'In basket',
+    timers
+  )
   return (
     <main className="list-page">
       <h1 className="list-title">In the shop</h1>
@@ -27,9 +36,8 @@ const TapOff: FC = () => {
           <LineGroups
             lines={list.toBuy}
             grouping="shop"
-            checkedIds={list.basketIds}
+            ticks={ticks}
             struck={true}
-            onToggle={list.toggleBasket}
             locationMode="none"
             onLocation={list.setLocation}
             onQuantity={list.setExtraQuantity}

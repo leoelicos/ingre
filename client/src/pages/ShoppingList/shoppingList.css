@@ -236,3 +236,21 @@
   font-size: 14px;
   color: var(--color-text-secondary);
 }
+
+/* Pending tick: stays in place with Undo, then fades out as it moves (never slides). */
+.list-row__pending {
+  margin: 0 0 8px 36px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+.list-row {
+  transition: opacity 200ms ease;
+}
+.list-row--leaving {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .list-row {
+    transition: none;
+  }
+}
