@@ -5,11 +5,18 @@ import RecipeCard from './RecipeCard'
 import { recipeKey } from './recipeCardHelpers'
 import './recipeCard.css'
 
+/** Shopping-list picking: shows "+ Add" / "✓ Added" on each card. */
+export interface PickControls {
+  pickedIds: ReadonlySet<string>
+  onToggle: (libraryId: string) => void
+}
+
 const RecipeCardContainer: FC<{
   results: ClientRecipe[]
   loading: boolean
   onSavedPage: boolean
-}> = ({ results, loading, onSavedPage }) => {
+  pick?: PickControls | null
+}> = ({ results, loading, onSavedPage, pick = null }) => {
   const [auth] = useAuthContext()
   const pro = auth.profile?.data.pro || false
   if (loading) return <p className="recipe-grid__status">Loading recipes…</p>
@@ -23,6 +30,7 @@ const RecipeCardContainer: FC<{
             recipe={recipe}
             onSavedPage={onSavedPage}
             pro={pro}
+            pick={pick}
           />
         </li>
       ))}

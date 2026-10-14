@@ -11,6 +11,7 @@ export type ShopSection =
   | 'Bakery'
   | 'Pantry'
   | 'Frozen'
+  | 'Other'
 
 export const SHOP_SECTIONS: readonly ShopSection[] = [
   'Fruit & Veg',
@@ -19,7 +20,8 @@ export const SHOP_SECTIONS: readonly ShopSection[] = [
   'Deli',
   'Bakery',
   'Pantry',
-  'Frozen'
+  'Frozen',
+  'Other'
 ]
 
 export type Aisle =

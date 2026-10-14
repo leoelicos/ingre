@@ -14,7 +14,7 @@ import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
 import Home from './pages/Home/Home'
-import { ShoppingListPage } from './pages/ShoppingList/ShoppingListPage'
+import { ShoppingFlow } from './pages/ShoppingList/ShoppingFlow'
 import { Saved } from './pages/Saved/Saved'
 import Search from './pages/Search/Search'
 import TapOff from './pages/TapOff/TapOff'
@@ -79,7 +79,7 @@ export const Ingre: FC = () => {
               />
               <Route
                 path="/ingredients"
-                element={<ShoppingListPage />}
+                element={<ShoppingFlow />}
               />
               <Route
                 path="/tapoff"

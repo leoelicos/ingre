@@ -5,10 +5,22 @@ import { useStored, useStoredSet } from './useStored'
 export const HAVE_KEY = 'ingre.list.have'
 export const BASKET_KEY = 'ingre.list.basket'
 export const LOCATIONS_KEY = 'ingre.list.locations'
-export const VIEW_KEY = 'ingre.list.view'
+export const STEP_KEY = 'ingre.list.step'
+export const PICKED_KEY = 'ingre.list.picked'
+export const EXTRAS_KEY = 'ingre.list.extras'
 
-export type ListView = 'home' | 'shop'
-export const LIST_VIEWS: readonly ListView[] = ['home', 'shop']
+/** The three steps of the shopping flow, in order. */
+export type FlowStep = 'pick' | 'home' | 'shop'
+export const FLOW_STEPS: readonly FlowStep[] = ['pick', 'home', 'shop']
+
+/** Something added by hand: a catalogue item or free text, with a quantity. */
+export interface Extra {
+  id: string
+  name: string
+  /** catalogue id, or null for free text */
+  ingredientId: string | null
+  quantity: number
+}
 
 /** Ingredients ticked "at home" (default: staples). */
 export const useHaveIds = (staples: ReadonlySet<string>) =>
@@ -17,13 +29,37 @@ export const useHaveIds = (staples: ReadonlySet<string>) =>
 /** Ingredients ticked into the basket at the shop. */
 export const useBasketIds = () => useStoredSet(BASKET_KEY, new Set())
 
-export const parseView = (value: unknown): ListView | null =>
-  LIST_VIEWS.find((v) => v === value) ?? null
+/** Recipes picked for this shop (library ids). */
+export const usePickedIds = () => useStoredSet(PICKED_KEY, new Set())
 
-export const useListView = (): [ListView, (view: ListView) => void] => {
-  const [view, update] = useStored(VIEW_KEY, parseView, 'home')
-  return [view, (next) => update(() => next)]
+export const parseStep = (value: unknown): FlowStep | null =>
+  FLOW_STEPS.find((v) => v === value) ?? null
+
+/** Last-used step; the flow reopens there. */
+export const useFlowStep = (): [FlowStep, (step: FlowStep) => void] => {
+  const [step, update] = useStored(STEP_KEY, parseStep, 'pick')
+  return [step, (next) => update(() => next)]
 }
+
+const parseExtra = (value: unknown): Extra[] => {
+  if (typeof value !== 'object' || value === null) return []
+  const record: Record<string, unknown> = { ...value }
+  const { id, name, ingredientId, quantity } = record
+  return typeof id === 'string' &&
+    typeof name === 'string' &&
+    (typeof ingredientId === 'string' || ingredientId === null) &&
+    typeof quantity === 'number' &&
+    Number.isInteger(quantity) &&
+    quantity > 0
+    ? [{ id, name, ingredientId, quantity }]
+    : []
+}
+
+/** Stored extras; malformed entries are dropped. */
+export const parseExtras = (value: unknown): Extra[] | null =>
+  Array.isArray(value) ? value.flatMap(parseExtra) : null
+
+export const useExtras = () => useStored<Extra[]>(EXTRAS_KEY, parseExtras, [])
 
 export const parseLocations = (
   value: unknown

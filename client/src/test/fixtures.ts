@@ -76,14 +76,3 @@ export function libIngredient(
     ...overrides
   }
 }
-
-/** An unsigned JWT that jwt-decode accepts, expiring at `exp` (seconds). */
-export function jwt(exp = Math.floor(Date.now() / 1000) + 3600): string {
-  const payload = Buffer.from(
-    JSON.stringify({
-      exp,
-      data: { firstName: 'Ada', email: 'a@b.c', _id: '1', pro: false }
-    })
-  ).toString('base64url')
-  return `e30.${payload}.sig`
-}

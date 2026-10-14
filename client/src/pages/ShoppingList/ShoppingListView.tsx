@@ -1,82 +1,69 @@
 import type { FC } from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { IngreIconBasket, IngreIconHouse } from '../../lib/icon/Icon'
-import type { LibraryRecipe } from '../../types/library'
-import { useShoppingList } from '../../utils/shopping/useShoppingList'
 import { ServesPicker } from '../../components/ServesPicker'
+import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
+import { AddItem } from './AddItem'
 import { LineGroups } from './LineGroups'
-
-const VIEWS = [
-  { value: 'home', label: 'At home', icon: <IngreIconHouse /> },
-  { value: 'shop', label: 'At the shop', icon: <IngreIconBasket /> }
-] satisfies { value: 'home' | 'shop'; label: string; icon: JSX.Element }[]
+import type { LocationMode } from './ListRow'
 
 export const tapLabel = (n: number) => `Tap ${n} ${n === 1 ? 'item' : 'items'}`
 
-export const ShoppingListView: FC<{ recipes: readonly LibraryRecipe[] }> = ({
-  recipes
-}) => {
-  const list = useShoppingList(recipes)
+/** "At home" (check your kitchen) or "At the shop" (to buy) over the same list. */
+export const ShoppingListView: FC<{
+  list: ShoppingListState
+  view: 'home' | 'shop'
+}> = ({ list, view }) => {
   const [haveOpen, setHaveOpen] = useState(false)
-  const atHome = list.view === 'home'
-
-  if (recipes.length === 0)
-    return (
-      <p className="list-empty">
-        Save a recipe or two and your shopping list appears here.{' '}
-        <Link to="/">Browse recipes</Link>
-      </p>
-    )
+  const atHome = view === 'home'
+  const locationMode: LocationMode = atHome ? 'move' : 'chip'
+  const rowActions = {
+    grouping: view,
+    locationMode,
+    onLocation: list.setLocation,
+    onQuantity: list.setExtraQuantity
+  }
 
   return (
     <>
       <div className="list-controls">
-        <div
-          className="segmented"
-          role="radiogroup"
-          aria-label="View"
-        >
-          {VIEWS.map(({ value, label, icon }) => (
-            <label
-              key={value}
-              className="segmented__option"
-            >
-              <input
-                type="radio"
-                name="list-view"
-                checked={list.view === value}
-                onChange={() => list.setView(value)}
-              />
-              <span className="segmented__wide">
-                {icon}
-                {label}
-              </span>
-            </label>
-          ))}
-        </div>
         <ServesPicker
           people={list.people}
           onChange={list.setPeople}
         />
       </div>
+      <AddItem onAdd={list.addExtra} />
 
-      <h2 className="list-heading">
-        {atHome ? 'Check your kitchen' : 'To buy'}
-      </h2>
-      {atHome && <p className="list-note">Tick what you already have</p>}
-      {list.toBuy.length === 0 ? (
-        <p className="list-empty">Nothing to buy. You have it all.</p>
+      {list.lineCount === 0 ? (
+        <p className="list-empty">
+          Nothing on your list yet.{' '}
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => list.setStep('pick')}
+          >
+            Pick some recipes
+          </button>{' '}
+          or add an item above.
+        </p>
       ) : (
-        <LineGroups
-          lines={list.toBuy}
-          grouping={list.view}
-          checkedIds={atHome ? new Set() : list.basketIds}
-          struck={!atHome}
-          onToggle={atHome ? list.toggleHave : list.toggleBasket}
-          locationMode={atHome ? 'move' : 'chip'}
-          onLocation={list.setLocation}
-        />
+        <>
+          <h2 className="list-heading">
+            {atHome ? 'Check your kitchen' : 'To buy'}
+          </h2>
+          {atHome && <p className="list-note">Tick what you already have</p>}
+          {list.toBuy.length === 0 ? (
+            <p className="list-empty">Nothing to buy. You have it all.</p>
+          ) : (
+            <LineGroups
+              {...rowActions}
+              lines={list.toBuy}
+              checkedIds={atHome ? new Set() : list.basketIds}
+              struck={!atHome}
+              onToggle={atHome ? list.toggleHave : list.toggleBasket}
+            />
+          )}
+        </>
       )}
 
       {list.alreadyHave.length > 0 && (
@@ -99,29 +86,37 @@ export const ShoppingListView: FC<{ recipes: readonly LibraryRecipe[] }> = ({
                 </p>
               )}
               <LineGroups
+                {...rowActions}
                 lines={list.alreadyHave}
-                grouping={list.view}
                 checkedIds={list.haveIds}
                 struck={false}
                 onToggle={list.toggleHave}
-                locationMode={atHome ? 'move' : 'chip'}
-                onLocation={list.setLocation}
               />
             </>
           )}
         </section>
       )}
 
-      {list.toBuy.length > 0 && (
-        <div className="list-tap">
-          <Link
-            to="/tapoff"
+      <div className="list-tap">
+        {atHome ? (
+          <button
+            type="button"
             className="btn btn-primary list-tap__button"
+            onClick={() => list.setStep('shop')}
           >
-            {tapLabel(list.toBuy.length)}
-          </Link>
-        </div>
-      )}
+            Next: at the shop ({list.toBuy.length} to buy)
+          </button>
+        ) : (
+          list.toBuy.length > 0 && (
+            <Link
+              to="/tapoff"
+              className="btn btn-primary list-tap__button"
+            >
+              {tapLabel(list.toBuy.length)}
+            </Link>
+          )
+        )}
+      </div>
     </>
   )
 }

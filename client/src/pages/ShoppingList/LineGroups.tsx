@@ -18,6 +18,7 @@ interface Props {
   onToggle: (ingredientId: string) => void
   locationMode: LocationMode
   onLocation: (id: string, location: HomeLocation) => void
+  onQuantity: (lineId: string, quantity: number) => void
 }
 
 /** Lines grouped by home location or shop section (Pantry keeps its aisle). */
@@ -50,6 +51,7 @@ export const LineGroups: FC<Props> = ({ lines, grouping, ...row }) => {
                     onToggle={row.onToggle}
                     locationMode={row.locationMode}
                     onLocation={row.onLocation}
+                    onQuantity={row.onQuantity}
                   />
                 ))}
               </ul>

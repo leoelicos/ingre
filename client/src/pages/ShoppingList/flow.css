@@ -1,0 +1,137 @@
+.flow {
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+}
+.flow-steps {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 8px var(--layout-gutter);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-card);
+}
+.flow-steps__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.flow-steps__dot {
+  color: var(--color-text-secondary);
+}
+.flow-steps__tab {
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+.flow-steps__tab[aria-selected='true'] {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+}
+.flow-steps__tab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+.flow-viewport {
+  overflow: hidden;
+  touch-action: pan-y;
+}
+/* At rest only the current step is shown and nothing is transformed (pinned bars stay
+   fixed). While a finger drags, the neighbouring steps join the track and follow it;
+   on release the step cuts over instantly, so reduced-motion needs no special case. */
+.flow-track {
+  display: flex;
+  align-items: flex-start;
+}
+.flow-panel {
+  flex: 0 0 100%;
+  min-width: 0;
+  padding: 16px var(--layout-gutter) 112px;
+}
+.list-tap--split {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.list-tap--split .list-tap__button {
+  width: auto;
+  flex: 1;
+}
+.list-tap__count {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.link-button {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+.add-item {
+  position: relative;
+  margin-bottom: 12px;
+}
+.add-item__row {
+  display: flex;
+  gap: 8px;
+}
+.add-item__row input {
+  min-width: 0;
+  flex: 1;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.add-item__button {
+  border-radius: var(--radius-pill);
+  min-height: 44px;
+}
+.add-item__suggestions {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px;
+  background: var(--color-surface);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-card);
+}
+.add-item__suggestions button {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  text-align: left;
+  color: var(--color-text);
+}
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+}
+.stepper button {
+  min-width: 36px;
+  min-height: 36px;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+.stepper span {
+  min-width: 20px;
+  text-align: center;
+}

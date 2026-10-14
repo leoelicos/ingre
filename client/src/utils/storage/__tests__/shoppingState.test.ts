@@ -4,13 +4,18 @@ import {
   BASKET_KEY,
   HAVE_KEY,
   LOCATIONS_KEY,
-  VIEW_KEY,
+  EXTRAS_KEY,
+  PICKED_KEY,
+  STEP_KEY,
   parseLocations,
-  parseView,
+  parseExtras,
+  parseStep,
   useBasketIds,
   useHaveIds,
-  useListView,
-  useLocationOverrides
+  useExtras,
+  useFlowStep,
+  useLocationOverrides,
+  usePickedIds
 } from '../shoppingState'
 
 const stored = (key: string): unknown =>
@@ -22,9 +27,28 @@ describe('parsers', () => {
     expect(parseStringSet(['a', 1])).toBeNull()
     expect(parseStringSet('a')).toBeNull()
   })
-  it('parses views', () => {
-    expect(parseView('shop')).toBe('shop')
-    expect(parseView('x')).toBeNull()
+  it('parses steps', () => {
+    expect(parseStep('shop')).toBe('shop')
+    expect(parseStep('x')).toBeNull()
+  })
+  it('parses extras, dropping malformed entries', () => {
+    const milk = { id: 'milk', name: 'milk', ingredientId: 'milk', quantity: 2 }
+    const free = { id: 'free-x', name: 'x', ingredientId: null, quantity: 1 }
+    expect(
+      parseExtras([
+        milk,
+        free,
+        null,
+        'x',
+        { ...milk, id: 1 },
+        { ...milk, name: 1 },
+        { ...milk, ingredientId: 3 },
+        { ...milk, quantity: '1' },
+        { ...milk, quantity: 1.5 },
+        { ...milk, quantity: 0 }
+      ])
+    ).toEqual([milk, free])
+    expect(parseExtras({})).toBeNull()
   })
   it('keeps only valid location overrides', () => {
     expect(parseLocations({ a: 'Fridge', b: 'Pantry', c: 3 })).toEqual({
@@ -67,11 +91,24 @@ describe('stored hooks', () => {
     expect(stored(BASKET_KEY)).toEqual(['onion'])
   })
 
-  it('remembers the view and location overrides', () => {
-    const view = renderHook(() => useListView())
-    expect(view.result.current[0]).toBe('home')
-    act(() => view.result.current[1]('shop'))
-    expect(stored(VIEW_KEY)).toBe('shop')
+  it('remembers the step, picks, extras and location overrides', () => {
+    const step = renderHook(() => useFlowStep())
+    expect(step.result.current[0]).toBe('pick')
+    act(() => step.result.current[1]('shop'))
+    expect(stored(STEP_KEY)).toBe('shop')
+    const picked = renderHook(() => usePickedIds())
+    act(() => picked.result.current[1]('dahl'))
+    expect(stored(PICKED_KEY)).toEqual(['dahl'])
+    act(() => picked.result.current[2]('dahl'))
+    expect(stored(PICKED_KEY)).toEqual([])
+    const extras = renderHook(() => useExtras())
+    expect(extras.result.current[0]).toEqual([])
+    act(() =>
+      extras.result.current[1](() => [
+        { id: 'x', name: 'x', ingredientId: null, quantity: 1 }
+      ])
+    )
+    expect(stored(EXTRAS_KEY)).toHaveLength(1)
     const locations = renderHook(() => useLocationOverrides())
     act(() => locations.result.current[1]('onion', 'Bench'))
     expect(locations.result.current[0]).toEqual({ onion: 'Bench' })

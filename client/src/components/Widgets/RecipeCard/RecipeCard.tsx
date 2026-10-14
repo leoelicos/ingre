@@ -3,6 +3,7 @@ import type { ClientRecipe } from '../../../types/client'
 import { Icon, IngreIconPro } from '../../../lib/icon/Icon'
 import { library } from '../../../utils/library/recipeLibrary'
 import { useAuthContext } from '../../../utils/auth/AuthContext'
+import type { PickControls } from './RecipeCardContainer'
 import { useRecipeCard } from './useRecipeCard'
 import { SaveButton } from './components/SaveButton'
 import { heroIcon, splitTitle, tintFor } from './recipeCardHelpers'
@@ -18,9 +19,34 @@ interface RecipeCardProps {
   recipe: ClientRecipe
   onSavedPage: boolean
   pro: boolean
+  pick: PickControls | null
 }
 
-const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
+const AddPill: FC<{ title: string; libraryId: string; pick: PickControls }> = ({
+  title,
+  libraryId,
+  pick
+}) => {
+  const added = pick.pickedIds.has(libraryId)
+  return (
+    <button
+      type="button"
+      className="add-pill"
+      aria-pressed={added}
+      onClick={() => pick.onToggle(libraryId)}
+    >
+      {added ? '✓ Added' : '+ Add'}
+      <span className="visually-hidden"> {title}</span>
+    </button>
+  )
+}
+
+const RecipeCard: FC<RecipeCardProps> = ({
+  recipe,
+  onSavedPage,
+  pro,
+  pick
+}) => {
   const [auth] = useAuthContext()
   const loggedIn = auth.loggedIn
   const { handleSave, savedRecipes, saveRecipeLoading } = useRecipeCard({
@@ -59,6 +85,13 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, onSavedPage, pro }) => {
           >
             {localName}
           </p>
+        )}
+        {pick !== null && (
+          <AddPill
+            title={title}
+            libraryId={recipe.libraryId ?? recipe.name}
+            pick={pick}
+          />
         )}
         {loggedIn && pro && (
           <a

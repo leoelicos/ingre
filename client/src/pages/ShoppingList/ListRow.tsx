@@ -7,9 +7,9 @@ import type { ShopLine } from '../../utils/shopping/shoppingList'
 import {
   buyAmount,
   displayName,
-  forLabel,
   needLabel,
-  partLabel
+  partLabel,
+  sourceLabel
 } from '../../utils/shopping/shoppingList'
 import { LocationMenu } from './LocationMenu'
 
@@ -23,6 +23,7 @@ export interface RowProps {
   onToggle: (ingredientId: string) => void
   locationMode: LocationMode
   onLocation: (id: string, location: HomeLocation) => void
+  onQuantity: (lineId: string, quantity: number) => void
 }
 
 const MoveTo: FC<Pick<RowProps, 'line' | 'onLocation'>> = ({
@@ -49,6 +50,35 @@ const MoveTo: FC<Pick<RowProps, 'line' | 'onLocation'>> = ({
   </div>
 )
 
+/** − n + for hand-added extras; − at 1 removes the item. */
+const Stepper: FC<{
+  name: string
+  quantity: number
+  onChange: (quantity: number) => void
+}> = ({ name, quantity, onChange }) => (
+  <div
+    className="stepper"
+    role="group"
+    aria-label={`Quantity of ${name}`}
+  >
+    <button
+      type="button"
+      aria-label={quantity === 1 ? `Remove ${name}` : `Fewer ${name}`}
+      onClick={() => onChange(quantity - 1)}
+    >
+      −
+    </button>
+    <span aria-live="polite">{quantity}</span>
+    <button
+      type="button"
+      aria-label={`More ${name}`}
+      onClick={() => onChange(quantity + 1)}
+    >
+      +
+    </button>
+  </div>
+)
+
 /** One list item: the whole row toggles; the chevron shows the breakdown. */
 export const ListRow: FC<RowProps> = ({
   line,
@@ -56,7 +86,8 @@ export const ListRow: FC<RowProps> = ({
   struck,
   onToggle,
   locationMode,
-  onLocation
+  onLocation,
+  onQuantity
 }) => {
   const [expanded, setExpanded] = useState(false)
   const name = displayName(line)
@@ -74,9 +105,16 @@ export const ListRow: FC<RowProps> = ({
               <span className="list-row__name">{name}</span>
               <span className="list-row__amount">{buyAmount(line)}</span>
             </span>
-            <small>{forLabel(line.recipes)}</small>
+            <small>{sourceLabel(line)}</small>
           </span>
         </label>
+        {line.extraQuantity !== null && (
+          <Stepper
+            name={line.name}
+            quantity={line.extraQuantity}
+            onChange={(quantity) => onQuantity(line.ingredientId, quantity)}
+          />
+        )}
         {locationMode === 'chip' && (
           <LocationMenu
             name={line.name}

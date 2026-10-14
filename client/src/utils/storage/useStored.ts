@@ -24,11 +24,11 @@ export const parseStringSet = (value: unknown): Set<string> | null =>
     ? new Set(value)
     : null
 
-/** Persisted set of ids with a toggle. */
+/** Persisted set of ids with toggle and remove. */
 export const useStoredSet = (
   key: string,
   fallback: ReadonlySet<string>
-): [ReadonlySet<string>, (id: string) => void] => {
+): [ReadonlySet<string>, (id: string) => void, (id: string) => void] => {
   const [ids, update] = useStored<ReadonlySet<string>>(
     key,
     parseStringSet,
@@ -41,5 +41,7 @@ export const useStoredSet = (
         ? new Set([...previous].filter((x) => x !== id))
         : new Set([...previous, id])
     )
-  return [ids, toggle]
+  const remove = (id: string) =>
+    update((previous) => new Set([...previous].filter((x) => x !== id)))
+  return [ids, toggle, remove]
 }

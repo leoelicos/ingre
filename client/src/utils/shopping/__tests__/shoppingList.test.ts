@@ -22,7 +22,10 @@ import {
   toShopUnits,
   totalNeed,
   withLocations,
-  partLabel
+  partLabel,
+  EXTRA_WEIGHED_GRAMS,
+  extraLines,
+  sourceLabel
 } from '../shoppingList'
 
 const recipe = (
@@ -353,5 +356,64 @@ describe('partLabel', () => {
         measure: 'whole'
       })
     ).toBe('Dahl: 2')
+  })
+})
+
+describe('extraLines', () => {
+  const items = [
+    libIngredient({
+      id: 'milk',
+      name: 'milk',
+      category: 'dairy & eggs',
+      sold: [{ type: 'bottle', size: { amount: 2000, unit: 'ml' } }],
+      pantry: 'Fridge'
+    }),
+    libIngredient({
+      id: 'grapes',
+      name: 'grapes',
+      sold: [{ type: 'weighed', size: null }],
+      pantry: 'Fridge'
+    })
+  ]
+  const extra = (id: string, ingredientId: string | null, quantity = 2) => ({
+    id,
+    name: id,
+    ingredientId,
+    quantity
+  })
+
+  it('buys packs, loose weight or a plain count', () => {
+    const [milk, grapes, candles] = extraLines(
+      [
+        extra('milk', 'milk'),
+        extra('grapes', 'grapes'),
+        extra('free-candles', null)
+      ],
+      items
+    )
+    expect(milk).toMatchObject({
+      ingredientId: 'extra:milk',
+      section: 'Dairy, Eggs & Fridge',
+      location: 'Fridge',
+      need: { amount: 4000, unit: 'ml' },
+      extraQuantity: 2
+    })
+    expect(milk && buyAmount(milk)).toBe('2 × 2 L')
+    expect(grapes?.need).toEqual({ amount: 2 * EXTRA_WEIGHED_GRAMS, unit: 'g' })
+    expect(candles).toMatchObject({
+      name: 'free-candles',
+      section: 'Other',
+      subsection: null,
+      location: 'Cupboard',
+      need: { amount: 2, unit: 'count' }
+    })
+    expect(candles && buyAmount(candles)).toBe('2')
+  })
+
+  it('labels extras "extra" and recipe lines by recipe', () => {
+    expect(sourceLabel({ recipes: [], extraQuantity: 1 })).toBe('extra')
+    expect(sourceLabel({ recipes: ['Dahl'], extraQuantity: null })).toBe(
+      'for dahl'
+    )
   })
 })

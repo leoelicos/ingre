@@ -6,6 +6,7 @@ import type {
   LibraryRecipe,
   SoldOption
 } from '../../types/library'
+import type { Extra } from '../storage/shoppingState'
 import type { ShopSection } from './sections'
 import { placeInShop } from './sections'
 import { splitTitle } from '../../components/Widgets/RecipeCard/recipeCardHelpers'
@@ -28,6 +29,7 @@ type SizedOption = SoldOption & { size: Amount }
 export type Buy =
   | { kind: 'packs'; option: SizedOption; count: number }
   | { kind: 'weighed'; amount: Amount }
+  | { kind: 'count'; count: number }
 
 export interface ShopLine {
   ingredientId: string
@@ -41,6 +43,8 @@ export interface ShopLine {
   buy: Buy
   recipes: string[]
   parts: NeedPart[]
+  /** hand-added extras carry their stepper quantity; recipe lines have null */
+  extraQuantity: number | null
 }
 
 /** Scales every recipe ingredient to `people` serves. */
@@ -162,7 +166,8 @@ export const toShopUnits =
           need,
           buy: chooseBuy(need, convertible, item),
           recipes: [...new Set(parts.map((p) => p.recipe))],
-          parts
+          parts,
+          extraQuantity: null
         }
       ]
     })
@@ -218,6 +223,7 @@ export const displayName = ({ name }: Pick<ShopLine, 'name'>) =>
 /** What to put in the trolley: "2", "1 × 500 g", "1 bunch", "1 × carton of 6", "100 g". */
 export const buyAmount = ({ buy }: Pick<ShopLine, 'buy'>): string => {
   if (buy.kind === 'weighed') return formatAmount(buy.amount)
+  if (buy.kind === 'count') return `${buy.count}`
   const { option, count } = buy
   if (option.type === 'each')
     return option.label === undefined
@@ -254,3 +260,64 @@ export const partLabel = ({ recipe, quantity, measure }: NeedPart): string =>
   `${splitTitle(recipe).title}: ${tidy(quantity)}${
     measure === 'whole' ? '' : ` ${measure}`
   }`
+
+/** Grams per stepper step for extras sold only loose by weight. */
+export const EXTRA_WEIGHED_GRAMS = 500
+/** Shop section and home location for free-text extras. */
+export const FREE_TEXT_SECTION: ShopSection = 'Other'
+export const FREE_TEXT_LOCATION: HomeLocation = 'Cupboard'
+
+export const extraLineId = (extra: Pick<Extra, 'id'>) => `extra:${extra.id}`
+
+const extraBuy = (item: LibraryIngredient, quantity: number): Buy => {
+  const option = item.sold.find(isSized)
+  return option === undefined
+    ? {
+        kind: 'weighed',
+        amount: { amount: quantity * EXTRA_WEIGHED_GRAMS, unit: 'g' }
+      }
+    : { kind: 'packs', option, count: quantity }
+}
+
+const boughtAmount = (buy: Buy): Amount => {
+  if (buy.kind === 'packs')
+    return {
+      amount: buy.count * buy.option.size.amount,
+      unit: buy.option.size.unit
+    }
+  return buy.kind === 'weighed'
+    ? buy.amount
+    : { amount: buy.count, unit: 'count' }
+}
+
+/** Hand-added items: one pack (or 500 g loose) per step; free text goes to Other. */
+export const extraLines = (
+  extras: readonly Extra[],
+  catalogue: readonly LibraryIngredient[]
+): ShopLine[] =>
+  extras.map((extra) => {
+    const item = catalogue.find((i) => i.id === extra.ingredientId)
+    const buy: Buy =
+      item === undefined
+        ? { kind: 'count', count: extra.quantity }
+        : extraBuy(item, extra.quantity)
+    return {
+      ingredientId: extraLineId(extra),
+      name: item?.name ?? extra.name,
+      ...(item === undefined
+        ? { section: FREE_TEXT_SECTION, subsection: null }
+        : placeInShop(item.category)),
+      location: item?.pantry ?? FREE_TEXT_LOCATION,
+      staple: false,
+      need: boughtAmount(buy),
+      buy,
+      recipes: [],
+      parts: [],
+      extraQuantity: extra.quantity
+    }
+  })
+
+/** Second line under a row: "for butter chicken and dahl", or "extra". */
+export const sourceLabel = (
+  line: Pick<ShopLine, 'recipes' | 'extraQuantity'>
+) => (line.extraQuantity === null ? forLabel(line.recipes) : 'extra')

@@ -85,3 +85,29 @@
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+
+.recipe-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.add-pill {
+  align-self: flex-end;
+  margin-top: auto;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+.add-pill[aria-pressed='true'] {
+  background: var(--color-chip-active);
+  color: var(--color-primary);
+}
+.add-pill:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

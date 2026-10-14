@@ -37,6 +37,7 @@ describe('RecipeCard states', () => {
           recipe={recipe()}
           onSavedPage={false}
           pro={true}
+          pick={null}
         />
       </MemoryRouter>
     )
@@ -49,6 +50,7 @@ describe('RecipeCard states', () => {
           recipe={recipe()}
           onSavedPage={false}
           pro={false}
+          pick={null}
         />
       </MemoryRouter>
     )
@@ -60,6 +62,7 @@ describe('RecipeCard states', () => {
           recipe={recipe()}
           onSavedPage={false}
           pro={true}
+          pick={null}
         />
       </MemoryRouter>
     )
@@ -71,6 +74,7 @@ describe('RecipeCard states', () => {
           recipe={omit(recipe(), 'libraryId')}
           onSavedPage={false}
           pro={true}
+          pick={null}
         />
       </MemoryRouter>
     )
