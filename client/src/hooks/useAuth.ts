@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 import { LOGIN } from '../lib/apollo/graphQL/mutations'
 import { useAuthContext } from '../utils/auth/AuthContext'
@@ -6,15 +6,17 @@ import { useAuthContext } from '../utils/auth/AuthContext'
 export const useAuth = () => {
   const [, dispatch] = useAuthContext()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const from = (location.state as { from?: string } | null)?.from || '/'
 
   const [loginMutation, { loading: loginLoading, error: loginError }] =
     useMutation(LOGIN, {
       onCompleted: (data) => {
         dispatch({ type: 'LOGIN', data: data.login.token })
-        navigate(-1)
+        navigate(from, { replace: true })
       },
       onError: (error) => {
-        // send them to an error page?
         console.error(error)
       }
     })

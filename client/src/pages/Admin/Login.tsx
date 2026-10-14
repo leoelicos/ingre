@@ -1,6 +1,6 @@
 import type { FC, ChangeEvent, FormEvent } from 'react'
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { changeTitle } from '../../utils/changeTitle'
 import { useAuth } from '../../hooks/useAuth'
 import { useAuthContext } from '../../utils/auth/AuthContext'
@@ -28,6 +28,7 @@ const useLoginForm = () => {
 }
 export const Login: FC = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const [auth] = useAuthContext()
   const { login, loginError, loginLoading } = useAuth()
   const {
@@ -39,6 +40,8 @@ export const Login: FC = () => {
     togglePasswordVisibility
   } = useLoginForm()
 
+  const from = (location.state as { from?: string } | null)?.from || '/'
+
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     login({ email, password })
@@ -47,15 +50,20 @@ export const Login: FC = () => {
   // Redirect only when this page opens. A successful login navigates itself.
   useEffect(() => {
     changeTitle('Log in')
-    if (auth.loggedIn) navigate(-1)
+    if (auth.loggedIn) navigate(from, { replace: true })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <main className="auth-page">
       <h1 className="auth-page__title">Log in</h1>
       {loginLoading ? (
-        <p>Loading</p>
+        <p role="status">Loading</p>
       ) : loginError ? (
-        <p className="auth-page__error">Couldn't log you in.</p>
+        <p
+          className="auth-page__error"
+          role="alert"
+        >
+          Couldn't log you in.
+        </p>
       ) : (
         <form
           className="auth-form"
@@ -113,7 +121,13 @@ export const Login: FC = () => {
         </form>
       )}
       <p className="auth-page__alt">
-        No account? <Link to="/signup">Sign up</Link>
+        No account?{' '}
+        <Link
+          to="/signup"
+          state={{ from }}
+        >
+          Sign up
+        </Link>
       </p>
     </main>
   )

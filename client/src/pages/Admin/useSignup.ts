@@ -1,10 +1,18 @@
 import React from 'react'
 import { useLazyQuery, useMutation } from '@apollo/client'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ADD_USER } from '../../lib/apollo/graphQL/mutations'
 import { CHECK_EMAIL_ALREADY_EXISTS } from '../../lib/apollo/graphQL/queries'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 import { changeTitle } from '../../utils/changeTitle'
+
+type SignupResult =
+  | { ok: true }
+  | {
+      ok: false
+      reason: 'validation' | 'email-exists' | 'error'
+      message: string
+    }
 
 export const useSignup = () => {
   changeTitle('Sign up')
@@ -21,13 +29,13 @@ export const useSignup = () => {
     password: ''
   })
 
+  const [validationMessage, setValidationMessage] = React.useState<
+    string | null
+  >(null)
+
   const [
     checkEmailAlreadyExists,
-    {
-      data: checkEmailData,
-      loading: checkEmailLoading,
-      error: checkEmailError
-    }
+    { data: checkEmailData, loading: checkEmailLoading, error: checkEmailError }
   ] = useLazyQuery(CHECK_EMAIL_ALREADY_EXISTS, {
     fetchPolicy: 'network-only'
   })
@@ -36,32 +44,60 @@ export const useSignup = () => {
     useMutation(ADD_USER)
 
   const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as { from?: string } | null)?.from || '/'
 
   const [state, dispatch] = useAuthContext()
   const loggedIn = state.loggedIn
 
   const emailExists = !!checkEmailData?.checkEmailAlreadyExists
 
-  const handleFormSubmit = async (e: { preventDefault: () => void }) => {
+  const handleFormSubmit = async (e: {
+    preventDefault: () => void
+  }): Promise<SignupResult> => {
     e.preventDefault()
+    setValidationMessage(null)
+
     const { firstName, lastName, email, password } = fields
-    if (!email || !password || !firstName) return
+    if (!firstName.trim()) {
+      const message = 'Please enter your first name.'
+      setValidationMessage(message)
+      return { ok: false, reason: 'validation', message }
+    }
+    if (!email.trim()) {
+      const message = 'Please enter an email address.'
+      setValidationMessage(message)
+      return { ok: false, reason: 'validation', message }
+    }
+    if (!password) {
+      const message = 'Please enter a password.'
+      setValidationMessage(message)
+      return { ok: false, reason: 'validation', message }
+    }
 
     try {
       const result = await checkEmailAlreadyExists({ variables: { email } })
       if (result.data?.checkEmailAlreadyExists) {
-        return // UI will show the exists message
+        const message = 'A user with this email already exists.'
+        setValidationMessage(message)
+        return { ok: false, reason: 'email-exists', message }
       }
 
       const variables = { input: { email, password, firstName, lastName } }
       const res = await addUser({ variables })
-      if (!res.data) throw new Error('Sign up returned no data')
+      if (!res.data) {
+        throw new Error('Sign up returned no data')
+      }
       const token = res.data.addUser.token
       dispatch({ type: 'LOGIN', data: token })
 
-      navigate(-1)
-    } catch (_e) {
-      console.error(_e)
+      navigate(from, { replace: true })
+      return { ok: true }
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Could not sign you up.'
+      setValidationMessage(message)
+      return { ok: false, reason: 'error', message }
     }
   }
 
@@ -89,6 +125,8 @@ export const useSignup = () => {
     checkEmailError,
     emailExists,
     addUserError,
-    addUserLoading
+    addUserLoading,
+    validationMessage,
+    from
   }
 }

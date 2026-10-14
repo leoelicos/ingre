@@ -1,39 +1,26 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { MockedProvider } from '@apollo/client/testing'
+import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { Signup } from '../Signup'
-
-jest.mock('../useSignup', () => ({
-  useSignup: () => ({
-    loggedIn: false,
-    fields: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: ''
-    },
-    handleFormSubmit: jest.fn(),
-    onFirstNameChange: jest.fn(),
-    onLastNameChange: jest.fn(),
-    onEmailChange: jest.fn(),
-    onPasswordChange: jest.fn(),
-    checkEmailLoading: false,
-    checkEmailError: null,
-    emailExists: false,
-    addUserError: null,
-    addUserLoading: false
-  })
-}))
 
 jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
 
+const renderSignup = (initialEntries = ['/signup']) =>
+  render(
+    <MockedProvider mocks={[]}>
+      <MemoryRouter initialEntries={initialEntries}>
+        <AuthProvider>
+          <Signup />
+        </AuthProvider>
+      </MemoryRouter>
+    </MockedProvider>
+  )
+
 describe('Signup', () => {
   it('renders signup form for logged-out users', () => {
-    render(
-      <MemoryRouter>
-        <Signup />
-      </MemoryRouter>
-    )
+    renderSignup()
     expect(
       screen.getByRole('heading', { name: /sign up/i })
     ).toBeInTheDocument()
