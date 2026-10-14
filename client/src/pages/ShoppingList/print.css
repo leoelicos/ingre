@@ -7,6 +7,7 @@
   body > *:not(.print-sheet) {
     display: none !important;
   }
+  html,
   html body {
     background: var(--color-print-paper);
     color: var(--color-print-ink);
