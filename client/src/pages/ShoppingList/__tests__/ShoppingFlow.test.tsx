@@ -4,6 +4,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { StoreProvider } from '../../../utils/state/GlobalState'
+import { addFontAwesome } from '../../../utils/addFontAwesome'
 import {
   BASKET_KEY,
   EXTRAS_KEY,
@@ -13,11 +14,13 @@ import {
 } from '../../../utils/storage/shoppingState'
 import { PEOPLE_KEY } from '../../../utils/storage/people'
 import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
-import TapOff from '../../TapOff/TapOff'
+import TapOff, { inBasketLine, stillToBuyLine } from '../../TapOff/TapOff'
 import { recipeCount } from '../PickStep'
 import { ShoppingFlow, wantsStartNew } from '../ShoppingFlow'
-import { tapLabel } from '../ShoppingListView'
+import { basketCount, DONE_SHOPPING } from '../ShoppingListView'
 import { assumedNames } from '../../../utils/shopping/shoppingList'
+
+addFontAwesome()
 
 const renderFlow = (picked: string[] = [], step = 'pick') => {
   localStorage.setItem(PICKED_KEY, JSON.stringify(picked))
@@ -43,16 +46,21 @@ afterEach(() => jest.useRealTimers())
 
 const tab = (name: string) => screen.getByRole('tab', { name })
 const panel = () => screen.getByRole('tabpanel')
-const tapCount = () =>
-  Number(
-    screen
-      .getByRole('button', { name: /^Tap \d+ items?$/ })
-      .textContent?.match(/\d+/)?.[0]
-  )
+const leftToBuy = () => {
+  const text = screen.getByText(/^\d+ of \d+ in basket$/).textContent ?? ''
+  const match = text.match(/^(\d+) of (\d+) in basket$/)
+  return Number(match?.[2]) - Number(match?.[1])
+}
 
 describe('labels', () => {
   it('pluralises', () => {
-    expect(tapLabel(1)).toBe('Tap 1 item')
+    expect(basketCount(1, 1)).toBe('1 of 1 in basket')
+    expect(basketCount(12, 29)).toBe('12 of 29 in basket')
+    expect(inBasketLine(1)).toBe('1 item is in the basket')
+    expect(inBasketLine(12)).toBe('12 items are in the basket')
+    expect(stillToBuyLine(0)).toBe('0 are still to buy')
+    expect(stillToBuyLine(1)).toBe('1 is still to buy')
+    expect(DONE_SHOPPING).toBe("I'm done shopping")
     expect(
       assumedNames([
         { name: 'olive oil' },
@@ -61,7 +69,6 @@ describe('labels', () => {
         { name: 'black pepper' }
       ])
     ).toBe('oil, salt, pepper')
-    expect(tapLabel(3)).toBe('Tap 3 items')
     expect(recipeCount(1)).toBe('1 recipe')
     expect(recipeCount(3)).toBe('3 recipes')
   })
@@ -171,6 +178,7 @@ describe('ShoppingFlow', () => {
     const have = p.getByRole('button', { name: /Already have/ })
     expect(have).toHaveTextContent('Already have (1)')
     expect(have).toHaveAttribute('aria-expanded', 'false')
+    expect(have.querySelector('.list-have__chevron svg')).not.toBeNull()
     fireEvent.click(have)
     expect(have).toHaveAttribute('aria-expanded', 'true')
     expect(
@@ -212,13 +220,13 @@ describe('ShoppingFlow', () => {
     expect(
       within(pantry).getAllByRole('heading', { level: 4 }).length
     ).toBeGreaterThan(0)
-    const before = tapCount()
+    const before = leftToBuy()
     const box = p.getAllByRole('checkbox', { checked: false })[0]
     fireEvent.click(box ?? document.body)
     expect(box).toBeChecked()
     expect(box?.closest('li')).toHaveClass('list-row--done')
     expect(p.getByText(/^In basket/)).toBeInTheDocument()
-    expect(tapCount()).toBe(before)
+    expect(leftToBuy()).toBe(before)
     const second = p.getAllByRole('checkbox', { checked: false })[0]
     fireEvent.click(second ?? document.body)
     fireEvent.click(
@@ -233,8 +241,8 @@ describe('ShoppingFlow', () => {
       p.getAllByRole('button', { name: /^Details for/ })[0] ?? document.body
     )
     expect(p.getAllByText(/^need |in total$/).length).toBeGreaterThan(0)
-    expect(tapCount()).toBe(before - 1)
-    fireEvent.click(p.getByRole('button', { name: /^Tap \d+ items?$/ }))
+    expect(leftToBuy()).toBe(before - 1)
+    fireEvent.click(p.getByRole('button', { name: DONE_SHOPPING }))
 
     expect(p.queryByRole('button', { name: /is kept in/ })).toBeNull()
     expect(p.queryByRole('group', { name: /^Move / })).toBeNull()
@@ -250,7 +258,7 @@ describe('ShoppingFlow', () => {
     expect(input).toHaveValue('')
     expect(p.getByRole('region', { name: 'Deli' })).toBeInTheDocument()
     expect(p.getByText('extra')).toBeInTheDocument()
-    expect(tapCount()).toBe(1)
+    expect(leftToBuy()).toBe(1)
 
     fireEvent.change(input, { target: { value: 'Birthday candles' } })
     fireEvent.submit(input)
@@ -290,7 +298,7 @@ describe('ShoppingFlow', () => {
     ).toBeInTheDocument()
     fireEvent.click(tab('At the shop'))
     expect(
-      screen.queryByRole('button', { name: /^Tap/ })
+      screen.queryByRole('button', { name: DONE_SHOPPING })
     ).not.toBeInTheDocument()
   })
 
@@ -301,7 +309,7 @@ describe('ShoppingFlow', () => {
   })
 })
 
-describe('In the shop', () => {
+describe('Shopping done', () => {
   beforeEach(() => localStorage.clear())
   const renderTap = (picked: string[]) => {
     localStorage.setItem(PICKED_KEY, JSON.stringify(picked))
@@ -327,27 +335,70 @@ describe('In the shop', () => {
     )
   }
 
-  it('lists to-buy items by section without logging in', () => {
+  it('shows basket and still-to-buy counts, and never the checklist', () => {
     renderTap(['dahl'])
     expect(
-      screen.getByRole('heading', { name: 'In the shop' })
+      screen.getByRole('heading', { name: 'Shopping done' })
     ).toBeInTheDocument()
-    expect(screen.getByText(/left to find$/)).toBeInTheDocument()
+    expect(document.title).toBe('Shopping done')
+    expect(screen.getByText('0 items are in the basket')).toBeInTheDocument()
+    expect(screen.getByText(/are still to buy$/)).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
     expect(
-      screen.queryByRole('region', { name: 'Fridge' })
-    ).not.toBeInTheDocument()
-    screen.getAllByRole('checkbox').forEach((box) => fireEvent.click(box))
-    settle()
-    const done = within(screen.getByRole('region', { name: 'All done' }))
-    fireEvent.click(done.getByRole('button', { name: 'Start a new list' }))
+      screen.getByRole('link', { name: 'Back to my list' })
+    ).toHaveAttribute('href', '/ingredients')
+  })
+
+  it('still shows the finish screen when the basket is empty', () => {
+    renderTap([])
+    expect(screen.getByText('0 items are in the basket')).toBeInTheDocument()
+    expect(screen.getByText('0 are still to buy')).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+  })
+
+  it('starts a new list from the finish screen', () => {
+    localStorage.setItem(STEP_KEY, JSON.stringify('shop'))
+    renderTap(['dahl'])
+    fireEvent.click(screen.getByRole('button', { name: 'Start a new list' }))
     expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
     expect(localStorage.getItem(PICKED_KEY)).toBe('[]')
     expect(screen.getByRole('status')).toHaveTextContent('List cleared')
   })
 
-  it('points back to the list when there is nothing to buy', () => {
-    renderTap([])
-    expect(screen.getByText(/Nothing to tap off yet/)).toBeInTheDocument()
+  it('opens from the shop bar without repeating the list', () => {
+    localStorage.setItem(PICKED_KEY, JSON.stringify(['dahl']))
+    localStorage.setItem(STEP_KEY, JSON.stringify('shop'))
+    render(
+      <MockedProvider mocks={[]}>
+        <MemoryRouter initialEntries={['/ingredients']}>
+          <AuthProvider>
+            <StoreProvider>
+              <Routes>
+                <Route
+                  path="/ingredients"
+                  element={<ShoppingFlow />}
+                />
+                <Route
+                  path="/tapoff"
+                  element={<TapOff />}
+                />
+              </Routes>
+            </StoreProvider>
+          </AuthProvider>
+        </MemoryRouter>
+      </MockedProvider>
+    )
+    expect(screen.getByText(/^\d+ of \d+ in basket$/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: DONE_SHOPPING }))
+    expect(
+      screen.getByRole('heading', { name: 'Shopping done' })
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('link', { name: 'Back to my list' }))
+    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
+    expect(
+      screen.getByRole('button', { name: DONE_SHOPPING })
+    ).toBeInTheDocument()
   })
 })
 
@@ -509,7 +560,7 @@ describe('PO shopper pass', () => {
       pantry.getByRole('group', { name: 'Quantity of salt' })
     ).toBeInTheDocument()
     expect(pantry.queryByText(/×/)).toBeNull()
-    expect(tapCount()).toBe(1)
+    expect(leftToBuy()).toBe(1)
     fireEvent.click(tab('At home'))
     const cupboard = within(screen.getByRole('region', { name: 'Cupboard' }))
     expect(cupboard.getByRole('checkbox', { name: /Salt/ })).toBeInTheDocument()

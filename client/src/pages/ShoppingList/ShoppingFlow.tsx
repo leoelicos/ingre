@@ -33,7 +33,7 @@ interface Drag {
 }
 
 /** Pick · At home · At the shop: tabs everywhere, plus swipe between steps on touch screens. */
-/** Router state In the shop sends when its All done button is tapped. */
+/** Router state the finish screen sends when Start a new list is tapped. */
 export const START_NEW_STATE = { startNew: true }
 export const wantsStartNew = (state: unknown): boolean =>
   typeof state === 'object' &&
