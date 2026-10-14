@@ -23,5 +23,8 @@
   "homepage": "https://github.com/leoelicos/ingre#readme",
   "devDependencies": {
     "concurrently": "^7.3.0"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }
