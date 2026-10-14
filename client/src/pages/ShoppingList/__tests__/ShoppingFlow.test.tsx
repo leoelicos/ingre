@@ -426,7 +426,7 @@ describe('Start a new list', () => {
   it('clears picks, ticks and extras (not hearts or Serves), goes to Pick; Undo restores', () => {
     localStorage.setItem(PEOPLE_KEY, '3')
     localStorage.setItem(FAVOURITES_KEY, '["dahl"]')
-    localStorage.setItem(HAVE_KEY, '["brown-onion"]')
+    localStorage.setItem(HAVE_KEY, '["onion"]')
     localStorage.setItem(BASKET_KEY, '["garlic"]')
     localStorage.setItem(
       EXTRAS_KEY,
@@ -450,7 +450,7 @@ describe('Start a new list', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
     expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl"]')
-    expect(localStorage.getItem(HAVE_KEY)).toBe('["brown-onion"]')
+    expect(localStorage.getItem(HAVE_KEY)).toBe('["onion"]')
     expect(localStorage.getItem(BASKET_KEY)).toBe('["garlic"]')
     expect(localStorage.getItem(EXTRAS_KEY)).toContain('free-x')
     expect(screen.queryByText(/List cleared/)).toBeNull()

@@ -72,8 +72,8 @@
       "ingredients": [
         {
           "ingredientId": "jasmine-rice",
-          "quantity": 1.0,
-          "measure": "cup"
+          "quantity": 75.0,
+          "measure": "g"
         },
         {
           "ingredientId": "egg",
@@ -82,8 +82,8 @@
         },
         {
           "ingredientId": "tinned-peas",
-          "quantity": 0.25,
-          "measure": "cup"
+          "quantity": 40.0,
+          "measure": "g"
         },
         {
           "ingredientId": "carrot",
@@ -117,9 +117,9 @@
         }
       ],
       "method": [
-        "Use cooked, cooled rice (ideally day-old).",
-        "Scramble eggs in a hot wok, remove; stir-fry garlic, carrot and peas.",
-        "Add rice, soy sauce, sesame oil, egg and spring onion; toss until hot."
+        "Cook the jasmine rice, spread it on a tray and let it cool for 10 minutes (or use day-old cooked rice).",
+        "Scramble eggs in a hot wok with the vegetable oil, remove; stir-fry garlic, diced carrot and drained peas.",
+        "Add rice, soy sauce, sesame oil, egg and sliced spring onion; toss until hot."
       ]
     },
     {
@@ -185,14 +185,15 @@
         },
         {
           "ingredientId": "basmati-rice",
-          "quantity": 0.375,
-          "measure": "cup"
+          "quantity": 75.0,
+          "measure": "g"
         }
       ],
       "method": [
         "Marinate diced chicken in yoghurt and half the spices for 15 minutes.",
         "Sear chicken in butter; remove. Soften onion, garlic and ginger, add remaining spices and tomatoes; simmer 10 minutes.",
-        "Blend sauce if desired, return chicken, stir in cream and simmer until cooked. Serve with basmati rice."
+        "Meanwhile, cook the basmati rice.",
+        "Blend sauce if desired, return chicken, stir in cream and simmer until cooked. Serve with the rice."
       ]
     },
     {
@@ -397,7 +398,7 @@
         "Fry the sliced onion in oil until soft and golden.",
         "Add grated garlic and ginger, then the spices, and cook for a minute.",
         "Add diced chicken and brown it.",
-        "Stir in the yoghurt and almond meal with a splash of water and simmer for 20 minutes.",
+        "Stir in the yoghurt and ground almonds with a splash of water and simmer for 20 minutes, cooking the basmati rice meanwhile.",
         "Stir through the cream, season, and serve with basmati rice."
       ]
     },
@@ -469,11 +470,11 @@
         }
       ],
       "method": [
-        "Rinse the lentils and simmer with turmeric and 1 litre of water for 20 minutes until soft.",
+        "Rinse the lentils and simmer with turmeric and 250 ml water for 20 minutes until soft; cook the basmati rice meanwhile.",
         "In a separate pan, melt the butter and fry the cumin seeds until they crackle.",
         "Add diced onion, garlic and ginger and cook until golden, then add chopped tomato.",
         "Stir the onion mixture and garam masala into the lentils and season.",
-        "Serve with rice and chopped coriander."
+        "Serve with the rice and chopped coriander."
       ]
     },
     {
@@ -510,7 +511,7 @@
         {
           "ingredientId": "crushed-tomatoes",
           "quantity": 100.0,
-          "measure": "g tin"
+          "measure": "g"
         },
         {
           "ingredientId": "tinned-peas",
@@ -557,7 +558,7 @@
         "Fry the diced onion in oil until golden.",
         "Add garlic, ginger and chilli, then the cumin and ground coriander.",
         "Add the mince and brown it, breaking it up.",
-        "Stir in the tomatoes and simmer for 20 minutes.",
+        "Stir in the tomatoes and simmer for 20 minutes, cooking the basmati rice meanwhile.",
         "Add the peas and garam masala and cook for 5 minutes more.",
         "Season, top with coriander and serve with rice."
       ]
@@ -581,7 +582,7 @@
         {
           "ingredientId": "chickpeas",
           "quantity": 100.0,
-          "measure": "g tin"
+          "measure": "g"
         },
         {
           "ingredientId": "onion",
@@ -601,12 +602,12 @@
         {
           "ingredientId": "crushed-tomatoes",
           "quantity": 100.0,
-          "measure": "g tin"
+          "measure": "g"
         },
         {
           "ingredientId": "coconut-milk",
           "quantity": 67.5,
-          "measure": "ml tin"
+          "measure": "ml"
         },
         {
           "ingredientId": "baby-spinach",
@@ -652,7 +653,7 @@
       "method": [
         "Fry the diced onion in oil, then add garlic, ginger and the ground spices.",
         "Add diced potato and cauliflower florets and stir to coat.",
-        "Add the tomatoes and coconut milk and simmer for 20 minutes until the potato is tender.",
+        "Add the tomatoes and coconut milk and simmer for 20 minutes until the potato is tender, cooking the basmati rice meanwhile.",
         "Stir in the drained chickpeas, spinach and garam masala until the spinach wilts.",
         "Season and serve with rice."
       ]
@@ -912,8 +913,8 @@
         }
       ],
       "method": [
-        "Make the dressing (nước chấm) by stirring 3 tbsp fish sauce, the sugar, lime juice, vinegar, sliced chilli, half the garlic and 125 ml water until the sugar dissolves.",
-        "Thinly slice the beef and marinate with chopped lemongrass, the remaining garlic and 1 tbsp fish sauce for 15 minutes.",
+        "Make the dressing (nước chấm) by stirring 2 tsp of the fish sauce, the sugar, lime juice, vinegar, sliced chilli, half the garlic and 3 tbsp water until the sugar dissolves.",
+        "Thinly slice the beef and marinate with chopped lemongrass, the remaining garlic and the remaining 1 tsp fish sauce for 15 minutes.",
         "Cook the vermicelli, rinse in cold water and drain.",
         "Shred the lettuce, julienne the carrot and cucumber, and pick the mint leaves.",
         "Stir-fry the beef and sliced onion in hot oil for 2 to 3 minutes.",

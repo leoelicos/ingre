@@ -56,19 +56,42 @@ describe('recipe library data', () => {
     }
   })
 
-  it('flags salt and cooking oils as staples and nothing else', () => {
+  it('PO audit: rice in uncooked grams, tins in g/ml, a cook-the-rice step', () => {
+    const uses = (recipeId: string, id: string) =>
+      library
+        .find((r) => r.id === recipeId)
+        ?.ingredients.find((i) => i.ingredientId === id)
+    expect(uses('egg-fried-rice', 'jasmine-rice')).toMatchObject({
+      quantity: 75,
+      measure: 'g'
+    })
+    expect(uses('butter-chicken', 'basmati-rice')).toMatchObject({
+      quantity: 75,
+      measure: 'g'
+    })
+    expect(
+      library
+        .flatMap((r) => r.ingredients)
+        .some((i) => i.measure.endsWith(' tin'))
+    ).toBe(false)
+    expect(library.find((r) => r.id === 'egg-fried-rice')?.method[0]).toMatch(
+      /cool for 10 minutes/
+    )
+    expect(library.find((r) => r.id === 'dahl')?.method[0]).toMatch(
+      /250 ml water/
+    )
+    expect(
+      library.find((r) => r.id === 'chicken-korma')?.method.join(' ')
+    ).toMatch(/ground almonds/)
+  })
+
+  it('flags salt, pepper, olive and vegetable oil as staples (not sesame oil)', () => {
     const staples = catalogue
       .filter((i) => i.staple)
       .map((i) => i.id)
       .sort()
     expect(staples).toEqual(
-      [
-        'black-pepper',
-        'olive-oil',
-        'salt',
-        'sesame-oil',
-        'vegetable-oil'
-      ].sort()
+      ['black-pepper', 'olive-oil', 'salt', 'vegetable-oil'].sort()
     )
   })
 

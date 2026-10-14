@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react'
+import { normaliseTicks, sameTicks } from './normaliseTicks'
 import { catalogue, library } from '../library/recipeLibrary'
 import { usePeople } from '../storage/people'
 import { assumedNames } from './shoppingList'
@@ -94,6 +96,20 @@ export const useShoppingList = () => {
     ],
     overrides
   )
+  // once, when saved state loads: drop orphaned and contradictory ticks
+  const loaded = useRef(false)
+  useEffect(() => {
+    if (loaded.current) return
+    loaded.current = true
+    const saved = { haveIds, basketIds }
+    const clean = normaliseTicks(
+      new Set(lines.filter((l) => !l.staple).map((l) => l.ingredientId)),
+      saved
+    )
+    if (sameTicks(saved, clean)) return
+    replaceHave(clean.haveIds)
+    replaceBasket(clean.basketIds)
+  })
   return {
     snapshot: (): ListSnapshot => ({
       pickedIds,

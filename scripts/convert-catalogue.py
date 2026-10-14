@@ -2,7 +2,7 @@
 import json, re, sys
 
 SRC = '/workspace/ingre-data/catalogue-sold-draft.json'
-RECIPES = '/workspace/ingre-data/recipes-per-serve-draft.json'
+RECIPES = '/workspace/ingre-data/recipes-method-audit-draft.json'  # PO audit 2026-10-14
 OUT = '/workspace/ingre/client/src/data/'
 
 WORD_TYPE = {'pack': 'pack', 'bag': 'bag', 'tin': 'tin', 'jar': 'jar', 'bottle': 'bottle',
@@ -63,6 +63,8 @@ VERIFIED = {
 }
 # PO 2026-10: how these read on the list ("1 small piece ginger", "1 garlic bulb"). Ginger piece ~50 g is an estimate.
 PO_DISPLAY = {'ginger': {'sold': [opt('each', size(1, 'count'), 'small piece')], 'approxGrams': 50}}
+# PO audit 2026-10-14 (ingredients-audit-additions.json): sesame oil goes on the list.
+NOT_STAPLES = {'sesame-oil'}
 SPICE_JARS = {'garam-masala', 'ground-cumin', 'chilli-powder', 'cumin-seeds', 'ground-coriander', 'ground-turmeric'}
 APPLE = {'id': 'apple', 'name': 'apples', 'category': 'fruit & veg',
          'sold': [opt('each', size(1, 'count')), opt('bag', size(1000, 'g'))], 'approxGrams': 185}
@@ -73,7 +75,7 @@ catalogue = json.load(open(SRC))
 out = []
 for item in catalogue:
     new = {k: item[k] for k in ('id', 'name', 'category')}
-    if item.get('staple'):
+    if item.get('staple') and item['id'] not in NOT_STAPLES:
         new['staple'] = True
     sold = [] if item['id'] in VERIFIED else [convert(item, s) for s in item['sold'] if s not in ('packet', 'shaker')]
     if item['id'] == 'salt':
@@ -173,7 +175,8 @@ for item in EXTRAS:
 out += extras
 note += (" EVERYDAY EXTRAS (PO draft, 2026-10, all sizes UNVERIFIED): " + ', '.join(i['id'] for i in extras)
          + ". Extras estimates: breakfast cereal 500 g pack, coffee 200 g jar/pack, whole watermelon 3 kg."
-         " The draft's shop section is stored as an aisle (deli, bakery, breakfast & spreads, tea & coffee are new aisles).")
+         " The draft's shop section is stored as an aisle (deli, bakery, breakfast & spreads, tea & coffee are new aisles)."
+         " AUDIT (PO 2026-10-14): sesame-oil is no longer a staple, so it goes on shopping lists; olive and vegetable oil stay staples.")
 
 json.dump({'_note': note, 'ingredients': out}, open(OUT + 'ingredients.json', 'w'), ensure_ascii=False, indent=2)
 recipes = json.load(open(RECIPES))
