@@ -8,6 +8,10 @@
 .home-search {
   flex: 1;
   margin: 0;
+  position: relative;
+}
+.home-search__icon {
+  display: none;
 }
 .home-search input {
   width: 100%;
@@ -19,12 +23,23 @@
   color: var(--color-text);
 }
 
+.chip-bar {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin: 0 0 20px;
+}
+.chip-bar .chip--more {
+  flex: none;
+}
 .chip-row {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 0;
-  margin: 0 0 20px;
+  margin: 0;
   list-style: none;
 }
 .chip {
@@ -39,4 +54,40 @@
   border-color: var(--color-primary);
   background: var(--color-chip-active);
   color: var(--color-primary);
+}
+
+/* Phones: search on its own row (icon inside), Serves left-aligned below. */
+@media (max-width: 599px) {
+  .home-strip {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .home-strip .serves {
+    align-self: flex-start;
+  }
+  .home-search__icon {
+    display: block;
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+  }
+  .home-search input {
+    padding-left: 40px;
+  }
+  /* collapsed tags: a single row that scrolls sideways rather than wrapping */
+  .chip-row--one {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    scrollbar-width: none;
+  }
+  .chip-row--one li {
+    flex: none;
+  }
+  .chip-row .chip {
+    padding: 4px 10px;
+  }
 }

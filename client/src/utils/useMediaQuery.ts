@@ -16,4 +16,5 @@ export const useMediaQuery = (query: string): boolean => {
   return match
 }
 
-export const NARROW_QUERY = '(max-width: 767px)'
+/** Phones: the home strip stacks and the tag chips collapse to one row. */
+export const PHONE_QUERY = '(max-width: 599px)'

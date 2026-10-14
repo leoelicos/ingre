@@ -1,4 +1,4 @@
-import { orderTags, tagLabel, toggleTag } from '../homeFilters'
+import { orderTags, tagLabel, toggleTag, visibleTags } from '../homeFilters'
 
 describe('toggleTag', () => {
   it('adds a missing tag without mutating the input', () => {
@@ -22,5 +22,17 @@ describe('tag display', () => {
   })
   it('capitalises the first letter only', () => {
     expect(tagLabel('gluten-free')).toBe('Gluten-free')
+  })
+})
+
+describe('visibleTags', () => {
+  const tags = ['lunch', 'Dinner', 'Indian', 'Thai']
+  it('collapsed shows primary tags and active ones; expanded shows all', () => {
+    expect(visibleTags(tags, ['Thai'], true)).toEqual([
+      'lunch',
+      'Dinner',
+      'Thai'
+    ])
+    expect(visibleTags(tags, [], false)).toEqual(tags)
   })
 })

@@ -26,3 +26,24 @@ export const orderTags = (tags: readonly string[]): string[] =>
 /** "gluten-free" -> "Gluten-free". */
 export const tagLabel = (tag: string): string =>
   tag.charAt(0).toUpperCase() + tag.slice(1)
+
+/** The one row of chips shown on narrow screens before "More". */
+export const PRIMARY_TAGS: readonly string[] = [
+  'lunch',
+  'dinner',
+  'vegetarian',
+  'vegan',
+  'gluten-free'
+]
+
+/** Collapsed: primary tags plus any active filter (never hidden). Expanded: all. */
+export const visibleTags = (
+  tags: readonly string[],
+  selected: readonly string[],
+  collapsed: boolean
+): string[] =>
+  collapsed
+    ? tags.filter(
+        (t) => PRIMARY_TAGS.includes(t.toLowerCase()) || selected.includes(t)
+      )
+    : [...tags]

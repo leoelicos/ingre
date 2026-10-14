@@ -86,7 +86,7 @@ describe('Home', () => {
     expect(names).toContain('Vietnamese')
   })
 
-  it('uses a short placeholder on narrow screens', () => {
+  it('on phones: short placeholder, one row of tags, More expands, active tags stay', () => {
     const original = window.matchMedia
     window.matchMedia = (query: string) => ({
       matches: true,
@@ -100,8 +100,23 @@ describe('Home', () => {
     })
     renderHome()
     expect(
-      screen.getByPlaceholderText('Search an ingredient')
+      screen.getByPlaceholderText('Search ingredients')
     ).toBeInTheDocument()
+    const chips = () =>
+      within(screen.getByRole('list', { name: 'Filter by tag' }))
+        .getAllByRole('button')
+        .map((b) => b.textContent)
+    expect(chips().at(-1)).toBe('More ▾')
+    expect(chips()).toContain('Dinner')
+    expect(chips()).not.toContain('Vietnamese')
+    const more = screen.getByRole('button', { name: 'More ▾' })
+    expect(more).toHaveAttribute('aria-expanded', 'false')
+    fireEvent.click(more)
+    expect(more).toHaveAttribute('aria-expanded', 'true')
+    fireEvent.click(screen.getByRole('button', { name: 'Vietnamese' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Less ▴' }))
+    expect(chips()).toContain('Vietnamese')
+    expect(chips()).toContain('More ▾')
     window.matchMedia = original
   })
 })
