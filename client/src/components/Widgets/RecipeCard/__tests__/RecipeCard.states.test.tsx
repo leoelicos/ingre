@@ -3,22 +3,8 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import RecipeCard from '../RecipeCard'
 import { recipe, omit } from '../../../../test/fixtures'
-import type { ClientRecipe } from '../../../../types/client'
 
-const mockCard: {
-  handleSave: () => void
-  savedRecipes: ClientRecipe[]
-  saveRecipeLoading: boolean
-} = {
-  handleSave: () => undefined,
-  savedRecipes: [],
-  saveRecipeLoading: false
-}
 const mockAuth: { loggedIn: boolean } = { loggedIn: false }
-
-jest.mock('../useRecipeCard', () => ({
-  useRecipeCard: () => mockCard
-}))
 
 jest.mock('../../../../utils/auth/AuthContext', () => ({
   useAuthContext: () => [mockAuth, jest.fn()]
@@ -35,7 +21,6 @@ describe('RecipeCard states', () => {
       <MemoryRouter>
         <RecipeCard
           recipe={recipe()}
-          onSavedPage={false}
           pro={true}
           pick={null}
         />
@@ -48,7 +33,6 @@ describe('RecipeCard states', () => {
       <MemoryRouter>
         <RecipeCard
           recipe={recipe()}
-          onSavedPage={false}
           pro={false}
           pick={null}
         />
@@ -60,7 +44,6 @@ describe('RecipeCard states', () => {
       <MemoryRouter>
         <RecipeCard
           recipe={recipe()}
-          onSavedPage={false}
           pro={true}
           pick={null}
         />
@@ -72,7 +55,6 @@ describe('RecipeCard states', () => {
       <MemoryRouter>
         <RecipeCard
           recipe={omit(recipe(), 'libraryId')}
-          onSavedPage={false}
           pro={true}
           pick={null}
         />

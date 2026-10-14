@@ -4,7 +4,6 @@ import { Icon, IngreIconPro } from '../../../lib/icon/Icon'
 import { library } from '../../../utils/library/recipeLibrary'
 import { useAuthContext } from '../../../utils/auth/AuthContext'
 import type { PickControls } from './RecipeCardContainer'
-import { useRecipeCard } from './useRecipeCard'
 import { SaveButton } from './components/SaveButton'
 import { heroIcon, splitTitle, tintFor } from './recipeCardHelpers'
 
@@ -17,7 +16,6 @@ const heroFor = (libraryId: string | undefined) =>
 
 interface RecipeCardProps {
   recipe: ClientRecipe
-  onSavedPage: boolean
   pro: boolean
   pick: PickControls | null
 }
@@ -41,18 +39,9 @@ const AddPill: FC<{ title: string; libraryId: string; pick: PickControls }> = ({
   )
 }
 
-const RecipeCard: FC<RecipeCardProps> = ({
-  recipe,
-  onSavedPage,
-  pro,
-  pick
-}) => {
+const RecipeCard: FC<RecipeCardProps> = ({ recipe, pro, pick }) => {
   const [auth] = useAuthContext()
   const loggedIn = auth.loggedIn
-  const { handleSave, savedRecipes, saveRecipeLoading } = useRecipeCard({
-    recipe,
-    onSavedPage
-  })
   const { title, localName } = splitTitle(recipe.name)
   return (
     <article className="recipe-card">
@@ -69,11 +58,7 @@ const RecipeCard: FC<RecipeCardProps> = ({
         </span>
         <SaveButton
           recipeName={title}
-          handleSave={handleSave}
-          savedRecipes={savedRecipes}
-          saveRecipeLoading={saveRecipeLoading}
-          libraryId={recipe.libraryId ?? ''}
-          loggedIn={loggedIn}
+          libraryId={recipe.libraryId ?? recipe.name}
         />
       </div>
       <div className="recipe-card__body">

@@ -4,29 +4,15 @@ import { MemoryRouter } from 'react-router-dom'
 import RecipeCard from '../RecipeCard'
 import { omit, recipe } from '../../../../test/fixtures'
 
-jest.mock('../useRecipeCard', () => ({
-  useRecipeCard: () => ({
-    handleSave: jest.fn(),
-    handleRemove: jest.fn(),
-    isSaved: false,
-    isDisabled: false
-  })
-}))
-
 jest.mock('../components/SaveButton', () => ({
   SaveButton: () => <button>Save</button>
 }))
-jest.mock('../components/TrashButton', () => ({
-  TrashButton: () => <button>Delete</button>
-}))
-
 describe('RecipeCard', () => {
   it('renders recipe name', () => {
     render(
       <MemoryRouter>
         <RecipeCard
           recipe={recipe({ name: 'Test Recipe' })}
-          onSavedPage={false}
           pro={false}
           pick={null}
         />
@@ -47,13 +33,11 @@ describe('RecipeCard', () => {
       <MemoryRouter>
         <RecipeCard
           recipe={recipe({ libraryId: 'lib1' })}
-          onSavedPage={false}
           pro={false}
           pick={pick}
         />
         <RecipeCard
           recipe={omit(recipe({ name: 'Plain' }), 'libraryId')}
-          onSavedPage={false}
           pro={false}
           pick={pick}
         />

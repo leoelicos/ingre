@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { changeTitle } from '../../utils/changeTitle'
 import { useAuth } from '../../hooks/useAuth'
 import { useAuthContext } from '../../utils/auth/AuthContext'
+import './auth.css'
 
 const useLoginForm = () => {
   const [email, setEmail] = useState<string>('')
@@ -49,57 +50,71 @@ export const Login: FC = () => {
     if (auth.loggedIn) navigate(-1)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div>
-      <div>
-        <h1>Log in</h1>
-      </div>
+    <main className="auth-page">
+      <h1 className="auth-page__title">Log in</h1>
       {loginLoading ? (
         <p>Loading</p>
       ) : loginError ? (
-        <p>Couldn't log you in.</p>
+        <p className="auth-page__error">Couldn't log you in.</p>
       ) : (
-        <form onSubmit={handleFormSubmit}>
+        <form
+          className="auth-form"
+          onSubmit={handleFormSubmit}
+        >
+          <label
+            className="auth-form__label"
+            htmlFor="email"
+          >
+            Email
+          </label>
           <input
             id="email"
             name="email"
-            type="text"
+            type="email"
+            className="auth-form__input"
             value={email}
             onChange={onEmailChange}
             autoComplete="email"
             required
           />
-          <div>
+          <label
+            className="auth-form__label"
+            htmlFor="password"
+          >
+            Password
+          </label>
+          <div className="auth-form__password">
             <input
               id="password"
               name="password"
               type={showPassword ? 'text' : 'password'}
+              className="auth-form__input"
               value={password}
               onChange={onPasswordChange}
-              autoComplete="password"
+              autoComplete="current-password"
               required
             />
             <button
               type="button"
+              className="auth-form__show"
+              aria-pressed={showPassword}
+              aria-controls="password"
               onClick={togglePasswordVisibility}
-              style={{
-                position: 'absolute',
-                right: 10,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer'
-              }}
             >
-              {showPassword ? '🙈' : '👁️'}
+              {showPassword ? 'Hide' : 'Show'}
             </button>
           </div>
-          <button type="submit">Submit</button>
+          <button
+            type="submit"
+            className="btn btn-primary auth-form__submit"
+          >
+            Log in
+          </button>
         </form>
       )}
-      <Link to="/signup">
-        <button>No account? Sign up</button>
-      </Link>
-    </div>
+      <p className="auth-page__alt">
+        No account? <Link to="/signup">Sign up</Link>
+      </p>
+    </main>
   )
 }

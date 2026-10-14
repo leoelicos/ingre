@@ -2,26 +2,32 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { Saved } from '../Saved'
+import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
+import { AuthProvider } from '../../../utils/auth/AuthContext'
 
-jest.mock('../useSaved', () => ({
-  useSaved: () => ({ loggedIn: false, loading: false, savedRecipes: [] })
-}))
-
-jest.mock('../../../utils/auth/AuthContext', () => ({
-  useAuthContext: () => [{ loggedIn: false }, jest.fn()]
-}))
-
-jest.mock('../../../components/NotLoggedIn', () => () => (
-  <div>Not logged in</div>
-))
+const renderSaved = () =>
+  render(
+    <MemoryRouter>
+      <AuthProvider>
+        <Saved />
+      </AuthProvider>
+    </MemoryRouter>
+  )
 
 describe('Saved', () => {
-  it('shows not logged in when unauthenticated', () => {
-    render(
-      <MemoryRouter>
-        <Saved />
-      </MemoryRouter>
-    )
-    expect(screen.getByText(/not logged in/i)).toBeInTheDocument()
+  beforeEach(() => localStorage.clear())
+
+  it('explains the heart when nothing is saved', () => {
+    renderSaved()
+    expect(screen.getByText(/Tap the heart/)).toBeInTheDocument()
+  })
+
+  it('lists hearted library recipes without logging in', () => {
+    localStorage.setItem(FAVOURITES_KEY, JSON.stringify(['dahl']))
+    renderSaved()
+    expect(
+      screen.getByRole('heading', { name: 'Red lentil dahl' })
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(1)
   })
 })

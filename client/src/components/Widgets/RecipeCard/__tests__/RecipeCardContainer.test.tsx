@@ -19,7 +19,6 @@ describe('RecipeCardContainer', () => {
         <RecipeCardContainer
           results={[]}
           loading={true}
-          onSavedPage={false}
         />
       </MemoryRouter>
     )
@@ -32,7 +31,6 @@ describe('RecipeCardContainer', () => {
         <RecipeCardContainer
           results={[]}
           loading={false}
-          onSavedPage={false}
         />
       </MemoryRouter>
     )
@@ -46,7 +44,6 @@ describe('RecipeCardContainer', () => {
         <RecipeCardContainer
           results={results}
           loading={false}
-          onSavedPage={false}
         />
       </MemoryRouter>
     )

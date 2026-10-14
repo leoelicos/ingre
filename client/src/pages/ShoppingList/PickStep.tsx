@@ -22,7 +22,6 @@ export const PickStep: FC<{ list: ShoppingListState }> = ({ list }) => {
       <RecipeCardContainer
         results={recipes}
         loading={false}
-        onSavedPage={false}
         pick={{ pickedIds: list.pickedIds, onToggle: list.togglePicked }}
       />
       <div className="list-tap list-tap--split">

@@ -1,6 +1,5 @@
 import type { FC } from 'react'
-import { useNavigate } from 'react-router-dom'
-import type { ClientRecipe } from '../../../../types/client'
+import { useFavourite } from '../../../../utils/storage/favourites'
 
 const HeartIcon: FC<{ filled: boolean }> = ({ filled }) => (
   <svg
@@ -17,32 +16,19 @@ const HeartIcon: FC<{ filled: boolean }> = ({ filled }) => (
   </svg>
 )
 
-export const SaveButton: FC<{
-  recipeName: string
-  handleSave: () => void
-  savedRecipes: ClientRecipe[]
-  saveRecipeLoading: boolean
-  libraryId: string
-  loggedIn: boolean
-}> = ({
+/** Heart: favourite on this device only; never asks to log in. */
+export const SaveButton: FC<{ recipeName: string; libraryId: string }> = ({
   recipeName,
-  handleSave,
-  savedRecipes,
-  saveRecipeLoading,
-  libraryId,
-  loggedIn
+  libraryId
 }) => {
-  const navigate = useNavigate()
-  const saved = savedRecipes.some((r) => r.libraryId === libraryId)
+  const [saved, toggle] = useFavourite(libraryId)
   return (
     <button
       type="button"
       className="icon-button"
-      aria-label={saved ? `Saved ${recipeName}` : `Save ${recipeName}`}
+      aria-label={saved ? `Unsave ${recipeName}` : `Save ${recipeName}`}
       aria-pressed={saved}
-      aria-busy={saveRecipeLoading}
-      disabled={saved || saveRecipeLoading}
-      onClick={loggedIn ? handleSave : () => navigate('/login')}
+      onClick={toggle}
     >
       <HeartIcon filled={saved} />
     </button>

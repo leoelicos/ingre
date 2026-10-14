@@ -41,7 +41,6 @@ const Search: FC = () => {
         <RecipeCardContainer
           results={libraryRecipes}
           loading={loadingRecipes}
-          onSavedPage={false}
         />
       )}
     </>

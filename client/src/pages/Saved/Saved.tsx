@@ -1,37 +1,32 @@
 import type { FC } from 'react'
-import NotLoggedIn from '../../components/NotLoggedIn'
+import { useEffect, useMemo } from 'react'
 import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardContainer'
-import { useAuthContext } from '../../utils/auth/AuthContext'
-import { useSaved } from './useSaved'
+import { changeTitle } from '../../utils/changeTitle'
+import { library, toClientRecipe } from '../../utils/library/recipeLibrary'
+import { readFavourites } from '../../utils/storage/favourites'
 
+/** Recipes hearted on this device (no account needed). */
 export const Saved: FC = () => {
-  const [auth] = useAuthContext()
-  const { loading, error, savedRecipes } = useSaved()
-
-  if (!auth.loggedIn) return <NotLoggedIn />
-  if (loading)
-    return (
-      <>
-        <p>Saved</p>
-        Loading saved recipes…
-      </>
-    )
-  if (error)
-    return (
-      <>
-        <p>Saved</p>
-        <h4>error</h4>
-        Couldn't load saved recipes
-      </>
-    )
+  useEffect(() => changeTitle('Saved'), [])
+  const recipes = useMemo(() => {
+    const favourites = readFavourites()
+    return library
+      .filter((r) => favourites.has(r.id))
+      .map((r) => toClientRecipe(r))
+  }, [])
   return (
-    <>
-      <p>Saved</p>
-      <RecipeCardContainer
-        results={savedRecipes}
-        onSavedPage={true}
-        loading={loading}
-      />
-    </>
+    <main className="ingre-page">
+      <h1 className="list-title">Saved</h1>
+      {recipes.length === 0 ? (
+        <p className="recipe-grid__status">
+          Tap the heart on a recipe to keep it here.
+        </p>
+      ) : (
+        <RecipeCardContainer
+          results={recipes}
+          loading={false}
+        />
+      )}
+    </main>
   )
 }

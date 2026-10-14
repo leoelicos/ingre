@@ -64,7 +64,6 @@ const Home: FC = () => {
       <RecipeCardContainer
         results={recipes}
         loading={false}
-        onSavedPage={false}
       />
     </main>
   )
