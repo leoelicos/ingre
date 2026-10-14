@@ -156,7 +156,7 @@ export const ShoppingListView: FC<{
       {list.lineCount > 0 && (
         <p className="list-assumed">Assumed at home: {list.assumed}</p>
       )}
-      {list.lineCount > 0 && <StartNewList onStart={onStartNew} />}
+      {list.lineCount > 0 && !complete && <StartNewList onStart={onStartNew} />}
 
       <div
         className="list-tap"

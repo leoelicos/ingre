@@ -82,7 +82,10 @@ describe('recipe library data', () => {
     )
     expect(
       library.find((r) => r.id === 'chicken-korma')?.method.join(' ')
-    ).toMatch(/ground almonds/)
+    ).toMatch(/almond meal/)
+    expect(
+      library.flatMap((r) => r.method).some((m) => /ground almond/i.test(m))
+    ).toBe(false)
   })
 
   it('flags salt, pepper, olive and vegetable oil as staples (not sesame oil)', () => {

@@ -472,6 +472,10 @@ describe('Start a new list', () => {
       .forEach((box) => fireEvent.click(box))
     settle()
     expect(screen.queryByRole('heading', { name: 'To buy' })).toBeNull()
+    // only the card's button: the quiet link shows only while shopping is in progress
+    expect(
+      screen.getAllByRole('button', { name: /Start a new list/ })
+    ).toHaveLength(1)
     expect(within(panel()).queryAllByRole('checkbox')).toHaveLength(0)
     const basket = screen.getByRole('button', { name: /^In basket \(\d+\) ▾$/ })
     expect(basket).toHaveAttribute('aria-expanded', 'false')

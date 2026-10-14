@@ -121,13 +121,10 @@
     padding-top: 24px;
     padding-bottom: 48px;
   }
-  /* the column scrolls inside itself when taller than the window; Add stays pinned at its foot */
-  .recipe-page__side {
+  /* the ingredient column grows to full length and the page scrolls; Method stays in view */
+  .recipe-method {
     position: sticky;
     top: 16px;
-    /* below the site header at the top of the page, so the pinned Add is always on screen */
-    max-height: calc(100vh - 140px);
-    overflow-y: auto;
   }
   .recipe-method li {
     font-size: 17px;
@@ -137,22 +134,14 @@
     margin: 0 0 16px;
     border-radius: var(--radius-card);
   }
+  /* at the bottom of the ingredient list, in the flow */
   .recipe-add-bar {
-    position: sticky;
-    bottom: 0;
-    padding: 12px 0;
-    background: var(--color-bg);
+    position: static;
+    padding: 16px 0 0;
+    background: none;
     box-shadow: none;
   }
-  .recipe-method .recipe-page__side .serves {
-    margin-top: 16px;
-  }
-  .recipe-method__note {
-    margin: 0 0 12px;
-    font-size: 14px;
-    color: var(--color-text-secondary); /* #6B6460 */
-  }
-  .recipe-heading {
+  .recipe-method .recipe-heading {
     margin-top: 0;
   }
 }

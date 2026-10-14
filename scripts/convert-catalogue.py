@@ -184,6 +184,8 @@ for r in recipes['recipes']:
     for g in r['ingredients']:
         if g['ingredientId'] == 'frozen-peas':
             g['ingredientId'] = 'tinned-peas'
+    # PO 2026-10-14: the catalogue calls it almond meal, so the methods do too.
+    r['method'] = [re.sub(r'ground almonds?', 'almond meal', m, flags=re.I) for m in r['method']]
 recipes['_note'] = ("Generic, brand-free everyday dishes cookable in under an hour. All quantities are PER SERVE "
                     "(portions: 1); the app multiplies by the number of people. Ingredients reference ingredients.json by id; "
                     "tags are many-to-many (cuisines, diets, meals).")
