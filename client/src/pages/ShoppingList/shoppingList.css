@@ -1,7 +1,14 @@
+:root {
+  /* the pinned bottom bar; list screens pad by this so nothing hides under it */
+  --list-bar-height: 72px;
+  --list-bar-space: calc(
+    var(--list-bar-height) + 24px + env(safe-area-inset-bottom, 0px)
+  );
+}
 .list-page {
   max-width: 720px;
   margin: 0 auto;
-  padding: 16px var(--layout-gutter) 96px;
+  padding: 16px var(--layout-gutter) var(--list-bar-space);
 }
 .list-title {
   font-size: 1.6rem;
@@ -206,7 +213,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 12px var(--layout-gutter);
+  box-sizing: content-box;
+  min-height: calc(var(--list-bar-height) - 24px);
+  padding: 12px var(--layout-gutter)
+    calc(12px + env(safe-area-inset-bottom, 0px));
   background: var(--color-bg);
   box-shadow: var(--shadow-card);
   text-align: center;
@@ -219,4 +229,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.list-assumed {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
 }

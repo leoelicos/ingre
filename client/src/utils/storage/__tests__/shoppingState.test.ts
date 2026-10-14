@@ -80,11 +80,11 @@ describe('stored hooks', () => {
     expect(stored('s')).toEqual(['b'])
   })
 
-  it('have ids default to staples; basket starts empty', () => {
-    const have = renderHook(() => useHaveIds(new Set(['salt'])))
-    expect(have.result.current[0].has('salt')).toBe(true)
+  it('have ids and basket both start empty', () => {
+    const have = renderHook(() => useHaveIds())
+    expect(have.result.current[0].size).toBe(0)
     act(() => have.result.current[1]('salt'))
-    expect(stored(HAVE_KEY)).toEqual([])
+    expect(stored(HAVE_KEY)).toEqual(['salt'])
     const basket = renderHook(() => useBasketIds())
     expect(basket.result.current[0].size).toBe(0)
     act(() => basket.result.current[1]('onion'))

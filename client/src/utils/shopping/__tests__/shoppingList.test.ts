@@ -27,7 +27,8 @@ import {
   EXTRA_WEIGHED_GRAMS,
   extraLines,
   sourceLabel,
-  type Buy
+  type Buy,
+  homeGroup
 } from '../shoppingList'
 
 const recipe = (
@@ -404,8 +405,8 @@ describe('extraLines', () => {
     expect(candles).toMatchObject({
       name: 'free-candles',
       section: 'Other',
+      location: null,
       subsection: null,
-      location: 'Cupboard',
       need: { amount: 2, unit: 'count' }
     })
     expect(candles && buyAmount(candles)).toBe('2')
@@ -507,5 +508,12 @@ describe('need formatting', () => {
     expect(
       needLabel({ need: g(337.5), parts: [part('g', 1)], buy: weighed })
     ).toBe('need 340 g')
+  })
+})
+
+describe('homeGroup', () => {
+  it('uses the location, or Other for free text', () => {
+    expect(homeGroup({ location: libIngredient().pantry })).toBe('Cupboard')
+    expect(homeGroup({ location: null })).toBe('Other')
   })
 })

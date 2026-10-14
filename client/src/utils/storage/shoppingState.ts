@@ -22,9 +22,8 @@ export interface Extra {
   quantity: number
 }
 
-/** Ingredients ticked "at home" (default: staples). */
-export const useHaveIds = (staples: ReadonlySet<string>) =>
-  useStoredSet(HAVE_KEY, staples)
+/** Ingredients ticked "at home". */
+export const useHaveIds = () => useStoredSet(HAVE_KEY, new Set())
 
 /** Ingredients ticked into the basket at the shop. */
 export const useBasketIds = () => useStoredSet(BASKET_KEY, new Set())

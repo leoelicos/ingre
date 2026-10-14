@@ -9,12 +9,12 @@ import '../ShoppingList/shoppingList.css'
 
 /** At the shop: the to-buy items by section; ticks share the list's basket. */
 const TapOff: FC = () => {
-  useEffect(() => changeTitle('Tap Off'), [])
+  useEffect(() => changeTitle('In the shop'), [])
   const list = useShoppingList()
-  const left = list.toBuy.filter((l) => !list.basketIds.has(l.ingredientId))
+  const left = list.leftToBuy
   return (
     <main className="list-page">
-      <h1 className="list-title">Tap Off</h1>
+      <h1 className="list-title">In the shop</h1>
       {list.toBuy.length === 0 ? (
         <p className="list-empty">
           Nothing to tap off yet. <Link to="/ingredients">Shopping list</Link>
@@ -22,7 +22,7 @@ const TapOff: FC = () => {
       ) : (
         <>
           <p className="list-note">
-            {left.length === 0 ? 'All done!' : `${left.length} left to find`}
+            {left === 0 ? 'All done!' : `${left} left to find`}
           </p>
           <LineGroups
             lines={list.toBuy}

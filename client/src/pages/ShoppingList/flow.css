@@ -54,7 +54,7 @@
 .flow-panel {
   flex: 0 0 100%;
   min-width: 0;
-  padding: 16px var(--layout-gutter) 112px;
+  padding: 16px var(--layout-gutter) var(--list-bar-space);
 }
 /* list steps read best as a single centred column on wide screens */
 .flow-panel--list > * {

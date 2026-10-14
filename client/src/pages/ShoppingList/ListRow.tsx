@@ -92,6 +92,7 @@ export const ListRow: FC<RowProps> = ({
   const [expanded, setExpanded] = useState(false)
   const name = displayName(line)
   const need = needLabel(line)
+  const location = line.location
   return (
     <li className={struck && checked ? 'list-row list-row--done' : 'list-row'}>
       <div className="list-row__main">
@@ -116,10 +117,10 @@ export const ListRow: FC<RowProps> = ({
             onChange={(quantity) => onQuantity(line.ingredientId, quantity)}
           />
         )}
-        {locationMode === 'chip' && (
+        {locationMode === 'chip' && location !== null && (
           <LocationMenu
             name={line.name}
-            location={line.location}
+            location={location}
             onChange={(location) => onLocation(line.ingredientId, location)}
           />
         )}
@@ -144,7 +145,7 @@ export const ListRow: FC<RowProps> = ({
                 {need !== null && <li>{need} in total</li>}
               </ul>
             )}
-          {locationMode === 'move' && (
+          {locationMode === 'move' && location !== null && (
             <MoveTo
               line={line}
               onLocation={onLocation}

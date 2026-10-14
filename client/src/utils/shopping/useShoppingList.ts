@@ -1,4 +1,3 @@
-import type { LibraryIngredient } from '../../types/library'
 import { catalogue, library } from '../library/recipeLibrary'
 import { usePeople } from '../storage/people'
 import type { Extra } from '../storage/shoppingState'
@@ -17,13 +16,6 @@ import {
   splitByHave,
   withLocations
 } from './shoppingList'
-
-export const stapleIds = (
-  items: readonly LibraryIngredient[]
-): ReadonlySet<string> =>
-  new Set(items.filter((i) => i.staple === true).map((i) => i.id))
-
-const STAPLES = stapleIds(catalogue)
 
 /** What the user typed or chose in "Add an item". */
 export interface NewExtra {
@@ -66,7 +58,7 @@ export const useShoppingList = () => {
   const [people, setPeople] = usePeople()
   const [pickedIds, togglePicked] = usePickedIds()
   const [extras, updateExtras] = useExtras()
-  const [haveIds, toggleHave, unHave] = useHaveIds(STAPLES)
+  const [haveIds, toggleHave, unHave] = useHaveIds()
   const [basketIds, toggleBasket, unBasket] = useBasketIds()
   const [overrides, setLocation] = useLocationOverrides()
   const [step, setStep] = useFlowStep()
@@ -91,7 +83,7 @@ export const useShoppingList = () => {
     basketIds,
     toggleBasket,
     setLocation,
-    lineCount: lines.length,
+    lineCount: lines.filter((l) => !l.staple).length,
     /** new extras start unticked: not had, not in the basket */
     addExtra: (extra: NewExtra) => {
       const lineId = extraLineId({ id: extraId(extra) })
@@ -101,7 +93,19 @@ export const useShoppingList = () => {
     },
     setExtraQuantity: (lineId: string, quantity: number) =>
       updateExtras((previous) => setExtraQuantity(previous, lineId, quantity)),
-    ...splitByHave(lines, haveIds)
+    /** staples are assumed at home: never counted or listed as to buy */
+    assumed: lines.filter((l) => l.staple),
+    ...splitByHave(
+      lines.filter((l) => !l.staple),
+      haveIds
+    ),
+    /** to buy and not yet in the basket: the one count every screen shows */
+    leftToBuy: lines.filter(
+      (l) =>
+        !l.staple &&
+        !haveIds.has(l.ingredientId) &&
+        !basketIds.has(l.ingredientId)
+    ).length
   }
 }
 

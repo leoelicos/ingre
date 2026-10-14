@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ServesPicker } from '../../components/ServesPicker'
 import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
 import { IngreIconPrint } from '../../lib/icon/Icon'
@@ -10,6 +10,20 @@ import type { LocationMode } from './ListRow'
 
 export const tapLabel = (n: number) => `Tap ${n} ${n === 1 ? 'item' : 'items'}`
 
+/** Short staple names, e.g. "oil, salt, pepper" (oils collapse to one). */
+export const assumedNames = (lines: readonly { name: string }[]): string =>
+  [
+    ...new Set(
+      lines.map(({ name }) =>
+        name.endsWith(' oil')
+          ? 'oil'
+          : name.endsWith('pepper')
+          ? 'pepper'
+          : name.toLowerCase()
+      )
+    )
+  ].join(', ')
+
 /** "At home" (check your kitchen) or "At the shop" (to buy) over the same list. */
 export const ShoppingListView: FC<{
   list: ShoppingListState
@@ -17,6 +31,7 @@ export const ShoppingListView: FC<{
   onPrint: () => void
 }> = ({ list, view, onPrint }) => {
   const [haveOpen, setHaveOpen] = useState(false)
+  const navigate = useNavigate()
   const atHome = view === 'home'
   const locationMode: LocationMode = atHome ? 'move' : 'chip'
   const rowActions = {
@@ -83,18 +98,14 @@ export const ShoppingListView: FC<{
               type="button"
               className="list-have__toggle"
               aria-expanded={haveOpen}
+              aria-controls={`have-${view}`}
               onClick={() => setHaveOpen(!haveOpen)}
             >
               Already have ({list.alreadyHave.length})
             </button>
           </h2>
           {haveOpen && (
-            <>
-              {list.alreadyHave.some((l) => l.staple) && (
-                <p className="list-note">
-                  We assumed you have these. Untick anything you need to buy.
-                </p>
-              )}
+            <div id={`have-${view}`}>
               <LineGroups
                 {...rowActions}
                 lines={list.alreadyHave}
@@ -102,9 +113,15 @@ export const ShoppingListView: FC<{
                 struck={false}
                 onToggle={list.toggleHave}
               />
-            </>
+            </div>
           )}
         </section>
+      )}
+
+      {list.assumed.length > 0 && (
+        <p className="list-assumed">
+          Assumed at home: {assumedNames(list.assumed)}
+        </p>
       )}
 
       <div className="list-tap">
@@ -114,16 +131,17 @@ export const ShoppingListView: FC<{
             className="btn btn-primary list-tap__button"
             onClick={() => list.setStep('shop')}
           >
-            Next: at the shop ({list.toBuy.length})
+            Next: at the shop ({list.leftToBuy})
           </button>
         ) : (
-          list.toBuy.length > 0 && (
-            <Link
-              to="/tapoff"
+          list.leftToBuy > 0 && (
+            <button
+              type="button"
               className="btn btn-primary list-tap__button"
+              onClick={() => navigate('/tapoff')}
             >
-              {tapLabel(list.toBuy.length)}
-            </Link>
+              {tapLabel(list.leftToBuy)}
+            </button>
           )
         )}
       </div>

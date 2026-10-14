@@ -8,7 +8,7 @@ import { PICKED_KEY, STEP_KEY } from '../../../utils/storage/shoppingState'
 import TapOff from '../../TapOff/TapOff'
 import { recipeCount } from '../PickStep'
 import { ShoppingFlow } from '../ShoppingFlow'
-import { tapLabel } from '../ShoppingListView'
+import { assumedNames, tapLabel } from '../ShoppingListView'
 
 const renderFlow = (picked: string[] = [], step = 'pick') => {
   localStorage.setItem(PICKED_KEY, JSON.stringify(picked))
@@ -31,13 +31,21 @@ const panel = () => screen.getByRole('tabpanel')
 const tapCount = () =>
   Number(
     screen
-      .getByRole('link', { name: /^Tap \d+ items?$/ })
+      .getByRole('button', { name: /^Tap \d+ items?$/ })
       .textContent?.match(/\d+/)?.[0]
   )
 
 describe('labels', () => {
   it('pluralises', () => {
     expect(tapLabel(1)).toBe('Tap 1 item')
+    expect(
+      assumedNames([
+        { name: 'olive oil' },
+        { name: 'sesame oil' },
+        { name: 'Salt' },
+        { name: 'black pepper' }
+      ])
+    ).toBe('oil, salt, pepper')
     expect(tapLabel(3)).toBe('Tap 3 items')
     expect(recipeCount(1)).toBe('1 recipe')
     expect(recipeCount(3)).toBe('3 recipes')
@@ -60,7 +68,7 @@ describe('ShoppingFlow', () => {
     expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
     fireEvent.click(
       screen.getByRole('button', {
-        name: /^Next: your kitchen \(\d+\)$/
+        name: /^Next: check at home \(\d+\)$/
       })
     )
     expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
@@ -135,8 +143,16 @@ describe('ShoppingFlow', () => {
     const onion = p.getAllByRole('checkbox', { name: /Brown onion/ })[0]
     fireEvent.click(onion ?? document.body)
     const have = p.getByRole('button', { name: /Already have/ })
+    expect(have).toHaveTextContent('Already have (1)')
+    expect(have).toHaveAttribute('aria-expanded', 'false')
     fireEvent.click(have)
-    expect(p.getByText(/We assumed you have these/)).toBeInTheDocument()
+    expect(have).toHaveAttribute('aria-expanded', 'true')
+    expect(
+      document.getElementById(have.getAttribute('aria-controls') ?? '')
+    ).not.toBeNull()
+    expect(p.getByText(/^Assumed at home: /)).toHaveTextContent(
+      /oil, salt|salt/
+    )
     expect(
       p.getAllByRole('checkbox', { name: /Brown onion/, checked: true })
     ).toHaveLength(1)
@@ -181,7 +197,8 @@ describe('ShoppingFlow', () => {
       p.getAllByRole('button', { name: /^Details for/ })[0] ?? document.body
     )
     expect(p.getAllByText(/^need |in total$/).length).toBeGreaterThan(0)
-    expect(tapCount()).toBe(before)
+    expect(tapCount()).toBe(before - 1)
+    fireEvent.click(p.getByRole('button', { name: /^Tap \d+ items?$/ }))
 
     fireEvent.click(
       p.getAllByRole('button', { name: /is kept in .*\. Change/ })[0] ??
@@ -197,11 +214,6 @@ describe('ShoppingFlow', () => {
     fireEvent.keyDown(screen.getByRole('menu'), { key: 'a' })
     fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' })
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-
-    fireEvent.click(p.getByRole('button', { name: /Already have/ }))
-    expect(
-      p.getAllByRole('checkbox', { checked: true }).length
-    ).toBeGreaterThan(1)
   })
 
   it('adds catalogue and free-text extras with a stepper', () => {
@@ -236,17 +248,24 @@ describe('ShoppingFlow', () => {
 
     fireEvent.click(p.getByRole('checkbox', { name: /Birthday candles/ }))
     fireEvent.click(tab('At home'))
+    const other = within(within(panel()).getByRole('region', { name: 'Other' }))
+    fireEvent.click(
+      other.getByRole('button', { name: 'Details for Birthday candles' })
+    )
+    expect(
+      other.queryByRole('group', { name: /^Move / })
+    ).not.toBeInTheDocument()
     fireEvent.click(
       within(panel()).getByRole('checkbox', { name: /Birthday candles/ })
     )
     expect(within(panel()).getByText(/Nothing to buy/)).toBeInTheDocument()
-    expect(within(panel()).queryByText(/We assumed/)).not.toBeInTheDocument()
-    fireEvent.click(
-      within(panel()).getByRole('button', { name: /Already have/ })
-    )
-    expect(within(panel()).queryByText(/We assumed/)).not.toBeInTheDocument()
+    expect(
+      within(panel()).queryByText(/^Assumed at home/)
+    ).not.toBeInTheDocument()
     fireEvent.click(tab('At the shop'))
-    expect(screen.queryByRole('link', { name: /^Tap/ })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /^Tap/ })
+    ).not.toBeInTheDocument()
   })
 
   it('links back to Pick from an empty list', () => {
@@ -256,7 +275,7 @@ describe('ShoppingFlow', () => {
   })
 })
 
-describe('Tap Off', () => {
+describe('In the shop', () => {
   beforeEach(() => localStorage.clear())
   const renderTap = (picked: string[]) => {
     localStorage.setItem(PICKED_KEY, JSON.stringify(picked))
@@ -269,6 +288,9 @@ describe('Tap Off', () => {
 
   it('lists to-buy items by section without logging in', () => {
     renderTap(['dahl'])
+    expect(
+      screen.getByRole('heading', { name: 'In the shop' })
+    ).toBeInTheDocument()
     expect(screen.getByText(/left to find$/)).toBeInTheDocument()
     expect(
       screen.queryByRole('region', { name: 'Fridge' })

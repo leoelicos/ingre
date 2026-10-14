@@ -1,21 +1,11 @@
 import { act, renderHook } from '@testing-library/react'
-import { libIngredient } from '../../../test/fixtures'
-import { catalogue } from '../../library/recipeLibrary'
 import { HAVE_KEY, PICKED_KEY } from '../../storage/shoppingState'
 import {
   addExtra,
   extraId,
   setExtraQuantity,
-  stapleIds,
   useShoppingList
 } from '../useShoppingList'
-
-describe('stapleIds', () => {
-  it('collects staple ingredient ids', () => {
-    const items = [libIngredient(), libIngredient({ id: 'salt', staple: true })]
-    expect([...stapleIds(items)]).toEqual(['salt'])
-  })
-})
 
 describe('extras', () => {
   const milk = { name: 'full cream milk', ingredientId: 'full-cream-milk' }
@@ -50,15 +40,15 @@ describe('extras', () => {
 describe('useShoppingList', () => {
   beforeEach(() => localStorage.clear())
 
-  it('builds lines from picked recipes; staples start in already-have', () => {
+  it('builds lines from picked recipes; staples are assumed, not listed', () => {
     const { result } = renderHook(() => useShoppingList())
     expect(result.current.lineCount).toBe(0)
     act(() => result.current.togglePicked('dahl'))
     expect(result.current.recipes.map((r) => r.id)).toEqual(['dahl'])
-    const staples = stapleIds(catalogue)
-    expect(
-      result.current.alreadyHave.every((l) => staples.has(l.ingredientId))
-    ).toBe(true)
+    expect(result.current.alreadyHave).toEqual([])
+    expect(result.current.assumed.every((l) => l.staple)).toBe(true)
+    expect(result.current.assumed.length).toBeGreaterThan(0)
+    expect(result.current.toBuy.some((l) => l.staple)).toBe(false)
     const first = result.current.toBuy[0]
     act(() => result.current.toggleHave(first?.ingredientId ?? ''))
     expect(result.current.alreadyHave.map((l) => l.ingredientId)).toContain(

@@ -9,6 +9,7 @@ import type {
 import type { Extra } from '../storage/shoppingState'
 import type { ShopSection } from './sections'
 import { placeInShop } from './sections'
+import { HOME_LOCATIONS } from '../library/parseLibrary'
 import { splitTitle } from '../../components/Widgets/RecipeCard/recipeCardHelpers'
 import { convert, formatAmount, toBase } from './units'
 
@@ -37,7 +38,8 @@ export interface ShopLine {
   section: ShopSection
   /** Pantry aisle shown as a quiet sub-heading; null elsewhere */
   subsection: string | null
-  location: HomeLocation
+  /** home location; null for free-text extras (shown under Other at home) */
+  location: HomeLocation | null
   staple: boolean
   need: Amount
   buy: Buy
@@ -188,6 +190,12 @@ export const groupBy = <T, K extends string>(
     .map((key) => ({ key, items: items.filter((i) => keyOf(i) === key) }))
 }
 
+/** Home group heading for a line: its location, or Other for free text. */
+export const OTHER_GROUP = 'Other'
+export const homeGroup = (line: Pick<ShopLine, 'location'>): string =>
+  line.location ?? OTHER_GROUP
+export const HOME_GROUPS: readonly string[] = [...HOME_LOCATIONS, OTHER_GROUP]
+
 /** Splits lines into those still to buy and those already at home. */
 export const splitByHave = (
   lines: readonly ShopLine[],
@@ -204,7 +212,10 @@ export const withLocations = (
 ): ShopLine[] =>
   lines.map((line) => ({
     ...line,
-    location: overrides[line.ingredientId] ?? line.location
+    location:
+      line.location === null
+        ? null
+        : overrides[line.ingredientId] ?? line.location
   }))
 
 export const buildShoppingList = (
@@ -315,9 +326,8 @@ export const partLabel = ({ recipe, quantity, measure }: NeedPart): string =>
 
 /** Grams per stepper step for extras sold only loose by weight. */
 export const EXTRA_WEIGHED_GRAMS = 500
-/** Shop section and home location for free-text extras. */
+/** Shop section for free-text extras (they have no home location). */
 export const FREE_TEXT_SECTION: ShopSection = 'Other'
-export const FREE_TEXT_LOCATION: HomeLocation = 'Cupboard'
 
 export const extraLineId = (extra: Pick<Extra, 'id'>) => `extra:${extra.id}`
 
@@ -359,7 +369,7 @@ export const extraLines = (
       ...(item === undefined
         ? { section: FREE_TEXT_SECTION, subsection: null }
         : placeInShop(item.category)),
-      location: item?.pantry ?? FREE_TEXT_LOCATION,
+      location: item?.pantry ?? null,
       staple: false,
       need: boughtAmount(buy),
       buy,

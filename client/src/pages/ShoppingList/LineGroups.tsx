@@ -1,10 +1,13 @@
 import type { FC } from 'react'
 import type { HomeLocation } from '../../types/library'
 import type { LocationMode } from './ListRow'
-import { HOME_LOCATIONS } from '../../utils/library/parseLibrary'
 import { SHOP_SECTIONS } from '../../utils/shopping/sections'
 import type { ShopLine } from '../../utils/shopping/shoppingList'
-import { groupBy } from '../../utils/shopping/shoppingList'
+import {
+  HOME_GROUPS,
+  groupBy,
+  homeGroup
+} from '../../utils/shopping/shoppingList'
 import { ListRow } from './ListRow'
 
 export type Grouping = 'home' | 'shop'
@@ -38,7 +41,7 @@ export const ticksLast = (
 export const LineGroups: FC<Props> = ({ lines, grouping, ...row }) => {
   const groups =
     grouping === 'home'
-      ? groupBy(lines, (l) => l.location, HOME_LOCATIONS)
+      ? groupBy(lines, homeGroup, HOME_GROUPS)
       : groupBy(lines, (l) => l.section, SHOP_SECTIONS)
   return (
     <>
