@@ -9,7 +9,7 @@ import {
 import { Header as LibHeader } from '../lib/components/index'
 
 const links = [
-  { to: '/', icon: <IngreIconRecipe />, label: 'Pick' },
+  { to: '/', icon: <IngreIconRecipe />, label: 'Recipes' },
   { to: '/saved', icon: <IngreIconSave />, label: 'Saved' },
   {
     to: '/ingredients',
