@@ -17,7 +17,6 @@ export const Signup: FC = () => {
     checkEmailLoading,
     checkEmailError,
     emailExists,
-    addUserError,
     addUserLoading,
     validationMessage,
     from
@@ -103,7 +102,12 @@ export const Signup: FC = () => {
             role="alert"
           >
             A user with this email already exists.{' '}
-            <Link to="/login">Log in?</Link>
+            <Link
+              to="/login"
+              state={{ from }}
+            >
+              Log in?
+            </Link>
           </p>
         )}
 
@@ -143,14 +147,6 @@ export const Signup: FC = () => {
             {validationMessage}
           </p>
         )}
-        {addUserError && (
-          <p
-            className="auth-page__error"
-            role="alert"
-          >
-            Couldn't sign you up.
-          </p>
-        )}
         {addUserLoading && <p role="status">Creating your account…</p>}
 
         <button
@@ -162,7 +158,13 @@ export const Signup: FC = () => {
         </button>
       </form>
       <p className="auth-page__alt">
-        Have an account? <Link to="/login">Log in</Link>
+        Have an account?{' '}
+        <Link
+          to="/login"
+          state={{ from }}
+        >
+          Log in
+        </Link>
       </p>
     </main>
   )

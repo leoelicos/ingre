@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { ADD_USER } from '../../lib/apollo/graphQL/mutations'
 import { CHECK_EMAIL_ALREADY_EXISTS } from '../../lib/apollo/graphQL/queries'
 import { useAuthContext } from '../../utils/auth/AuthContext'
+import { returnPath } from '../../utils/auth/returnPath'
 import { changeTitle } from '../../utils/changeTitle'
 
 type SignupResult =
@@ -13,6 +14,10 @@ type SignupResult =
       reason: 'validation' | 'email-exists' | 'error'
       message: string
     }
+
+const EMAIL_EXISTS = 'A user with this email already exists.'
+const CHECK_FAILED = "Couldn't check that email."
+const SIGNUP_FAILED = "Couldn't sign you up."
 
 export const useSignup = () => {
   changeTitle('Sign up')
@@ -45,7 +50,7 @@ export const useSignup = () => {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const from = (location.state as { from?: string } | null)?.from || '/'
+  const from = returnPath(location.state)
 
   const [state, dispatch] = useAuthContext()
   const loggedIn = state.loggedIn
@@ -77,12 +82,21 @@ export const useSignup = () => {
 
     try {
       const result = await checkEmailAlreadyExists({ variables: { email } })
-      if (result.data?.checkEmailAlreadyExists) {
-        const message = 'A user with this email already exists.'
-        setValidationMessage(message)
-        return { ok: false, reason: 'email-exists', message }
+      if (result.error || !result.data) {
+        throw new Error(CHECK_FAILED)
       }
+      if (result.data.checkEmailAlreadyExists) {
+        return {
+          ok: false,
+          reason: 'email-exists',
+          message: EMAIL_EXISTS
+        }
+      }
+    } catch {
+      return { ok: false, reason: 'error', message: CHECK_FAILED }
+    }
 
+    try {
       const variables = { input: { email, password, firstName, lastName } }
       const res = await addUser({ variables })
       if (!res.data) {
@@ -93,11 +107,9 @@ export const useSignup = () => {
 
       navigate(from, { replace: true })
       return { ok: true }
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Could not sign you up.'
-      setValidationMessage(message)
-      return { ok: false, reason: 'error', message }
+    } catch {
+      setValidationMessage(SIGNUP_FAILED)
+      return { ok: false, reason: 'error', message: SIGNUP_FAILED }
     }
   }
 

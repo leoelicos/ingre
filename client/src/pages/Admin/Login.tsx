@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { changeTitle } from '../../utils/changeTitle'
 import { useAuth } from '../../hooks/useAuth'
 import { useAuthContext } from '../../utils/auth/AuthContext'
+import { returnPath } from '../../utils/auth/returnPath'
 import './auth.css'
 
 const useLoginForm = () => {
@@ -40,7 +41,7 @@ export const Login: FC = () => {
     togglePasswordVisibility
   } = useLoginForm()
 
-  const from = (location.state as { from?: string } | null)?.from || '/'
+  const from = returnPath(location.state)
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -51,7 +52,7 @@ export const Login: FC = () => {
   useEffect(() => {
     changeTitle('Log in')
     if (auth.loggedIn) navigate(from, { replace: true })
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [auth.loggedIn, from, navigate])
   return (
     <main className="auth-page">
       <h1 className="auth-page__title">Log in</h1>

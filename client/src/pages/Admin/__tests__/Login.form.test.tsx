@@ -81,13 +81,25 @@ describe('Login form', () => {
     expect(screen.getByText(/couldn't log you in/i)).toBeInTheDocument()
   })
 
-  it('leaves when already logged in', () => {
+  it('returns home when already logged in and no starting page was stored', () => {
     mockAuth.loggedIn = true
     render(
       <MemoryRouter>
         <Login />
       </MemoryRouter>
     )
-    expect(mockNavigate).toHaveBeenCalledWith(-1)
+    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true })
+  })
+
+  it('returns to the starting page when already logged in', () => {
+    mockAuth.loggedIn = true
+    render(
+      <MemoryRouter
+        initialEntries={[{ pathname: '/login', state: { from: '/saved' } }]}
+      >
+        <Login />
+      </MemoryRouter>
+    )
+    expect(mockNavigate).toHaveBeenCalledWith('/saved', { replace: true })
   })
 })

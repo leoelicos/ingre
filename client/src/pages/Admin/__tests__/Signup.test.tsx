@@ -5,8 +5,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { Signup } from '../Signup'
 
-jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-
 const renderSignup = (initialEntries = ['/signup']) =>
   render(
     <MockedProvider mocks={[]}>
@@ -19,6 +17,10 @@ const renderSignup = (initialEntries = ['/signup']) =>
   )
 
 describe('Signup', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
   it('renders signup form for logged-out users', () => {
     renderSignup()
     expect(
