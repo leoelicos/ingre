@@ -76,7 +76,7 @@ describe('Home', () => {
       { id: 'banana', name: 'banana', ingredientId: 'banana', quantity: 1 }
     ])
     const view = screen.getByRole('link', {
-      name: '✓ banana is on your list. View list'
+      name: '✓ Banana is on your list. View list'
     })
     expect(view).toHaveAttribute('href', '/ingredients')
     expect(screen.queryByRole('button', { name: '+ Add banana' })).toBeNull()
@@ -92,7 +92,7 @@ describe('Home', () => {
     renderHome()
     fireEvent.change(search(), { target: { value: 'bananas' } })
     expect(
-      screen.getByRole('link', { name: '✓ banana is on your list. View list' })
+      screen.getByRole('link', { name: '✓ Banana is on your list. View list' })
     ).toBeInTheDocument()
   })
 

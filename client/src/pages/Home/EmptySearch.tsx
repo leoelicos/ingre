@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import { Link } from 'react-router-dom'
+import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import type { LibraryIngredient } from '../../types/library'
 import { catalogue } from '../../utils/library/recipeLibrary'
 import { matchCatalogue } from '../../utils/library/catalogueMatch'
@@ -19,7 +20,7 @@ const AddMatched: FC<{ item: LibraryIngredient }> = ({ item }) => {
           to="/ingredients"
           className="btn btn-primary empty-search__button"
         >
-          ✓ {item.name} is on your list. View list
+          ✓ {capitaliseFirst(item.name)} is on your list. View list
         </Link>
       ) : (
         <button

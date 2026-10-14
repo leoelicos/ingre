@@ -1,3 +1,4 @@
+import { capitaliseFirst } from '../../utils/capitaliseFirst'
 /** Adds the tag when absent, removes it when present. */
 export const toggleTag = (selected: readonly string[], tag: string): string[] =>
   selected.includes(tag)
@@ -24,8 +25,7 @@ export const orderTags = (tags: readonly string[]): string[] =>
   [...tags].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))
 
 /** "gluten-free" -> "Gluten-free". */
-export const tagLabel = (tag: string): string =>
-  tag.charAt(0).toUpperCase() + tag.slice(1)
+export const tagLabel = (tag: string): string => capitaliseFirst(tag)
 
 /** The one row of chips shown on narrow screens before "More". */
 export const PRIMARY_TAGS: readonly string[] = [

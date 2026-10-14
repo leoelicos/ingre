@@ -12,6 +12,7 @@ import { IngreIconBack } from '../../lib/icon/Icon'
 import { HeroIcon } from '../../components/Widgets/RecipeCard/HeroIcon'
 import type { LibraryRecipe } from '../../types/library'
 import { changeTitle } from '../../utils/changeTitle'
+import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import { catalogue, library } from '../../utils/library/recipeLibrary'
 import { containsLine, recipeAllergens } from '../../utils/library/allergens'
 import {
@@ -56,7 +57,7 @@ const AddToList: FC<{ id: string; title: string }> = ({ id, title }) => {
     <Link
       to="/ingredients"
       className="btn btn-primary recipe-add"
-      aria-label={`${title} is on your list. View list`}
+      aria-label={`${capitaliseFirst(title)} is on your list. View list`}
     >
       ✓ Added · View list
     </Link>

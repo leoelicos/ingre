@@ -1,3 +1,4 @@
+import { capitaliseFirst } from '../capitaliseFirst'
 /* Pure shopping-list pipeline: collectNeeds -> mergeById -> toShopUnits -> groupBy / splitByHave. */
 import type {
   Amount,
@@ -225,11 +226,9 @@ export const buildShoppingList = (
 ): ShopLine[] =>
   toShopUnits(catalogue)(mergeById(collectNeeds(recipes, people)))
 
-const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
-
 /** Display name: "Brown onion". */
 export const displayName = ({ name }: Pick<ShopLine, 'name'>) =>
-  capitalise(name)
+  capitaliseFirst(name)
 
 /** What to put in the trolley: "2", "1 garlic bulb", "1 × 500 g", "1 bunch", "1 × carton of 6", "100 g". */
 export const buyAmount = ({ buy }: Pick<ShopLine, 'buy'>): string => {

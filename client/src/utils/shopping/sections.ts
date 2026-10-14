@@ -1,3 +1,4 @@
+import { capitaliseFirst } from '../capitaliseFirst'
 /**
  * Shop sections: the single place to rename or regroup them. Generic names (no store
  * layout, branches differ); sections are shown in this fixed order and empty ones hidden.
@@ -84,8 +85,6 @@ export const placeInShop = (
   const section = AISLE_SECTION[aisle]
   return {
     section,
-    subsection: section === 'Pantry' ? capitalise(aisle) : null
+    subsection: section === 'Pantry' ? capitaliseFirst(aisle) : null
   }
 }
-
-const capitalise = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
