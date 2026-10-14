@@ -5,14 +5,16 @@ type Props = {
   children: ReactNode
   onPress?: () => void
   isDisabled?: boolean
-  /** When true, set aria-disabled but keep the button focusable (matches prior Bootstrap behaviour). */
+  /** When true, set aria-disabled but keep the button focusable. */
   ariaDisabledOnly?: boolean
   ariaDescribedBy?: string | undefined
   className?: string
   id?: string | undefined
 }
 
-/** Primary action button matching the existing green pill/rounded look via design tokens. */
+const DISABLED_ARIA = true
+
+/** Primary action button using design tokens. Focus ring is 3px green, offset 2px, only on focus-visible. */
 export const PrimaryButton = ({
   children,
   onPress,
@@ -23,10 +25,15 @@ export const PrimaryButton = ({
   id
 }: Props) => {
   const showAriaDisabled = Boolean(isDisabled || ariaDisabledOnly)
+  const blocked = Boolean(isDisabled || ariaDisabledOnly)
+  const handlePress = () => {
+    if (blocked) return
+    onPress?.()
+  }
   return (
     <AriaButton
       {...(id !== undefined ? { id } : {})}
-      {...(onPress !== undefined ? { onPress } : {})}
+      onPress={handlePress}
       {...(ariaDisabledOnly
         ? {}
         : isDisabled !== undefined
@@ -35,17 +42,16 @@ export const PrimaryButton = ({
       {...(ariaDescribedBy !== undefined
         ? { 'aria-describedby': ariaDescribedBy }
         : {})}
-      {...(showAriaDisabled ? { 'aria-disabled': true as const } : {})}
+      {...(showAriaDisabled ? { 'aria-disabled': DISABLED_ARIA } : {})}
       className={({ isFocusVisible }) =>
         [
-          'inline-flex items-center justify-center min-h-[44px] px-4 rounded-control',
-          'bg-primary text-on-primary font-semibold',
-          'border border-primary',
+          'inline-flex items-center justify-center min-h-[48px] px-4 rounded-control',
+          'font-semibold border',
           showAriaDisabled
-            ? 'opacity-60 cursor-not-allowed'
-            : 'hover:brightness-95',
+            ? 'bg-[color:var(--list-tap-dim-bg,var(--color-primary))] text-[color:var(--list-tap-dim-fg,var(--color-on-primary))] border-transparent cursor-not-allowed'
+            : 'bg-primary text-on-primary border-primary',
           isFocusVisible
-            ? 'outline outline-2 outline-offset-2 outline-primary'
+            ? 'outline outline-[3px] outline-offset-2 outline-primary'
             : '',
           className
         ]

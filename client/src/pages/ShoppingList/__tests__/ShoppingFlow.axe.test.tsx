@@ -7,7 +7,6 @@ import { MockedProvider } from '@apollo/client/testing'
 
 expect.extend(toHaveNoViolations)
 
-jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
 
 const renderFlow = () =>
   render(

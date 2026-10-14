@@ -9,8 +9,6 @@ import { Signup } from '../Admin/Signup'
 import { ShoppingFlow } from '../ShoppingList/ShoppingFlow'
 import Home from '../Home/Home'
 
-jest.mock('../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-
 const renderAt = (ui: React.ReactElement, path: string) =>
   render(
     <MockedProvider mocks={[]}>

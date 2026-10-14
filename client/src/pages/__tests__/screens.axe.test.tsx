@@ -15,8 +15,6 @@ import { ShoppingFlow } from '../ShoppingList/ShoppingFlow'
 
 expect.extend(toHaveNoViolations)
 
-jest.mock('../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-
 const renderScreen = (ui: React.ReactElement, path = '/') =>
   render(
     <MockedProvider mocks={[]}>

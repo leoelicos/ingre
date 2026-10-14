@@ -34,7 +34,7 @@ jobs:
         run: npm ci
         working-directory: server
 
-      - name: Client typecheck
+      - name: Client typecheck (strict)
         run: npx tsc --noEmit
         working-directory: client
 
@@ -42,8 +42,16 @@ jobs:
         run: npm run lint
         working-directory: client
 
-      - name: Client unit tests
-        run: npm test
+      - name: Client prettier check
+        run: npx prettier --check "src/**/*.{ts,tsx,css}"
+        working-directory: client
+
+      - name: Client unit tests with coverage
+        run: npm test -- --coverage --coverageThreshold='{"global":{"branches":100,"functions":100,"lines":100,"statements":100}}'
+        working-directory: client
+
+      - name: Client production build
+        run: npm run build
         working-directory: client
 
       - name: Server unit tests
