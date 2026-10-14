@@ -125,8 +125,7 @@
     text-decoration-thickness: 2px;
   }
   .flow-steps__tab:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: -2px;
+    @apply focus-ring;
   }
   .flow-viewport {
     overflow: hidden;
@@ -212,7 +211,7 @@
     color: var(--color-text);
   }
   .add-item__button {
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-control);
     min-height: 44px;
   }
   .add-item__suggestions {
