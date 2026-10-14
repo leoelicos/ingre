@@ -43,11 +43,10 @@ describe('RecipeCard', () => {
         />
       </MemoryRouter>
     )
-    fireEvent.click(screen.getByRole('button', { name: /^\+ Add/ }))
-    expect(screen.getByRole('button', { name: /Added Plain/ })).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    fireEvent.click(screen.getByRole('button', { name: /^Add .* to list$/ }))
+    expect(
+      screen.getByRole('button', { name: /^Remove Plain.* from list$/ })
+    ).toHaveAttribute('aria-pressed', 'true')
     expect(toggled).toEqual(['lib1'])
   })
 })

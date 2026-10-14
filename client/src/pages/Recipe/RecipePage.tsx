@@ -55,6 +55,7 @@ const AddToList: FC<{ id: string; title: string }> = ({ id, title }) => {
     <Link
       to="/ingredients"
       className="btn btn-primary recipe-add"
+      aria-label={`${title} is on your list. View list`}
     >
       ✓ Added · View list
     </Link>
@@ -62,9 +63,10 @@ const AddToList: FC<{ id: string; title: string }> = ({ id, title }) => {
     <button
       type="button"
       className="btn btn-primary recipe-add"
+      aria-label={`Add ${title} to list`}
       onClick={() => togglePicked(id)}
     >
-      + Add to list<span className="visually-hidden"> {title}</span>
+      + Add to list
     </button>
   )
 }

@@ -33,10 +33,10 @@ const AddPill: FC<{ title: string; libraryId: string; pick: PickControls }> = ({
       type="button"
       className="add-pill"
       aria-pressed={added}
+      aria-label={added ? `Remove ${title} from list` : `Add ${title} to list`}
       onClick={() => pick.onToggle(libraryId)}
     >
       {added ? '✓ Added' : '+ Add'}
-      <span className="visually-hidden"> {title}</span>
     </button>
   )
 }

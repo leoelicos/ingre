@@ -13,6 +13,7 @@ import {
   printLine,
   fraction,
   pluralise,
+  singularise,
   usesLabel,
   chooseBuy,
   collectNeeds,
@@ -389,12 +390,23 @@ describe('fractions and plurals', () => {
     expect(fraction(0.3)).toBe('0.3')
   })
   it('pluralises English nouns', () => {
+    expect(pluralise('egg')).toBe('eggs')
+    expect(pluralise('eggs')).toBe('eggs')
+    expect(pluralise('tomatoes')).toBe('tomatoes')
     expect(pluralise('tomato')).toBe('tomatoes')
+    expect(pluralise('potato')).toBe('potatoes')
+    expect(pluralise('clove')).toBe('cloves')
+    expect(pluralise('curry leaf')).toBe('curry leaves')
+    expect(pluralise('red chilli')).toBe('red chillies')
+    expect(pluralise('rice paper sheets')).toBe('rice paper sheets')
     expect(pluralise('bunch')).toBe('bunches')
     expect(pluralise('berry')).toBe('berries')
-    expect(pluralise('clove')).toBe('cloves')
     expect(pluralise('day')).toBe('days')
-    expect(pluralise('bamboo')).toBe('bamboos')
+    expect(singularise('eggs')).toBe('egg')
+    expect(singularise('tomatoes')).toBe('tomato')
+    expect(singularise('rice paper sheets')).toBe('rice paper sheet')
+    expect(singularise('hummus')).toBe('hummus')
+    expect(singularise('lime')).toBe('lime')
   })
   it('names counted uses: ½ onion, 3 cloves, ½ tbsp, 2 cups', () => {
     const uses = (quantity: number, measure: string, name = 'brown onion') =>
@@ -407,6 +419,11 @@ describe('fractions and plurals', () => {
     expect(uses(0.5, 'tbsp')).toBe('uses ½ tbsp')
     expect(uses(2, 'tbsp')).toBe('uses 2 tbsp')
     expect(uses(2, 'cup')).toBe('uses 2 cups')
+    expect(uses(3, 'whole', 'eggs')).toBe('uses 3 eggs')
+    expect(uses(1, 'whole', 'eggs')).toBe('uses 1 egg')
+    expect(uses(0.5, 'whole', 'tomatoes')).toBe('uses ½ tomato')
+    expect(uses(2, 'whole', 'potato')).toBe('uses 2 potatoes')
+    expect(uses(2, 'whole', 'green chilli')).toBe('uses 2 green chillies')
   })
 })
 

@@ -74,8 +74,12 @@ describe('ShoppingFlow', () => {
     renderFlow()
     expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByText('0 recipes')).toBeInTheDocument()
-    const add = screen.getByRole('button', { name: '+ Add Red lentil dahl' })
+    const add = screen.getByRole('button', {
+      name: 'Add Red lentil dahl to list'
+    })
+    expect(add).toHaveTextContent('+ Add')
     fireEvent.click(add)
+    expect(add).toHaveAccessibleName('Remove Red lentil dahl from list')
     expect(add).toHaveAttribute('aria-pressed', 'true')
     expect(add).toHaveTextContent('✓ Added')
     expect(screen.getByText('1 recipe')).toBeInTheDocument()
@@ -528,5 +532,24 @@ describe('PO shopper pass', () => {
     ).toHaveLength(1)
     expect(container.querySelectorAll('[role=tabpanel]')).toHaveLength(1)
     expect(container.querySelectorAll('[hidden]')).toHaveLength(0)
+  })
+})
+
+describe('tick clock regression (pointer resting, no events)', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('moves the row exactly 2s after a single tick with no further events', () => {
+    renderFlow(['dahl'], 'home')
+    const box = within(panel()).getAllByRole('checkbox')[0]
+    fireEvent.click(box ?? document.body)
+    // nothing else happens: no pointer, focus or other events until the clock runs out
+    act(() => jest.advanceTimersByTime(1999))
+    expect(screen.queryByRole('button', { name: /Already have/ })).toBeNull()
+    act(() => jest.advanceTimersByTime(1))
+    expect(box?.closest('li')).toHaveClass('list-row--leaving')
+    act(() => jest.advanceTimersByTime(200))
+    expect(
+      screen.getByRole('button', { name: /^Already have \(1\)/ })
+    ).toBeInTheDocument()
   })
 })

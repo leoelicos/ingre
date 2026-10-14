@@ -343,13 +343,48 @@ export const fraction = (n: number): string => {
     : `${whole}${glyph}`
 }
 
-/** English plural: tomato -> tomatoes, bunch -> bunches, berry -> berries, clove -> cloves. */
-export const pluralise = (word: string): string =>
-  /([^o]o|s|x|ch|sh)$/.test(word)
-    ? `${word}es`
-    : /[^aeiou]y$/.test(word)
-    ? `${word.slice(0, -1)}ies`
-    : `${word}s`
+/** Irregular or -o/-i nouns used in the catalogue: singular -> plural. */
+export const IRREGULAR_PLURALS: Readonly<Record<string, string>> = {
+  leaf: 'leaves',
+  chilli: 'chillies',
+  potato: 'potatoes',
+  tomato: 'tomatoes',
+  egg: 'eggs'
+}
+const SINGULARS: Readonly<Record<string, string>> = Object.fromEntries(
+  Object.entries(IRREGULAR_PLURALS).map(([one, many]) => [many, one])
+)
+
+/** Ends in a plural -s (not -ss or -us, e.g. "glass", "hummus"). */
+const looksPlural = (word: string) => /[^su]s$/.test(word)
+
+/** Applies `fn` to the last word of a phrase ("red chilli" -> "red chillies"). */
+const onLastWord = (phrase: string, fn: (word: string) => string): string => {
+  const i = phrase.lastIndexOf(' ') + 1
+  return phrase.slice(0, i) + fn(phrase.slice(i))
+}
+
+/** Plural, never doubled: egg -> eggs, eggs -> eggs, leaf -> leaves, bunch -> bunches. */
+export const pluralise = (phrase: string): string =>
+  onLastWord(
+    phrase,
+    (word) =>
+      IRREGULAR_PLURALS[word] ??
+      (SINGULARS[word] !== undefined || looksPlural(word)
+        ? word
+        : /(s|x|ch|sh)$/.test(word)
+        ? `${word}es`
+        : /[^aeiou]y$/.test(word)
+        ? `${word.slice(0, -1)}ies`
+        : `${word}s`)
+  )
+
+/** Singular for catalogue names given in the plural: eggs -> egg, tomatoes -> tomato. */
+export const singularise = (phrase: string): string =>
+  onLastWord(
+    phrase,
+    (word) => SINGULARS[word] ?? (looksPlural(word) ? word.slice(0, -1) : word)
+  )
 
 /** Measures that take a plural (spoons, g and ml never do). */
 const COUNTED_MEASURES: readonly string[] = ['cup', 'clove', 'stalk', 'bunch']
@@ -361,9 +396,12 @@ export const partAmount = (
 ): string => {
   const noun = measure === 'whole' ? name : measure
   const counted = measure === 'whole' || COUNTED_MEASURES.includes(measure)
-  return `${fraction(quantity)} ${
-    counted && quantity > 1 ? pluralise(noun) : noun
-  }`
+  const named = !counted
+    ? noun
+    : quantity > 1
+    ? pluralise(noun)
+    : singularise(noun)
+  return `${fraction(quantity)} ${named}`
 }
 
 /** "Butter chicken: ½ tbsp" / "Dahl: 2 brown onions". */

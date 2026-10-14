@@ -97,9 +97,15 @@ describe('RecipePage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save Butter chicken' }))
     expect(localStorage.getItem(FAVOURITES_KEY)).toBe('["butter-chicken"]')
 
-    fireEvent.click(screen.getByRole('button', { name: /^\+ Add to list/ }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Add Butter chicken to list' })
+    )
     expect(localStorage.getItem(PICKED_KEY)).toBe('["butter-chicken"]')
-    fireEvent.click(screen.getByRole('link', { name: '✓ Added · View list' }))
+    const view = screen.getByRole('link', {
+      name: 'Butter chicken is on your list. View list'
+    })
+    expect(view).toHaveTextContent('✓ Added · View list')
+    fireEvent.click(view)
     expect(screen.getByText('List page')).toBeInTheDocument()
   })
 
