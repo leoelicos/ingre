@@ -15,7 +15,7 @@ import {
 import { PEOPLE_KEY } from '../../../utils/storage/people'
 import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
 import TapOff, { inBasketLine, stillToBuyLine } from '../../TapOff/TapOff'
-import { recipeCount } from '../PickStep'
+import { PICK_NEXT_HINT, recipeCount } from '../PickStep'
 import { ShoppingFlow, wantsStartNew } from '../ShoppingFlow'
 import { basketCount, DONE_SHOPPING } from '../ShoppingListView'
 import { assumedNames } from '../../../utils/shopping/shoppingList'
@@ -104,6 +104,27 @@ describe('ShoppingFlow', () => {
     expect(
       within(panel()).getByRole('heading', { name: 'Check your kitchen' })
     ).toBeInTheDocument()
+  })
+
+  it('keeps Next disabled until one recipe is picked', () => {
+    renderFlow()
+    const next = screen.getByRole('button', {
+      name: /^Next: check at home \(\d+\)$/
+    })
+    expect(next).toHaveAttribute('aria-disabled', 'true')
+    expect(next).toHaveAccessibleDescription(PICK_NEXT_HINT)
+    expect(screen.getByText(PICK_NEXT_HINT)).toBeInTheDocument()
+    next.focus()
+    expect(next).toHaveFocus()
+    fireEvent.click(next)
+    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Add Red lentil dahl to list' })
+    )
+    expect(next).not.toHaveAttribute('aria-disabled')
+    expect(screen.queryByText(PICK_NEXT_HINT)).not.toBeInTheDocument()
+    fireEvent.click(next)
+    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
   })
 
   it('reopens on the last step and switches with tabs and arrow keys', () => {
@@ -354,6 +375,27 @@ describe('Shopping done', () => {
     expect(screen.getByText('0 items are in the basket')).toBeInTheDocument()
     expect(screen.getByText('0 are still to buy')).toBeInTheDocument()
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+  })
+
+  it('uses the singular when one item is in the basket', () => {
+    localStorage.setItem(
+      EXTRAS_KEY,
+      JSON.stringify([
+        {
+          id: 'free-lemon',
+          name: 'Lemon',
+          ingredientId: null,
+          quantity: 1
+        }
+      ])
+    )
+    localStorage.setItem(BASKET_KEY, JSON.stringify(['extra:free-lemon']))
+    renderTap([])
+    expect(screen.getByText('1 item is in the basket')).toBeInTheDocument()
+    expect(
+      screen.queryByText('1 items are in the basket')
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('0 are still to buy')).toBeInTheDocument()
   })
 
   it('starts a new list from the finish screen', () => {
