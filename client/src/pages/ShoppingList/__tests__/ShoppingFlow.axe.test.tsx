@@ -7,7 +7,6 @@ import { MockedProvider } from '@apollo/client/testing'
 
 expect.extend(toHaveNoViolations)
 
-
 const renderFlow = () =>
   render(
     <MockedProvider mocks={[]}>
