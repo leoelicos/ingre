@@ -24,7 +24,6 @@ import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
 import { changeTitle } from './utils/changeTitle'
 import { StoreProvider } from './utils/state/GlobalState'
-import 'bootstrap/dist/css/bootstrap.min.css'
 
 addFontAwesome()
 
