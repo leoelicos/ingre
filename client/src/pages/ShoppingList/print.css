@@ -9,8 +9,8 @@
   }
   html,
   html body {
-    background: var(--color-print-paper);
-    color: var(--color-print-ink);
+    background: var(--color-print-paper) !important;
+    color: var(--color-print-ink) !important;
   }
   .print-sheet {
     display: block;
