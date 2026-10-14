@@ -20,6 +20,8 @@ export const basketCount = (inBasket: number, total: number) =>
 
 export const DONE_SHOPPING = "I'm done shopping"
 
+export const SHOP_BAR_ID = 'shop-done-button'
+
 /** "At home" (check your kitchen) or "At the shop" (to buy) over the same list. */
 export const ShoppingListView: FC<{
   list: ShoppingListState
@@ -106,7 +108,13 @@ export const ShoppingListView: FC<{
                 aria-controls="in-basket"
                 onClick={() => setBasketOpen(!basketOpen)}
               >
-                In basket ({list.toBuy.length}) {basketOpen ? '▴' : '▾'}
+                In basket ({list.toBuy.length})
+                <span
+                  className="list-have__chevron"
+                  aria-hidden="true"
+                >
+                  <IngreIconChevronDown />
+                </span>
               </button>
               {basketOpen && (
                 <div id="in-basket">
@@ -190,6 +198,7 @@ export const ShoppingListView: FC<{
               <button
                 type="button"
                 className="btn btn-primary list-tap__button"
+                id={SHOP_BAR_ID}
                 onClick={() => navigate('/tapoff')}
               >
                 {DONE_SHOPPING}

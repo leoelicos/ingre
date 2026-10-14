@@ -33,6 +33,23 @@ beforeEach(() => jest.useFakeTimers())
 afterEach(() => jest.useRealTimers())
 
 describe('useDelayedTicks', () => {
+  it('uses browser timers when none are passed', () => {
+    const committed = { ids: new Set<string>() }
+    const hook = renderHook(() =>
+      useDelayedTicks(
+        committed.ids,
+        (ids) => {
+          committed.ids = new Set([...committed.ids, ...ids])
+        },
+        () => {},
+        'In basket'
+      )
+    )
+    act(() => hook.result.current.onToggle('a'))
+    act(() => jest.advanceTimersByTime(TICK_DELAY_MS + FADE_MS))
+    expect(committed.ids.has('a')).toBe(true)
+  })
+
   it('ticks at once, stays pending, then fades and moves together', () => {
     const { committed, now } = setup()
     act(() => now().onToggle('a'))

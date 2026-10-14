@@ -12,7 +12,7 @@ import { useStartNewList } from '../../utils/shopping/useStartNewList'
 import { browserTimers } from '../../utils/shopping/usePendingTicks'
 import type { Timers } from '../../utils/shopping/usePendingTicks'
 import { PrintSheet } from './PrintSheet'
-import { ShoppingListView } from './ShoppingListView'
+import { ShoppingListView, SHOP_BAR_ID } from './ShoppingListView'
 import { dragOffset, stepAt, swipeTarget } from './swipe'
 import '../../styles/segmented.css'
 import './shoppingList.css'
@@ -35,11 +35,17 @@ interface Drag {
 /** Pick · At home · At the shop: tabs everywhere, plus swipe between steps on touch screens. */
 /** Router state the finish screen sends when Start a new list is tapped. */
 export const START_NEW_STATE = { startNew: true }
+export const FOCUS_SHOP_BAR = { focusShopBar: true }
 export const wantsStartNew = (state: unknown): boolean =>
   typeof state === 'object' &&
   state !== null &&
   'startNew' in state &&
   state.startNew === true
+export const wantsShopBarFocus = (state: unknown): boolean =>
+  typeof state === 'object' &&
+  state !== null &&
+  'focusShopBar' in state &&
+  state.focusShopBar === true
 
 export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   print = () => window.print(),
@@ -56,6 +62,11 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
     if (handled.current || !wantsStartNew(state)) return
     handled.current = true
     startNew.start()
+    navigate('/ingredients', { replace: true, state: null })
+  })
+  useEffect(() => {
+    if (!wantsShopBarFocus(state)) return
+    document.getElementById(SHOP_BAR_ID)?.focus()
     navigate('/ingredients', { replace: true, state: null })
   })
   const index = FLOW_STEPS.indexOf(list.step)

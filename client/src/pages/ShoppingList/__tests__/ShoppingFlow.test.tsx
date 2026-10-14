@@ -337,9 +337,9 @@ describe('Shopping done', () => {
 
   it('shows basket and still-to-buy counts, and never the checklist', () => {
     renderTap(['dahl'])
-    expect(
-      screen.getByRole('heading', { name: 'Shopping done' })
-    ).toBeInTheDocument()
+    const heading = screen.getByRole('heading', { name: 'Shopping done' })
+    expect(heading).toHaveAttribute('tabindex', '-1')
+    expect(heading).toHaveFocus()
     expect(document.title).toBe('Shopping done')
     expect(screen.getByText('0 items are in the basket')).toBeInTheDocument()
     expect(screen.getByText(/are still to buy$/)).toBeInTheDocument()
@@ -395,10 +395,10 @@ describe('Shopping done', () => {
     ).toBeInTheDocument()
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('link', { name: 'Back to my list' }))
+    const done = screen.getByRole('button', { name: DONE_SHOPPING })
     expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
-    expect(
-      screen.getByRole('button', { name: DONE_SHOPPING })
-    ).toBeInTheDocument()
+    expect(done).toBeInTheDocument()
+    expect(done).toHaveFocus()
   })
 })
 
@@ -530,11 +530,11 @@ describe('Start a new list', () => {
       screen.getAllByRole('button', { name: /Start a new list/ })
     ).toHaveLength(1)
     expect(within(panel()).queryAllByRole('checkbox')).toHaveLength(0)
-    const basket = screen.getByRole('button', { name: /^In basket \(\d+\) ▾$/ })
+    const basket = screen.getByRole('button', { name: /^In basket \(\d+\)$/ })
     expect(basket).toHaveAttribute('aria-expanded', 'false')
+    expect(basket.querySelector('.list-have__chevron svg')).not.toBeNull()
     fireEvent.click(basket)
     expect(basket).toHaveAttribute('aria-expanded', 'true')
-    expect(basket).toHaveTextContent('▴')
     expect(
       within(
         document.getElementById('in-basket') ?? document.body
