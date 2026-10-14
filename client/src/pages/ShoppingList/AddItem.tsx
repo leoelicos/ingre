@@ -45,7 +45,7 @@ export const AddItem: FC<{ onAdd: (extra: NewExtra) => void }> = ({
     >
       <label
         htmlFor={id}
-        className="visually-hidden"
+        className="sr-only"
       >
         Add an item
       </label>

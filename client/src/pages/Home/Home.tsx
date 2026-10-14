@@ -34,7 +34,7 @@ const Home: FC = () => {
           className="home-search"
           htmlFor="home-search"
         >
-          <span className="visually-hidden">Search recipes</span>
+          <span className="sr-only">Search recipes</span>
           <span
             className="home-search__icon"
             aria-hidden="true"

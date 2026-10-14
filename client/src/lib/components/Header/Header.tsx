@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { AuthButton } from '../../../components/AuthButton'
 
@@ -10,12 +10,26 @@ export const Header: React.FC<{
   loggedIn: boolean
 }> = ({ Logo, logoText, LogoCollapsed, links, loggedIn }) => {
   const [open, setOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        menuButtonRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open])
+
   return (
     <header className="ingre-navbar">
       <div className="ingre-page flex items-center justify-between py-3">
         <Link
           to="/"
-          className="flex items-center gap-2 no-underline"
+          className="flex items-center gap-2 no-underline focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
           <Logo />
           <span
@@ -31,10 +45,12 @@ export const Header: React.FC<{
           </span>
         </Link>
         <button
+          ref={menuButtonRef}
           type="button"
-          className="lg:hidden min-h-[44px] min-w-[44px] border-0 bg-transparent"
+          className="md:hidden min-h-[44px] min-w-[44px] border border-primary rounded-control bg-transparent focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-primary"
           aria-expanded={open}
           aria-controls="main-nav"
+          aria-label="Menu"
           onClick={() => setOpen((v) => !v)}
         >
           <LogoCollapsed />
@@ -44,19 +60,21 @@ export const Header: React.FC<{
           id="main-nav"
           className={`${
             open ? 'flex' : 'hidden'
-          } lg:flex flex-col lg:flex-row absolute lg:static top-16 left-0 right-0 bg-bg lg:bg-transparent z-20 px-4 py-2 lg:p-0 items-start lg:items-center gap-3`}
+          } md:flex flex-col md:flex-row relative md:static w-full md:w-auto bg-bg md:bg-transparent z-20 px-4 py-3 md:p-0 items-center gap-3`}
         >
           {links.map(({ to, label }) => (
             <Link
               key={to}
               to={to}
-              className="no-underline text-text hover:text-primary"
+              className="no-underline text-text hover:text-primary focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-primary"
               onClick={() => setOpen(false)}
             >
               {label}
             </Link>
           ))}
-          <AuthButton loggedIn={loggedIn} />
+          <span onClick={() => setOpen(false)}>
+            <AuthButton loggedIn={loggedIn} />
+          </span>
         </nav>
       </div>
     </header>

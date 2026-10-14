@@ -48,7 +48,7 @@ export const PrimaryButton = ({
           'inline-flex items-center justify-center min-h-[48px] px-4 rounded-control',
           'font-semibold border',
           showAriaDisabled
-            ? 'bg-[color:var(--list-tap-dim-bg,var(--color-primary))] text-[color:var(--list-tap-dim-fg,var(--color-on-primary))] border-transparent cursor-not-allowed'
+            ? 'bg-primary-disabled text-on-primary-disabled border-transparent cursor-not-allowed'
             : 'bg-primary text-on-primary border-primary',
           isFocusVisible
             ? 'outline outline-[3px] outline-offset-2 outline-primary'

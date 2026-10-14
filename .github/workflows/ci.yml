@@ -39,7 +39,7 @@ jobs:
         working-directory: client
 
       - name: Client lint
-        run: npm run lint
+        run: npm run lint -- --max-warnings 0
         working-directory: client
 
       - name: Client prettier check

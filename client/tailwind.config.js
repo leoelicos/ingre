@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  corePlugins: {
-    preflight: false
-  },
   theme: {
     extend: {
       colors: {
@@ -15,7 +12,11 @@ module.exports = {
         text: 'var(--color-text)',
         'text-secondary': 'var(--color-text-secondary)',
         border: 'var(--color-border)',
-        success: 'var(--color-success)'
+        success: 'var(--color-success)',
+        /* Charlie's disabled: text mixed ~70% toward green */
+        'primary-disabled':
+          'color-mix(in srgb, var(--color-primary) 70%, var(--color-text))',
+        'on-primary-disabled': 'var(--color-on-primary)'
       },
       borderRadius: {
         card: 'var(--radius-card)',
@@ -30,6 +31,9 @@ module.exports = {
       },
       spacing: {
         gutter: 'var(--layout-gutter)'
+      },
+      outlineWidth: {
+        3: '3px'
       }
     }
   },

@@ -8,34 +8,59 @@ import { Header } from '../Header'
 const Logo = () => <span>Logo</span>
 const LogoCollapsed = () => <span>Menu</span>
 
+const renderHeader = () =>
+  render(
+    <MockedProvider mocks={[]}>
+      <MemoryRouter>
+        <AuthProvider>
+          <Header
+            Logo={Logo}
+            LogoCollapsed={LogoCollapsed}
+            logoText="ingré"
+            links={[{ to: '/saved', label: 'Saved' }]}
+            loggedIn={false}
+          />
+        </AuthProvider>
+      </MemoryRouter>
+    </MockedProvider>
+  )
+
 describe('Header mobile toggle', () => {
   it('toggles the menu open and closed and closes on link click', () => {
-    render(
-      <MockedProvider mocks={[]}>
-        <MemoryRouter>
-          <AuthProvider>
-            <Header
-              Logo={Logo}
-              LogoCollapsed={LogoCollapsed}
-              logoText="ingré"
-              links={[{ to: '/saved', label: 'Saved' }]}
-              loggedIn={false}
-            />
-          </AuthProvider>
-        </MemoryRouter>
-      </MockedProvider>
-    )
-    const toggle = screen.getByRole('button', { name: /open menu/i })
+    renderHeader()
+    const toggle = screen.getByRole('button', { name: /menu/i })
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
     fireEvent.click(toggle)
-    expect(screen.getByRole('button', { name: /close menu/i })).toHaveAttribute(
-      'aria-expanded',
-      'true'
-    )
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
     fireEvent.click(screen.getByRole('link', { name: 'Saved' }))
-    expect(screen.getByRole('button', { name: /open menu/i })).toHaveAttribute(
-      'aria-expanded',
-      'false'
-    )
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('closes the menu on Escape and returns focus to the button', () => {
+    renderHeader()
+    const toggle = screen.getByRole('button', { name: /menu/i })
+    fireEvent.click(toggle)
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    expect(toggle).toHaveFocus()
+  })
+
+  it('ignores non-Escape keys while open', () => {
+    renderHeader()
+    const toggle = screen.getByRole('button', { name: /menu/i })
+    fireEvent.click(toggle)
+    fireEvent.keyDown(document, { key: 'Enter' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('closes the menu when the auth button area is clicked', () => {
+    renderHeader()
+    const toggle = screen.getByRole('button', { name: /menu/i })
+    fireEvent.click(toggle)
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    const authLink = screen.getByRole('link', { name: /log\s*in/i })
+    fireEvent.click(authLink)
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
   })
 })
