@@ -8,7 +8,8 @@ Three steps, in order: `pick`, `home`, `shop`. Labels: Pick, At home, At the sho
 | --- | --- |
 | `ShoppingFlow.tsx` | Step shell, swipe, print, start-new |
 | `PickStep.tsx` | Recipes chosen for this shop |
-| `ShoppingListView.tsx` | At home and at the shop |
+| `ShoppingListView.tsx` | At home and at the shop. Shop bar: "n of m in basket" and "I'm done shopping" |
+| `TapOff.tsx` | Finish screen ("Shopping done"): basket and still-to-buy counts, no checklist |
 | `ListRow.tsx` | One line, tick, undo |
 | `AddItem.tsx` | Catalogue or free-text extra |
 | `StartNewList.tsx` | Clears the list, 10s undo |

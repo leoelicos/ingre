@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ServesPicker } from '../../components/ServesPicker'
 import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
-import { IngreIconPrint } from '../../lib/icon/Icon'
+import { IngreIconChevronDown, IngreIconPrint } from '../../lib/icon/Icon'
 import { AddItem } from './AddItem'
 import { AllDone, StartNewList } from './StartNewList'
 import { LineGroups } from './LineGroups'
@@ -15,7 +15,12 @@ import {
 } from '../../utils/shopping/usePendingTicks'
 import type { Timers } from '../../utils/shopping/usePendingTicks'
 
-export const tapLabel = (n: number) => `Tap ${n} ${n === 1 ? 'item' : 'items'}`
+export const basketCount = (inBasket: number, total: number) =>
+  `${inBasket} of ${total} in basket`
+
+export const DONE_SHOPPING = "I'm done shopping"
+
+export const SHOP_BAR_ID = 'shop-done-button'
 
 /** "At home" (check your kitchen) or "At the shop" (to buy) over the same list. */
 export const ShoppingListView: FC<{
@@ -46,6 +51,8 @@ export const ShoppingListView: FC<{
     timers
   )
   const locationMode: LocationMode = atHome ? 'move' : 'none'
+  const shopBar = !atHome && list.toBuy.length > 0
+  const inBasket = list.toBuy.length - list.leftToBuy
   const rowActions = {
     grouping: view,
     locationMode,
@@ -101,7 +108,13 @@ export const ShoppingListView: FC<{
                 aria-controls="in-basket"
                 onClick={() => setBasketOpen(!basketOpen)}
               >
-                In basket ({list.toBuy.length}) {basketOpen ? '▴' : '▾'}
+                In basket ({list.toBuy.length})
+                <span
+                  className="list-have__chevron"
+                  aria-hidden="true"
+                >
+                  <IngreIconChevronDown />
+                </span>
               </button>
               {basketOpen && (
                 <div id="in-basket">
@@ -138,6 +151,12 @@ export const ShoppingListView: FC<{
               onClick={() => setHaveOpen(!haveOpen)}
             >
               Already have ({list.alreadyHave.length})
+              <span
+                className="list-have__chevron"
+                aria-hidden="true"
+              >
+                <IngreIconChevronDown />
+              </span>
             </button>
           </h2>
           {haveOpen && (
@@ -159,7 +178,7 @@ export const ShoppingListView: FC<{
       {list.lineCount > 0 && !complete && <StartNewList onStart={onStartNew} />}
 
       <div
-        className="list-tap"
+        className={shopBar ? 'list-tap list-tap--split' : 'list-tap'}
         ref={measureBar(BOTTOM_BAR)}
       >
         {atHome ? (
@@ -171,14 +190,20 @@ export const ShoppingListView: FC<{
             Next: at the shop ({list.leftToBuy})
           </button>
         ) : (
-          list.leftToBuy > 0 && (
-            <button
-              type="button"
-              className="btn btn-primary list-tap__button"
-              onClick={() => navigate('/tapoff')}
-            >
-              {tapLabel(list.leftToBuy)}
-            </button>
+          shopBar && (
+            <>
+              <span className="list-tap__count">
+                {basketCount(inBasket, list.toBuy.length)}
+              </span>
+              <button
+                type="button"
+                className="btn btn-primary list-tap__button"
+                id={SHOP_BAR_ID}
+                onClick={() => navigate('/tapoff')}
+              >
+                {DONE_SHOPPING}
+              </button>
+            </>
           )
         )}
       </div>
