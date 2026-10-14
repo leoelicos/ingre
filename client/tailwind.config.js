@@ -13,10 +13,9 @@ module.exports = {
         'text-secondary': 'var(--color-text-secondary)',
         border: 'var(--color-border)',
         success: 'var(--color-success)',
-        /* Charlie's disabled: text mixed ~70% toward green */
-        'primary-disabled':
-          'color-mix(in srgb, var(--color-primary) 70%, var(--color-text))',
-        'on-primary-disabled': 'var(--color-on-primary)'
+        /* Charlie: text mixed ~70% toward green; dimmed bg from #125 */
+        'primary-disabled-bg': 'color-mix(in srgb, var(--color-primary) 45%, var(--color-bg))',
+        'primary-disabled-fg': 'color-mix(in srgb, var(--color-primary) 70%, var(--color-text))'
       },
       borderRadius: {
         card: 'var(--radius-card)',

@@ -22,7 +22,6 @@
   h5,
   h6 {
     margin-block: 0.5em;
-    font-weight: 700;
     line-height: 1.2;
   }
   a {
@@ -61,9 +60,31 @@
   .focus-ring {
     @apply outline outline-[3px] outline-offset-2 outline-primary;
   }
-  .btn-primary-disabled {
-    background-color: theme('colors.primary-disabled');
-    color: theme('colors.on-primary-disabled');
+  .btn {
+    @apply inline-flex items-center justify-center min-h-[48px] px-3 rounded-control font-semibold border border-transparent cursor-pointer no-underline;
+  }
+  .btn-primary {
+    @apply bg-primary text-on-primary border-primary;
+  }
+  .btn-primary:focus-visible {
+    @apply focus-ring;
+  }
+  .btn-primary:disabled,
+  .btn-primary[aria-disabled='true'] {
+    background-color: color-mix(
+      in srgb,
+      var(--color-primary) 45%,
+      var(--color-bg)
+    );
+    color: color-mix(in srgb, var(--color-primary) 70%, var(--color-text));
+    cursor: not-allowed;
+  }
+  .ingre-btn-outline {
+    @apply inline-block px-3 py-1 border border-primary rounded-control text-primary text-sm no-underline;
+  }
+  .ingre-btn-outline:hover,
+  .ingre-btn-outline:focus-visible {
+    @apply bg-primary text-on-primary focus-ring;
   }
 }
 

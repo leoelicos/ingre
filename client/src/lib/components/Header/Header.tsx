@@ -26,10 +26,10 @@ export const Header: React.FC<{
 
   return (
     <header className="ingre-navbar">
-      <div className="ingre-page flex items-center justify-between py-3">
+      <div className="ingre-page flex flex-wrap items-center justify-between py-3">
         <Link
           to="/"
-          className="flex items-center gap-2 no-underline focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="flex items-center gap-2 no-underline focus-visible:focus-ring"
         >
           <Logo />
           <span
@@ -47,7 +47,7 @@ export const Header: React.FC<{
         <button
           ref={menuButtonRef}
           type="button"
-          className="md:hidden min-h-[44px] min-w-[44px] border border-primary rounded-control bg-transparent focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="md:hidden min-h-[44px] min-w-[44px] border border-border rounded-control bg-transparent focus-visible:focus-ring"
           aria-expanded={open}
           aria-controls="main-nav"
           aria-label="Menu"
@@ -60,21 +60,22 @@ export const Header: React.FC<{
           id="main-nav"
           className={`${
             open ? 'flex' : 'hidden'
-          } md:flex flex-col md:flex-row relative md:static w-full md:w-auto bg-bg md:bg-transparent z-20 px-4 py-3 md:p-0 items-center gap-3`}
+          } md:flex flex-col md:flex-row basis-full md:basis-auto w-full md:w-auto bg-bg md:bg-transparent z-20 px-4 py-3 md:p-0 items-center justify-center gap-3`}
         >
           {links.map(({ to, label }) => (
             <Link
               key={to}
               to={to}
-              className="no-underline text-text hover:text-primary focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="no-underline text-text hover:text-primary focus-visible:focus-ring"
               onClick={() => setOpen(false)}
             >
               {label}
             </Link>
           ))}
-          <span onClick={() => setOpen(false)}>
-            <AuthButton loggedIn={loggedIn} />
-          </span>
+          <AuthButton
+            loggedIn={loggedIn}
+            onNavigate={() => setOpen(false)}
+          />
         </nav>
       </div>
     </header>

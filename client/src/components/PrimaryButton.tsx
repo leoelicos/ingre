@@ -48,11 +48,9 @@ export const PrimaryButton = ({
           'inline-flex items-center justify-center min-h-[48px] px-4 rounded-control',
           'font-semibold border',
           showAriaDisabled
-            ? 'bg-primary-disabled text-on-primary-disabled border-transparent cursor-not-allowed'
+            ? 'bg-primary-disabled-bg text-primary-disabled-fg border-transparent cursor-not-allowed'
             : 'bg-primary text-on-primary border-primary',
-          isFocusVisible
-            ? 'outline outline-[3px] outline-offset-2 outline-primary'
-            : '',
+          isFocusVisible ? 'focus-ring' : '',
           className
         ]
           .filter(Boolean)
