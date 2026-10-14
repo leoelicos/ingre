@@ -1,13 +1,21 @@
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { StoreProvider } from '../../../utils/state/GlobalState'
-import { PICKED_KEY, STEP_KEY } from '../../../utils/storage/shoppingState'
+import {
+  BASKET_KEY,
+  EXTRAS_KEY,
+  HAVE_KEY,
+  PICKED_KEY,
+  STEP_KEY
+} from '../../../utils/storage/shoppingState'
+import { PEOPLE_KEY } from '../../../utils/storage/people'
+import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
 import TapOff from '../../TapOff/TapOff'
 import { recipeCount } from '../PickStep'
-import { ShoppingFlow } from '../ShoppingFlow'
+import { ShoppingFlow, wantsStartNew } from '../ShoppingFlow'
 import { tapLabel } from '../ShoppingListView'
 import { assumedNames } from '../../../utils/shopping/shoppingList'
 
@@ -292,9 +300,24 @@ describe('In the shop', () => {
   const renderTap = (picked: string[]) => {
     localStorage.setItem(PICKED_KEY, JSON.stringify(picked))
     return render(
-      <MemoryRouter>
-        <TapOff />
-      </MemoryRouter>
+      <MockedProvider mocks={[]}>
+        <MemoryRouter initialEntries={['/tapoff']}>
+          <AuthProvider>
+            <StoreProvider>
+              <Routes>
+                <Route
+                  path="/tapoff"
+                  element={<TapOff />}
+                />
+                <Route
+                  path="/ingredients"
+                  element={<ShoppingFlow />}
+                />
+              </Routes>
+            </StoreProvider>
+          </AuthProvider>
+        </MemoryRouter>
+      </MockedProvider>
     )
   }
 
@@ -309,7 +332,11 @@ describe('In the shop', () => {
     ).not.toBeInTheDocument()
     screen.getAllByRole('checkbox').forEach((box) => fireEvent.click(box))
     settle()
-    expect(screen.getByText('All done!')).toBeInTheDocument()
+    const done = within(screen.getByRole('region', { name: 'All done' }))
+    fireEvent.click(done.getByRole('button', { name: 'Start a new list' }))
+    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expect(localStorage.getItem(PICKED_KEY)).toBe('[]')
+    expect(screen.getByRole('status')).toHaveTextContent('List cleared')
   })
 
   it('points back to the list when there is nothing to buy', () => {
@@ -378,5 +405,70 @@ describe('Print', () => {
     const sheet = within(screen.getByTestId('print-sheet'))
     expect(sheet.getByText('Serves 2')).toBeInTheDocument()
     expect(sheet.queryByText(/^need /)).not.toBeInTheDocument()
+  })
+})
+
+describe('Start a new list', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('reads the router flag only when it is exactly startNew: true', () => {
+    expect(wantsStartNew({ startNew: true })).toBe(true)
+    expect(wantsStartNew({ startNew: 1 })).toBe(false)
+    expect(wantsStartNew({})).toBe(false)
+    expect(wantsStartNew(null)).toBe(false)
+    expect(wantsStartNew('x')).toBe(false)
+  })
+
+  it('clears picks, ticks and extras (not hearts or Serves), goes to Pick; Undo restores', () => {
+    localStorage.setItem(PEOPLE_KEY, '3')
+    localStorage.setItem(FAVOURITES_KEY, '["dahl"]')
+    localStorage.setItem(HAVE_KEY, '["brown-onion"]')
+    localStorage.setItem(BASKET_KEY, '["garlic"]')
+    localStorage.setItem(
+      EXTRAS_KEY,
+      '[{"id":"free-x","name":"x","ingredientId":null,"quantity":1}]'
+    )
+    renderFlow(['dahl'], 'home')
+    expect(screen.queryByRole('region', { name: 'All done' })).toBeNull()
+    fireEvent.click(
+      within(panel()).getByRole('button', { name: 'Start a new list' })
+    )
+    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expect(localStorage.getItem(PICKED_KEY)).toBe('[]')
+    expect(localStorage.getItem(HAVE_KEY)).toBe('[]')
+    expect(localStorage.getItem(BASKET_KEY)).toBe('[]')
+    expect(localStorage.getItem(EXTRAS_KEY)).toBe('[]')
+    expect(localStorage.getItem(PEOPLE_KEY)).toBe('3')
+    expect(localStorage.getItem(FAVOURITES_KEY)).toBe('["dahl"]')
+    expect(screen.queryByRole('dialog')).toBeNull()
+
+    act(() => jest.advanceTimersByTime(9999))
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl"]')
+    expect(localStorage.getItem(HAVE_KEY)).toBe('["brown-onion"]')
+    expect(localStorage.getItem(BASKET_KEY)).toBe('["garlic"]')
+    expect(localStorage.getItem(EXTRAS_KEY)).toContain('free-x')
+    expect(screen.queryByText(/List cleared/)).toBeNull()
+
+    fireEvent.click(
+      within(panel()).getByRole('button', { name: 'Start a new list' })
+    )
+    act(() => jest.advanceTimersByTime(10000))
+    expect(screen.queryByText(/List cleared/)).toBeNull()
+    expect(
+      within(panel()).queryByRole('button', { name: 'Start a new list' })
+    ).toBeNull()
+  })
+
+  it('shows a calm All done card once everything at the shop is ticked', () => {
+    renderFlow(['dahl'], 'shop')
+    within(panel())
+      .getAllByRole('checkbox')
+      .forEach((box) => fireEvent.click(box))
+    settle()
+    const done = within(screen.getByRole('region', { name: 'All done' }))
+    fireEvent.click(done.getByRole('button', { name: 'Start a new list' }))
+    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
   })
 })

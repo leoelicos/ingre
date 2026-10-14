@@ -1,6 +1,6 @@
 import { catalogue, library } from '../library/recipeLibrary'
 import { usePeople } from '../storage/people'
-import type { Extra } from '../storage/shoppingState'
+import type { Extra, FlowStep } from '../storage/shoppingState'
 import {
   useBasketIds,
   useExtras,
@@ -54,12 +54,30 @@ export const setExtraQuantity = (
   )
 
 /** All shopping-flow state: picks, people, extras, ticks, locations and step, persisted. */
+/** Everything "Start a new list" clears (never hearts or Serves), so Undo can put it back. */
+export interface ListSnapshot {
+  pickedIds: ReadonlySet<string>
+  haveIds: ReadonlySet<string>
+  basketIds: ReadonlySet<string>
+  extras: readonly Extra[]
+  step: FlowStep
+}
+
+export const EMPTY_LIST: ListSnapshot = {
+  pickedIds: new Set(),
+  haveIds: new Set(),
+  basketIds: new Set(),
+  extras: [],
+  step: 'pick'
+}
+
 export const useShoppingList = () => {
   const [people, setPeople] = usePeople()
-  const [pickedIds, togglePicked] = usePickedIds()
+  const [pickedIds, togglePicked, , , replacePicked] = usePickedIds()
   const [extras, updateExtras] = useExtras()
-  const [haveIds, toggleHave, unHave, addHave] = useHaveIds()
-  const [basketIds, toggleBasket, unBasket, addBasket] = useBasketIds()
+  const [haveIds, toggleHave, unHave, addHave, replaceHave] = useHaveIds()
+  const [basketIds, toggleBasket, unBasket, addBasket, replaceBasket] =
+    useBasketIds()
   const [overrides, setLocation] = useLocationOverrides()
   const [step, setStep] = useFlowStep()
   const recipes = library.filter((r) => pickedIds.has(r.id))
@@ -71,6 +89,20 @@ export const useShoppingList = () => {
     overrides
   )
   return {
+    snapshot: (): ListSnapshot => ({
+      pickedIds,
+      haveIds,
+      basketIds,
+      extras,
+      step
+    }),
+    restore: (s: ListSnapshot) => {
+      replacePicked(s.pickedIds)
+      replaceHave(s.haveIds)
+      replaceBasket(s.basketIds)
+      updateExtras(() => [...s.extras])
+      setStep(s.step)
+    },
     people,
     setPeople,
     step,

@@ -1,10 +1,15 @@
 import type { FC, KeyboardEvent, TouchEvent } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { changeTitle } from '../../utils/changeTitle'
 import { useShoppingList } from '../../utils/shopping/useShoppingList'
 import type { FlowStep } from '../../utils/storage/shoppingState'
 import { FLOW_STEPS } from '../../utils/storage/shoppingState'
 import { PickStep } from './PickStep'
+import { ClearedNote } from './StartNewList'
+import { useStartNewList } from '../../utils/shopping/useStartNewList'
+import { browserTimers } from '../../utils/shopping/usePendingTicks'
+import type { Timers } from '../../utils/shopping/usePendingTicks'
 import { PrintSheet } from './PrintSheet'
 import { ShoppingListView } from './ShoppingListView'
 import { dragOffset, stepAt, swipeTarget } from './swipe'
@@ -27,11 +32,31 @@ interface Drag {
 }
 
 /** Pick · At home · At the shop: tabs everywhere, plus swipe between steps on touch screens. */
-export const ShoppingFlow: FC<{ print?: () => void }> = ({
-  print = () => window.print()
+/** Router state In the shop sends when its All done button is tapped. */
+export const START_NEW_STATE = { startNew: true }
+export const wantsStartNew = (state: unknown): boolean =>
+  typeof state === 'object' &&
+  state !== null &&
+  'startNew' in state &&
+  state.startNew === true
+
+export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
+  print = () => window.print(),
+  timers = browserTimers
 }) => {
   useEffect(() => changeTitle('Shopping list'), [])
   const list = useShoppingList()
+  const startNew = useStartNewList(list, timers)
+  const previous = startNew.previous
+  const { state } = useLocation()
+  const navigate = useNavigate()
+  const handled = useRef(false)
+  useEffect(() => {
+    if (handled.current || !wantsStartNew(state)) return
+    handled.current = true
+    startNew.start()
+    navigate('/ingredients', { replace: true, state: null })
+  })
   const index = FLOW_STEPS.indexOf(list.step)
   const count = FLOW_STEPS.length
   const [drag, setDrag] = useState<Drag | null>(null)
@@ -138,6 +163,8 @@ export const ShoppingFlow: FC<{ print?: () => void }> = ({
                 <ShoppingListView
                   list={list}
                   view={step}
+                  onStartNew={startNew.start}
+                  timers={timers}
                   onPrint={print}
                 />
               )}
@@ -145,6 +172,9 @@ export const ShoppingFlow: FC<{ print?: () => void }> = ({
           ))}
         </div>
       </div>
+      {previous !== null && (
+        <ClearedNote onUndo={() => startNew.undo(previous)} />
+      )}
       <PrintSheet
         recipes={list.recipes}
         people={list.people}

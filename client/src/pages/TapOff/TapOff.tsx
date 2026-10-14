@@ -1,6 +1,8 @@
 import type { FC } from 'react'
 import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { AllDone } from '../ShoppingList/StartNewList'
+import { START_NEW_STATE } from '../ShoppingList/ShoppingFlow'
 import { LineGroups } from '../ShoppingList/LineGroups'
 import { useShoppingList } from '../../utils/shopping/useShoppingList'
 import { changeTitle } from '../../utils/changeTitle'
@@ -14,6 +16,7 @@ const TapOff: FC<{ timers?: Timers }> = ({ timers }) => {
   useEffect(() => changeTitle('In the shop'), [])
   const list = useShoppingList()
   const left = list.leftToBuy
+  const navigate = useNavigate()
   const ticks = useDelayedTicks(
     list.basketIds,
     list.addBasket,
@@ -30,9 +33,15 @@ const TapOff: FC<{ timers?: Timers }> = ({ timers }) => {
         </p>
       ) : (
         <>
-          <p className="list-note">
-            {left === 0 ? 'All done!' : `${left} left to find`}
-          </p>
+          {left === 0 ? (
+            <AllDone
+              onStart={() =>
+                navigate('/ingredients', { state: START_NEW_STATE })
+              }
+            />
+          ) : (
+            <p className="list-note">{`${left} left to find`}</p>
+          )}
           <LineGroups
             lines={list.toBuy}
             grouping="shop"

@@ -5,6 +5,7 @@ import { ServesPicker } from '../../components/ServesPicker'
 import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
 import { IngreIconPrint } from '../../lib/icon/Icon'
 import { AddItem } from './AddItem'
+import { AllDone, StartNewList } from './StartNewList'
 import { assumedNames } from '../../utils/shopping/shoppingList'
 import { LineGroups } from './LineGroups'
 import type { LocationMode } from './ListRow'
@@ -21,8 +22,9 @@ export const ShoppingListView: FC<{
   list: ShoppingListState
   view: 'home' | 'shop'
   onPrint: () => void
+  onStartNew: () => void
   timers?: Timers
-}> = ({ list, view, onPrint, timers }) => {
+}> = ({ list, view, onPrint, onStartNew, timers }) => {
   const [haveOpen, setHaveOpen] = useState(false)
   const navigate = useNavigate()
   const atHome = view === 'home'
@@ -84,6 +86,9 @@ export const ShoppingListView: FC<{
             {atHome ? 'Check your kitchen' : 'To buy'}
           </h2>
           {atHome && <p className="list-note">Tick what you already have</p>}
+          {!atHome && list.toBuy.length > 0 && list.leftToBuy === 0 && (
+            <AllDone onStart={onStartNew} />
+          )}
           {list.toBuy.length === 0 ? (
             <p className="list-empty">Nothing to buy. You have it all.</p>
           ) : (
@@ -128,6 +133,7 @@ export const ShoppingListView: FC<{
           Assumed at home: {assumedNames(list.assumed)}
         </p>
       )}
+      {list.lineCount > 0 && <StartNewList onStart={onStartNew} />}
 
       <div className="list-tap">
         {atHome ? (
