@@ -467,6 +467,18 @@ describe('Start a new list', () => {
       .getAllByRole('checkbox')
       .forEach((box) => fireEvent.click(box))
     settle()
+    expect(screen.queryByRole('heading', { name: 'To buy' })).toBeNull()
+    expect(within(panel()).queryAllByRole('checkbox')).toHaveLength(0)
+    const basket = screen.getByRole('button', { name: /^In basket \(\d+\) ▾$/ })
+    expect(basket).toHaveAttribute('aria-expanded', 'false')
+    fireEvent.click(basket)
+    expect(basket).toHaveAttribute('aria-expanded', 'true')
+    expect(basket).toHaveTextContent('▴')
+    expect(
+      within(
+        document.getElementById('in-basket') ?? document.body
+      ).getAllByRole('checkbox', { checked: true }).length
+    ).toBeGreaterThan(0)
     const done = within(screen.getByRole('region', { name: 'All done' }))
     fireEvent.click(done.getByRole('button', { name: 'Start a new list' }))
     expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')

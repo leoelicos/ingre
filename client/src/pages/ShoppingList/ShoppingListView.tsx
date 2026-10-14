@@ -28,6 +28,9 @@ export const ShoppingListView: FC<{
   const [haveOpen, setHaveOpen] = useState(false)
   const navigate = useNavigate()
   const atHome = view === 'home'
+  const [basketOpen, setBasketOpen] = useState(false)
+  /** at the shop with everything in the basket */
+  const complete = !atHome && list.toBuy.length > 0 && list.leftToBuy === 0
   const homeTicks = useDelayedTicks(
     list.haveIds,
     list.addHave,
@@ -82,14 +85,36 @@ export const ShoppingListView: FC<{
         </p>
       ) : (
         <>
-          <h2 className="list-heading">
-            {atHome ? 'Check your kitchen' : 'To buy'}
-          </h2>
-          {atHome && <p className="list-note">Tick what you already have</p>}
-          {!atHome && list.toBuy.length > 0 && list.leftToBuy === 0 && (
-            <AllDone onStart={onStartNew} />
+          {!complete && (
+            <h2 className="list-heading">
+              {atHome ? 'Check your kitchen' : 'To buy'}
+            </h2>
           )}
-          {list.toBuy.length === 0 ? (
+          {atHome && <p className="list-note">Tick what you already have</p>}
+          {complete && <AllDone onStart={onStartNew} />}
+          {complete ? (
+            <section className="list-basket">
+              <button
+                type="button"
+                className="list-have__toggle"
+                aria-expanded={basketOpen}
+                aria-controls="in-basket"
+                onClick={() => setBasketOpen(!basketOpen)}
+              >
+                In basket ({list.toBuy.length}) {basketOpen ? '▴' : '▾'}
+              </button>
+              {basketOpen && (
+                <div id="in-basket">
+                  <LineGroups
+                    {...rowActions}
+                    lines={list.toBuy}
+                    ticks={shopTicks}
+                    struck={true}
+                  />
+                </div>
+              )}
+            </section>
+          ) : list.toBuy.length === 0 ? (
             <p className="list-empty">Nothing to buy. You have it all.</p>
           ) : (
             <LineGroups

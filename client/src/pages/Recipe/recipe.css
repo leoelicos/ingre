@@ -51,6 +51,13 @@
 .recipe-page__side .serves {
   margin-top: 16px;
 }
+/* What to buy: always 24px clear of the Serves row */
+.recipe-page__side section {
+  margin-top: 24px;
+}
+.recipe-page__side section > .recipe-heading {
+  margin-top: 0;
+}
 .recipe-method__note {
   margin: 0 0 12px;
   font-size: 14px;
