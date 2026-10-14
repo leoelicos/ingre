@@ -164,6 +164,8 @@
 }
 .list-tap {
   position: fixed;
+  /* above the sticky steps bar (20) and every card layer, so nothing paints over it */
+  z-index: 30;
   left: 0;
   right: 0;
   bottom: 0;

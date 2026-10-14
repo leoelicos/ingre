@@ -92,6 +92,8 @@ describe('ShoppingFlow', () => {
     )
     expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
     expect(localStorage.getItem(STEP_KEY)).toBe('"home"')
+    expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl"]')
+    expect(localStorage.getItem(FAVOURITES_KEY)).toBeNull()
     expect(
       within(panel()).getByRole('heading', { name: 'Check your kitchen' })
     ).toBeInTheDocument()

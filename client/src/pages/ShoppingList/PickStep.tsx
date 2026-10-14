@@ -20,11 +20,13 @@ export const PickStep: FC<{ list: ShoppingListState }> = ({ list }) => {
           onChange={list.setPeople}
         />
       </div>
-      <RecipeCardContainer
-        results={recipes}
-        loading={false}
-        pick={{ pickedIds: list.pickedIds, onToggle: list.togglePicked }}
-      />
+      <div className="pick-grid">
+        <RecipeCardContainer
+          results={recipes}
+          loading={false}
+          pick={{ pickedIds: list.pickedIds, onToggle: list.togglePicked }}
+        />
+      </div>
       <div
         className="list-tap list-tap--split"
         ref={measureBar(BOTTOM_BAR)}
