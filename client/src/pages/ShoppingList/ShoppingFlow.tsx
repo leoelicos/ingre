@@ -16,7 +16,6 @@ import { ShoppingListView, SHOP_BAR_ID } from './ShoppingListView'
 import { dragOffset, stepAt, swipeTarget } from './swipe'
 import '../../styles/segmented.css'
 import './shoppingList.css'
-import './flow.css'
 
 export const STEP_LABELS: Readonly<Record<FlowStep, string>> = {
   pick: 'Pick',

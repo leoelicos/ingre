@@ -258,10 +258,6 @@
   margin-top: 20px;
   border-radius: var(--radius-card);
 }
-.done-screen .btn.done-screen__start:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
 .done-screen__back {
   display: inline-flex;
   align-items: center;

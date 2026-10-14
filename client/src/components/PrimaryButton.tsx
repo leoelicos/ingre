@@ -46,7 +46,7 @@ export const PrimaryButton = ({
       className={({ isFocusVisible }) =>
         [
           'inline-flex items-center justify-center min-h-[48px] px-4 rounded-control',
-          'font-semibold border',
+          'font-normal border',
           showAriaDisabled
             ? 'bg-primary-disabled-bg text-primary-disabled-fg border-transparent cursor-not-allowed'
             : 'bg-primary text-on-primary border-primary',
