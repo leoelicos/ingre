@@ -164,3 +164,7 @@
   padding: 0 24px;
   border-radius: var(--radius-card);
 }
+
+.recipe-panel__back:focus-visible {
+  @apply focus-ring;
+}

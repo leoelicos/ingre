@@ -45,7 +45,7 @@ export const AddItem: FC<{ onAdd: (extra: NewExtra) => void }> = ({
     >
       <label
         htmlFor={id}
-        className="visually-hidden"
+        className="sr-only"
       >
         Add an item
       </label>
@@ -57,6 +57,7 @@ export const AddItem: FC<{ onAdd: (extra: NewExtra) => void }> = ({
           placeholder="Add an item, e.g. milk"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          className="focus-visible:focus-ring"
         />
         <button
           type="submit"

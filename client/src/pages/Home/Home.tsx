@@ -34,7 +34,7 @@ const Home: FC = () => {
           className="home-search"
           htmlFor="home-search"
         >
-          <span className="visually-hidden">Search recipes</span>
+          <span className="sr-only">Search recipes or ingredients</span>
           <span
             className="home-search__icon"
             aria-hidden="true"
@@ -43,8 +43,9 @@ const Home: FC = () => {
           </span>
           <input
             id="home-search"
+            className="focus-visible:focus-ring"
             type="search"
-            placeholder="Search ingredients"
+            placeholder="Search recipes or ingredients"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -64,7 +65,7 @@ const Home: FC = () => {
             <li key={tag}>
               <button
                 type="button"
-                className="chip"
+                className="chip focus-visible:focus-ring"
                 aria-pressed={selectedTags.includes(tag)}
                 onClick={() => onToggleTag(tag)}
               >
@@ -76,7 +77,7 @@ const Home: FC = () => {
         {hasMore && (
           <button
             type="button"
-            className="chip chip--more"
+            className="chip chip--more focus-visible:focus-ring"
             aria-expanded={moreOpen}
             aria-controls="home-tags"
             onClick={() => setMoreOpen(!moreOpen)}

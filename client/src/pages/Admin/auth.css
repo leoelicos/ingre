@@ -6,6 +6,7 @@
 .auth-page__title {
   font-size: 1.6rem;
   font-weight: 600;
+  margin-top: 0;
   margin-bottom: 16px;
 }
 .auth-page__error {
@@ -35,8 +36,7 @@
   color: var(--color-text);
 }
 .auth-form__input:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 1px;
+  @apply focus-ring;
 }
 .auth-form__password {
   position: relative;
@@ -63,4 +63,11 @@
 .auth-page__alt {
   margin-top: 16px;
   color: var(--color-text-secondary);
+}
+
+.auth-form__show:focus-visible {
+  @apply focus-ring;
+}
+.auth-page__alt a:focus-visible {
+  @apply focus-ring;
 }

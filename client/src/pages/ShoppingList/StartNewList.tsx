@@ -1,12 +1,13 @@
 import type { FC } from 'react'
 import { IngreIconStartOver } from '../../lib/icon/Icon'
+import { PrimaryButton } from '../../components/PrimaryButton'
 import './startNewList.css'
 
 /** Quiet text button at the foot of the list. Self-contained so it can move. */
 export const StartNewList: FC<{ onStart: () => void }> = ({ onStart }) => (
   <button
     type="button"
-    className="start-new"
+    className="start-new focus-visible:focus-ring"
     onClick={onStart}
   >
     <IngreIconStartOver /> Start a new list
@@ -21,13 +22,12 @@ export const AllDone: FC<{ onStart: () => void }> = ({ onStart }) => (
   >
     <h2 className="all-done__title">All done</h2>
     <p className="list-note">Everything is in the basket.</p>
-    <button
-      type="button"
-      className="btn btn-primary all-done__button"
-      onClick={onStart}
+    <PrimaryButton
+      onPress={onStart}
+      className="all-done__button"
     >
       Start a new list
-    </button>
+    </PrimaryButton>
   </section>
 )
 

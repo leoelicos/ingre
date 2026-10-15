@@ -3,6 +3,7 @@ import { BOTTOM_BAR, measureBar } from '../../utils/measureBar'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ServesPicker } from '../../components/ServesPicker'
+import { PrimaryButton } from '../../components/PrimaryButton'
 import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
 import { IngreIconChevronDown, IngreIconPrint } from '../../lib/icon/Icon'
 import { AddItem } from './AddItem'
@@ -69,7 +70,7 @@ export const ShoppingListView: FC<{
         />
         <button
           type="button"
-          className="print-button"
+          className="print-button focus-visible:focus-ring"
           onClick={onPrint}
           disabled={list.toBuy.length === 0}
         >
@@ -182,27 +183,25 @@ export const ShoppingListView: FC<{
         ref={measureBar(BOTTOM_BAR)}
       >
         {atHome ? (
-          <button
-            type="button"
-            className="btn btn-primary list-tap__button"
-            onClick={() => list.setStep('shop')}
+          <PrimaryButton
+            onPress={() => list.setStep('shop')}
+            className="list-tap__button w-full"
           >
             Next: at the shop ({list.leftToBuy})
-          </button>
+          </PrimaryButton>
         ) : (
           shopBar && (
             <>
               <span className="list-tap__count">
                 {basketCount(inBasket, list.toBuy.length)}
               </span>
-              <button
-                type="button"
-                className="btn btn-primary list-tap__button"
+              <PrimaryButton
                 id={SHOP_BAR_ID}
-                onClick={() => navigate('/tapoff')}
+                onPress={() => navigate('/tapoff')}
+                className="list-tap__button"
               >
                 {DONE_SHOPPING}
-              </button>
+              </PrimaryButton>
             </>
           )
         )}

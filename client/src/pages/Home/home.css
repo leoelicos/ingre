@@ -22,6 +22,9 @@
   background: var(--color-surface);
   color: var(--color-text);
 }
+.home-search input:focus-visible {
+  @apply focus-ring;
+}
 
 .chip-bar {
   display: flex;
@@ -49,6 +52,9 @@
   background: transparent;
   color: var(--color-text);
   font-size: 0.875rem;
+}
+.chip:focus-visible {
+  @apply focus-ring;
 }
 .chip[aria-pressed='true'] {
   border-color: var(--color-primary);
@@ -83,6 +89,8 @@
     overflow-x: auto;
     gap: 6px;
     scrollbar-width: none;
+    padding: 5px;
+    margin: -5px;
   }
   .chip-row--one li {
     flex: none;

@@ -42,7 +42,7 @@ const BackButton: FC = () => {
   return (
     <button
       type="button"
-      className="recipe-panel__back"
+      className="recipe-panel__back focus-visible:focus-ring"
       aria-label="Back"
       onClick={() => (key === 'default' ? navigate('/') : navigate(-1))}
     >

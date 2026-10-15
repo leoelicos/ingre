@@ -1,9 +1,281 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wdth,wght@95,800&family=Poppins&display=swap');
 @import './styles/theme.css';
-@import './styles/layout.css';
 
-* {
-  font-family: 'Poppins', sans-serif;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-block: 0.5em;
+    line-height: 1.2;
+  }
+  a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  a:hover {
+    color: var(--color-primary);
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-placeholder);
+    opacity: 1;
+  }
+}
+
+@layer components {
+  .ingre-page {
+    max-width: var(--layout-max-width);
+    margin-inline: auto;
+    padding-inline: var(--layout-gutter);
+  }
+  .ingre-navbar {
+    margin-bottom: var(--space-nav-gap);
+  }
+  .focus-ring {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center min-h-[48px] px-3 rounded-control font-normal border border-transparent cursor-pointer no-underline;
+  }
+  .btn-primary {
+    @apply bg-primary text-on-primary border-primary;
+  }
+  .btn-primary:focus-visible {
+    @apply focus-ring;
+  }
+  .btn-primary:disabled,
+  .btn-primary[aria-disabled='true'] {
+    background-color: theme('colors.primary-disabled-bg');
+    color: theme('colors.primary-disabled-fg');
+    cursor: not-allowed;
+  }
+  .ingre-btn-outline {
+    @apply inline-block px-3 py-1 border border-primary rounded-control text-primary text-sm no-underline;
+  }
+  .ingre-btn-outline:hover {
+    @apply bg-primary text-on-primary;
+  }
+  .ingre-btn-outline:focus-visible {
+    @apply bg-primary text-on-primary focus-ring;
+  }
+
+  /* shopping flow (moved from flow.css) */
+  .flow {
+    max-width: var(--layout-max-width);
+    margin: 0 auto;
+  }
+  .flow-steps {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    padding: 8px var(--layout-gutter);
+    background: var(--color-bg);
+    box-shadow: var(--shadow-card);
+  }
+  .flow-steps__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .flow-steps__dot {
+    color: var(--color-text-secondary);
+  }
+  .flow-steps__tab {
+    min-height: 44px;
+    padding: 0 8px;
+    border: 0;
+    background: none;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+  }
+  .flow-steps__tab[aria-selected='true'] {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+  }
+  .flow-steps__tab:focus-visible {
+    @apply focus-ring;
+  }
+  .flow-viewport {
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+  /* At rest only the current step is shown and nothing is transformed (pinned bars stay
+     fixed). While a finger drags, the neighbouring steps join the track and follow it;
+     on release the step cuts over instantly, so reduced-motion needs no special case. */
+  .flow-track {
+    display: flex;
+    align-items: flex-start;
+  }
+  .flow-panel {
+    flex: 0 0 100%;
+    min-width: 0;
+    padding: 16px var(--layout-gutter) var(--list-bar-space);
+    scroll-margin-top: var(--flow-steps-height);
+  }
+  /* list steps read best as a single centred column on wide screens */
+  .flow-panel--list > * {
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  @media (max-width: 767px) {
+    .flow {
+      margin-top: calc(8px - var(--space-nav-gap));
+    }
+  }
+  .list-tap--split {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .list-tap--split .list-tap__action {
+    flex: 1;
+    min-width: 0;
+  }
+  .list-tap__action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .list-tap--split .list-tap__button {
+    width: 100%;
+  }
+  .list-tap__count {
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+  /* #6b6460 on #fff8f0 is 5.5:1, above the 4.5:1 requirement for this hint */
+  .list-tap__hint {
+    margin: 6px 0 0;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .link-button {
+    border: 0;
+    background: none;
+    padding: 0;
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+  .add-item {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .add-item__row {
+    display: flex;
+    gap: 8px;
+  }
+  .add-item__row input {
+    min-width: 0;
+    flex: 1;
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+  .add-item__row input:focus-visible {
+    @apply focus-ring;
+  }
+  .add-item__button {
+    border-radius: var(--radius-control);
+    min-height: 44px;
+  }
+  .add-item__suggestions {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 4px;
+    background: var(--color-surface);
+    border-radius: var(--radius-control);
+    box-shadow: var(--shadow-card);
+  }
+  .add-item__suggestions button {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 0;
+    background: none;
+    text-align: left;
+    color: var(--color-text);
+  }
+  .stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+  }
+  .stepper button {
+    min-width: 36px;
+    min-height: 36px;
+    border: 0;
+    background: none;
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+  .stepper span {
+    min-width: 20px;
+    text-align: center;
+  }
+  .print-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+  .print-button:focus-visible {
+    @apply focus-ring;
+  }
+  .print-button:disabled {
+    opacity: 0.5;
+  }
+  /* the last row of picks scrolls fully clear of the pinned bar and the home indicator */
+  .pick-grid {
+    padding-bottom: calc(
+      var(--list-bar-height) + env(safe-area-inset-bottom, 0px)
+    );
+  }
 }
 
 #root {

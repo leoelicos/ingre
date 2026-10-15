@@ -86,8 +86,7 @@
   color: var(--color-accent);
 }
 .icon-button:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  @apply focus-ring;
 }
 
 .recipe-card__body {
@@ -109,11 +108,10 @@
 }
 .add-pill[aria-pressed='true'] {
   background: var(--color-chip-active);
-  color: var(--color-primary);
+  color: var(--color-added-pill);
 }
 .add-pill:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  @apply focus-ring;
 }
 
 /* The title link covers the whole card; the heart and pill sit above it. */
@@ -128,8 +126,7 @@
   border-radius: var(--radius-card);
 }
 .recipe-card__link:focus-visible::after {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  @apply focus-ring;
 }
 .recipe-card .icon-button {
   z-index: 1;
