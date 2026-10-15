@@ -52,7 +52,8 @@ export const ShoppingListView: FC<{
     timers
   )
   const locationMode: LocationMode = atHome ? 'move' : 'none'
-  const shopBar = !atHome && list.toBuy.length > 0
+  const shopBar = !atHome
+  const nothingLeft = list.toBuy.length === 0
   const inBasket = list.toBuy.length - list.leftToBuy
   const rowActions = {
     grouping: view,
@@ -193,7 +194,9 @@ export const ShoppingListView: FC<{
           shopBar && (
             <>
               <span className="list-tap__count">
-                {basketCount(inBasket, list.toBuy.length)}
+                {nothingLeft
+                  ? 'Nothing left to buy'
+                  : basketCount(inBasket, list.toBuy.length)}
               </span>
               <PrimaryButton
                 id={SHOP_BAR_ID}
