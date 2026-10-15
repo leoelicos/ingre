@@ -73,7 +73,11 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   const [drag, setDrag] = useState<Drag | null>(null)
   const dragging = drag !== null && drag.horizontal === true
 
-  const go = (i: number) => list.setStep(stepAt(i, list.step))
+  const go = (i: number) => {
+    const next = stepAt(i, list.step)
+    list.setStep(next)
+    document.getElementById(`flow-tab-${next}`)?.focus()
+  }
 
   const onTabKey = (e: KeyboardEvent) => {
     const delta = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
@@ -132,7 +136,10 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
               aria-controls={`flow-panel-${step}`}
               tabIndex={step === list.step ? 0 : -1}
               className="flow-steps__tab"
-              onClick={() => list.setStep(step)}
+              onClick={() => {
+                list.setStep(step)
+                document.getElementById(`flow-tab-${step}`)?.focus()
+              }}
             >
               {STEP_LABELS[step]}
             </button>
