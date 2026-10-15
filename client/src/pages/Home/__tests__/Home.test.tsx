@@ -30,7 +30,8 @@ const cardTitles = () =>
     .getAllByRole('heading', { level: 3 })
     .map((heading) => heading.textContent)
 
-const search = () => screen.getByPlaceholderText('Search recipes')
+const search = () =>
+  screen.getByPlaceholderText('Search recipes or ingredients')
 
 describe('Home', () => {
   beforeEach(() => localStorage.clear())
@@ -155,7 +156,9 @@ describe('Home', () => {
       dispatchEvent: () => false
     })
     renderHome()
-    expect(screen.getByPlaceholderText('Search recipes')).toBeInTheDocument()
+    expect(
+      screen.getByPlaceholderText('Search recipes or ingredients')
+    ).toBeInTheDocument()
     const chips = () =>
       within(screen.getByRole('list', { name: 'Filter by tag' }))
         .getAllByRole('button')

@@ -34,7 +34,7 @@ const Home: FC = () => {
           className="home-search"
           htmlFor="home-search"
         >
-          <span className="sr-only">Search recipes</span>
+          <span className="sr-only">Search recipes or ingredients</span>
           <span
             className="home-search__icon"
             aria-hidden="true"
@@ -45,7 +45,7 @@ const Home: FC = () => {
             id="home-search"
             className="focus-visible:focus-ring"
             type="search"
-            placeholder="Search recipes"
+            placeholder="Search recipes or ingredients"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
