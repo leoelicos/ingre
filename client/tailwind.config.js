@@ -1,5 +1,3 @@
-const reactAria = require('tailwindcss-react-aria-components')
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
@@ -43,7 +41,6 @@ module.exports = {
     }
   },
   plugins: [
-    reactAria,
     function ({ addUtilities }) {
       addUtilities({
         '.focus-ring': {
