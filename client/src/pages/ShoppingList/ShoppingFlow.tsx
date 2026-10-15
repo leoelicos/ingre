@@ -34,6 +34,7 @@ interface Drag {
 /** Pick · At home · At the shop: tabs everywhere, plus swipe between steps on touch screens. */
 /** Router state the finish screen sends when Start a new list is tapped. */
 export const START_NEW_STATE = { startNew: true }
+/** Router state sent by "Back to my list". */
 export const FOCUS_SHOP_BAR = { focusShopBar: true }
 export const wantsStartNew = (state: unknown): boolean =>
   typeof state === 'object' &&
