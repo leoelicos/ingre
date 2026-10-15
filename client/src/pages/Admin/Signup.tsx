@@ -87,7 +87,11 @@ export const Signup: FC = () => {
           autoComplete="email"
           required
         />
-        {checkEmailLoading && <p role="status">Checking email…</p>}
+        {checkEmailLoading && (
+          <p role="status">
+            Checking email… the server may take a few seconds to wake up.
+          </p>
+        )}
         {checkEmailError && (
           <p
             className="auth-page__error"
