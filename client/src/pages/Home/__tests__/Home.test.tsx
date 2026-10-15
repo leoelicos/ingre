@@ -155,9 +155,7 @@ describe('Home', () => {
       dispatchEvent: () => false
     })
     renderHome()
-    expect(
-      screen.getByPlaceholderText('Search recipes')
-    ).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Search recipes')).toBeInTheDocument()
     const chips = () =>
       within(screen.getByRole('list', { name: 'Filter by tag' }))
         .getAllByRole('button')
