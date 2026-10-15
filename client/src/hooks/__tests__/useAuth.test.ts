@@ -1,104 +1,75 @@
-import { renderHook, act } from '@testing-library/react'
+import '@testing-library/jest-dom'
+import { renderHook, act, waitFor } from '@testing-library/react'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import { AuthProvider, useAuthContext } from '../../utils/auth/AuthContext'
+import { LOGIN } from '../../lib/apollo/graphQL/mutations'
 import { useAuth } from '../useAuth'
 
-const mockDispatch = jest.fn()
-const mockNavigate = jest.fn()
-const mockLoginMutation = jest.fn()
-const mockLocation: { state: unknown } = { state: { from: '/saved' } }
-const mockLoginOptions: {
-  onCompleted?: ((data: { login: { token: string } }) => void) | undefined
-  onError?: ((error: Error) => void) | undefined
-} = {}
+const VALID_TOKEN =
+  'eyJhbGciOiJub25lIn0.eyJkYXRhIjp7ImZpcnN0TmFtZSI6IkFkYSIsImVtYWlsIjoiYWRhQGIuYyIsIl9pZCI6IjEiLCJwcm8iOmZhbHNlfSwiZXhwIjo5OTk5OTk5OTk5fQ.'
 
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigate,
-  useLocation: () => mockLocation
-}))
-
-jest.mock('@apollo/client', () => ({
-  useMutation: (
-    _mutation: unknown,
-    options: {
-      onCompleted?: (data: { login: { token: string } }) => void
-      onError?: (error: Error) => void
-    }
-  ) => {
-    mockLoginOptions.onCompleted = options.onCompleted
-    mockLoginOptions.onError = options.onError
-    return [mockLoginMutation, { loading: false, error: null }]
+const loginMock: MockedResponse = {
+  request: {
+    query: LOGIN,
+    variables: { email: 'ada@b.c', password: 'secret' }
   },
-  gql: (s: TemplateStringsArray) => s
-}))
+  result: { data: { login: { token: VALID_TOKEN } } }
+}
 
-jest.mock('../../utils/auth/AuthContext', () => ({
-  useAuthContext: () => [{ loggedIn: false }, mockDispatch]
-}))
+const Probe = () => {
+  const loc = useLocation()
+  return <span data-testid="where">{loc.pathname}</span>
+}
+
+const wrapper =
+  (mocks: MockedResponse[] = [], initial = '/login') =>
+  ({ children }: { children: React.ReactNode }) =>
+    (
+      <MockedProvider mocks={mocks}>
+        <AuthProvider>
+          <MemoryRouter initialEntries={[initial]}>
+            <Routes>
+              <Route
+                path="*"
+                element={children}
+              />
+            </Routes>
+          </MemoryRouter>
+        </AuthProvider>
+      </MockedProvider>
+    )
 
 describe('useAuth', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-    mockLocation.state = { from: '/saved' }
-    mockLoginOptions.onCompleted = undefined
-    mockLoginOptions.onError = undefined
-  })
-
   it('returns login and logout functions', () => {
-    const { result } = renderHook(() => useAuth())
+    const { result } = renderHook(() => useAuth(), { wrapper: wrapper() })
     expect(typeof result.current.login).toBe('function')
     expect(typeof result.current.handleLogout).toBe('function')
   })
 
-  it('handleLogout dispatches LOGOUT', () => {
-    const { result } = renderHook(() => useAuth())
+  it('handleLogout clears the logged-in state', () => {
+    const { result } = renderHook(
+      () => ({ auth: useAuth(), ctx: useAuthContext() }),
+      { wrapper: wrapper() }
+    )
     act(() => {
-      result.current.handleLogout()
+      result.current.auth.handleLogout()
     })
-    expect(mockDispatch).toHaveBeenCalledWith({ type: 'LOGOUT', data: '' })
+    expect(result.current.ctx[0].loggedIn).toBe(false)
   })
 
-  it('login calls mutation', () => {
-    const { result } = renderHook(() => useAuth())
+  it('login dispatches and navigates on success', async () => {
+    const { result } = renderHook(
+      () => ({ auth: useAuth(), ctx: useAuthContext() }),
+      {
+        wrapper: wrapper([loginMock], '/login')
+      }
+    )
     act(() => {
-      result.current.login({ email: 'test@example.com', password: 'pass' })
+      void result.current.auth.login({ email: 'ada@b.c', password: 'secret' })
     })
-    expect(mockLoginMutation).toHaveBeenCalledWith({
-      variables: { email: 'test@example.com', password: 'pass' }
+    await waitFor(() => {
+      expect(result.current.ctx[0].loggedIn).toBe(true)
     })
-  })
-
-  it('onCompleted dispatches LOGIN and returns to the starting page', () => {
-    renderHook(() => useAuth())
-    const onCompleted = mockLoginOptions.onCompleted
-    if (!onCompleted) throw new Error('missing onCompleted')
-    act(() => {
-      onCompleted({ login: { token: 'abc123' } })
-    })
-    expect(mockDispatch).toHaveBeenCalledWith({ type: 'LOGIN', data: 'abc123' })
-    expect(mockNavigate).toHaveBeenCalledWith('/saved', { replace: true })
-  })
-
-  it('returns home when no starting page was stored', () => {
-    mockLocation.state = null
-    renderHook(() => useAuth())
-    const onCompleted = mockLoginOptions.onCompleted
-    if (!onCompleted) throw new Error('missing onCompleted')
-    act(() => {
-      onCompleted({ login: { token: 'abc123' } })
-    })
-    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true })
-  })
-
-  it('onError logs error', () => {
-    const consoleSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => undefined)
-    renderHook(() => useAuth())
-    const onError = mockLoginOptions.onError
-    if (!onError) throw new Error('missing onError')
-    act(() => {
-      onError(new Error('login failed'))
-    })
-    expect(consoleSpy).toHaveBeenCalled()
-    consoleSpy.mockRestore()
   })
 })

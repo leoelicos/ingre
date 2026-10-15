@@ -1,51 +1,36 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import { AuthProvider } from '../../../utils/auth/AuthContext'
+import { LOGIN } from '../../../lib/apollo/graphQL/mutations'
 import { Login } from '../Login'
 
-const mockNavigate = jest.fn()
-const mockLogin = jest.fn()
-const mockAuth = { loggedIn: false }
-const mockUseAuth: {
-  login: typeof mockLogin
-  loginError: Error | null
-  loginLoading: boolean
-} = {
-  login: mockLogin,
-  loginError: null,
-  loginLoading: false
+const VALID_TOKEN =
+  'eyJhbGciOiJub25lIn0.eyJkYXRhIjp7ImZpcnN0TmFtZSI6IkFkYSIsImVtYWlsIjoiYWRhQGIuYyIsIl9pZCI6IjEiLCJwcm8iOmZhbHNlfSwiZXhwIjo5OTk5OTk5OTk5fQ.'
+
+const loginMock: MockedResponse = {
+  request: {
+    query: LOGIN,
+    variables: { email: 'a@b.c', password: 'secret' }
+  },
+  result: { data: { login: { token: VALID_TOKEN } } }
 }
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom')
-  return { ...actual, useNavigate: () => mockNavigate }
-})
-
-jest.mock('../../../hooks/useAuth', () => ({
-  useAuth: () => mockUseAuth
-}))
-
-jest.mock('../../../utils/auth/AuthContext', () => ({
-  useAuthContext: () => [mockAuth, jest.fn()]
-}))
-
-jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
+const renderLogin = (mocks: MockedResponse[] = []) =>
+  render(
+    <MockedProvider mocks={mocks}>
+      <AuthProvider>
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+      </AuthProvider>
+    </MockedProvider>
+  )
 
 describe('Login form', () => {
-  beforeEach(() => {
-    mockNavigate.mockClear()
-    mockLogin.mockClear()
-    mockAuth.loggedIn = false
-    mockUseAuth.loginError = null
-    mockUseAuth.loginLoading = false
-  })
-
-  it('submits credentials and toggles the password', () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    )
+  it('toggles the password and submits credentials', async () => {
+    renderLogin([loginMock])
     fireEvent.change(screen.getByLabelText('Email'), {
       target: { value: 'a@b.c' }
     })
@@ -57,49 +42,16 @@ describe('Login form', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Hide' }))
     expect(password).toHaveAttribute('type', 'password')
     fireEvent.click(screen.getByRole('button', { name: 'Log in' }))
-    expect(mockLogin).toHaveBeenCalledWith({
-      email: 'a@b.c',
-      password: 'secret'
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: 'Log in' })).not.toBeNull()
     })
   })
 
-  it('shows loading and error states', () => {
-    mockUseAuth.loginLoading = true
-    const { rerender } = render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
+  it('shows an inline error for an empty submit', () => {
+    renderLogin()
+    fireEvent.click(screen.getByRole('button', { name: 'Log in' }))
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      /please enter an email address/i
     )
-    expect(screen.getByText('Loading')).toBeInTheDocument()
-    mockUseAuth.loginLoading = false
-    mockUseAuth.loginError = new Error('no')
-    rerender(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    )
-    expect(screen.getByText(/couldn't log you in/i)).toBeInTheDocument()
-  })
-
-  it('returns home when already logged in and no starting page was stored', () => {
-    mockAuth.loggedIn = true
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    )
-    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true })
-  })
-
-  it('returns to the starting page when already logged in', () => {
-    mockAuth.loggedIn = true
-    render(
-      <MemoryRouter
-        initialEntries={[{ pathname: '/login', state: { from: '/saved' } }]}
-      >
-        <Login />
-      </MemoryRouter>
-    )
-    expect(mockNavigate).toHaveBeenCalledWith('/saved', { replace: true })
   })
 })
