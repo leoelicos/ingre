@@ -36,8 +36,7 @@
   color: var(--color-text);
 }
 .auth-form__input:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 2px;
+  @apply focus-ring;
 }
 .auth-form__password {
   position: relative;
@@ -64,4 +63,11 @@
 .auth-page__alt {
   margin-top: 16px;
   color: var(--color-text-secondary);
+}
+
+.auth-form__show:focus-visible {
+  @apply focus-ring;
+}
+.auth-page__alt a:focus-visible {
+  @apply focus-ring;
 }

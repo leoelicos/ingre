@@ -114,6 +114,7 @@ export const ListRow: FC<RowProps> = ({
             type="checkbox"
             checked={checked}
             onChange={() => ticks.onToggle(id)}
+            className="focus-visible:focus-ring"
           />
           <span className="list-row__text">
             <span className="list-row__line">
@@ -134,7 +135,7 @@ export const ListRow: FC<RowProps> = ({
         )}
         <button
           type="button"
-          className="list-row__more"
+          className="list-row__more focus-visible:focus-ring"
           aria-expanded={expanded}
           aria-label={`Details for ${line.name}`}
           onClick={() => setExpanded(!expanded)}

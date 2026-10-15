@@ -42,7 +42,7 @@
   }
   input::placeholder,
   textarea::placeholder {
-    color: #6b7280;
+    color: var(--color-placeholder);
     opacity: 1;
   }
 }
@@ -57,7 +57,8 @@
     margin-bottom: var(--space-nav-gap);
   }
   .focus-ring {
-    @apply outline outline-[3px] outline-offset-2 outline-primary;
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
   }
   .btn {
     @apply inline-flex items-center justify-center min-h-[48px] px-3 rounded-control font-normal border border-transparent cursor-pointer no-underline;
@@ -209,6 +210,9 @@
     background: var(--color-surface);
     color: var(--color-text);
   }
+  .add-item__row input:focus-visible {
+    @apply focus-ring;
+  }
   .add-item__button {
     border-radius: var(--radius-control);
     min-height: 44px;
@@ -259,6 +263,9 @@
     border-radius: var(--radius-pill);
     background: var(--color-surface);
     color: var(--color-text);
+  }
+  .print-button:focus-visible {
+    @apply focus-ring;
   }
   .print-button:disabled {
     opacity: 0.5;

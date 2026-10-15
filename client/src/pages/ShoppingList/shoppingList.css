@@ -228,8 +228,7 @@
   text-align: left;
 }
 .list-have__toggle:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 2px;
+  @apply focus-ring;
 }
 .list-have__chevron {
   display: inline-flex;
@@ -251,8 +250,7 @@
   color: var(--color-text-secondary);
 }
 .done-screen .list-title:focus {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 2px;
+  @apply focus-ring;
 }
 .done-screen__start {
   width: 100%;
@@ -271,6 +269,12 @@
   text-decoration: underline;
 }
 .done-screen__back:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 2px;
+  @apply focus-ring;
+}
+
+.list-row__toggle input:focus-visible {
+  @apply focus-ring;
+}
+.list-row__more:focus-visible {
+  @apply focus-ring;
 }

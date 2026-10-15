@@ -23,8 +23,7 @@
   color: var(--color-text);
 }
 .home-search input:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 2px;
+  @apply focus-ring;
 }
 
 .chip-bar {
@@ -55,8 +54,7 @@
   font-size: 0.875rem;
 }
 .chip:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 2px;
+  @apply focus-ring;
 }
 .chip[aria-pressed='true'] {
   border-color: var(--color-primary);

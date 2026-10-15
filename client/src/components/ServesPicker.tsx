@@ -28,7 +28,7 @@ export const ServesPicker: FC<{
         {PEOPLE_OPTIONS.map((option) => (
           <label
             key={option}
-            className="segmented__option"
+            className="segmented__option focus-visible:focus-ring"
           >
             <input
               type="radio"

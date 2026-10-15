@@ -31,7 +31,7 @@ const AddPill: FC<{ title: string; libraryId: string; pick: PickControls }> = ({
   return (
     <button
       type="button"
-      className="add-pill"
+      className="add-pill focus-visible:focus-ring"
       aria-pressed={added}
       aria-label={added ? `Remove ${title} from list` : `Add ${title} to list`}
       onClick={() => pick.onToggle(libraryId)}
@@ -70,7 +70,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, pro, pick }) => {
           ) : (
             <Link
               to={`/recipe/${recipe.libraryId}`}
-              className="recipe-card__link"
+              className="recipe-card__link focus-visible:focus-ring"
             >
               {title}
             </Link>

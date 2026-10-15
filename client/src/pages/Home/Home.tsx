@@ -43,6 +43,7 @@ const Home: FC = () => {
           </span>
           <input
             id="home-search"
+            className="focus-visible:focus-ring"
             type="search"
             placeholder="Search recipes"
             value={query}
@@ -64,7 +65,7 @@ const Home: FC = () => {
             <li key={tag}>
               <button
                 type="button"
-                className="chip"
+                className="chip focus-visible:focus-ring"
                 aria-pressed={selectedTags.includes(tag)}
                 onClick={() => onToggleTag(tag)}
               >
@@ -76,7 +77,7 @@ const Home: FC = () => {
         {hasMore && (
           <button
             type="button"
-            className="chip chip--more"
+            className="chip chip--more focus-visible:focus-ring"
             aria-expanded={moreOpen}
             aria-controls="home-tags"
             onClick={() => setMoreOpen(!moreOpen)}

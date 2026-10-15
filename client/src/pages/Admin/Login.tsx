@@ -80,7 +80,7 @@ export const Login: FC = () => {
             id="email"
             name="email"
             type="email"
-            className="auth-form__input"
+            className="auth-form__input focus-visible:focus-ring"
             value={email}
             onChange={onEmailChange}
             autoComplete="email"
@@ -97,7 +97,7 @@ export const Login: FC = () => {
               id="password"
               name="password"
               type={showPassword ? 'text' : 'password'}
-              className="auth-form__input"
+              className="auth-form__input focus-visible:focus-ring"
               value={password}
               onChange={onPasswordChange}
               autoComplete="current-password"
@@ -105,7 +105,7 @@ export const Login: FC = () => {
             />
             <button
               type="button"
-              className="auth-form__show"
+              className="auth-form__show focus-visible:focus-ring"
               aria-pressed={showPassword}
               aria-controls="password"
               onClick={togglePasswordVisibility}
@@ -126,6 +126,7 @@ export const Login: FC = () => {
         <Link
           to="/signup"
           state={{ from }}
+          className="focus-visible:focus-ring"
         >
           Sign up
         </Link>

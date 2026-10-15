@@ -28,8 +28,7 @@
   color: var(--color-on-primary);
 }
 .segmented__option input:focus-visible + span {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 2px;
+  @apply focus-ring;
 }
 
 .serves {

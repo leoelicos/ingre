@@ -70,7 +70,7 @@ export const ShoppingListView: FC<{
         />
         <button
           type="button"
-          className="print-button"
+          className="print-button focus-visible:focus-ring"
           onClick={onPrint}
           disabled={list.toBuy.length === 0}
         >

@@ -33,6 +33,10 @@
   --color-text: var(--palette-ink);
   --color-text-secondary: var(--palette-stone);
   --color-text-strong: var(--palette-ink); /* high-contrast icons */
+  /* placeholder: ≥4.5:1 on cream */
+  --color-placeholder: #6b7280;
+  /* "Added" pill text on the dinner tint */
+  --color-added-pill: #276b43;
 
   /* lines */
   --color-border: var(--palette-stone);
