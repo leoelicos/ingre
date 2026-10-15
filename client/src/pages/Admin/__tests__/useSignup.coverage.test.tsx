@@ -189,7 +189,7 @@ describe('useSignup coverage', () => {
     })
   })
 
-  it('returns email-exists without a second validation message', async () => {
+  it('returns email-exists and sets the message', async () => {
     const { result } = renderHook(() => useSignup(), {
       wrapper: wrapper([takenEmailMock])
     })
@@ -205,7 +205,9 @@ describe('useSignup coverage', () => {
       reason: 'email-exists',
       message: 'A user with this email already exists.'
     })
-    expect(result.current.validationMessage).toBeNull()
+    expect(result.current.validationMessage).toBe(
+      'A user with this email already exists.'
+    )
     expect(result.current.emailExists).toBe(true)
   })
 
@@ -225,7 +227,7 @@ describe('useSignup coverage', () => {
       reason: 'error',
       message: "Couldn't check that email."
     })
-    expect(result.current.validationMessage).toBeNull()
+    expect(result.current.validationMessage).toBe("Couldn't check that email.")
   })
 
   it('surfaces one friendly message when sign-up returns no data', async () => {

@@ -15,7 +15,6 @@ export const Signup: FC = () => {
     onEmailChange,
     onPasswordChange,
     checkEmailLoading,
-    checkEmailError,
     emailExists,
     addUserLoading,
     validationMessage,
@@ -88,14 +87,6 @@ export const Signup: FC = () => {
           required
         />
         {checkEmailLoading && <p role="status">Checking email…</p>}
-        {checkEmailError && (
-          <p
-            className="auth-page__error"
-            role="alert"
-          >
-            Couldn't check that email.
-          </p>
-        )}
         {emailExists && (
           <p
             className="auth-page__error"
@@ -108,6 +99,14 @@ export const Signup: FC = () => {
             >
               Log in?
             </Link>
+          </p>
+        )}
+        {!emailExists && validationMessage && (
+          <p
+            className="auth-page__error"
+            role="alert"
+          >
+            {validationMessage}
           </p>
         )}
 
@@ -139,14 +138,6 @@ export const Signup: FC = () => {
           </button>
         </div>
 
-        {validationMessage && (
-          <p
-            className="auth-page__error"
-            role="alert"
-          >
-            {validationMessage}
-          </p>
-        )}
         {addUserLoading && <p role="status">Creating your account…</p>}
 
         <button
