@@ -45,6 +45,7 @@
     "postcss": "^8.5.30",
     "prettier": "^2.8.8",
     "tailwindcss": "^3.4.19",
+    "tailwindcss-react-aria-components": "^2.2.0",
     "ts-jest": "^29.4.14",
     "typescript": "6",
     "vite": "^8.3.4"

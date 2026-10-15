@@ -43,19 +43,17 @@ export const PrimaryButton = ({
         ? { 'aria-describedby': ariaDescribedBy }
         : {})}
       {...(showAriaDisabled ? { 'aria-disabled': DISABLED_ARIA } : {})}
-      className={({ isFocusVisible }) =>
-        [
-          'inline-flex items-center justify-center min-h-[48px] px-4 rounded-control',
-          'font-normal border',
-          showAriaDisabled
-            ? 'bg-primary-disabled-bg text-primary-disabled-fg border-transparent cursor-not-allowed'
-            : 'bg-primary text-on-primary border-primary',
-          isFocusVisible ? 'focus-ring' : '',
-          className
-        ]
-          .filter(Boolean)
-          .join(' ')
-      }
+      className={[
+        'inline-flex items-center justify-center min-h-[48px] px-4 rounded-control',
+        'font-normal border',
+        'bg-primary text-on-primary border-primary',
+        'focus-visible:focus-ring',
+        'pressed:opacity-90',
+        'disabled:bg-primary-disabled-bg disabled:text-primary-disabled-fg disabled:border-transparent disabled:cursor-not-allowed',
+        className
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       {children}
     </AriaButton>
