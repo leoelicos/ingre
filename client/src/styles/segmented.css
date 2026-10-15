@@ -28,8 +28,8 @@
   color: var(--color-on-primary);
 }
 .segmented__option input:focus-visible + span {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -4px;
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .serves {

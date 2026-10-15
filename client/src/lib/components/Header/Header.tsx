@@ -54,7 +54,6 @@ export const Header: React.FC<{
           onClick={() => setOpen((v) => !v)}
         >
           <LogoCollapsed />
-          <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
         </button>
         <nav
           id="main-nav"

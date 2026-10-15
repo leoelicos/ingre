@@ -228,7 +228,7 @@
   text-align: left;
 }
 .list-have__toggle:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
 .list-have__chevron {
@@ -251,8 +251,8 @@
   color: var(--color-text-secondary);
 }
 .done-screen .list-title:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 4px;
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
 }
 .done-screen__start {
   width: 100%;
@@ -271,6 +271,6 @@
   text-decoration: underline;
 }
 .done-screen__back:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }

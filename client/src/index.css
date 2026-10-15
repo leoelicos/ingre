@@ -40,11 +40,10 @@
     font-size: inherit;
     line-height: inherit;
   }
-  input,
-  select,
-  textarea {
-    box-sizing: border-box;
-    max-width: 100%;
+  input::placeholder,
+  textarea::placeholder {
+    color: #6b7280;
+    opacity: 1;
   }
 }
 

@@ -44,7 +44,7 @@ const Home: FC = () => {
           <input
             id="home-search"
             type="search"
-            placeholder="Search ingredients"
+            placeholder="Search recipes"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />

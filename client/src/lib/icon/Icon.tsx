@@ -31,7 +31,12 @@ export const IngreIconLogoEgg = () => (
   />
 )
 
-export const IngreIconLogoMenuCollapsed = () => <Icon icon={['fas', 'bars']} />
+export const IngreIconLogoMenuCollapsed = () => (
+  <Icon
+    icon={['fas', 'bars']}
+    extraStyle={{ fontSize: '20px', width: '20px' }}
+  />
+)
 export const IngreIconChevronDown = () => (
   <Icon
     icon={['fas', 'chevron-down']}
