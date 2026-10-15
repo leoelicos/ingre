@@ -52,7 +52,6 @@ export const Signup: FC = () => {
           value={fields.firstName}
           onChange={onFirstNameChange}
           autoComplete="given-name"
-          required
         />
 
         <label
@@ -85,7 +84,6 @@ export const Signup: FC = () => {
           value={fields.email}
           onChange={onEmailChange}
           autoComplete="email"
-          required
         />
         {checkEmailLoading && <p role="status">Checking email…</p>}
         {checkEmailError && (
@@ -126,7 +124,6 @@ export const Signup: FC = () => {
             value={fields.password}
             onChange={onPasswordChange}
             autoComplete="new-password"
-            required
           />
           <button
             type="button"

@@ -43,8 +43,20 @@ export const Login: FC = () => {
 
   const from = returnPath(location.state)
 
+  const [validationMessage, setValidationMessage] = useState<string | null>(
+    null
+  )
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setValidationMessage(null)
+    if (!email.trim()) {
+      setValidationMessage('Please enter an email address.')
+      return
+    }
+    if (!password) {
+      setValidationMessage('Please enter a password.')
+      return
+    }
     login({ email, password })
   }
 
@@ -84,7 +96,6 @@ export const Login: FC = () => {
             value={email}
             onChange={onEmailChange}
             autoComplete="email"
-            required
           />
           <label
             className="auth-form__label"
@@ -101,7 +112,6 @@ export const Login: FC = () => {
               value={password}
               onChange={onPasswordChange}
               autoComplete="current-password"
-              required
             />
             <button
               type="button"
@@ -113,6 +123,14 @@ export const Login: FC = () => {
               {showPassword ? 'Hide' : 'Show'}
             </button>
           </div>
+          {validationMessage && (
+            <p
+              className="auth-page__error"
+              role="alert"
+            >
+              {validationMessage}
+            </p>
+          )}
           <button
             type="submit"
             className="btn btn-primary auth-form__submit"
