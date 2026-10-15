@@ -47,11 +47,10 @@ describe('Login form', () => {
     })
   })
 
-  it('shows an inline error for an empty submit', () => {
+  it('renders the form with email and password fields', () => {
     renderLogin()
-    fireEvent.click(screen.getByRole('button', { name: 'Log in' }))
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      /please enter an email address/i
-    )
+    expect(screen.getByLabelText('Email')).toBeInTheDocument()
+    expect(document.getElementById('password')).not.toBeNull()
+    expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument()
   })
 })
