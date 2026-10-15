@@ -319,8 +319,9 @@ describe('ShoppingFlow', () => {
     ).toBeInTheDocument()
     fireEvent.click(tab('At the shop'))
     expect(
-      screen.queryByRole('button', { name: DONE_SHOPPING })
-    ).not.toBeInTheDocument()
+      screen.getByRole('button', { name: DONE_SHOPPING })
+    ).toBeInTheDocument()
+    expect(screen.getByText('Nothing left to buy')).toBeInTheDocument()
   })
 
   it('links back to Pick from an empty list', () => {
