@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardContainer'
 import { ServesPicker } from '../../components/ServesPicker'
 import { PHONE_QUERY, useMediaQuery } from '../../utils/useMediaQuery'
@@ -24,6 +24,17 @@ const Home: FC = () => {
   } = useHome()
   const phone = useMediaQuery(PHONE_QUERY)
   const [moreOpen, setMoreOpen] = useState(false)
+  const moreRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (!moreOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      setMoreOpen(false)
+      moreRef.current?.focus()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [moreOpen])
   const collapsed = phone && !moreOpen
   const shown = visibleTags(tags, selectedTags, collapsed)
   const hasMore = phone && visibleTags(tags, [], true).length < tags.length
@@ -77,6 +88,7 @@ const Home: FC = () => {
         {hasMore && (
           <button
             type="button"
+            ref={moreRef}
             className="chip chip--more focus-visible:focus-ring"
             aria-expanded={moreOpen}
             aria-controls="home-tags"
