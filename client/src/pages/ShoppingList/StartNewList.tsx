@@ -7,7 +7,7 @@ import './startNewList.css'
 export const StartNewList: FC<{ onStart: () => void }> = ({ onStart }) => (
   <button
     type="button"
-    className="start-new"
+    className="start-new focus-visible:focus-ring"
     onClick={onStart}
   >
     <IngreIconStartOver /> Start a new list

@@ -89,6 +89,8 @@
     overflow-x: auto;
     gap: 6px;
     scrollbar-width: none;
+    padding: 5px;
+    margin: -5px;
   }
   .chip-row--one li {
     flex: none;
