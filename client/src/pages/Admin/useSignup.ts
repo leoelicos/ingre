@@ -15,6 +15,8 @@ type SignupResult =
       message: string
     }
 
+const MIN_PASSWORD_LENGTH = 5
+
 const EMAIL_EXISTS = 'A user with this email already exists.'
 const CHECK_FAILED = "Couldn't check that email."
 const SIGNUP_FAILED = "Couldn't sign you up."
@@ -76,6 +78,11 @@ export const useSignup = () => {
     }
     if (!password) {
       const message = 'Please enter a password.'
+      setValidationMessage(message)
+      return { ok: false, reason: 'validation', message }
+    }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      const message = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
       setValidationMessage(message)
       return { ok: false, reason: 'validation', message }
     }
