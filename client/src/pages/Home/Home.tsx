@@ -68,6 +68,23 @@ const Home: FC = () => {
                 className="chip focus-visible:focus-ring"
                 aria-pressed={selectedTags.includes(tag)}
                 onClick={() => onToggleTag(tag)}
+                onFocus={(e) => {
+                  const chip = e.currentTarget
+                  const row = chip.closest('.chip-row')
+                  if (!row || !row.classList.contains('chip-row--one')) return
+                  const more = row.parentElement?.querySelector('.chip--more')
+                  const moreWidth = more
+                    ? more.getBoundingClientRect().width + 12
+                    : 0
+                  const chipRect = chip.getBoundingClientRect()
+                  const rowRect = row.getBoundingClientRect()
+                  if (chipRect.right > rowRect.right - moreWidth) {
+                    row.scrollLeft +=
+                      chipRect.right - (rowRect.right - moreWidth)
+                  } else if (chipRect.left < rowRect.left) {
+                    row.scrollLeft -= rowRect.left - chipRect.left
+                  }
+                }}
               >
                 {tagLabel(tag)}
               </button>
