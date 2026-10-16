@@ -83,9 +83,11 @@ export const useSignup = () => {
     try {
       const result = await checkEmailAlreadyExists({ variables: { email } })
       if (result.error || !result.data) {
-        throw new Error(CHECK_FAILED)
+        setValidationMessage(CHECK_FAILED)
+        return { ok: false, reason: 'error', message: CHECK_FAILED }
       }
       if (result.data.checkEmailAlreadyExists) {
+        setValidationMessage(EMAIL_EXISTS)
         return {
           ok: false,
           reason: 'email-exists',
@@ -93,6 +95,7 @@ export const useSignup = () => {
         }
       }
     } catch {
+      setValidationMessage(CHECK_FAILED)
       return { ok: false, reason: 'error', message: CHECK_FAILED }
     }
 
