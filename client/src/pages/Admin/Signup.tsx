@@ -51,7 +51,6 @@ export const Signup: FC = () => {
           value={fields.firstName}
           onChange={onFirstNameChange}
           autoComplete="given-name"
-          required
         />
 
         <label
@@ -84,7 +83,6 @@ export const Signup: FC = () => {
           value={fields.email}
           onChange={onEmailChange}
           autoComplete="email"
-          required
         />
         {checkEmailLoading && <p role="status">Checking email…</p>}
         {emailExists && (
@@ -131,7 +129,6 @@ export const Signup: FC = () => {
             value={fields.password}
             onChange={onPasswordChange}
             autoComplete="new-password"
-            required
             minLength={5}
             aria-describedby="password-hint"
           />
