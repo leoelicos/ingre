@@ -15,7 +15,6 @@ export const Signup: FC = () => {
     onEmailChange,
     onPasswordChange,
     checkEmailLoading,
-    checkEmailError,
     emailExists,
     addUserLoading,
     validationMessage,
@@ -52,7 +51,6 @@ export const Signup: FC = () => {
           value={fields.firstName}
           onChange={onFirstNameChange}
           autoComplete="given-name"
-          required
         />
 
         <label
@@ -85,19 +83,10 @@ export const Signup: FC = () => {
           value={fields.email}
           onChange={onEmailChange}
           autoComplete="email"
-          required
         />
         {checkEmailLoading && (
           <p role="status">
             Checking email… the server may take a few seconds to wake up.
-          </p>
-        )}
-        {checkEmailError && (
-          <p
-            className="auth-page__error"
-            role="alert"
-          >
-            Couldn't check that email.
           </p>
         )}
         {emailExists && (
@@ -114,6 +103,14 @@ export const Signup: FC = () => {
             </Link>
           </p>
         )}
+        {!emailExists && validationMessage && (
+          <p
+            className="auth-page__error"
+            role="alert"
+          >
+            {validationMessage}
+          </p>
+        )}
 
         <label
           className="auth-form__label"
@@ -121,6 +118,12 @@ export const Signup: FC = () => {
         >
           Password
         </label>
+        <p
+          id="password-hint"
+          className="auth-form__hint"
+        >
+          At least 5 characters.
+        </p>
         <div className="auth-form__password">
           <input
             id="password"
@@ -130,7 +133,8 @@ export const Signup: FC = () => {
             value={fields.password}
             onChange={onPasswordChange}
             autoComplete="new-password"
-            required
+            minLength={5}
+            aria-describedby="password-hint"
           />
           <button
             type="button"
@@ -143,14 +147,6 @@ export const Signup: FC = () => {
           </button>
         </div>
 
-        {validationMessage && (
-          <p
-            className="auth-page__error"
-            role="alert"
-          >
-            {validationMessage}
-          </p>
-        )}
         {addUserLoading && <p role="status">Creating your account…</p>}
 
         <button

@@ -5,7 +5,11 @@ import { useNavigate } from 'react-router-dom'
 import { ServesPicker } from '../../components/ServesPicker'
 import { PrimaryButton } from '../../components/PrimaryButton'
 import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
-import { IngreIconChevronDown, IngreIconPrint } from '../../lib/icon/Icon'
+import {
+  IngreIconChevronDown,
+  IngreIconPrint,
+  IngreIconBasket
+} from '../../lib/icon/Icon'
 import { AddItem } from './AddItem'
 import { AllDone, StartNewList } from './StartNewList'
 import { LineGroups } from './LineGroups'
@@ -52,7 +56,8 @@ export const ShoppingListView: FC<{
     timers
   )
   const locationMode: LocationMode = atHome ? 'move' : 'none'
-  const shopBar = !atHome && list.toBuy.length > 0
+  const shopBar = !atHome
+  const nothingLeft = list.toBuy.length === 0
   const inBasket = list.toBuy.length - list.leftToBuy
   const rowActions = {
     grouping: view,
@@ -85,7 +90,10 @@ export const ShoppingListView: FC<{
           <button
             type="button"
             className="link-button"
-            onClick={() => list.setStep('pick')}
+            onClick={() => {
+              list.setStep('pick')
+              document.getElementById('flow-tab-pick')?.focus()
+            }}
           >
             Pick some recipes
           </button>{' '}
@@ -95,8 +103,22 @@ export const ShoppingListView: FC<{
         <>
           {!complete && (
             <h2 className="list-heading">
-              {atHome ? 'Check your kitchen' : 'To buy'}
+              {atHome ? (
+                'Check your kitchen'
+              ) : (
+                <>
+                  <IngreIconBasket /> To buy
+                </>
+              )}
             </h2>
+          )}
+          {!atHome && list.toBuy.length > 0 && (
+            <p
+              className="list-basket-count"
+              aria-live="polite"
+            >
+              {basketCount(inBasket, list.toBuy.length)}
+            </p>
           )}
           {atHome && <p className="list-note">Tick what you already have</p>}
           {complete && <AllDone onStart={onStartNew} />}
@@ -184,7 +206,10 @@ export const ShoppingListView: FC<{
       >
         {atHome ? (
           <PrimaryButton
-            onPress={() => list.setStep('shop')}
+            onPress={() => {
+              list.setStep('shop')
+              document.getElementById('flow-tab-shop')?.focus()
+            }}
             className="list-tap__button w-full"
           >
             Next: at the shop ({list.leftToBuy})
@@ -193,7 +218,9 @@ export const ShoppingListView: FC<{
           shopBar && (
             <>
               <span className="list-tap__count">
-                {basketCount(inBasket, list.toBuy.length)}
+                {nothingLeft
+                  ? 'Nothing left to buy'
+                  : basketCount(inBasket, list.toBuy.length)}
               </span>
               <PrimaryButton
                 id={SHOP_BAR_ID}

@@ -15,6 +15,8 @@ type SignupResult =
       message: string
     }
 
+const MIN_PASSWORD_LENGTH = 5
+
 const EMAIL_EXISTS = 'A user with this email already exists.'
 const CHECK_FAILED = "Couldn't check that email."
 const SIGNUP_FAILED = "Couldn't sign you up."
@@ -79,13 +81,20 @@ export const useSignup = () => {
       setValidationMessage(message)
       return { ok: false, reason: 'validation', message }
     }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      const message = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
+      setValidationMessage(message)
+      return { ok: false, reason: 'validation', message }
+    }
 
     try {
       const result = await checkEmailAlreadyExists({ variables: { email } })
       if (result.error || !result.data) {
-        throw new Error(CHECK_FAILED)
+        setValidationMessage(CHECK_FAILED)
+        return { ok: false, reason: 'error', message: CHECK_FAILED }
       }
       if (result.data.checkEmailAlreadyExists) {
+        setValidationMessage(EMAIL_EXISTS)
         return {
           ok: false,
           reason: 'email-exists',
@@ -93,6 +102,7 @@ export const useSignup = () => {
         }
       }
     } catch {
+      setValidationMessage(CHECK_FAILED)
       return { ok: false, reason: 'error', message: CHECK_FAILED }
     }
 

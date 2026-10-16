@@ -23,6 +23,7 @@ export const PickStep: FC<{ list: ShoppingListState }> = ({ list }) => {
   const canContinue = list.recipes.length > 0
   const goHome = () => {
     list.setStep('home')
+    document.getElementById('flow-tab-home')?.focus()
   }
   return (
     <>

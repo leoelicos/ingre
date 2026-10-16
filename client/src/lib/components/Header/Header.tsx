@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { AuthButton } from '../../../components/AuthButton'
 
 export const Header: React.FC<{
@@ -11,6 +11,11 @@ export const Header: React.FC<{
 }> = ({ Logo, logoText, LogoCollapsed, links, loggedIn }) => {
   const [open, setOpen] = useState(false)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const location = useLocation()
+  // Close the mobile menu on any navigation (including Log in).
+  useEffect(() => {
+    setOpen(false)
+  }, [location.pathname])
 
   useEffect(() => {
     if (!open) return
