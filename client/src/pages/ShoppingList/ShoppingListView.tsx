@@ -86,7 +86,10 @@ export const ShoppingListView: FC<{
           <button
             type="button"
             className="link-button"
-            onClick={() => list.setStep('pick')}
+            onClick={() => {
+              list.setStep('pick')
+              document.getElementById('flow-tab-pick')?.focus()
+            }}
           >
             Pick some recipes
           </button>{' '}
@@ -185,7 +188,10 @@ export const ShoppingListView: FC<{
       >
         {atHome ? (
           <PrimaryButton
-            onPress={() => list.setStep('shop')}
+            onPress={() => {
+              list.setStep('shop')
+              document.getElementById('flow-tab-shop')?.focus()
+            }}
             className="list-tap__button w-full"
           >
             Next: at the shop ({list.leftToBuy})
