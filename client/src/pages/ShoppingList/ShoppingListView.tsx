@@ -5,7 +5,11 @@ import { useNavigate } from 'react-router-dom'
 import { ServesPicker } from '../../components/ServesPicker'
 import { PrimaryButton } from '../../components/PrimaryButton'
 import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
-import { IngreIconChevronDown, IngreIconPrint } from '../../lib/icon/Icon'
+import {
+  IngreIconChevronDown,
+  IngreIconPrint,
+  IngreIconBasket
+} from '../../lib/icon/Icon'
 import { AddItem } from './AddItem'
 import { AllDone, StartNewList } from './StartNewList'
 import { LineGroups } from './LineGroups'
@@ -99,8 +103,22 @@ export const ShoppingListView: FC<{
         <>
           {!complete && (
             <h2 className="list-heading">
-              {atHome ? 'Check your kitchen' : 'To buy'}
+              {atHome ? (
+                'Check your kitchen'
+              ) : (
+                <>
+                  <IngreIconBasket /> To buy
+                </>
+              )}
             </h2>
+          )}
+          {!atHome && list.toBuy.length > 0 && (
+            <p
+              className="list-basket-count"
+              aria-live="polite"
+            >
+              {basketCount(inBasket, list.toBuy.length)}
+            </p>
           )}
           {atHome && <p className="list-note">Tick what you already have</p>}
           {complete && <AllDone onStart={onStartNew} />}
