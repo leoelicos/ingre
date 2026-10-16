@@ -26,6 +26,11 @@
   font-weight: 600;
   color: var(--color-text);
 }
+.auth-form__hint {
+  margin: 0 0 4px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
 .auth-form__input {
   width: 100%;
   min-height: 44px;

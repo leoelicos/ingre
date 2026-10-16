@@ -116,6 +116,12 @@ export const Signup: FC = () => {
         >
           Password
         </label>
+        <p
+          id="password-hint"
+          className="auth-form__hint"
+        >
+          At least 5 characters.
+        </p>
         <div className="auth-form__password">
           <input
             id="password"
@@ -126,6 +132,8 @@ export const Signup: FC = () => {
             onChange={onPasswordChange}
             autoComplete="new-password"
             required
+            minLength={5}
+            aria-describedby="password-hint"
           />
           <button
             type="button"
