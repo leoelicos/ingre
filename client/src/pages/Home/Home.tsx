@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardContainer'
 import { ServesPicker } from '../../components/ServesPicker'
 import { PHONE_QUERY, useMediaQuery } from '../../utils/useMediaQuery'
@@ -24,6 +24,17 @@ const Home: FC = () => {
   } = useHome()
   const phone = useMediaQuery(PHONE_QUERY)
   const [moreOpen, setMoreOpen] = useState(false)
+  const moreRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (!moreOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      setMoreOpen(false)
+      moreRef.current?.focus()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [moreOpen])
   const collapsed = phone && !moreOpen
   const shown = visibleTags(tags, selectedTags, collapsed)
   const hasMore = phone && visibleTags(tags, [], true).length < tags.length
@@ -68,6 +79,23 @@ const Home: FC = () => {
                 className="chip focus-visible:focus-ring"
                 aria-pressed={selectedTags.includes(tag)}
                 onClick={() => onToggleTag(tag)}
+                onFocus={(e) => {
+                  const chip = e.currentTarget
+                  const row = chip.closest('.chip-row')
+                  if (!row || !row.classList.contains('chip-row--one')) return
+                  const more = row.parentElement?.querySelector('.chip--more')
+                  const moreWidth = more
+                    ? more.getBoundingClientRect().width + 12
+                    : 0
+                  const chipRect = chip.getBoundingClientRect()
+                  const rowRect = row.getBoundingClientRect()
+                  if (chipRect.right > rowRect.right - moreWidth) {
+                    row.scrollLeft +=
+                      chipRect.right - (rowRect.right - moreWidth)
+                  } else if (chipRect.left < rowRect.left) {
+                    row.scrollLeft -= rowRect.left - chipRect.left
+                  }
+                }}
               >
                 {tagLabel(tag)}
               </button>
@@ -77,6 +105,7 @@ const Home: FC = () => {
         {hasMore && (
           <button
             type="button"
+            ref={moreRef}
             className="chip chip--more focus-visible:focus-ring"
             aria-expanded={moreOpen}
             aria-controls="home-tags"

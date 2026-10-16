@@ -34,6 +34,7 @@ interface Drag {
 /** Pick · At home · At the shop: tabs everywhere, plus swipe between steps on touch screens. */
 /** Router state the finish screen sends when Start a new list is tapped. */
 export const START_NEW_STATE = { startNew: true }
+/** Router state sent by "Back to my list". */
 export const FOCUS_SHOP_BAR = { focusShopBar: true }
 export const wantsStartNew = (state: unknown): boolean =>
   typeof state === 'object' &&
@@ -73,9 +74,26 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   const [drag, setDrag] = useState<Drag | null>(null)
   const dragging = drag !== null && drag.horizontal === true
 
-  const go = (i: number) => list.setStep(stepAt(i, list.step))
+  const go = (i: number) => {
+    const next = stepAt(i, list.step)
+    list.setStep(next)
+    document.getElementById(`flow-tab-${next}`)?.focus()
+  }
 
   const onTabKey = (e: KeyboardEvent) => {
+    if (e.key === 'Home') {
+      e.preventDefault()
+      list.setStep(FLOW_STEPS[0]!)
+      document.getElementById(`flow-tab-${FLOW_STEPS[0]}`)?.focus()
+      return
+    }
+    if (e.key === 'End') {
+      e.preventDefault()
+      const last = FLOW_STEPS[count - 1]!
+      list.setStep(last)
+      document.getElementById(`flow-tab-${last}`)?.focus()
+      return
+    }
     const delta = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
     if (delta === 0) return
     const next = stepAt((index + delta + count) % count, list.step)
@@ -132,7 +150,10 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
               aria-controls={`flow-panel-${step}`}
               tabIndex={step === list.step ? 0 : -1}
               className="flow-steps__tab"
-              onClick={() => list.setStep(step)}
+              onClick={() => {
+                list.setStep(step)
+                document.getElementById(`flow-tab-${step}`)?.focus()
+              }}
             >
               {STEP_LABELS[step]}
             </button>

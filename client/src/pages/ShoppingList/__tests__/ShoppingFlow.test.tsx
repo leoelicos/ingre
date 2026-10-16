@@ -47,7 +47,8 @@ afterEach(() => jest.useRealTimers())
 const tab = (name: string) => screen.getByRole('tab', { name })
 const panel = () => screen.getByRole('tabpanel')
 const leftToBuy = () => {
-  const text = screen.getByText(/^\d+ of \d+ in basket$/).textContent ?? ''
+  const text =
+    screen.getAllByText(/^\d+ of \d+ in basket$/)[0]?.textContent ?? ''
   const match = text.match(/^(\d+) of (\d+) in basket$/)
   return Number(match?.[2]) - Number(match?.[1])
 }
@@ -319,8 +320,9 @@ describe('ShoppingFlow', () => {
     ).toBeInTheDocument()
     fireEvent.click(tab('At the shop'))
     expect(
-      screen.queryByRole('button', { name: DONE_SHOPPING })
-    ).not.toBeInTheDocument()
+      screen.getByRole('button', { name: DONE_SHOPPING })
+    ).toBeInTheDocument()
+    expect(screen.getByText('Nothing left to buy')).toBeInTheDocument()
   })
 
   it('links back to Pick from an empty list', () => {
@@ -430,7 +432,9 @@ describe('Shopping done', () => {
         </MemoryRouter>
       </MockedProvider>
     )
-    expect(screen.getByText(/^\d+ of \d+ in basket$/)).toBeInTheDocument()
+    expect(
+      screen.getAllByText(/^\d+ of \d+ in basket$/).length
+    ).toBeGreaterThan(0)
     fireEvent.click(screen.getByRole('button', { name: DONE_SHOPPING }))
     expect(
       screen.getByRole('heading', { name: 'Shopping done' })

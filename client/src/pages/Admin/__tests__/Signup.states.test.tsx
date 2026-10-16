@@ -99,6 +99,10 @@ const renderWithProviders = (
               element={<div>home with list</div>}
             />
             <Route
+              path="/saved"
+              element={<div>saved list still here</div>}
+            />
+            <Route
               path="/login"
               element={<LoginProbe />}
             />
@@ -251,7 +255,7 @@ describe('Signup states', () => {
   it('navigates to the starting page after successful sign-up and keeps the list', async () => {
     renderWithProviders(
       [emailFreeMock, addUserMock],
-      [{ pathname: '/signup', state: { from: '/' } }]
+      [{ pathname: '/signup', state: { from: '/saved' } }]
     )
     fillAccount()
     fireEvent.submit(
@@ -259,7 +263,7 @@ describe('Signup states', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('home with list')).toBeInTheDocument()
+      expect(screen.getByText('saved list still here')).toBeInTheDocument()
     })
     expect(
       screen.queryByRole('heading', { name: /sign up/i })

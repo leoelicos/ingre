@@ -15,7 +15,6 @@ export const Signup: FC = () => {
     onEmailChange,
     onPasswordChange,
     checkEmailLoading,
-    checkEmailError,
     emailExists,
     addUserLoading,
     validationMessage,
@@ -86,14 +85,6 @@ export const Signup: FC = () => {
           autoComplete="email"
         />
         {checkEmailLoading && <p role="status">Checking email…</p>}
-        {checkEmailError && (
-          <p
-            className="auth-page__error"
-            role="alert"
-          >
-            Couldn't check that email.
-          </p>
-        )}
         {emailExists && (
           <p
             className="auth-page__error"
@@ -108,6 +99,14 @@ export const Signup: FC = () => {
             </Link>
           </p>
         )}
+        {!emailExists && validationMessage && (
+          <p
+            className="auth-page__error"
+            role="alert"
+          >
+            {validationMessage}
+          </p>
+        )}
 
         <label
           className="auth-form__label"
@@ -115,6 +114,12 @@ export const Signup: FC = () => {
         >
           Password
         </label>
+        <p
+          id="password-hint"
+          className="auth-form__hint"
+        >
+          At least 5 characters.
+        </p>
         <div className="auth-form__password">
           <input
             id="password"
@@ -124,6 +129,8 @@ export const Signup: FC = () => {
             value={fields.password}
             onChange={onPasswordChange}
             autoComplete="new-password"
+            minLength={5}
+            aria-describedby="password-hint"
           />
           <button
             type="button"
@@ -136,14 +143,6 @@ export const Signup: FC = () => {
           </button>
         </div>
 
-        {validationMessage && (
-          <p
-            className="auth-page__error"
-            role="alert"
-          >
-            {validationMessage}
-          </p>
-        )}
         {addUserLoading && <p role="status">Creating your account…</p>}
 
         <button
