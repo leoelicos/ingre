@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import { capitaliseFirst } from '../../utils/capitaliseFirst'
+import { PrimaryButton } from '../../components/PrimaryButton'
 import type { LibraryIngredient } from '../../types/library'
 import { catalogue } from '../../utils/library/recipeLibrary'
 import { matchCatalogue } from '../../utils/library/catalogueMatch'
@@ -24,21 +25,19 @@ const AddMatched: FC<{ item: LibraryIngredient; list: EmptySearchList }> = ({
         No recipes with {item.name} yet. You can add {item.name} to your list
       </p>
       {onList ? (
-        <button
-          type="button"
-          className="btn btn-primary empty-search__button"
-          onClick={list.onViewList}
+        <PrimaryButton
+          size="snug"
+          onPress={list.onViewList}
         >
           ✓ {capitaliseFirst(item.name)} is on your list. View list
-        </button>
+        </PrimaryButton>
       ) : (
-        <button
-          type="button"
-          className="btn btn-primary empty-search__button"
-          onClick={() => list.onAdd({ name: item.name, ingredientId: item.id })}
+        <PrimaryButton
+          size="snug"
+          onPress={() => list.onAdd({ name: item.name, ingredientId: item.id })}
         >
           + Add {item.name}
-        </button>
+        </PrimaryButton>
       )}
     </>
   )

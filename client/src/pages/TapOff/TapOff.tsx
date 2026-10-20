@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FOCUS_SHOP_BAR, START_NEW_STATE } from '../ShoppingList/ShoppingFlow'
 import { useShoppingList } from '../../utils/shopping/useShoppingList'
 import { changeTitle } from '../../utils/changeTitle'
+import { PrimaryButton } from '../../components/PrimaryButton'
 import '../ShoppingList/shoppingList.css'
 
 export const inBasketLine = (n: number) =>
@@ -34,13 +35,13 @@ const TapOff: FC = () => {
       </h1>
       <p>{inBasketLine(total - left)}</p>
       <p>{stillToBuyLine(left)}</p>
-      <button
-        type="button"
-        className="btn btn-primary done-screen__start"
-        onClick={() => navigate('/', { state: START_NEW_STATE })}
+      <PrimaryButton
+        size="snug"
+        className="done-screen__start"
+        onPress={() => navigate('/', { state: START_NEW_STATE })}
       >
         Start a new list
-      </button>
+      </PrimaryButton>
       <Link
         className="done-screen__back"
         to="/"

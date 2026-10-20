@@ -5,6 +5,7 @@ import { changeTitle } from '../../utils/changeTitle'
 import { useAuth } from '../../hooks/useAuth'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 import { returnPath } from '../../utils/auth/returnPath'
+import { PrimaryButton } from '../../components/PrimaryButton'
 import './auth.css'
 
 const useLoginForm = () => {
@@ -131,12 +132,13 @@ export const Login: FC = () => {
               {validationMessage}
             </p>
           )}
-          <button
+          <PrimaryButton
             type="submit"
-            className="btn btn-primary auth-form__submit"
+            size="snug"
+            className="auth-form__submit"
           >
             Log in
-          </button>
+          </PrimaryButton>
         </form>
       )}
       <p className="auth-page__alt">

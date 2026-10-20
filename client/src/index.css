@@ -55,31 +55,6 @@
   .ingre-navbar {
     margin-bottom: var(--space-nav-gap);
   }
-  .btn {
-    @apply inline-flex items-center justify-center min-h-[48px] px-3 rounded-control font-normal border border-transparent cursor-pointer no-underline;
-  }
-  .btn-primary {
-    @apply bg-primary text-on-primary border-primary;
-  }
-  .btn-primary:focus-visible {
-    @apply focus-ring;
-  }
-  .btn-primary:disabled,
-  .btn-primary[aria-disabled='true'] {
-    background-color: theme('colors.primary-disabled-bg');
-    color: theme('colors.primary-disabled-fg');
-    cursor: not-allowed;
-  }
-  .ingre-btn-outline {
-    @apply inline-block px-3 py-1 border border-primary rounded-control text-primary text-sm no-underline;
-  }
-  .ingre-btn-outline:hover {
-    @apply bg-primary text-on-primary;
-  }
-  .ingre-btn-outline:focus-visible {
-    @apply bg-primary text-on-primary focus-ring;
-  }
-
   /* shopping flow (moved from flow.css) */
   .flow {
     max-width: var(--layout-max-width);
@@ -182,10 +157,6 @@
   }
   .add-item__row input:focus-visible {
     @apply focus-ring;
-  }
-  .add-item__button {
-    border-radius: var(--radius-control);
-    min-height: 44px;
   }
   .add-item__suggestions {
     list-style: none;

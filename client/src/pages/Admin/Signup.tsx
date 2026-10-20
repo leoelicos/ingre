@@ -2,6 +2,7 @@ import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSignup } from './useSignup'
+import { PrimaryButton } from '../../components/PrimaryButton'
 import './auth.css'
 
 export const Signup: FC = () => {
@@ -149,13 +150,14 @@ export const Signup: FC = () => {
 
         {addUserLoading && <p role="status">Creating your account…</p>}
 
-        <button
+        <PrimaryButton
           type="submit"
-          className="btn btn-primary auth-form__submit"
-          disabled={checkEmailLoading || emailExists || addUserLoading}
+          size="snug"
+          className="auth-form__submit"
+          isDisabled={checkEmailLoading || emailExists || addUserLoading}
         >
           Sign up
-        </button>
+        </PrimaryButton>
       </form>
       <p className="auth-page__alt">
         Have an account?{' '}
