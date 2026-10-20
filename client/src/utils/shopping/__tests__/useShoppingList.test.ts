@@ -1,8 +1,13 @@
 import { act, renderHook } from '@testing-library/react'
 import { HAVE_KEY, PICKED_KEY } from '../../storage/shoppingState'
+import type { ListSnapshot } from '../useShoppingList'
 import {
+  EMPTY_LIST,
+  NO_UNSAVED,
   addExtra,
   extraId,
+  sameList,
+  withUnsaved,
   setExtraQuantity,
   useShoppingList
 } from '../useShoppingList'
@@ -78,5 +83,50 @@ describe('useShoppingList', () => {
     expect(result.current.basketIds.has('extra:free-candles')).toBe(false)
     act(() => result.current.setExtraQuantity('extra:free-candles', 4))
     expect(result.current.toBuy[0]?.extraQuantity).toBe(4)
+  })
+})
+
+describe('list snapshots', () => {
+  const extra = { id: 'free-x', name: 'x', ingredientId: null, quantity: 1 }
+  const full: ListSnapshot = {
+    pickedIds: new Set(['dahl']),
+    haveIds: new Set(['onion']),
+    basketIds: new Set(['garlic']),
+    extras: [extra],
+    step: 'shop'
+  }
+
+  it('sameList compares picks, ticks, extras (field by field) and step by value', () => {
+    expect(sameList(full, { ...full, pickedIds: new Set(['dahl']) })).toBe(true)
+    expect(sameList(full, { ...full, extras: [{ ...extra }] })).toBe(true)
+    expect(sameList(full, EMPTY_LIST)).toBe(false)
+    expect(sameList(full, { ...full, step: 'home' })).toBe(false)
+    expect(sameList(full, { ...full, pickedIds: new Set(['x']) })).toBe(false)
+    expect(sameList(full, { ...full, haveIds: new Set() })).toBe(false)
+    expect(sameList(full, { ...full, basketIds: new Set() })).toBe(false)
+    expect(sameList(full, { ...full, extras: [] })).toBe(false)
+    expect(sameList(full, { ...full, extras: [{ ...extra, id: 'y' }] })).toBe(
+      false
+    )
+    expect(sameList(full, { ...full, extras: [{ ...extra, name: 'y' }] })).toBe(
+      false
+    )
+    expect(
+      sameList(full, { ...full, extras: [{ ...extra, ingredientId: 'y' }] })
+    ).toBe(false)
+    expect(
+      sameList(full, { ...full, extras: [{ ...extra, quantity: 2 }] })
+    ).toBe(false)
+  })
+
+  it('withUnsaved saves waiting ticks into the snapshot, leaving the rest alone', () => {
+    expect(withUnsaved(full, NO_UNSAVED)).toEqual(full)
+    expect(
+      withUnsaved(full, { haveIds: ['egg'], basketIds: ['milk'] })
+    ).toEqual({
+      ...full,
+      haveIds: new Set(['onion', 'egg']),
+      basketIds: new Set(['garlic', 'milk'])
+    })
   })
 })

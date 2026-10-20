@@ -42,6 +42,8 @@ export const usePendingTicks = (
   const [leaving, setLeaving] = useState<ReadonlySet<string>>(EMPTY)
   const pendingRef = useRef<ReadonlySet<string>>(EMPTY)
   const clock = useRef<number | null>(null)
+  const fade = useRef<number | null>(null)
+  const leavingRef = useRef<ReadonlySet<string>>(EMPTY)
   const commitRef = useRef(commit)
   commitRef.current = commit
 
@@ -50,9 +52,15 @@ export const usePendingTicks = (
     setPendingState(next)
   }
 
+  const setFading = (next: ReadonlySet<string>) => {
+    leavingRef.current = next
+    setLeaving(next)
+  }
+
   const finish = (ids: readonly string[]) => {
+    fade.current = null
     commitRef.current(ids)
-    setLeaving(EMPTY)
+    setFading(EMPTY)
   }
 
   const expire = () => {
@@ -64,8 +72,8 @@ export const usePendingTicks = (
       finish(ids)
       return
     }
-    setLeaving(new Set(ids))
-    timers.setTimeout(() => finish(ids), fadeMs)
+    setFading(new Set(ids))
+    fade.current = timers.setTimeout(() => finish(ids), fadeMs)
   }
 
   const tick = (id: string) => {
@@ -76,6 +84,18 @@ export const usePendingTicks = (
 
   const undo = (id: string) => setPending(without(pendingRef.current, id))
 
+  /** Hands back every tick not yet saved (waiting or fading) and drops it, so nothing saves later. */
+  const takeUnsaved = (): readonly string[] => {
+    const ids = [...pendingRef.current, ...leavingRef.current]
+    if (clock.current !== null) timers.clearTimeout(clock.current)
+    if (fade.current !== null) timers.clearTimeout(fade.current)
+    clock.current = null
+    fade.current = null
+    setPending(EMPTY)
+    setFading(EMPTY)
+    return ids
+  }
+
   useEffect(
     () => () => {
       if (clock.current !== null) timers.clearTimeout(clock.current)
@@ -85,7 +105,7 @@ export const usePendingTicks = (
     [timers]
   )
 
-  return { pending, leaving, tick, undo }
+  return { pending, leaving, tick, undo, takeUnsaved }
 }
 
 /** Everything a group of rows needs to show ticks: checked, moved, pending, fading. */
@@ -99,6 +119,8 @@ export interface TickState {
   pendingLabel: string
   onToggle: (id: string) => void
   onUndo: (id: string) => void
+  /** ticks not yet saved, dropped as they are handed back (see usePendingTicks) */
+  takeUnsaved: () => readonly string[]
 }
 
 /** Ticks that apply at once (e.g. unticking in Already have). */
@@ -112,7 +134,8 @@ export const instantTicks = (
   leavingIds: EMPTY,
   pendingLabel: '',
   onToggle,
-  onUndo: onToggle
+  onUndo: onToggle,
+  takeUnsaved: () => []
 })
 
 /**
@@ -127,11 +150,14 @@ export const useDelayedTicks = (
   timers: Timers = browserTimers
 ): TickState => {
   const reduced = useMediaQuery(REDUCED_MOTION_QUERY)
-  const { pending, leaving, tick, undo } = usePendingTicks(commit, {
-    delayMs: TICK_DELAY_MS,
-    fadeMs: reduced ? 0 : FADE_MS,
-    timers
-  })
+  const { pending, leaving, tick, undo, takeUnsaved } = usePendingTicks(
+    commit,
+    {
+      delayMs: TICK_DELAY_MS,
+      fadeMs: reduced ? 0 : FADE_MS,
+      timers
+    }
+  )
   return {
     checkedIds: new Set([...committed, ...pending, ...leaving]),
     movedIds: committed,
@@ -140,6 +166,7 @@ export const useDelayedTicks = (
     pendingLabel,
     onToggle: (id) =>
       committed.has(id) ? untick(id) : pending.has(id) ? undo(id) : tick(id),
-    onUndo: undo
+    onUndo: undo,
+    takeUnsaved
   }
 }

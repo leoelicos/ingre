@@ -4,8 +4,11 @@ export interface Ticks {
   basketIds: ReadonlySet<string>
 }
 
-const sameSet = (a: ReadonlySet<string>, b: ReadonlySet<string>) =>
-  a.size === b.size && [...a].every((x) => b.has(x))
+/** True when both sets hold the same ids. */
+export const sameSet = (
+  a: ReadonlySet<string>,
+  b: ReadonlySet<string>
+): boolean => a.size === b.size && [...a].every((x) => b.has(x))
 
 /**
  * Cleans ticks saved by an earlier session (UX rule, 2026-10-14):

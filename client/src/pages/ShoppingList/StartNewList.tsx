@@ -32,16 +32,19 @@ export const AllDone: FC<{ onStart: () => void }> = ({ onStart }) => (
   </section>
 )
 
-/** Sits just above the bottom bar for UNDO_MS; static (no slide). Gone once Undo is used. */
+/** Said by the always-present polite live region in ShoppingFlow when a list is cleared. */
+export const LIST_CLEARED = 'List cleared'
+
+/**
+ * Sits just above the bottom bar for UNDO_MS; static (no slide). Gone once Undo is used or the
+ * list changes. Not itself a live region: ShoppingFlow announces LIST_CLEARED.
+ */
 export const ClearedNote: FC<{ onUndo: () => UndoResult }> = ({ onUndo }) => (
-  <p
-    className="cleared-note"
-    role="status"
-  >
-    List cleared ·{' '}
+  <p className="cleared-note">
+    {LIST_CLEARED} ·{' '}
     <button
       type="button"
-      className="link-button"
+      className="link-button focus-visible:focus-ring"
       onClick={onUndo}
     >
       Undo

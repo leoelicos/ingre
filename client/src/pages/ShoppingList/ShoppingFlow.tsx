@@ -2,12 +2,16 @@ import type { FC, KeyboardEvent, TouchEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { changeTitle } from '../../utils/changeTitle'
-import { useShoppingList } from '../../utils/shopping/useShoppingList'
+import {
+  NO_UNSAVED,
+  useShoppingList
+} from '../../utils/shopping/useShoppingList'
+import type { UnsavedTicks } from '../../utils/shopping/useShoppingList'
 import type { FlowStep } from '../../utils/storage/shoppingState'
 import { FLOW_STEPS } from '../../utils/storage/shoppingState'
 import { PickStep } from './PickStep'
 import { STEPS_BAR, measureBar } from '../../utils/measureBar'
-import { ClearedNote } from './StartNewList'
+import { ClearedNote, LIST_CLEARED } from './StartNewList'
 import { useStartNewList } from '../../utils/shopping/useStartNewList'
 import { browserTimers } from '../../utils/shopping/usePendingTicks'
 import type { Timers } from '../../utils/shopping/usePendingTicks'
@@ -47,6 +51,9 @@ export const wantsShopBarFocus = (state: unknown): boolean =>
   'focusShopBar' in state &&
   state.focusShopBar === true
 
+/** The polite live region that says "List cleared"; always rendered, so the change is announced. */
+export const CLEARED_STATUS_ID = 'list-cleared-status'
+
 /** Home and End jump to the first and last step. */
 const EDGE_STEPS: ReadonlyMap<string, FlowStep> = new Map([
   ...FLOW_STEPS.slice(0, 1).map((step): [string, FlowStep] => ['Home', step]),
@@ -64,13 +71,18 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   useEffect(() => changeTitle('Shopping list'), [])
   const list = useShoppingList()
   const startNew = useStartNewList(list, timers)
+  /** Clears, then puts focus on the Pick tab (the only tab in the Tab order now). */
+  const clearList = (unsaved: UnsavedTicks): void => {
+    startNew.start(unsaved)
+    document.getElementById('flow-tab-pick')?.focus()
+  }
   const { state } = useLocation()
   const navigate = useNavigate()
   const handled = useRef(false)
   useEffect(() => {
     if (handled.current || !wantsStartNew(state)) return
     handled.current = true
-    startNew.start()
+    clearList(NO_UNSAVED)
     navigate('/ingredients', { replace: true, state: null })
   })
   useEffect(() => {
@@ -199,7 +211,7 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
                   <ShoppingListView
                     list={list}
                     view={step}
-                    onStartNew={startNew.start}
+                    onStartNew={clearList}
                     timers={timers}
                     onPrint={print}
                   />
@@ -209,6 +221,13 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
           )}
         </div>
       </div>
+      <p
+        id={CLEARED_STATUS_ID}
+        className="sr-only"
+        role="status"
+      >
+        {startNew.canUndo ? LIST_CLEARED : ''}
+      </p>
       {startNew.canUndo && <ClearedNote onUndo={startNew.undo} />}
       <PrintSheet
         recipes={list.recipes}

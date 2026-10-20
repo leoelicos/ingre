@@ -151,11 +151,12 @@ describe('useDelayedTicks', () => {
 })
 
 describe('instantTicks', () => {
-  it('treats checked ids as moved and undo as a toggle', () => {
+  it('treats checked ids as moved and undo as a toggle; nothing is ever unsaved', () => {
     const toggled: string[] = []
     const ticks = instantTicks(new Set(['a']), (id) => toggled.push(id))
     expect(ticks.movedIds.has('a')).toBe(true)
     ticks.onUndo('a')
     expect(toggled).toEqual(['a'])
+    expect(ticks.takeUnsaved()).toEqual([])
   })
 })

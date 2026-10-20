@@ -1,18 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Timers } from './usePendingTicks'
-import type { ListSnapshot } from './useShoppingList'
-import { EMPTY_LIST } from './useShoppingList'
+import type { ListSnapshot, UnsavedTicks } from './useShoppingList'
+import { EMPTY_LIST, sameList, withUnsaved } from './useShoppingList'
 
 /** How long "List cleared · Undo" stays up. */
 export const UNDO_MS = 10000
 
-/** What a tap on Undo did: put the cleared list back, or nothing (already used or expired). */
+/** What a tap on Undo did: put the cleared list back, or nothing (already used, expired or stale). */
 export type UndoResult = 'restored' | 'nothing-to-undo'
 
+/** True while the list is still exactly what "Start a new list" left: nothing picked, ticked, added or moved. */
+export const stillCleared = (current: ListSnapshot): boolean =>
+  sameList(current, EMPTY_LIST)
+
 /**
- * "Start a new list": one tap clears picks, ticks and extras and returns to Pick (no confirm);
- * Undo within UNDO_MS restores the exact previous state, once. The hook owns the snapshot, so a
- * second or stale Undo finds nothing to restore and can never bring back an older list.
+ * "Start a new list": one tap clears picks, ticks (saved and still waiting on the tick clock),
+ * extras and step, and returns to Pick (no confirm). Undo within UNDO_MS restores that exact
+ * state, once. The snapshot is dropped as soon as the list changes (a pick, a tick, a new item or a
+ * step change), so Undo can never put an old list over a newer one.
  */
 export const useStartNewList = (
   list: {
@@ -22,16 +27,26 @@ export const useStartNewList = (
   timers: Timers
 ) => {
   const held = useRef<ListSnapshot | null>(null)
-  const [canUndo, setCanUndo] = useState(false)
+  const [holding, setHolding] = useState(false)
   const clock = useRef<number | null>(null)
-  const hold = (snapshot: ListSnapshot | null) => {
+  const unchanged = stillCleared(list.snapshot())
+
+  const hold = (snapshot: ListSnapshot | null): void => {
     held.current = snapshot
-    setCanUndo(snapshot !== null)
+    setHolding(snapshot !== null)
   }
-  const stop = () => {
+  const stop = (): void => {
     if (clock.current !== null) timers.clearTimeout(clock.current)
     clock.current = null
   }
+  const forget = (): void => {
+    stop()
+    hold(null)
+  }
+
+  useEffect(() => {
+    if (holding && !unchanged) forget()
+  })
   useEffect(
     () => () => {
       if (clock.current !== null) timers.clearTimeout(clock.current)
@@ -39,11 +54,11 @@ export const useStartNewList = (
     [timers]
   )
 
-  const start = () => {
-    const before = list.snapshot()
+  const start = (unsaved: UnsavedTicks): void => {
+    const before = withUnsaved(list.snapshot(), unsaved)
     list.restore(EMPTY_LIST)
-    hold(before)
     stop()
+    hold(before)
     clock.current = timers.setTimeout(() => {
       clock.current = null
       hold(null)
@@ -53,11 +68,10 @@ export const useStartNewList = (
   const undo = (): UndoResult => {
     const snapshot = held.current
     if (snapshot === null) return 'nothing-to-undo'
-    stop()
-    hold(null)
+    forget()
     list.restore(snapshot)
     return 'restored'
   }
 
-  return { canUndo, start, undo }
+  return { canUndo: holding && unchanged, start, undo }
 }

@@ -16,7 +16,12 @@ import { PEOPLE_KEY } from '../../../utils/storage/people'
 import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
 import TapOff, { inBasketLine, stillToBuyLine } from '../../TapOff/TapOff'
 import { PICK_NEXT_HINT, recipeCount } from '../PickStep'
-import { ShoppingFlow, edgeStep, wantsStartNew } from '../ShoppingFlow'
+import {
+  CLEARED_STATUS_ID,
+  ShoppingFlow,
+  edgeStep,
+  wantsStartNew
+} from '../ShoppingFlow'
 import { basketCount, DONE_SHOPPING } from '../ShoppingListView'
 import { assumedNames } from '../../../utils/shopping/shoppingList'
 
@@ -604,6 +609,111 @@ describe('Start a new list', () => {
     expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
     act(() => jest.advanceTimersByTime(10000))
     expect(localStorage.getItem(HAVE_KEY)).toBe(newer)
+  })
+
+  const tapStartNew = () =>
+    fireEvent.click(
+      within(panel()).getByRole('button', { name: 'Start a new list' })
+    )
+  const box = (name: RegExp) => within(panel()).getByRole('checkbox', { name })
+  const clearedStatus = () => document.getElementById(CLEARED_STATUS_ID)
+  const stored = (key: string) => JSON.parse(localStorage.getItem(key) ?? '')
+
+  it('a pick after clearing removes the Undo and the snapshot; At home and At the shop stay clear', () => {
+    renderFlow(['dahl'], 'home')
+    tapStartNew()
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument()
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Add Butter chicken to list' })
+    )
+    expect(screen.queryByText(/List cleared/)).toBeNull()
+    expect(clearedStatus()).toHaveTextContent(/^$/)
+    fireEvent.click(tab('At home'))
+    expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
+    fireEvent.click(tab('At the shop'))
+    expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
+    expect(
+      screen.getByRole('button', { name: DONE_SHOPPING })
+    ).toBeInTheDocument()
+    act(() => jest.advanceTimersByTime(10000))
+    expect(stored(PICKED_KEY)).toEqual(['butter-chicken'])
+    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('a step change after clearing removes the Undo for good, even back on Pick', () => {
+    renderFlow(['dahl'], 'home')
+    tapStartNew()
+    fireEvent.click(tab('At home'))
+    expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
+    fireEvent.click(tab('Pick'))
+    expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
+    expect(stored(PICKED_KEY)).toEqual([])
+  })
+
+  it('a tick waiting on the tick clock never lands in the cleared list or removes its Undo', () => {
+    renderFlow(['egg-fried-rice'], 'home')
+    fireEvent.click(box(/eggs/i))
+    tapStartNew()
+    act(() => jest.advanceTimersByTime(3000))
+    expect(stored(HAVE_KEY)).toEqual([])
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument()
+  })
+
+  it('Undo restores the ticks and progress exactly: Eggs ticked at home, saved and waiting ticks at the shop', () => {
+    renderFlow(['egg-fried-rice'], 'home')
+    fireEvent.click(box(/carrot/i))
+    settle()
+    fireEvent.click(box(/eggs/i))
+    tapStartNew()
+    expect(stored(HAVE_KEY)).toEqual([])
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expect(new Set(stored(HAVE_KEY))).toEqual(new Set(['carrot', 'egg']))
+    fireEvent.click(screen.getByRole('button', { name: /^Already have \(2\)/ }))
+    expect(box(/eggs/i)).toBeChecked()
+    expect(box(/carrot/i)).toBeChecked()
+
+    fireEvent.click(tab('At the shop'))
+    fireEvent.click(box(/jasmine rice/i))
+    settle()
+    fireEvent.click(box(/peas/i))
+    act(() => jest.advanceTimersByTime(2000)) // its row is fading out
+    fireEvent.click(box(/soy sauce/i)) // still waiting
+    expect(box(/soy sauce/i)).toBeChecked()
+    tapStartNew()
+    expect(stored(BASKET_KEY)).toEqual([])
+    act(() => jest.advanceTimersByTime(3000))
+    expect(stored(BASKET_KEY)).toEqual([])
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
+    expect(new Set(stored(BASKET_KEY))).toEqual(
+      new Set(['jasmine-rice', 'tinned-peas', 'soy-sauce'])
+    )
+    expect(new Set(stored(HAVE_KEY))).toEqual(new Set(['carrot', 'egg']))
+    expect(stored(PICKED_KEY)).toEqual(['egg-fried-rice'])
+    expect(box(/jasmine rice/i)).toBeChecked()
+    expect(box(/peas/i)).toBeChecked()
+    expect(box(/soy sauce/i)).toBeChecked()
+    // the ticks that were waiting are back as saved ticks, exactly as the clock would have saved them
+    expect(screen.getAllByText(/^\d+ of \d+ in basket$/)[0]).toHaveTextContent(
+      '3 of 6 in basket'
+    )
+  })
+
+  it('announces "List cleared" in a polite live region, focuses Pick, and Undo has the focus ring', () => {
+    renderFlow(['dahl'], 'home')
+    const status = clearedStatus()
+    expect(status).toHaveAttribute('role', 'status')
+    expect(status).toHaveTextContent(/^$/)
+    tapStartNew()
+    expect(clearedStatus()).toBe(status)
+    expect(status).toHaveTextContent(/^List cleared$/)
+    expect(tab('Pick')).toHaveFocus()
+    expect(tab('Pick')).toHaveAttribute('tabindex', '0')
+    const undo = screen.getByRole('button', { name: 'Undo' })
+    expect(undo).toHaveClass('focus-visible:focus-ring')
+    fireEvent.click(undo)
+    expect(status).toHaveTextContent(/^$/)
   })
 
   it('shows a calm All done card once everything at the shop is ticked', () => {
