@@ -76,7 +76,7 @@ const AddToList: FC<{ id: string; title: string }> = ({ id, title }) => {
 }
 
 /** The same key ingredient badges as the recipe's card (#155); nothing when it names none. */
-const KeyIngredients: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
+export const KeyIngredients: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
   const id = useId()
   const items = keyIngredientsOf(recipe)
   return items.length === 0 ? null : (

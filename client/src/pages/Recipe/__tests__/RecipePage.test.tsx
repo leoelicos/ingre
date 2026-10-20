@@ -3,7 +3,12 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import Home from '../../Home/Home'
-import RecipePage, { findRecipe, recipeMeta } from '../RecipePage'
+import RecipePage, {
+  KeyIngredients,
+  findRecipe,
+  recipeMeta
+} from '../RecipePage'
+import { libRecipe } from '../../../test/fixtures'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { StoreProvider } from '../../../utils/state/GlobalState'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
@@ -100,6 +105,11 @@ describe('RecipePage', () => {
     expect(badgesIn(region)).toEqual(onCard)
     expect(within(region).getByText('BST')).toHaveClass('bg-badge-meat')
     expect(within(region).getByText('LIM')).toHaveClass('bg-badge-produce')
+  })
+
+  it('leaves the Key ingredients section out for a recipe that names none', () => {
+    const { container } = render(<KeyIngredients recipe={libRecipe({})} />)
+    expect(container).toBeEmptyDOMElement()
   })
 
   it('names key ingredients in the same casing as the buy list', () => {
