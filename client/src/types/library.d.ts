@@ -65,6 +65,8 @@ export interface LibraryRecipe {
   portions: number
   /** many-to-many: cuisines, diets, meals */
   tags: string[]
+  /** defining ingredients (ids from `ingredients`), drawn as badges on cards and the recipe page */
+  keyIngredients?: string[]
   ingredients: LibraryRecipeIngredient[]
   method: string[]
   picture_url?: string

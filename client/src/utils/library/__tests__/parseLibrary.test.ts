@@ -157,6 +157,58 @@ describe('parseRecipe', () => {
   })
 })
 
+describe('parseRecipe keyIngredients', () => {
+  const withKeys = (keyIngredients: unknown) => ({
+    ...validRecipe,
+    ingredients: [
+      { ingredientId: 'garlic', quantity: 1, measure: 'clove' },
+      { ingredientId: 'onion', quantity: 1, measure: 'whole' },
+      { ingredientId: 'salt', quantity: 1, measure: 'pinch' },
+      { ingredientId: 'egg', quantity: 1, measure: 'whole' }
+    ],
+    keyIngredients
+  })
+
+  it('keeps 1 to 3 of the recipe’s own ingredient ids, in order, and leaves them out when absent', () => {
+    expect(parseRecipe(withKeys(['onion', 'garlic'])).keyIngredients).toEqual([
+      'onion',
+      'garlic'
+    ])
+    expect(parseRecipe(validRecipe)).not.toHaveProperty('keyIngredients')
+  })
+
+  it.each<[string, unknown, string]>([
+    ['not an array', 'onion', 'r.keyIngredients: expected an array'],
+    [
+      'an id the recipe does not use',
+      ['onion', 'tomato'],
+      'r.keyIngredients[1]: expected an ingredientId of this recipe'
+    ],
+    ['a blank id', [''], 'r.keyIngredients[0]: expected a non-empty string'],
+    ['none', [], 'r.keyIngredients: expected 1 to 3 different ingredient ids'],
+    [
+      'more than three',
+      ['garlic', 'onion', 'salt', 'egg'],
+      'r.keyIngredients: expected 1 to 3 different ingredient ids'
+    ],
+    [
+      'a repeat',
+      ['onion', 'onion'],
+      'r.keyIngredients: expected 1 to 3 different ingredient ids'
+    ]
+  ])('fails loudly on %s', (_label, keys, message) => {
+    expect(() => parseRecipe(withKeys(keys), 'r')).toThrow(
+      new LibraryDataError(message)
+    )
+  })
+
+  it('loads key ingredients for every shipped recipe', () => {
+    expect(
+      parseRecipes(recipeData).every((r) => r.keyIngredients !== undefined)
+    ).toBe(true)
+  })
+})
+
 describe('parseCatalogue / parseRecipes', () => {
   it('reject non-object roots and missing arrays with a path', () => {
     expect(() => parseCatalogue([])).toThrow('catalogue: expected an object')
@@ -195,7 +247,7 @@ describe('parseIngredient badgeCode', () => {
     expect(
       parseCatalogue(ingredientData).filter((i) => i.badgeCode !== undefined)
         .length
-    ).toBe(11)
+    ).toBe(32)
   })
 })
 

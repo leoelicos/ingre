@@ -157,6 +157,36 @@ describe('useStartNewList', () => {
     expect(listWith([])).toBe(true)
   })
 
+  it('pause stops the countdown while focus is in the note; resume starts a fresh 10s', () => {
+    const { restored, now } = setup()
+    act(() => now().start(NO_UNSAVED))
+    act(() => jest.advanceTimersByTime(UNDO_MS - 1))
+    act(() => now().pause())
+    expect(jest.getTimerCount()).toBe(0)
+    act(() => jest.advanceTimersByTime(UNDO_MS * 5))
+    expect(now().canUndo).toBe(true)
+    act(() => now().resume())
+    act(() => jest.advanceTimersByTime(UNDO_MS - 1))
+    expect(now().canUndo).toBe(true)
+    act(() => jest.advanceTimersByTime(1))
+    expect(now().canUndo).toBe(false)
+    expect(now().undo()).toBe('nothing-to-undo')
+    expect(restored).toEqual([EMPTY_LIST])
+  })
+
+  it('resume does nothing once there is nothing to undo', () => {
+    const { now } = setup()
+    act(() => now().resume())
+    expect(jest.getTimerCount()).toBe(0)
+    act(() => now().start(NO_UNSAVED))
+    act(() => {
+      expect(now().undo()).toBe('restored')
+    })
+    act(() => now().resume())
+    expect(jest.getTimerCount()).toBe(0)
+    expect(now().canUndo).toBe(false)
+  })
+
   it('cancels its timer on unmount', () => {
     const { hook, now } = setup()
     act(() => now().start(NO_UNSAVED))

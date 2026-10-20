@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { useId } from 'react'
 import { Link } from 'react-router-dom'
 import type { ClientRecipe } from '../../../types/client'
 import { IngreIconPro } from '../../../lib/icon/Icon'
@@ -7,6 +8,11 @@ import { library } from '../../../utils/library/recipeLibrary'
 import { useAuthContext } from '../../../utils/auth/AuthContext'
 import type { PickControls } from './RecipeCardContainer'
 import { SaveButton } from './components/SaveButton'
+import {
+  KeyIngredientList,
+  keyNameIds
+} from '../../IngredientBadge/KeyIngredients'
+import { keyIngredientsFor } from '../../../utils/library/keyIngredients'
 import { heroIcon, splitTitle, tintFor } from './recipeCardHelpers'
 
 const heroFor = (libraryId: string | undefined) =>
@@ -41,8 +47,12 @@ const AddPill: FC<{ title: string; libraryId: string; pick: PickControls }> = ({
   )
 }
 
+/** Hero, heart, title link, key ingredient badges (names and sections as text) and + Add. */
 const RecipeCard: FC<RecipeCardProps> = ({ recipe, pro, pick }) => {
   const [auth] = useAuthContext()
+  const id = useId()
+  const items = keyIngredientsFor(recipe.libraryId)
+  const describedBy = keyNameIds(id, items)
   const loggedIn = auth.loggedIn
   const { title, localName } = splitTitle(recipe.name)
   return (
@@ -71,6 +81,9 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, pro, pick }) => {
             <Link
               to={`/recipe/${recipe.libraryId}`}
               className="recipe-card__link focus-visible:focus-ring"
+              {...(describedBy === ''
+                ? {}
+                : { 'aria-describedby': describedBy })}
             >
               {title}
             </Link>
@@ -83,6 +96,14 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, pro, pick }) => {
           >
             {localName}
           </p>
+        )}
+        {items.length > 0 && (
+          <div className="my-3">
+            <KeyIngredientList
+              items={items}
+              idPrefix={id}
+            />
+          </div>
         )}
         {pick !== null && (
           <AddPill

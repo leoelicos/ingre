@@ -35,14 +35,29 @@ export const AllDone: FC<{ onStart: () => void }> = ({ onStart }) => (
 /** Said by the always-present polite live region in ShoppingFlow when a list is cleared. */
 export const LIST_CLEARED = 'List cleared'
 
+/** Ref callback: focuses the element when it mounts (React calls it with null on unmount). */
+export const focusOnMount = (element: HTMLElement | null): void =>
+  element?.focus()
+
 /**
  * Sits just above the bottom bar for UNDO_MS; static (no slide). Gone once Undo is used or the
  * list changes. Not itself a live region: ShoppingFlow announces LIST_CLEARED.
+ * Undo takes focus as soon as it appears, so it is the very next control for keyboard users;
+ * the countdown is paused while focus is inside the note.
  */
-export const ClearedNote: FC<{ onUndo: () => UndoResult }> = ({ onUndo }) => (
-  <p className="cleared-note">
+export const ClearedNote: FC<{
+  onUndo: () => UndoResult
+  onFocusIn: () => void
+  onFocusOut: () => void
+}> = ({ onUndo, onFocusIn, onFocusOut }) => (
+  <p
+    className="cleared-note"
+    onFocus={onFocusIn}
+    onBlur={onFocusOut}
+  >
     {LIST_CLEARED} ·{' '}
     <button
+      ref={focusOnMount}
       type="button"
       className="link-button focus-visible:focus-ring"
       onClick={onUndo}

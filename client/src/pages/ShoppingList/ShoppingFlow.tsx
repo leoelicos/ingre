@@ -13,6 +13,7 @@ import { PickStep } from './PickStep'
 import { STEPS_BAR, measureBar } from '../../utils/measureBar'
 import { ClearedNote, LIST_CLEARED } from './StartNewList'
 import { useStartNewList } from '../../utils/shopping/useStartNewList'
+import type { UndoResult } from '../../utils/shopping/useStartNewList'
 import { browserTimers } from '../../utils/shopping/usePendingTicks'
 import type { Timers } from '../../utils/shopping/usePendingTicks'
 import { PrintSheet } from './PrintSheet'
@@ -71,10 +72,19 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   useEffect(() => changeTitle('Shopping list'), [])
   const list = useShoppingList()
   const startNew = useStartNewList(list, timers)
-  /** Clears, then puts focus on the Pick tab (the only tab in the Tab order now). */
-  const clearList = (unsaved: UnsavedTicks): void => {
-    startNew.start(unsaved)
-    document.getElementById('flow-tab-pick')?.focus()
+  /** Clears; the Undo note then takes focus as it appears (ClearedNote). */
+  const clearList = (unsaved: UnsavedTicks): void => startNew.start(unsaved)
+  /** After a successful Undo, focus goes to the restored step's tab (the note is gone). */
+  const [focusStep, setFocusStep] = useState(false)
+  useEffect(() => {
+    if (!focusStep) return
+    setFocusStep(false)
+    document.getElementById(`flow-tab-${list.step}`)?.focus()
+  }, [focusStep, list.step])
+  const undo = (): UndoResult => {
+    const result = startNew.undo()
+    setFocusStep(result === 'restored')
+    return result
   }
   const { state } = useLocation()
   const navigate = useNavigate()
@@ -228,7 +238,13 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
       >
         {startNew.canUndo ? LIST_CLEARED : ''}
       </p>
-      {startNew.canUndo && <ClearedNote onUndo={startNew.undo} />}
+      {startNew.canUndo && (
+        <ClearedNote
+          onUndo={undo}
+          onFocusIn={startNew.pause}
+          onFocusOut={startNew.resume}
+        />
+      )}
       <PrintSheet
         recipes={list.recipes}
         people={list.people}

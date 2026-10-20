@@ -14,14 +14,14 @@ export type IngredientBadgeProps = BadgeCodeSource & {
 /**
  * An ingredient drawn in code: a circle with a three-letter code, coloured by its shop section.
  * The code is the catalogue's `badgeCode` when given, otherwise derived from the name.
- * Not interactive. Screen readers get one image named with the full ingredient name.
+ * Decorative: hidden from screen readers, because the full name is always shown as text beside
+ * it (see KeyIngredients), so nothing is announced twice. Not interactive.
  */
 export const IngredientBadge: FC<IngredientBadgeProps> = (props) => (
   <span
-    role="img"
-    aria-label={props.name}
+    aria-hidden="true"
     className={`${SHAPE} ${TONE_CLASSES[categoryTone(props.category)]}`}
   >
-    <span aria-hidden="true">{resolveBadgeCode(props)}</span>
+    {resolveBadgeCode(props)}
   </span>
 )

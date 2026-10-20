@@ -13,6 +13,8 @@ module.exports = {
         'text-secondary': 'var(--color-text-secondary)',
         placeholder: 'var(--color-placeholder)',
         'added-pill': 'var(--color-added-pill)',
+        /* picked card / active chip background */
+        'chip-active': 'var(--color-chip-active)',
         border: 'var(--color-border)',
         success: 'var(--color-success)',
         /* ingredient badges (#154): one background + ink pair per shop section */

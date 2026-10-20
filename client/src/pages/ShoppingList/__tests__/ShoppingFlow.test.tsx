@@ -15,7 +15,13 @@ import {
 import { PEOPLE_KEY } from '../../../utils/storage/people'
 import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
 import TapOff, { inBasketLine, stillToBuyLine } from '../../TapOff/TapOff'
-import { PICK_NEXT_HINT, recipeCount } from '../PickStep'
+import {
+  PICK_NEXT_HINT,
+  PICK_START_HINT,
+  pickHint,
+  recipeCount
+} from '../PickStep'
+import { PICKED_MARK } from '../../../components/Widgets/RecipeCard/PickCard'
 import {
   CLEARED_STATUS_ID,
   ShoppingFlow,
@@ -87,14 +93,13 @@ describe('ShoppingFlow', () => {
     renderFlow()
     expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByText('0 recipes')).toBeInTheDocument()
-    const add = screen.getByRole('button', {
-      name: 'Add Red lentil dahl to list'
-    })
-    expect(add).toHaveTextContent('+ Add')
-    fireEvent.click(add)
-    expect(add).toHaveAccessibleName('Remove Red lentil dahl from list')
-    expect(add).toHaveAttribute('aria-pressed', 'true')
-    expect(add).toHaveTextContent('✓ Added')
+    const card = screen.getByRole('button', { name: 'Red lentil dahl' })
+    expect(card).toHaveAttribute('aria-pressed', 'false')
+    expect(card).not.toHaveTextContent(PICKED_MARK)
+    fireEvent.click(card)
+    expect(card).toHaveAccessibleName('Red lentil dahl')
+    expect(card).toHaveAttribute('aria-pressed', 'true')
+    expect(card).toHaveTextContent(PICKED_MARK)
     expect(screen.getByText('1 recipe')).toBeInTheDocument()
     expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl"]')
     expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
@@ -112,23 +117,46 @@ describe('ShoppingFlow', () => {
     ).toBeInTheDocument()
   })
 
+  it('after the first pick, a hint says where you are and what is next, announced without moving focus (#157)', () => {
+    renderFlow()
+    const hint = document.getElementById('pick-next-hint')
+    expect(hint).toHaveAttribute('role', 'status')
+    expect(hint).toHaveTextContent(PICK_START_HINT)
+    const dahl = screen.getByRole('button', { name: 'Red lentil dahl' })
+    const korma = screen.getByRole('button', { name: 'Chicken korma' })
+    dahl.focus()
+    fireEvent.click(dahl)
+    // same always-present live region, new text; focus stays on the card
+    expect(document.getElementById('pick-next-hint')).toBe(hint)
+    expect(hint).toHaveTextContent(PICK_NEXT_HINT)
+    expect(dahl).toHaveFocus()
+    fireEvent.click(korma)
+    expect(hint).toHaveTextContent(PICK_NEXT_HINT)
+    fireEvent.click(korma)
+    fireEvent.click(dahl)
+    expect(hint).toHaveTextContent(PICK_START_HINT)
+    expect(dahl).toHaveFocus()
+    expect(pickHint(0)).toBe(PICK_START_HINT)
+    expect(pickHint(1)).toBe(PICK_NEXT_HINT)
+    expect(pickHint(5)).toBe(PICK_NEXT_HINT)
+  })
+
   it('keeps Next disabled until one recipe is picked', () => {
     renderFlow()
     const next = screen.getByRole('button', {
       name: /^Next: check at home \(\d+\)$/
     })
     expect(next).toHaveAttribute('aria-disabled', 'true')
-    expect(next).toHaveAccessibleDescription(PICK_NEXT_HINT)
-    expect(screen.getByText(PICK_NEXT_HINT)).toBeInTheDocument()
+    expect(next).toHaveAccessibleDescription(PICK_START_HINT)
+    expect(screen.getByText(PICK_START_HINT)).toBeInTheDocument()
     next.focus()
     expect(next).toHaveFocus()
     fireEvent.click(next)
     expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Add Red lentil dahl to list' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Red lentil dahl' }))
     expect(next).not.toHaveAttribute('aria-disabled')
-    expect(screen.queryByText(PICK_NEXT_HINT)).not.toBeInTheDocument()
+    expect(screen.queryByText(PICK_START_HINT)).not.toBeInTheDocument()
+    expect(next).toHaveAccessibleDescription(PICK_NEXT_HINT)
     fireEvent.click(next)
     expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
   })
@@ -426,7 +454,10 @@ describe('Shopping done', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Start a new list' }))
     expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
     expect(localStorage.getItem(PICKED_KEY)).toBe('[]')
-    expect(screen.getByRole('status')).toHaveTextContent('List cleared')
+    expect(document.getElementById(CLEARED_STATUS_ID)).toHaveTextContent(
+      'List cleared'
+    )
+    expect(screen.getByRole('button', { name: 'Undo' })).toHaveFocus()
   })
 
   it('opens from the shop bar without repeating the list', () => {
@@ -577,6 +608,10 @@ describe('Start a new list', () => {
     fireEvent.click(
       within(panel()).getByRole('button', { name: 'Start a new list' })
     )
+    // the countdown only runs once focus has left the note
+    act(() => jest.advanceTimersByTime(10000))
+    expect(screen.getByRole('button', { name: 'Undo' })).toHaveFocus()
+    act(() => tab('Pick').focus())
     act(() => jest.advanceTimersByTime(10000))
     expect(screen.queryByText(/List cleared/)).toBeNull()
     expect(
@@ -623,9 +658,7 @@ describe('Start a new list', () => {
     renderFlow(['dahl'], 'home')
     tapStartNew()
     expect(screen.getByRole('button', { name: 'Undo' })).toBeInTheDocument()
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Add Butter chicken to list' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Butter chicken' }))
     expect(screen.queryByText(/List cleared/)).toBeNull()
     expect(clearedStatus()).toHaveTextContent(/^$/)
     fireEvent.click(tab('At home'))
@@ -700,7 +733,7 @@ describe('Start a new list', () => {
     )
   })
 
-  it('announces "List cleared" in a polite live region, focuses Pick, and Undo has the focus ring', () => {
+  it('announces "List cleared" in a polite live region, focuses Undo (focus ring), then the restored step', () => {
     renderFlow(['dahl'], 'home')
     const status = clearedStatus()
     expect(status).toHaveAttribute('role', 'status')
@@ -708,12 +741,33 @@ describe('Start a new list', () => {
     tapStartNew()
     expect(clearedStatus()).toBe(status)
     expect(status).toHaveTextContent(/^List cleared$/)
-    expect(tab('Pick')).toHaveFocus()
-    expect(tab('Pick')).toHaveAttribute('tabindex', '0')
     const undo = screen.getByRole('button', { name: 'Undo' })
+    // Undo is reachable straight away: it has focus, not the Pick tab or a Serves radio
+    expect(undo).toHaveFocus()
+    expect(tab('Pick')).toHaveAttribute('tabindex', '0')
     expect(undo).toHaveClass('focus-visible:focus-ring')
     fireEvent.click(undo)
     expect(status).toHaveTextContent(/^$/)
+    expect(tab('At home')).toHaveFocus()
+  })
+
+  it('pauses the 10s Undo countdown while focus is inside the note, and restarts it after', () => {
+    renderFlow(['dahl'], 'home')
+    tapStartNew()
+    const undo = screen.getByRole('button', { name: 'Undo' })
+    act(() => jest.advanceTimersByTime(60000))
+    expect(undo).toBeInTheDocument()
+    act(() => tab('Pick').focus())
+    act(() => jest.advanceTimersByTime(9999))
+    act(() => undo.focus())
+    act(() => jest.advanceTimersByTime(60000))
+    act(() => tab('Pick').focus())
+    act(() => jest.advanceTimersByTime(9999))
+    expect(undo).toBeInTheDocument()
+    act(() => jest.advanceTimersByTime(1))
+    expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
+    expect(clearedStatus()).toHaveTextContent(/^$/)
+    expect(stored(PICKED_KEY)).toEqual([])
   })
 
   it('shows a calm All done card once everything at the shop is ticked', () => {
