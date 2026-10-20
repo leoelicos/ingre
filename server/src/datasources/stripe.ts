@@ -2,8 +2,8 @@ import Stripe from 'stripe'
 
 export class StripeApi {
   private stripe: Stripe
-  constructor() {
-    this.stripe = getStripe()
+  constructor(stripe: Stripe = getStripe()) {
+    this.stripe = stripe
   }
   public stripePay = async ({
     productName,

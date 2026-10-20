@@ -3,63 +3,45 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import RecipeCard from '../RecipeCard'
 import { recipe, omit } from '../../../../test/fixtures'
+import { logIn } from '../../../../test/providers'
+import { AuthProvider } from '../../../../utils/auth/AuthContext'
+import type { ClientRecipe } from '../../../../types/client'
 
-const mockAuth: { loggedIn: boolean } = { loggedIn: false }
-
-jest.mock('../../../../utils/auth/AuthContext', () => ({
-  useAuthContext: () => [mockAuth, jest.fn()]
-}))
+const card = (r: ClientRecipe, pro: boolean) => (
+  <MemoryRouter>
+    <AuthProvider>
+      <RecipeCard
+        recipe={r}
+        pro={pro}
+        pick={null}
+      />
+    </AuthProvider>
+  </MemoryRouter>
+)
 
 describe('RecipeCard states', () => {
   beforeEach(() => {
-    mockAuth.loggedIn = false
+    localStorage.clear()
+  })
+
+  it('hides instructions when logged out, even for a pro card', () => {
+    render(card(recipe(), true))
+    expect(screen.queryByText(/instructions/i)).not.toBeInTheDocument()
   })
 
   it('shows instructions only for a logged-in pro', () => {
-    mockAuth.loggedIn = false
-    const { rerender } = render(
-      <MemoryRouter>
-        <RecipeCard
-          recipe={recipe()}
-          pro={true}
-          pick={null}
-        />
-      </MemoryRouter>
-    )
+    logIn(true)
+    const { unmount } = render(card(recipe(), false))
     expect(screen.queryByText(/instructions/i)).not.toBeInTheDocument()
-
-    mockAuth.loggedIn = true
-    rerender(
-      <MemoryRouter>
-        <RecipeCard
-          recipe={recipe()}
-          pro={false}
-          pick={null}
-        />
-      </MemoryRouter>
-    )
-    expect(screen.queryByText(/instructions/i)).not.toBeInTheDocument()
-
-    rerender(
-      <MemoryRouter>
-        <RecipeCard
-          recipe={recipe()}
-          pro={true}
-          pick={null}
-        />
-      </MemoryRouter>
-    )
+    unmount()
+    render(card(recipe(), true))
     expect(screen.getByText(/instructions/i)).toBeInTheDocument()
+  })
 
-    rerender(
-      <MemoryRouter>
-        <RecipeCard
-          recipe={omit(recipe(), 'libraryId')}
-          pro={true}
-          pick={null}
-        />
-      </MemoryRouter>
-    )
+  it('shows a plain title when the recipe is not from the library', () => {
+    logIn(true)
+    render(card(omit(recipe(), 'libraryId'), true))
     expect(screen.getByText('Pasta')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Pasta' })).toBeNull()
   })
 })

@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { loadStripe } from '@stripe/stripe-js'
+import type { Stripe } from '@stripe/stripe-js'
 import { CHECKOUT, GET_USER } from '../../lib/apollo/graphQL/queries'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 
-const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx')
-export const useUpgrade = () => {
+const STRIPE_KEY = 'pk_test_TYooMQauvdEDq54NiTphI7jx'
+
+/** The part of Stripe.js the upgrade uses. */
+export type CheckoutRedirect = Pick<Stripe, 'redirectToCheckout'>
+
+/** Loads Stripe.js when checkout starts, not when the module is imported. */
+export const loadCheckout = (): Promise<CheckoutRedirect | null> =>
+  loadStripe(STRIPE_KEY)
+
+export const useUpgrade = (load: typeof loadCheckout = loadCheckout) => {
   const [auth] = useAuthContext()
   const loggedIn = auth.loggedIn
 
@@ -23,7 +32,7 @@ export const useUpgrade = () => {
 
   useEffect(() => {
     if (data) {
-      stripePromise.then((res) => {
+      load().then((res) => {
         if (!res) {
           console.error('Error: No response from Stripe')
           return
@@ -31,7 +40,7 @@ export const useUpgrade = () => {
         res.redirectToCheckout({ sessionId: data.checkout.session })
       })
     }
-  }, [data])
+  }, [data, load])
 
   useEffect(() => {
     if (!userLoading && !userError && userData) {

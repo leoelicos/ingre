@@ -6,7 +6,3 @@ if (typeof globalThis.TextEncoder === 'undefined') {
 if (typeof globalThis.TextDecoder === 'undefined') {
   globalThis.TextDecoder = TextDecoder
 }
-
-jest.mock('@stripe/stripe-js', () => ({
-  loadStripe: () => Promise.resolve(null)
-}))

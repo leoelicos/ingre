@@ -1,11 +1,4 @@
-import {
-  FC,
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useReducer
-} from 'react'
+import { FC, ReactNode, createContext, useContext, useReducer } from 'react'
 import jwtDecode from 'jwt-decode'
 
 interface ProfileType {
@@ -38,13 +31,14 @@ type AuthContextType = [
   dispatch: React.Dispatch<{ type: string; data: string }>
 ]
 
-const initialState: AuthType = readInitialAuth(localStorage.getItem('id_token'))
+/** The stored token's auth state, read when a provider mounts (not at import), so a page or test sees the current token. */
+export const readStoredAuth = (): AuthType =>
+  readInitialAuth(localStorage.getItem('id_token'))
 
-const AuthContext = createContext<AuthContextType>([initialState, () => {}])
+const AuthContext = createContext<AuthContextType>([readStoredAuth(), () => {}])
 
 const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useAuthReducer(initialState)
-  useEffect(() => {}, [])
+  const [state, dispatch] = useReducer(authReducer, null, readStoredAuth)
   return (
     <AuthContext.Provider value={[state, dispatch]}>
       {children}
@@ -57,10 +51,6 @@ export { AuthProvider, useAuthContext }
 interface AuthState {
   loggedIn: boolean
   profile: ProfileType | null
-}
-
-const useAuthReducer = (initialState: AuthState) => {
-  return useReducer(authReducer, initialState)
 }
 
 type reducerType = (

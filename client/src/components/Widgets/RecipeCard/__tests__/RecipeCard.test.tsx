@@ -4,9 +4,6 @@ import { MemoryRouter } from 'react-router-dom'
 import RecipeCard from '../RecipeCard'
 import { omit, recipe } from '../../../../test/fixtures'
 
-jest.mock('../components/SaveButton', () => ({
-  SaveButton: () => <button>Save</button>
-}))
 describe('RecipeCard', () => {
   it('renders recipe name', () => {
     render(
@@ -19,6 +16,9 @@ describe('RecipeCard', () => {
       </MemoryRouter>
     )
     expect(screen.getByText('Test Recipe')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Save Test Recipe' })
+    ).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('picks by library id, falling back to the name', () => {
