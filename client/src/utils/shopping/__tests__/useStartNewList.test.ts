@@ -13,11 +13,17 @@ const full: ListSnapshot = {
   step: 'shop'
 }
 
-const setup = () => {
+const newer: ListSnapshot = {
+  ...EMPTY_LIST,
+  pickedIds: new Set(['butter-chicken']),
+  step: 'home'
+}
+
+const setup = (snapshot: () => ListSnapshot = () => full) => {
   const restored: ListSnapshot[] = []
   const hook = renderHook(() =>
     useStartNewList(
-      { snapshot: () => full, restore: (s) => restored.push(s) },
+      { snapshot, restore: (s) => restored.push(s) },
       browserTimers
     )
   )
@@ -45,6 +51,35 @@ describe('useStartNewList', () => {
     expect(restored).toEqual([EMPTY_LIST, full])
     expect(now().previous).toBeNull()
     expect(jest.getTimerCount()).toBe(0)
+  })
+
+  it('undo is one-shot: a second Undo in a row restores nothing', () => {
+    const { restored, now } = setup()
+    act(() => now().start())
+    const { undo } = now()
+    act(() => {
+      undo(full)
+      undo(full)
+    })
+    expect(restored).toEqual([EMPTY_LIST, full])
+  })
+
+  it('a stale Undo can never restore an older snapshot over a newer list', () => {
+    const lists: ListSnapshot[] = [full, newer]
+    const { restored, now } = setup(() => lists.shift() ?? EMPTY_LIST)
+    act(() => now().start())
+    const stale = now().undo
+    act(() => {
+      stale(full)
+    })
+    act(() => now().start())
+    act(() => {
+      now().undo(newer)
+    })
+    act(() => {
+      stale(full)
+    })
+    expect(restored).toEqual([EMPTY_LIST, full, EMPTY_LIST, newer])
   })
 
   it('cancels its timer on unmount', () => {

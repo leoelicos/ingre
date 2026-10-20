@@ -579,6 +579,33 @@ describe('Start a new list', () => {
     ).toBeNull()
   })
 
+  it('Undo is one-shot: it restores the list just cleared, then disappears', () => {
+    renderFlow(['dahl'], 'home')
+    const startNew = () =>
+      fireEvent.click(
+        within(panel()).getByRole('button', { name: 'Start a new list' })
+      )
+    startNew()
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl"]')
+    expect(screen.queryByText(/List cleared/)).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
+
+    fireEvent.click(
+      within(panel()).getAllByRole('checkbox', { checked: false })[0] ??
+        document.body
+    )
+    settle()
+    const newer = localStorage.getItem(HAVE_KEY)
+    expect(newer).not.toBe('[]')
+    startNew()
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    expect(localStorage.getItem(HAVE_KEY)).toBe(newer)
+    expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
+    act(() => jest.advanceTimersByTime(10000))
+    expect(localStorage.getItem(HAVE_KEY)).toBe(newer)
+  })
+
   it('shows a calm All done card once everything at the shop is ticked', () => {
     renderFlow(['dahl'], 'shop')
     within(panel())
