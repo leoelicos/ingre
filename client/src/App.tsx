@@ -14,6 +14,7 @@ import {
   useLocation
 } from 'react-router-dom'
 import { Header } from './components/Header'
+import { MAIN_ID, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
 import RecipePage from './pages/Recipe/RecipePage'
@@ -88,54 +89,61 @@ export const Ingre: FC = () => {
       <Router>
         <AuthProvider>
           <StoreProvider>
+            <SkipLink />
             <Header />
-            <Routes>
-              <Route
-                path="/"
-                element={<ShoppingFlow />}
-              />
-              <Route
-                path="/search"
-                element={<Search />}
-              />
-              <Route
-                path="/saved"
-                element={<SavedRedirect />}
-              />
-              <Route
-                path="/ingredients"
-                element={<WorkspaceRedirect />}
-              />
-              <Route
-                path="/recipe/:id"
-                element={<RecipePage />}
-              />
-              <Route
-                path="/tapoff"
-                element={<TapOff />}
-              />
-              {/* admin */}
-              <Route
-                path="/login"
-                element={<Login />}
-              />
-              <Route
-                path="/signup"
-                element={<Signup />}
-              />
-              <Route
-                path="/upgrade"
-                element={<Upgrade />}
-              />
-              <Route
-                path="/success"
-                element={<Success />}
-              />
-              <Route
-                path="*"
-                element={<NoMatch />}
-              />
-            </Routes>
+            <main
+              id={MAIN_ID}
+              tabIndex={-1}
+              className="focus:outline-none"
+            >
+              <Routes>
+                <Route
+                  path="/"
+                  element={<ShoppingFlow />}
+                />
+                <Route
+                  path="/search"
+                  element={<Search />}
+                />
+                <Route
+                  path="/saved"
+                  element={<SavedRedirect />}
+                />
+                <Route
+                  path="/ingredients"
+                  element={<WorkspaceRedirect />}
+                />
+                <Route
+                  path="/recipe/:id"
+                  element={<RecipePage />}
+                />
+                <Route
+                  path="/tapoff"
+                  element={<TapOff />}
+                />
+                {/* admin */}
+                <Route
+                  path="/login"
+                  element={<Login />}
+                />
+                <Route
+                  path="/signup"
+                  element={<Signup />}
+                />
+                <Route
+                  path="/upgrade"
+                  element={<Upgrade />}
+                />
+                <Route
+                  path="/success"
+                  element={<Success />}
+                />
+                <Route
+                  path="*"
+                  element={<NoMatch />}
+                />
+              </Routes>
+            </main>
           </StoreProvider>
         </AuthProvider>
       </Router>

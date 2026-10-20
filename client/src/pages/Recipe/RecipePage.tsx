@@ -109,7 +109,7 @@ const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
   const staples = lines.filter((l) => l.staple)
   const contains = containsLine(recipeAllergens(recipe, catalogue))
   return (
-    <main className="recipe-page">
+    <div className="recipe-page">
       <div className="recipe-page__side">
         <div
           className={`recipe-panel recipe-card__tint--${tintFor(recipe.tags)}`}
@@ -197,7 +197,7 @@ const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
           </ol>
         </section>
       )}
-    </main>
+    </div>
   )
 }
 
@@ -205,7 +205,7 @@ const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
 const RecipePage: FC = () => {
   const recipe = findRecipe(useParams()['id'])
   return recipe === null ? (
-    <main className="recipe-page recipe-missing">
+    <div className="recipe-page recipe-missing">
       <h1 className="recipe-title">We couldn&apos;t find that recipe</h1>
       <p className="list-note">
         The link may be old or mistyped. Have a look through what we have.
@@ -216,7 +216,7 @@ const RecipePage: FC = () => {
       >
         Back to Pick
       </Link>
-    </main>
+    </div>
   ) : (
     <RecipeView recipe={recipe} />
   )

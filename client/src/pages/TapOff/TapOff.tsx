@@ -25,7 +25,7 @@ const TapOff: FC = () => {
   const total = list.toBuy.length
   const left = list.leftToBuy
   return (
-    <main className="list-page done-screen">
+    <div className="list-page done-screen">
       <h1
         className="list-title"
         ref={titleRef}
@@ -49,7 +49,7 @@ const TapOff: FC = () => {
       >
         Back to my list
       </Link>
-    </main>
+    </div>
   )
 }
 export default TapOff

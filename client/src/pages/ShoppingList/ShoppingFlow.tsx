@@ -175,7 +175,7 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   }
 
   return (
-    <main className="flow">
+    <div className="flow">
       <div
         className="flow-steps justify-start"
         ref={measureBar(STEPS_BAR)}
@@ -265,6 +265,6 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
         people={list.people}
         toBuy={list.toBuy}
       />
-    </main>
+    </div>
   )
 }

@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { authHeaders, graphqlEndpoint, Ingre, withAuthHeaders } from '../App'
 import { STEP_KEY } from '../utils/storage/shoppingState'
 
@@ -72,5 +73,19 @@ describe('App', () => {
   it('uses an empty authorization header without a token', () => {
     expect(authHeaders(undefined)).toEqual({ headers: { authorization: '' } })
     expect(withAuthHeaders({}, {}).headers['authorization']).toBe('')
+  })
+})
+
+describe('App skip link (#131)', () => {
+  it('the first Tab on a page lands on "Skip to content", which targets the main landmark', async () => {
+    const user = userEvent.setup()
+    window.history.pushState({}, '', '/login')
+    render(<Ingre />)
+    await user.tab()
+    const link = screen.getByRole('link', { name: 'Skip to content' })
+    expect(link).toHaveFocus()
+    await user.click(link)
+    expect(screen.getByRole('main')).toHaveFocus()
+    expect(screen.getByRole('main')).toHaveAttribute('id', 'main')
   })
 })

@@ -67,7 +67,7 @@ export const Login: FC = () => {
     if (auth.loggedIn) navigate(from, { replace: true })
   }, [auth.loggedIn, from, navigate])
   return (
-    <main className="auth-page">
+    <div className="auth-page">
       <h1 className="auth-page__title">Log in</h1>
       {loginLoading ? (
         <p role="status">Loading</p>
@@ -151,6 +151,6 @@ export const Login: FC = () => {
           Sign up
         </Link>
       </p>
-    </main>
+    </div>
   )
 }

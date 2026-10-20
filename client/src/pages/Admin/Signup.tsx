@@ -32,7 +32,7 @@ export const Signup: FC = () => {
   }, [loggedIn, from, navigate])
 
   return (
-    <main className="auth-page">
+    <div className="auth-page">
       <h1 className="auth-page__title">Sign up</h1>
       <form
         className="auth-form"
@@ -169,6 +169,6 @@ export const Signup: FC = () => {
           Log in
         </Link>
       </p>
-    </main>
+    </div>
   )
 }
