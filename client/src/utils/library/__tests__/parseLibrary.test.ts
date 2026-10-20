@@ -165,6 +165,40 @@ describe('parseCatalogue / parseRecipes', () => {
   })
 })
 
+describe('parseIngredient badgeCode', () => {
+  const base = {
+    id: 'fresh-mint',
+    name: 'fresh mint',
+    category: 'fruit & veg',
+    sold: [{ type: 'bunch', size: { amount: 1, unit: 'count' } }],
+    pantry: 'Fridge',
+    allergens: []
+  }
+
+  it('keeps a valid three-letter code and leaves it out when absent', () => {
+    expect(parseIngredient({ ...base, badgeCode: 'MNT' }).badgeCode).toBe('MNT')
+    expect(parseIngredient(base)).not.toHaveProperty('badgeCode')
+  })
+
+  it.each(['mnt', 'MN', 'MINT', 'M1T', 'MÑT', '', 123, null])(
+    'fails loudly on badgeCode %p',
+    (badgeCode) => {
+      expect(() => parseIngredient({ ...base, badgeCode }, 'x')).toThrow(
+        new LibraryDataError(
+          'x.badgeCode: expected exactly 3 upper-case letters A-Z'
+        )
+      )
+    }
+  )
+
+  it('loads the overrides from the real catalogue', () => {
+    expect(
+      parseCatalogue(ingredientData).filter((i) => i.badgeCode !== undefined)
+        .length
+    ).toBe(11)
+  })
+})
+
 describe('parseSectionColours', () => {
   const valid = {
     sectionColours: {
@@ -184,18 +218,51 @@ describe('parseSectionColours', () => {
     expect(parseSectionColours(ingredientData)['Fruit & Veg']).toBe('produce')
   })
 
-  it('fails loudly on a missing map, a missing section or an unknown tone', () => {
+  it('fails loudly on a missing map', () => {
     expect(() => parseSectionColours({})).toThrow(
       'catalogue.sectionColours: expected an object'
     )
-    expect(() =>
+  })
+
+  it('names the section and the bad value for an unknown colour', () => {
+    const bad = () =>
       parseSectionColours({
         sectionColours: { ...valid.sectionColours, Deli: 'pink' }
       })
-    ).toThrow(LibraryDataError)
+    expect(bad).toThrow(LibraryDataError)
+    expect(bad).toThrow(
+      'catalogue.sectionColours.Deli: "pink" is not a known colour'
+    )
+    expect(() =>
+      parseSectionColours({
+        sectionColours: { ...valid.sectionColours, Bakery: 7 }
+      })
+    ).toThrow('Bakery: 7 is not a known colour')
+  })
+
+  it('names a missing section', () => {
     const { Frozen: _frozen, ...missing } = valid.sectionColours
     expect(() => parseSectionColours({ sectionColours: missing })).toThrow(
-      'catalogue.sectionColours.Frozen'
+      'catalogue.sectionColours.Frozen: nothing is not a known colour'
     )
+  })
+
+  it('rejects an unknown section key', () => {
+    expect(() =>
+      parseSectionColours({
+        sectionColours: { ...valid.sectionColours, Seafood: 'meat' }
+      })
+    ).toThrow(
+      new LibraryDataError(
+        'catalogue.sectionColours.Seafood: "Seafood" is not a known section (expected one of Fruit & Veg, Meat & Seafood, Dairy, Eggs & Fridge, Deli, Bakery, Pantry, Frozen, Other)'
+      )
+    )
+  })
+
+  it('reports a miscased key as unknown, not as a missing section', () => {
+    const { Deli: _deli, ...rest } = valid.sectionColours
+    expect(() =>
+      parseSectionColours({ sectionColours: { ...rest, deli: 'deli' } })
+    ).toThrow('catalogue.sectionColours.deli: "deli" is not a known section')
   })
 })

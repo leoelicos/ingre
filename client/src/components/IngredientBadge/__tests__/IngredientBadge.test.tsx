@@ -31,6 +31,19 @@ describe('IngredientBadge', () => {
     expect(screen.getByText('BMI')).toHaveAttribute('aria-hidden', 'true')
   })
 
+  it('shows the catalogue badgeCode instead of the derived code', () => {
+    render(
+      <IngredientBadge
+        name="full cream milk"
+        category="dairy & eggs"
+        badgeCode="MLK"
+      />
+    )
+    expect(screen.getByRole('img')).toHaveAccessibleName('full cream milk')
+    expect(screen.getByText('MLK')).toHaveAttribute('aria-hidden', 'true')
+    expect(screen.queryByText('FMI')).toBeNull()
+  })
+
   it('is neutral for an unknown section and is never focusable', () => {
     render(
       <IngredientBadge
