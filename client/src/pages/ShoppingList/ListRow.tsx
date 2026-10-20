@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { IngreIconChevronDown } from '../../lib/icon/Icon'
 import type { HomeLocation } from '../../types/library'
 import { HOME_LOCATIONS } from '../../utils/library/parseLibrary'
@@ -84,6 +84,63 @@ const Stepper: FC<{
   </div>
 )
 
+/**
+ * The source line ("for red lentil dahl"). While a tick waits, the pending label is drawn over
+ * it in the same grid cell, so the row keeps its height and nothing below moves under the
+ * pointer. The source stays in the checkbox's name (opacity only); the overlay is aria-hidden.
+ */
+export const SourceLine: FC<{ source: string; pendingLabel: string }> = ({
+  source,
+  pendingLabel
+}) => (
+  <span className="grid">
+    <small
+      className={
+        pendingLabel === ''
+          ? 'col-start-1 row-start-1'
+          : 'col-start-1 row-start-1 opacity-0'
+      }
+    >
+      {source}
+    </small>
+    {pendingLabel !== '' && (
+      <small
+        aria-hidden="true"
+        className="col-start-1 row-start-1"
+      >
+        {pendingLabel}
+      </small>
+    )}
+  </span>
+)
+
+/**
+ * Undo for a waiting tick, in the 44px slot the Details chevron uses, so the row never grows.
+ * Its status is announced, not drawn (the label is drawn by SourceLine).
+ */
+export const UndoSlot: FC<{
+  name: string
+  pendingLabel: string
+  onUndo: () => void
+}> = ({ name, pendingLabel, onUndo }) => (
+  <>
+    <span
+      role="status"
+      className="sr-only"
+    >
+      {`${name}: ${pendingLabel}`}
+    </span>
+    <button
+      type="button"
+      className="list-row__more w-11 px-0 text-sm font-semibold text-primary underline focus-visible:focus-ring"
+      aria-label={`Undo ${name}`}
+      onClick={onUndo}
+    >
+      Undo
+    </button>
+  </>
+)
+
 /** One list item: the whole row toggles; the chevron shows the breakdown. */
 export const ListRow: FC<RowProps> = ({
   line,
@@ -94,11 +151,13 @@ export const ListRow: FC<RowProps> = ({
   onQuantity
 }) => {
   const [expanded, setExpanded] = useState(false)
+  const box = useRef<HTMLInputElement>(null)
   const name = displayName(line)
   const need = needLabel(line)
   const location = line.location
   const id = line.ingredientId
   const checked = ticks.checkedIds.has(id)
+  const pending = ticks.pendingIds.has(id)
   const className = [
     'list-row',
     struck && checked ? 'list-row--done' : '',
@@ -111,6 +170,7 @@ export const ListRow: FC<RowProps> = ({
       <div className="list-row__main">
         <label className="list-row__toggle">
           <input
+            ref={box}
             type="checkbox"
             checked={checked}
             onChange={() => ticks.onToggle(id)}
@@ -123,7 +183,10 @@ export const ListRow: FC<RowProps> = ({
                 <span className="list-row__amount">{buyAmount(line)}</span>
               )}
             </span>
-            <small>{sourceLabel(line)}</small>
+            <SourceLine
+              source={sourceLabel(line)}
+              pendingLabel={pending ? ticks.pendingLabel : ''}
+            />
           </span>
         </label>
         {line.extraQuantity !== null && (
@@ -133,32 +196,29 @@ export const ListRow: FC<RowProps> = ({
             onChange={(quantity) => onQuantity(line.ingredientId, quantity)}
           />
         )}
-        <button
-          type="button"
-          className="list-row__more focus-visible:focus-ring"
-          aria-expanded={expanded}
-          aria-label={`Details for ${line.name}`}
-          onClick={() => setExpanded(!expanded)}
-        >
-          <IngreIconChevronDown />
-        </button>
-      </div>
-      {ticks.pendingIds.has(id) && (
-        <p
-          className="list-row__pending"
-          role="status"
-        >
-          {ticks.pendingLabel} ·{' '}
+        {pending ? (
+          <UndoSlot
+            name={line.name}
+            pendingLabel={ticks.pendingLabel}
+            onUndo={() => {
+              ticks.onUndo(id)
+              ;[box.current]
+                .filter((el) => el !== null)
+                .forEach((el) => el.focus())
+            }}
+          />
+        ) : (
           <button
             type="button"
-            className="link-button"
-            aria-label={`Undo ${line.name}`}
-            onClick={() => ticks.onUndo(id)}
+            className="list-row__more focus-visible:focus-ring"
+            aria-expanded={expanded}
+            aria-label={`Details for ${line.name}`}
+            onClick={() => setExpanded(!expanded)}
           >
-            Undo
+            <IngreIconChevronDown />
           </button>
-        </p>
-      )}
+        )}
+      </div>
       {expanded && (
         <div className="list-row__details">
           {(locationMode !== 'move' || line.recipes.length >= 2) &&
