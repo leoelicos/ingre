@@ -29,7 +29,7 @@ export const PICK_NEXT_HINT =
 
 /** The Saved filter is on but nothing has a heart yet (#160). */
 export const NO_SAVED_HINT =
-  'No saved recipes yet. Search for a recipe, open it and tap its heart to save it. It will show here.'
+  'No saved recipes yet. Tap View recipe under a recipe, then tap its heart to save it. It will show here.'
 
 /** The hint for how many recipes are picked; it only changes between none and some. */
 export const pickHint = (picked: number): string =>

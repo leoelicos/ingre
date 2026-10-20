@@ -38,6 +38,16 @@ export const stillNeeded = (
   checkedAtHome: ReadonlySet<string>
 ): ShopLine[] => toBuy.filter((line) => !checkedAtHome.has(line.ingredientId))
 
+/** Still to buy and not in the basket, counting ticks still on the clock, for the Next count. */
+export const leftToBuyNow = (
+  toBuy: readonly ShopLine[],
+  checkedAtHome: ReadonlySet<string>,
+  basketIds: ReadonlySet<string>
+): number =>
+  stillNeeded(toBuy, checkedAtHome).filter(
+    (line) => !basketIds.has(line.ingredientId)
+  ).length
+
 /** "At home" (check your kitchen) or "At the shop" (to buy) over the same list. */
 export const ShoppingListView: FC<{
   list: ShoppingListState
@@ -72,6 +82,12 @@ export const ShoppingListView: FC<{
       haveIds: homeTicks.takeUnsaved(),
       basketIds: shopTicks.takeUnsaved()
     })
+  /** At home the Next count follows a tick at once, before the 2s clock saves it. */
+  const nextCount = leftToBuyNow(
+    list.toBuy,
+    homeTicks.checkedIds,
+    list.basketIds
+  )
   const locationMode: LocationMode = atHome ? 'move' : 'none'
   const shopBar = !atHome
   const nothingLeft = list.toBuy.length === 0
@@ -234,7 +250,7 @@ export const ShoppingListView: FC<{
             }}
             className="list-tap__button w-full"
           >
-            Next: at the shop ({list.leftToBuy})
+            Next: at the shop ({nextCount})
           </PrimaryButton>
         ) : (
           shopBar && (

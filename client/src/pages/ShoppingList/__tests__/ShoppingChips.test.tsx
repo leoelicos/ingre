@@ -20,7 +20,7 @@ import {
   itemCount,
   lineBadge
 } from '../ShoppingChips'
-import { stillNeeded } from '../ShoppingListView'
+import { leftToBuyNow, stillNeeded } from '../ShoppingListView'
 
 addFontAwesome()
 
@@ -86,8 +86,36 @@ describe('Shopping list chips (#159)', () => {
     fireEvent.click(carrot)
     expect(chipNames()).toHaveLength(before - 1)
     expect(chipNames().some((n) => /Carrot$/.test(n ?? ''))).toBe(false)
+    // the count and the Next count follow the tick at once, before it is saved
+    expect(chipList()).toHaveAccessibleName(
+      `Shopping list, ${itemCount(before - 1)}`
+    )
+    expect(
+      screen.getByRole('button', { name: `Next: at the shop (${before - 1})` })
+    ).toBeInTheDocument()
+    expect(localStorage.getItem(HAVE_KEY)).toBeNull()
     act(() => jest.advanceTimersByTime(2500))
+    expect(JSON.parse(localStorage.getItem(HAVE_KEY) ?? '[]')).toEqual([
+      'carrot'
+    ])
     expect(chipNames()).toHaveLength(before - 1)
+    expect(
+      screen.getByRole('button', { name: `Next: at the shop (${before - 1})` })
+    ).toBeInTheDocument()
+    // un-ticking brings the chip straight back
+    fireEvent.click(screen.getByRole('button', { name: /^Already have \(1\)/ }))
+    fireEvent.click(screen.getByRole('checkbox', { name: /carrot/i }))
+    expect(chipNames()).toHaveLength(before)
+  })
+
+  it('counts what is left to buy now: pending home ticks and basket items are out', () => {
+    const lines = [
+      shopLine('a', 'Other'),
+      shopLine('b', 'Other'),
+      shopLine('c', 'Other')
+    ]
+    expect(leftToBuyNow(lines, new Set(['a']), new Set(['b']))).toBe(1)
+    expect(leftToBuyNow(lines, new Set(), new Set())).toBe(3)
   })
 
   it('VoiceOver: a named list with the count, each chip the full name (badge hidden)', () => {

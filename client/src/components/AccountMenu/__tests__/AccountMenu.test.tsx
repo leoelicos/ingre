@@ -3,7 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { AuthProvider } from '../../../utils/auth/AuthContext'
+import { AuthProvider, useAuthContext } from '../../../utils/auth/AuthContext'
+import { Header } from '../../Header'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { ACCOUNT_LABEL, AccountMenu } from '../AccountMenu'
 import { SAVED_PATH, accountItems, actionsFor } from '../accountItems'
@@ -117,5 +118,51 @@ describe('AccountMenu (#164)', () => {
     expect(actionsFor('saved')).toEqual(['saved'])
     expect(actionsFor('nope')).toEqual([])
     expect(actionsFor(3)).toEqual([])
+  })
+
+  it('after logging in, the header account menu shows Saved, which opens the Saved filter', async () => {
+    const user = userEvent.setup()
+    const payload = btoa(
+      JSON.stringify({
+        data: { firstName: 'Ada', email: 'a@b.c', _id: '1', pro: false },
+        exp: Date.now() / 1000 + 3600
+      })
+    )
+    const token = `e30.${payload}.sig`
+    const LogIn = () => {
+      const [, dispatch] = useAuthContext()
+      return (
+        <button
+          type="button"
+          onClick={() => dispatch({ type: 'LOGIN', data: token })}
+        >
+          Pretend login
+        </button>
+      )
+    }
+    render(
+      <MockedProvider mocks={[]}>
+        <MemoryRouter initialEntries={['/']}>
+          <AuthProvider>
+            <Header />
+            <LogIn />
+            <Routes>
+              <Route
+                path="*"
+                element={<Where />}
+              />
+            </Routes>
+          </AuthProvider>
+        </MemoryRouter>
+      </MockedProvider>
+    )
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Log in', 'Sign up'])
+    await user.keyboard('{Escape}')
+    await user.click(screen.getByRole('button', { name: 'Pretend login' }))
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Saved', 'Log out'])
+    await user.click(screen.getByRole('menuitem', { name: 'Saved' }))
+    expect(where()).toBe(`${SAVED_PATH} null`)
   })
 })

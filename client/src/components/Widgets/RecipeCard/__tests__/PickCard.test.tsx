@@ -3,10 +3,17 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import { useState } from 'react'
+import { MemoryRouter } from 'react-router-dom'
 import type { ClientRecipe } from '../../../../types/client'
 import { searchLibrary } from '../../../../utils/library/recipeLibrary'
 import { omit, recipe } from '../../../../test/fixtures'
-import { PICKED_MARK, PickCardGrid, pickId } from '../PickCard'
+import {
+  PICKED_MARK,
+  PickCardGrid,
+  VIEW_RECIPE,
+  pickId,
+  viewRecipeLabel
+} from '../PickCard'
 
 expect.extend(toHaveNoViolations)
 
@@ -22,26 +29,28 @@ const Picker = ({ recipes }: { recipes: readonly ClientRecipe[] }) => {
         : new Set([...now, id])
     )
   return (
-    <PickCardGrid
-      recipes={recipes}
-      pick={{ pickedIds: picked, onToggle }}
-    />
+    <MemoryRouter>
+      <PickCardGrid
+        recipes={recipes}
+        pick={{ pickedIds: picked, onToggle }}
+      />
+    </MemoryRouter>
   )
 }
 
 const card = (name: string) => screen.getByRole('button', { name })
 
 describe('PickCard (#156)', () => {
-  it('shows only the title and the key ingredient badges: no link, heart, picture or local name', () => {
+  it('shows only the title and the key ingredient badges: no link, heart, picture or local name inside the toggle', () => {
     render(<Picker recipes={library} />)
     const shaking = card('Shaking beef')
     expect(shaking).toHaveTextContent(
       /^Shaking beefBSTBeef rump steakMeat & SeafoodRONRed onionFruit & VegLIMLimeFruit & Veg$/
     )
     expect(screen.queryByText('bò lúc lắc')).toBeNull()
-    expect(screen.queryByRole('link')).toBeNull()
+    expect(within(shaking).queryByRole('link')).toBeNull()
     expect(screen.queryByRole('img')).toBeNull()
-    expect(shaking.querySelector('svg, img, button')).toBeNull()
+    expect(shaking.querySelector('svg, img, button, a')).toBeNull()
     expect(screen.getAllByRole('button')).toHaveLength(library.length)
   })
 
@@ -87,7 +96,27 @@ describe('PickCard (#156)', () => {
     await user.keyboard('{Enter}')
     expect(first).toHaveAttribute('aria-pressed', 'false')
     await user.tab()
+    expect(
+      screen.getByRole('link', { name: viewRecipeLabel('Spaghetti bolognese') })
+    ).toHaveFocus()
+    await user.tab()
     expect(card('Egg fried rice')).toHaveFocus()
+  })
+
+  it('each card is followed by its own View recipe link, a sibling of the toggle', () => {
+    render(<Picker recipes={library} />)
+    const shaking = card('Shaking beef')
+    const link = screen.getByRole('link', {
+      name: viewRecipeLabel('Shaking beef')
+    })
+    expect(link).toHaveAccessibleName('View recipe: Shaking beef')
+    expect(link).toHaveTextContent(new RegExp(`^${VIEW_RECIPE}$`))
+    expect(link).toHaveAttribute('href', '/recipe/shaking-beef')
+    expect(link).toHaveClass('focus-visible:focus-ring')
+    expect(shaking.contains(link)).toBe(false)
+    expect(link.parentElement).toBe(shaking.parentElement)
+    expect(shaking.nextElementSibling).toBe(link)
+    expect(screen.getAllByRole('link')).toHaveLength(library.length)
   })
 
   it('a recipe outside the library has no badges or description and picks by name', () => {
@@ -96,6 +125,8 @@ describe('PickCard (#156)', () => {
     const only = card('Plain')
     expect(only).not.toHaveAttribute('aria-describedby')
     expect(only).toHaveTextContent(/^Plain$/)
+    // no library page to open
+    expect(screen.queryByRole('link')).toBeNull()
     expect(pickId(plain)).toBe('Plain (local)')
     fireEvent.click(only)
     expect(only).toHaveAttribute('aria-pressed', 'true')

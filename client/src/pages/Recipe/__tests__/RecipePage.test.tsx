@@ -83,6 +83,21 @@ describe('RecipePage', () => {
     ).toBeInTheDocument()
   })
 
+  it('View recipe on a Pick card opens the recipe, where the heart saves it (#160)', () => {
+    renderAt('/')
+    fireEvent.click(
+      screen.getByRole('link', { name: 'View recipe: Shaking beef' })
+    )
+    // opening a recipe never picks it
+    expect(localStorage.getItem(PICKED_KEY)).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Save Shaking beef' }))
+    expect(localStorage.getItem(FAVOURITES_KEY)).toBe('["shaking-beef"]')
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+    expect(
+      screen.getByRole('button', { name: 'Shaking beef' })
+    ).toBeInTheDocument()
+  })
+
   /** Codes, names and sections drawn in a card or the recipe page, in order. */
   const badgesIn = (root: HTMLElement) =>
     within(root)
