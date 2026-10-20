@@ -1,6 +1,7 @@
 import type { FC } from 'react'
 import { IngreIconStartOver } from '../../lib/icon/Icon'
 import { PrimaryButton } from '../../components/PrimaryButton'
+import type { UndoResult } from '../../utils/shopping/useStartNewList'
 import './startNewList.css'
 
 /** Quiet text button at the foot of the list. Self-contained so it can move. */
@@ -31,8 +32,8 @@ export const AllDone: FC<{ onStart: () => void }> = ({ onStart }) => (
   </section>
 )
 
-/** Sits just above the bottom bar for UNDO_MS; static (no slide). */
-export const ClearedNote: FC<{ onUndo: () => void }> = ({ onUndo }) => (
+/** Sits just above the bottom bar for UNDO_MS; static (no slide). Gone once Undo is used. */
+export const ClearedNote: FC<{ onUndo: () => UndoResult }> = ({ onUndo }) => (
   <p
     className="cleared-note"
     role="status"

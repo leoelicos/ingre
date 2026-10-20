@@ -35,21 +35,25 @@ describe('useStartNewList', () => {
     const { restored, now } = setup()
     act(() => now().start())
     expect(restored).toEqual([EMPTY_LIST])
-    expect(now().previous).toBe(full)
+    expect(now().canUndo).toBe(true)
     act(() => jest.advanceTimersByTime(UNDO_MS - 1))
     act(() => now().start())
     act(() => jest.advanceTimersByTime(UNDO_MS - 1))
-    expect(now().previous).toBe(full)
+    expect(now().canUndo).toBe(true)
     act(() => jest.advanceTimersByTime(1))
-    expect(now().previous).toBeNull()
+    expect(now().canUndo).toBe(false)
+    expect(now().undo()).toBe('nothing-to-undo')
+    expect(restored).toEqual([EMPTY_LIST, EMPTY_LIST])
   })
 
   it('undo restores the previous state and stops the clock', () => {
     const { restored, now } = setup()
     act(() => now().start())
-    act(() => now().undo(full))
+    act(() => {
+      expect(now().undo()).toBe('restored')
+    })
     expect(restored).toEqual([EMPTY_LIST, full])
-    expect(now().previous).toBeNull()
+    expect(now().canUndo).toBe(false)
     expect(jest.getTimerCount()).toBe(0)
   })
 
@@ -58,10 +62,12 @@ describe('useStartNewList', () => {
     act(() => now().start())
     const { undo } = now()
     act(() => {
-      undo(full)
-      undo(full)
+      expect(undo()).toBe('restored')
+      expect(undo()).toBe('nothing-to-undo')
     })
     expect(restored).toEqual([EMPTY_LIST, full])
+    expect(now().undo()).toBe('nothing-to-undo')
+    expect(now().canUndo).toBe(false)
   })
 
   it('a stale Undo can never restore an older snapshot over a newer list', () => {
@@ -70,14 +76,14 @@ describe('useStartNewList', () => {
     act(() => now().start())
     const stale = now().undo
     act(() => {
-      stale(full)
+      expect(stale()).toBe('restored')
     })
     act(() => now().start())
     act(() => {
-      now().undo(newer)
+      expect(now().undo()).toBe('restored')
     })
     act(() => {
-      stale(full)
+      expect(stale()).toBe('nothing-to-undo')
     })
     expect(restored).toEqual([EMPTY_LIST, full, EMPTY_LIST, newer])
   })

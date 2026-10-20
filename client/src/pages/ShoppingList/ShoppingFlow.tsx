@@ -64,7 +64,6 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   useEffect(() => changeTitle('Shopping list'), [])
   const list = useShoppingList()
   const startNew = useStartNewList(list, timers)
-  const previous = startNew.previous
   const { state } = useLocation()
   const navigate = useNavigate()
   const handled = useRef(false)
@@ -210,9 +209,7 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
           )}
         </div>
       </div>
-      {previous !== null && (
-        <ClearedNote onUndo={() => startNew.undo(previous)} />
-      )}
+      {startNew.canUndo && <ClearedNote onUndo={startNew.undo} />}
       <PrintSheet
         recipes={list.recipes}
         people={list.people}
