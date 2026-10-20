@@ -53,4 +53,19 @@ describe('Login form', () => {
     expect(document.getElementById('password')).not.toBeNull()
     expect(screen.getByRole('button', { name: 'Log in' })).toBeInTheDocument()
   })
+
+  it('asks for an email, then a password, before logging in', () => {
+    renderLogin()
+    fireEvent.click(screen.getByRole('button', { name: 'Log in' }))
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Please enter an email address.'
+    )
+    fireEvent.change(screen.getByLabelText('Email'), {
+      target: { value: 'a@b.c' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Log in' }))
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Please enter a password.'
+    )
+  })
 })

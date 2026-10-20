@@ -33,6 +33,31 @@ const cardTitles = () =>
 const search = () =>
   screen.getByPlaceholderText('Search recipes or ingredients')
 
+/** Pretends to be a phone: every media query matches. */
+const asPhone = () => {
+  const original = window.matchMedia
+  window.matchMedia = (query: string) => ({
+    matches: true,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false
+  })
+  return () => {
+    window.matchMedia = original
+  }
+}
+
+/** jsdom has no layout: give an element a fixed horizontal box. */
+const place = (element: Element, left: number, width: number) => {
+  element.getBoundingClientRect = () => new DOMRect(left, 0, width, 32)
+}
+
+const tagRow = () => screen.getByRole('list', { name: 'Filter by tag' })
+
 describe('Home', () => {
   beforeEach(() => localStorage.clear())
 
@@ -177,5 +202,69 @@ describe('Home', () => {
     expect(chips()).toContain('Vietnamese')
     expect(screen.getByRole('button', { name: 'More ▾' })).toBeInTheDocument()
     window.matchMedia = original
+  })
+
+  it('on phones: Escape closes More and returns focus to it; other keys do not', () => {
+    const restore = asPhone()
+    renderHome()
+    const more = screen.getByRole('button', { name: 'More ▾' })
+    fireEvent.click(more)
+    fireEvent.keyDown(document, { key: 'Enter' })
+    expect(more).toHaveAttribute('aria-expanded', 'true')
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(more).toHaveAttribute('aria-expanded', 'false')
+    expect(more).toHaveFocus()
+    restore()
+  })
+
+  it('on phones: a focused chip in the one row scrolls clear of More', () => {
+    const restore = asPhone()
+    renderHome()
+    const row = tagRow()
+    place(row, 0, 300)
+    place(screen.getByRole('button', { name: 'More ▾' }), 230, 70)
+    const chip = within(row).getByRole('button', { name: 'Dinner' })
+
+    row.scrollLeft = 0
+    place(chip, 200, 60)
+    fireEvent.focus(chip)
+    expect(row.scrollLeft).toBe(42)
+
+    row.scrollLeft = 50
+    place(chip, -20, 60)
+    fireEvent.focus(chip)
+    expect(row.scrollLeft).toBe(30)
+
+    place(chip, 10, 60)
+    fireEvent.focus(chip)
+    expect(row.scrollLeft).toBe(30)
+
+    // without a More chip in the bar, the chip only needs to clear the row edge
+    const more = screen.getByRole('button', { name: 'More ▾' })
+    const bar = more.parentElement ?? document.body
+    more.remove()
+    row.scrollLeft = 0
+    place(chip, 200, 60)
+    fireEvent.focus(chip)
+    expect(row.scrollLeft).toBe(0)
+    place(chip, 280, 60)
+    fireEvent.focus(chip)
+    expect(row.scrollLeft).toBe(40)
+    bar.append(more)
+    restore()
+  })
+
+  it('a focused chip never scrolls when the tags are not on one row', () => {
+    const restore = asPhone()
+    renderHome()
+    fireEvent.click(screen.getByRole('button', { name: 'More ▾' }))
+    const row = tagRow()
+    place(row, 0, 300)
+    const chip = within(row).getByRole('button', { name: 'Dinner' })
+    place(chip, 400, 60)
+    row.scrollLeft = 0
+    fireEvent.focus(chip)
+    expect(row.scrollLeft).toBe(0)
+    restore()
   })
 })

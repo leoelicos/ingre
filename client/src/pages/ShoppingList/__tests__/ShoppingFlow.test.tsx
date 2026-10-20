@@ -16,7 +16,7 @@ import { PEOPLE_KEY } from '../../../utils/storage/people'
 import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
 import TapOff, { inBasketLine, stillToBuyLine } from '../../TapOff/TapOff'
 import { PICK_NEXT_HINT, recipeCount } from '../PickStep'
-import { ShoppingFlow, wantsStartNew } from '../ShoppingFlow'
+import { ShoppingFlow, edgeStep, wantsStartNew } from '../ShoppingFlow'
 import { basketCount, DONE_SHOPPING } from '../ShoppingListView'
 import { assumedNames } from '../../../utils/shopping/shoppingList'
 
@@ -140,6 +140,21 @@ describe('ShoppingFlow', () => {
     expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
     fireEvent.click(tab('At home'))
     expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+  })
+
+  it('Home and End jump to the first and last step, focus it and keep the page still', () => {
+    renderFlow(['dahl'], 'home')
+    const home = fireEvent.keyDown(tab('At home'), { key: 'Home' })
+    expect(home).toBe(false)
+    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expect(tab('Pick')).toHaveFocus()
+    const end = fireEvent.keyDown(tab('Pick'), { key: 'End' })
+    expect(end).toBe(false)
+    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
+    expect(tab('At the shop')).toHaveFocus()
+    expect(edgeStep('Home')).toBe('pick')
+    expect(edgeStep('End')).toBe('shop')
+    expect(edgeStep('Enter')).toBeNull()
   })
 
   it('swipes past 40% of the width, snaps back otherwise, ignores vertical scrolls', () => {
