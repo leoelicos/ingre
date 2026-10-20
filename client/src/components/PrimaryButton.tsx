@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 import { Button as AriaButton } from 'react-aria-components'
+import type { PrimarySize } from './primaryButtonStyle'
+import { primaryButtonClass } from './primaryButtonStyle'
 
 type Props = {
   children: ReactNode
@@ -8,8 +10,12 @@ type Props = {
   /** When true, set aria-disabled but keep the button focusable. */
   ariaDisabledOnly?: boolean
   ariaDescribedBy?: string | undefined
+  ariaLabel?: string
   className?: string
   id?: string | undefined
+  /** 'submit' inside a form; defaults to 'button'. */
+  type?: 'button' | 'submit'
+  size?: PrimarySize
 }
 
 const DISABLED_ARIA = true
@@ -21,18 +27,21 @@ export const PrimaryButton = ({
   isDisabled,
   ariaDisabledOnly,
   ariaDescribedBy,
+  ariaLabel,
   className = '',
-  id
+  id,
+  type = 'button',
+  size = 'regular'
 }: Props) => {
   const showAriaDisabled = Boolean(isDisabled || ariaDisabledOnly)
-  const blocked = Boolean(isDisabled || ariaDisabledOnly)
   const handlePress = () => {
-    if (blocked) return
+    if (showAriaDisabled) return
     onPress?.()
   }
   return (
     <AriaButton
       {...(id !== undefined ? { id } : {})}
+      type={type}
       onPress={handlePress}
       {...(ariaDisabledOnly
         ? {}
@@ -42,14 +51,11 @@ export const PrimaryButton = ({
       {...(ariaDescribedBy !== undefined
         ? { 'aria-describedby': ariaDescribedBy }
         : {})}
+      {...(ariaLabel !== undefined ? { 'aria-label': ariaLabel } : {})}
       {...(showAriaDisabled ? { 'aria-disabled': DISABLED_ARIA } : {})}
       className={({ isFocusVisible }) =>
         [
-          'inline-flex items-center justify-center min-h-[48px] px-4 rounded-control',
-          'font-normal border',
-          showAriaDisabled
-            ? 'bg-primary-disabled-bg text-primary-disabled-fg border-transparent cursor-not-allowed'
-            : 'bg-primary text-on-primary border-primary',
+          primaryButtonClass(size, showAriaDisabled),
           isFocusVisible ? 'focus-ring' : '',
           className
         ]

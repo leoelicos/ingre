@@ -3,9 +3,18 @@ import RecipeCardContainer from '../../components/Widgets/RecipeCard/RecipeCardC
 import { options } from './options'
 import { useSearch } from './useSearch'
 
-const Search: FC = () => {
-  const { searchText, onSearchChange, loadingRecipes, libraryRecipes } =
-    useSearch()
+type SearchViewProps = Pick<
+  ReturnType<typeof useSearch>,
+  'searchText' | 'onSearchChange' | 'loadingRecipes' | 'libraryRecipes'
+>
+
+/** The search screen for a given search state. */
+export const SearchView: FC<SearchViewProps> = ({
+  searchText,
+  onSearchChange,
+  loadingRecipes,
+  libraryRecipes
+}) => {
   return (
     <>
       <p>Search</p>
@@ -46,5 +55,7 @@ const Search: FC = () => {
     </>
   )
 }
+
+const Search: FC = () => <SearchView {...useSearch()} />
 
 export default Search

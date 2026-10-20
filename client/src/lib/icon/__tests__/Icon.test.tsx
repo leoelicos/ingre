@@ -22,9 +22,10 @@ import {
   IngreIconTapOff
 } from '../Icon'
 
-jest.mock('@fortawesome/react-fontawesome', () => ({
-  FontAwesomeIcon: () => <span>icon</span>
-}))
+import { addFontAwesome } from '../../../utils/addFontAwesome'
+
+/* The real Font Awesome renderer, with the app's icon library loaded as App.tsx does. */
+addFontAwesome()
 
 describe('Icon', () => {
   it('renders every icon, including small and extra styles', () => {
@@ -52,8 +53,12 @@ describe('Icon', () => {
       <IngreIconPortion key="portion" />,
       <IngreIconClearSearch key="clear-search" />
     ]
+    const error = jest.spyOn(console, 'error')
     icons.forEach((icon) => {
-      expect(() => render(icon)).not.toThrow()
+      const { container } = render(icon)
+      expect(container.querySelector('svg, img')).not.toBeNull()
     })
+    expect(error).not.toHaveBeenCalled()
+    error.mockRestore()
   })
 })

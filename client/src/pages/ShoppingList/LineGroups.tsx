@@ -48,15 +48,19 @@ export const LineGroups: FC<Props> = ({ lines, grouping, ...row }) => {
       {groups.map(({ key, items }) => (
         <section
           key={key}
-          className="list-group"
+          className="mb-3 rounded-card bg-surface px-3 py-2 shadow-card last:mb-0"
           aria-label={key}
         >
-          <h3 className="list-group__title">{key}</h3>
+          <h3 className="m-0 mb-1 text-[1rem] text-primary">{key}</h3>
           {groupBy(items, (l) =>
             grouping === 'shop' ? l.subsection ?? '' : ''
           ).map((sub) => (
             <div key={sub.key}>
-              {sub.key !== '' && <h4 className="list-group__sub">{sub.key}</h4>}
+              {sub.key !== '' && (
+                <h4 className="mb-0 mt-2 text-[0.8rem] uppercase tracking-[0.04em] text-text-secondary">
+                  {sub.key}
+                </h4>
+              )}
               <ul className="list-rows">
                 {ticksLast(sub.items, row.struck, row.ticks.movedIds).map(
                   (line) => (

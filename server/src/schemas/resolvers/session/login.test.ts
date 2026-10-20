@@ -1,16 +1,17 @@
-import { singleResult } from '../../../test-utils/singleResult'
+import { isRecord, singleResult } from '../../../test-utils/singleResult'
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
 import { UserInput } from '../../types'
 import { typeDefs } from '../../typeDefs'
 import { resolvers } from '../../resolvers'
-import '../../../utils/auth'
+import { Types } from 'mongoose'
+import { readUserFromAuthHeader } from '../../../utils/auth'
 
-const mockSignToken = jest.fn()
+const SECRET = 'login-test-secret'
+process.env['JWT_SECRET'] = SECRET
+
 const mockFindOneUser = jest.fn()
 const mockCheckUserPassword = jest.fn()
-
-const mockToken = 'token'
 
 export const LOGIN = gql`
   mutation Login($email: String!, $password: String!) {
@@ -31,10 +32,6 @@ interface ContextValue {
 
 const createTestServer = () =>
   new ApolloServer<ContextValue>({ typeDefs, resolvers })
-
-jest.mock('../../../utils/auth', () => ({
-  signToken: (e: unknown) => mockSignToken(e)
-}))
 
 let testServer = createTestServer()
 
@@ -57,12 +54,14 @@ describe('login', () => {
     firstName: 'John',
     lastName: 'Doe'
   }
-  const mockUserId = '12345'
+  const mockUserId = new Types.ObjectId()
   const mockUser = {
     _id: mockUserId,
     firstName: input.firstName,
     lastName: input.lastName,
-    email: input.email
+    email: input.email,
+    pro: false,
+    savedRecipes: []
   }
 
   beforeEach(() => {
@@ -72,7 +71,6 @@ describe('login', () => {
 
   it('should login and return the token and user', async () => {
     mockCheckUserPassword.mockReturnValueOnce(mockUser)
-    mockSignToken.mockReturnValueOnce(mockToken)
 
     const result = await testServer.executeOperation(
       {
@@ -85,20 +83,24 @@ describe('login', () => {
     const { errors, data = {} } = singleResult(result)
 
     expect(errors).toBeUndefined()
-    expect(data?.['login']).toStrictEqual({
-      user: { _id: mockUser._id },
-      token: mockToken
-    })
+    const login = data?.['login']
+    if (!isRecord(login)) throw new Error('expected login')
+    expect(login['user']).toStrictEqual({ _id: mockUserId.toString() })
+    // the real signToken: the token carries the user who logged in
+    expect(
+      readUserFromAuthHeader(
+        `Bearer ${String(login['token'])}`,
+        SECRET
+      )?._id.toString()
+    ).toBe(mockUserId.toString())
     expect(mockCheckUserPassword).toHaveBeenCalledWith({
       email: input.email,
       password: input.password
     })
-    expect(mockSignToken).toHaveBeenCalledWith(mockUser)
   })
 
   it('should throw an error if checkUserPassword returns false', async () => {
     mockCheckUserPassword.mockReturnValueOnce(null)
-    mockSignToken.mockReturnValueOnce(mockToken)
 
     const result = await testServer.executeOperation(
       {
@@ -111,12 +113,10 @@ describe('login', () => {
 
     expect(errors?.[0]?.message).toBe('Incorrect credentials')
     expect(data).toBeNull()
-    expect(mockSignToken).not.toHaveBeenCalled()
   })
 
   it('should throw an error if checkUserPassword throws', async () => {
     mockCheckUserPassword.mockRejectedValueOnce(null)
-    mockSignToken.mockReturnValueOnce(mockToken)
 
     const result = await testServer.executeOperation(
       {
@@ -129,6 +129,5 @@ describe('login', () => {
 
     expect(errors?.[0]?.message).toBe('Unexpected error value: null')
     expect(data).toBeNull()
-    expect(mockSignToken).not.toHaveBeenCalled()
   })
 })

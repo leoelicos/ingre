@@ -1,27 +1,19 @@
-const mockRender = jest.fn()
-const mockCreateRoot = jest.fn()
+import '@testing-library/jest-dom'
+import { act, screen } from '@testing-library/react'
 
-jest.mock('react-dom/client', () => ({
-  createRoot: (...args: unknown[]) => mockCreateRoot(...args)
-}))
-
-jest.mock('../App', () => ({
-  Ingre: () => null
-}))
-
+/* No module mocks: the real entry point mounts the real app into #root. */
 describe('index', () => {
-  beforeEach(() => {
-    mockRender.mockReset()
-    mockCreateRoot.mockReset()
-    mockCreateRoot.mockImplementation(() => ({ render: mockRender }))
+  it('mounts the app into #root', async () => {
     document.body.innerHTML = '<div id="root"></div>'
-  })
-
-  it('mounts the app into #root', () => {
-    jest.isolateModules(() => {
-      require('../index')
+    window.history.pushState({}, '', '/login')
+    await act(async () => {
+      jest.isolateModules(() => {
+        require('../index')
+      })
     })
-    expect(mockCreateRoot).toHaveBeenCalled()
-    expect(mockRender).toHaveBeenCalled()
+    expect(
+      await screen.findByRole('heading', { name: /log in/i })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Skip to content' })).toBeVisible()
   })
 })

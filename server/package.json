@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npx tsx server.ts",
+    "start:e2e": "npx tsx e2e.ts",
     "watch": "npx tsx --watch server.ts",
     "clear": "jest --clearCache",
     "test": "jest -c ./jest.config.js --watchAll=false --forceExit",

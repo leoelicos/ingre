@@ -7,6 +7,7 @@ import { placeInShop } from '../../utils/shopping/sections'
 import { displayName } from '../../utils/shopping/shoppingList'
 import type { NewExtra } from '../../utils/shopping/useShoppingList'
 import { IngredientBadge } from '../../components/IngredientBadge/IngredientBadge'
+import { PrimaryButton } from '../../components/PrimaryButton'
 
 const MAX_SUGGESTIONS = 6
 
@@ -69,12 +70,12 @@ export const AddItem: FC<{ onAdd: (extra: NewExtra) => void }> = ({
           onChange={(e) => setQuery(e.target.value)}
           className="focus-visible:focus-ring"
         />
-        <button
+        <PrimaryButton
           type="submit"
-          className="btn btn-primary add-item__button"
+          size="compact"
         >
           Add
-        </button>
+        </PrimaryButton>
       </div>
       {matches.length > 0 && (
         <ul

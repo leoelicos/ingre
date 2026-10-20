@@ -13,7 +13,9 @@ import {
   Routes,
   useLocation
 } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import { Header } from './components/Header'
+import { MAIN_ID, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
 import RecipePage from './pages/Recipe/RecipePage'
@@ -24,7 +26,7 @@ import { ShoppingFlow } from './pages/ShoppingList/ShoppingFlow'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import Search from './pages/Search/Search'
 import TapOff from './pages/TapOff/TapOff'
-import { APP_MODE } from './appMode'
+import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
 import { changeTitle } from './utils/changeTitle'
@@ -32,7 +34,8 @@ import { StoreProvider } from './utils/state/GlobalState'
 
 addFontAwesome()
 
-export function graphqlEndpoint(mode: string): string {
+export function graphqlEndpoint(mode: string, override: string): string {
+  if (override !== '') return override
   if (mode === 'production') {
     return 'https://ingre-backend.onrender.com/graphql'
   }
@@ -55,7 +58,7 @@ export const withAuthHeaders = (
 
 const authLink = setContext(withAuthHeaders)
 
-const uri = graphqlEndpoint(APP_MODE)
+const uri = graphqlEndpoint(APP_MODE, GRAPHQL_URL_OVERRIDE)
 const httpLink = createHttpLink({ uri })
 const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
@@ -81,6 +84,10 @@ export const WorkspaceRedirect: FC = () => {
   )
 }
 
+/** Vercel Web Analytics (#177), cookie-free: only in the production build, so dev, tests and e2e make no outside request. */
+export const SiteAnalytics: FC<{ mode: string }> = ({ mode }) =>
+  mode === 'production' ? <Analytics /> : null
+
 export const Ingre: FC = () => {
   changeTitle('Pick')
   return (
@@ -88,54 +95,62 @@ export const Ingre: FC = () => {
       <Router>
         <AuthProvider>
           <StoreProvider>
+            <SkipLink />
             <Header />
-            <Routes>
-              <Route
-                path="/"
-                element={<ShoppingFlow />}
-              />
-              <Route
-                path="/search"
-                element={<Search />}
-              />
-              <Route
-                path="/saved"
-                element={<SavedRedirect />}
-              />
-              <Route
-                path="/ingredients"
-                element={<WorkspaceRedirect />}
-              />
-              <Route
-                path="/recipe/:id"
-                element={<RecipePage />}
-              />
-              <Route
-                path="/tapoff"
-                element={<TapOff />}
-              />
-              {/* admin */}
-              <Route
-                path="/login"
-                element={<Login />}
-              />
-              <Route
-                path="/signup"
-                element={<Signup />}
-              />
-              <Route
-                path="/upgrade"
-                element={<Upgrade />}
-              />
-              <Route
-                path="/success"
-                element={<Success />}
-              />
-              <Route
-                path="*"
-                element={<NoMatch />}
-              />
-            </Routes>
+            <main
+              id={MAIN_ID}
+              tabIndex={-1}
+              className="focus:outline-none"
+            >
+              <Routes>
+                <Route
+                  path="/"
+                  element={<ShoppingFlow />}
+                />
+                <Route
+                  path="/search"
+                  element={<Search />}
+                />
+                <Route
+                  path="/saved"
+                  element={<SavedRedirect />}
+                />
+                <Route
+                  path="/ingredients"
+                  element={<WorkspaceRedirect />}
+                />
+                <Route
+                  path="/recipe/:id"
+                  element={<RecipePage />}
+                />
+                <Route
+                  path="/tapoff"
+                  element={<TapOff />}
+                />
+                {/* admin */}
+                <Route
+                  path="/login"
+                  element={<Login />}
+                />
+                <Route
+                  path="/signup"
+                  element={<Signup />}
+                />
+                <Route
+                  path="/upgrade"
+                  element={<Upgrade />}
+                />
+                <Route
+                  path="/success"
+                  element={<Success />}
+                />
+                <Route
+                  path="*"
+                  element={<NoMatch />}
+                />
+              </Routes>
+            </main>
+            <SiteAnalytics mode={APP_MODE} />
           </StoreProvider>
         </AuthProvider>
       </Router>

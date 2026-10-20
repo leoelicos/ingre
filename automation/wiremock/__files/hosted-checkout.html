@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Stripe Checkout (e2e stand-in)</title>
+  </head>
+  <body>
+    <main>
+      <h1>Pay ingré PRO</h1>
+      <p>Session {{request.pathSegments.[2]}}</p>
+      <a
+        id="pay"
+        href="{{regexExtract request.headers.Referer 'https?://[^/]+'}}/success?session_id={{request.pathSegments.[2]}}"
+        >Pay</a
+      >
+      <a
+        id="cancel"
+        href="{{regexExtract request.headers.Referer 'https?://[^/]+'}}/upgrade?checkout=cancelled"
+        >Cancel</a
+      >
+    </main>
+  </body>
+</html>

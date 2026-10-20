@@ -1,0 +1,12 @@
+{
+  "name": "Stand-in for https://js.stripe.com/v3 (the browser test routes Stripe.js here)",
+  "request": {
+    "method": "GET",
+    "urlPath": "/stripe-js/v3"
+  },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/javascript" },
+    "bodyFileName": "stripe-js-v3.js"
+  }
+}

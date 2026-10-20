@@ -6,3 +6,11 @@
 declare const __APP_MODE__: string
 
 export const APP_MODE: string = __APP_MODE__
+
+/**
+ * VITE_GRAPHQL_URL at build/dev-server start, or '' when unset (#175: the e2e
+ * suite points the client at its own server). Injected like `__APP_MODE__`.
+ */
+declare const __GRAPHQL_URL__: string
+
+export const GRAPHQL_URL_OVERRIDE: string = __GRAPHQL_URL__

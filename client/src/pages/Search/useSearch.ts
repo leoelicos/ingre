@@ -131,7 +131,10 @@ export const filterTags = (filter: filterTypes): string[] => [
 
 type SearchHandlerType = (value: string, event?: { target?: unknown }) => void
 
-export const useSearch = () => {
+/** Finds recipes for a query and tags; the real one searches the local library. */
+export type SearchFn = (search: { q: string; tags: string[] }) => ClientRecipe[]
+
+export const useSearch = (search: SearchFn = searchLibrary) => {
   const [state, dispatch] = useStoreContext()
   const [loadingRecipes, setLoadingRecipes] = useState(false)
   const [libraryRecipes, setLibraryRecipes] = useState<ClientRecipe[]>(
@@ -145,7 +148,7 @@ export const useSearch = () => {
     if (!event) return
     try {
       setLoadingRecipes(true)
-      const hits = searchLibrary({ q, tags: filterTags(filterState) })
+      const hits = search({ q, tags: filterTags(filterState) })
       setLibraryRecipes(hits)
       setUpdateRecipes(true)
       setLoadingRecipes(false)

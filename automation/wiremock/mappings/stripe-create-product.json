@@ -1,0 +1,17 @@
+{
+  "name": "Stripe: create product (checkout.ts step 1)",
+  "request": {
+    "method": "POST",
+    "urlPath": "/v1/products"
+  },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "prod_e2e",
+      "object": "product",
+      "active": true,
+      "livemode": false
+    }
+  }
+}
