@@ -1,5 +1,15 @@
 {
-  "_note": "Generic, brand-free items available at Coles/Woolworths/Aldi. `category` is the supermarket aisle. `sold` lists how the item is sold: {type, size: {amount, unit: g|ml|count} | null for weighed, label?}. `approxGrams` is the weight of one counted item (each/bunch); `measureGrams` converts recipe-only measures (clove, stalk). `pantry` is the default home location (Fridge, Cupboard, Spice rack, Bench; from the PO's home-locations draft with Fruit bowl folded into Bench); users can override it in the app. Frozen peas replaced by tinned peas (confirmed by the PO; 420 g tin size unverified) as there is no freezer location. Verified against Coles (PO, 2026-10): apple, black-pepper, celery, chilli-powder, cumin-seeds, garam-masala, garlic, ground-coriander, ground-cumin, ground-turmeric, lemongrass, parmesan, rice-paper (spice jars 25-50 g; parmesan blocks and grated/shaved; pepper 50 g grinder or ground; rice paper 250/375 g packs, recipes count sheets so one pack is bought; lemongrass punnet or paste tube, not per stalk). UNVERIFIED draft sizes, to be checked by the PO: baby-spinach, basmati-rice, bean-sprouts, beef-mince, beef-rump, butter, capsicum, carrot, cauliflower, chicken-thigh, chickpeas, coconut-milk, cooked-prawns, cream, crushed-tomatoes, cucumber, dried-oregano, egg, feta, fish-sauce, fresh-coriander, fresh-mint, ginger, green-chilli, ground-almonds, haloumi, hoisin-sauce, iceberg-lettuce, jasmine-rice, kalamata-olives, lime, natural-yoghurt, olive-oil, onion, oyster-sauce, pork-belly, pork-mince, potato, red-chilli, red-lentils, red-onion, red-wine-vinegar, rice-vermicelli, roasted-peanuts, salt, sesame-oil, soy-sauce, spaghetti, spring-onion, tinned-peas, tomato, tomato-paste, vegetable-oil, water-chestnuts, white-sugar, white-vinegar. Estimates: celery bunch 800 g / trimmed head 500 g, celery stalk 40 g, spring onion stalk 10 g, garlic clove 6 g, ginger small piece 50 g, salt shaker 125 g, dried oregano 10 g jar (below the verified 25-50 g spice-jar range). EVERYDAY EXTRAS (PO draft, 2026-10, all sizes UNVERIFIED): banana, orange, mandarin, pear, lemon, avocado, grapes, strawberries, blueberries, kiwifruit, watermelon, broccoli, zucchini, sweet-potato, pumpkin, mushrooms, corn, salad-mix, full-cream-milk, light-milk, cheddar, greek-yoghurt, orange-juice, sliced-ham, hummus, chicken-breast, sausages, bacon, white-bread, wholemeal-bread, bread-rolls, wraps, rolled-oats, breakfast-cereal, peanut-butter, honey, jam, coffee, tea-bags, plain-flour, canned-tuna. Extras estimates: breakfast cereal 500 g pack, coffee 200 g jar/pack, whole watermelon 3 kg. The draft's shop section is stored as an aisle (deli, bakery, breakfast & spreads, tea & coffee are new aisles). AUDIT (PO 2026-10-14): sesame-oil is no longer a staple, so it goes on shopping lists; olive and vegetable oil stay staples. ALLERGENS (PO draft 2026-10): `allergens` lists FSANZ mandatory allergens per item (empty when none); recipes derive theirs from their ingredients. APPLE RECIPE (draft 2026-10-14): pork-loin-chop added (no allergens); its 500 g pack size and 250 g per chop are UNVERIFIED.",
+  "_note": "Generic, brand-free items available at Coles/Woolworths/Aldi. `category` is the supermarket aisle. `sold` lists how the item is sold: {type, size: {amount, unit: g|ml|count} | null for weighed, label?}. `approxGrams` is the weight of one counted item (each/bunch); `measureGrams` converts recipe-only measures (clove, stalk). `pantry` is the default home location (Fridge, Cupboard, Spice rack, Bench; from the PO's home-locations draft with Fruit bowl folded into Bench); users can override it in the app. Frozen peas replaced by tinned peas (confirmed by the PO; 420 g tin size unverified) as there is no freezer location. Verified against Coles (PO, 2026-10): apple, black-pepper, celery, chilli-powder, cumin-seeds, garam-masala, garlic, ground-coriander, ground-cumin, ground-turmeric, lemongrass, parmesan, rice-paper (spice jars 25-50 g; parmesan blocks and grated/shaved; pepper 50 g grinder or ground; rice paper 250/375 g packs, recipes count sheets so one pack is bought; lemongrass punnet or paste tube, not per stalk). UNVERIFIED draft sizes, to be checked by the PO: baby-spinach, basmati-rice, bean-sprouts, beef-mince, beef-rump, butter, capsicum, carrot, cauliflower, chicken-thigh, chickpeas, coconut-milk, cooked-prawns, cream, crushed-tomatoes, cucumber, dried-oregano, egg, feta, fish-sauce, fresh-coriander, fresh-mint, ginger, green-chilli, ground-almonds, haloumi, hoisin-sauce, iceberg-lettuce, jasmine-rice, kalamata-olives, lime, natural-yoghurt, olive-oil, onion, oyster-sauce, pork-belly, pork-mince, potato, red-chilli, red-lentils, red-onion, red-wine-vinegar, rice-vermicelli, roasted-peanuts, salt, sesame-oil, soy-sauce, spaghetti, spring-onion, tinned-peas, tomato, tomato-paste, vegetable-oil, water-chestnuts, white-sugar, white-vinegar. Estimates: celery bunch 800 g / trimmed head 500 g, celery stalk 40 g, spring onion stalk 10 g, garlic clove 6 g, ginger small piece 50 g, salt shaker 125 g, dried oregano 10 g jar (below the verified 25-50 g spice-jar range). EVERYDAY EXTRAS (PO draft, 2026-10, all sizes UNVERIFIED): banana, orange, mandarin, pear, lemon, avocado, grapes, strawberries, blueberries, kiwifruit, watermelon, broccoli, zucchini, sweet-potato, pumpkin, mushrooms, corn, salad-mix, full-cream-milk, light-milk, cheddar, greek-yoghurt, orange-juice, sliced-ham, hummus, chicken-breast, sausages, bacon, white-bread, wholemeal-bread, bread-rolls, wraps, rolled-oats, breakfast-cereal, peanut-butter, honey, jam, coffee, tea-bags, plain-flour, canned-tuna. Extras estimates: breakfast cereal 500 g pack, coffee 200 g jar/pack, whole watermelon 3 kg. The draft's shop section is stored as an aisle (deli, bakery, breakfast & spreads, tea & coffee are new aisles). AUDIT (PO 2026-10-14): sesame-oil is no longer a staple, so it goes on shopping lists; olive and vegetable oil stay staples. ALLERGENS (PO draft 2026-10): `allergens` lists FSANZ mandatory allergens per item (empty when none); recipes derive theirs from their ingredients. APPLE RECIPE (draft 2026-10-14): pork-loin-chop added (no allergens); its 500 g pack size and 250 g per chop are UNVERIFIED. BADGE CODES (product lead, 2026-10-20): optional `badgeCode` (exactly 3 letters A-Z) overrides the code derived from the name; every item's resolved code must be unique across the catalogue.",
+  "sectionColours": {
+    "Fruit & Veg": "produce",
+    "Meat & Seafood": "meat",
+    "Dairy, Eggs & Fridge": "dairy",
+    "Deli": "deli",
+    "Bakery": "bakery",
+    "Pantry": "pantry",
+    "Frozen": "frozen",
+    "Other": "neutral"
+  },
   "ingredients": [
     {
       "id": "beef-mince",
@@ -26,7 +36,8 @@
         }
       ],
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "badgeCode": "BEF"
     },
     {
       "id": "pork-mince",
@@ -975,7 +986,8 @@
         }
       ],
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "badgeCode": "SPI"
     },
     {
       "id": "green-chilli",
@@ -1214,7 +1226,8 @@
         }
       ],
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "badgeCode": "LGR"
     },
     {
       "id": "red-chilli",
@@ -1269,7 +1282,8 @@
       ],
       "approxGrams": 50,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "badgeCode": "MNT"
     },
     {
       "id": "bean-sprouts",
@@ -1285,7 +1299,8 @@
         }
       ],
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "badgeCode": "BSP"
     },
     {
       "id": "fish-sauce",
@@ -1587,7 +1602,8 @@
       ],
       "approxGrams": 120,
       "pantry": "Bench",
-      "allergens": []
+      "allergens": [],
+      "badgeCode": "LEM"
     },
     {
       "id": "avocado",
@@ -1708,7 +1724,8 @@
       ],
       "approxGrams": 350,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "badgeCode": "BRC"
     },
     {
       "id": "zucchini",
@@ -1835,7 +1852,8 @@
         }
       ],
       "pantry": "Fridge",
-      "allergens": ["milk"]
+      "allergens": ["milk"],
+      "badgeCode": "MLK"
     },
     {
       "id": "light-milk",
@@ -2024,7 +2042,8 @@
         }
       ],
       "pantry": "Bench",
-      "allergens": ["wheat", "soy"]
+      "allergens": ["wheat", "soy"],
+      "badgeCode": "WHB"
     },
     {
       "id": "wholemeal-bread",
@@ -2040,7 +2059,8 @@
         }
       ],
       "pantry": "Bench",
-      "allergens": ["wheat", "soy"]
+      "allergens": ["wheat", "soy"],
+      "badgeCode": "WMB"
     },
     {
       "id": "bread-rolls",
@@ -2057,7 +2077,8 @@
         }
       ],
       "pantry": "Bench",
-      "allergens": ["wheat", "soy"]
+      "allergens": ["wheat", "soy"],
+      "badgeCode": "BRO"
     },
     {
       "id": "wraps",

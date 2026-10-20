@@ -49,6 +49,24 @@
   --color-tint-lunch-ink: #e9a597;
   --color-chip-active: var(--color-tint-dinner);
 
+  /* ingredient badges: background + ink per shop section (#154); ink on bg >= 6.7:1 */
+  --color-badge-produce: #dcefe2;
+  --color-badge-produce-ink: #1f5a36;
+  --color-badge-meat: #fbe0dc;
+  --color-badge-meat-ink: #8a2318;
+  --color-badge-dairy: #dde9f7;
+  --color-badge-dairy-ink: #1d4f8a;
+  --color-badge-deli: #f8e1cf;
+  --color-badge-deli-ink: #7a3a0b;
+  --color-badge-bakery: #f4e9cf;
+  --color-badge-bakery-ink: #674708;
+  --color-badge-pantry: #ece4f3;
+  --color-badge-pantry-ink: #5b2f7a;
+  --color-badge-frozen: #d7eff3;
+  --color-badge-frozen-ink: #0b5864;
+  --color-badge-neutral: #e8e6e4;
+  --color-badge-neutral-ink: #4a4542;
+
   /* print: black on white */
   --color-print-ink: #000000;
   --color-print-paper: #ffffff;

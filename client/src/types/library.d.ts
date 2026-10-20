@@ -49,6 +49,8 @@ export interface LibraryIngredient {
   pantry: HomeLocation
   /** FSANZ mandatory allergens, e.g. 'milk', 'tree nut (almond)'; empty when none */
   allergens: string[]
+  /** badge code override: exactly three letters A-Z; when absent the code is derived from the name */
+  badgeCode?: string
 }
 
 export interface LibraryRecipeIngredient {
