@@ -1,7 +1,13 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { authHeaders, graphqlEndpoint, Ingre, withAuthHeaders } from '../App'
+import {
+  authHeaders,
+  graphqlEndpoint,
+  Ingre,
+  SiteAnalytics,
+  withAuthHeaders
+} from '../App'
 import { STEP_KEY } from '../utils/storage/shoppingState'
 
 /** Renders the whole app at a path, as a browser would open it. */
@@ -87,5 +93,25 @@ describe('App skip link (#131)', () => {
     await user.click(link)
     expect(screen.getByRole('main')).toHaveFocus()
     expect(screen.getByRole('main')).toHaveAttribute('id', 'main')
+  })
+})
+
+describe('SiteAnalytics (#177)', () => {
+  const insightsScripts = () =>
+    Array.from(document.querySelectorAll('script')).filter((s) =>
+      /insights|vercel-scripts/.test(s.src)
+    )
+
+  it('renders nothing outside the production build', () => {
+    const { container } = render(<SiteAnalytics mode="test" />)
+    expect(container).toBeEmptyDOMElement()
+    expect(insightsScripts()).toEqual([])
+  })
+
+  it('adds the Vercel Analytics script in the production build', async () => {
+    render(<SiteAnalytics mode="production" />)
+    await waitFor(() => {
+      expect(insightsScripts()).toHaveLength(1)
+    })
   })
 })

@@ -13,6 +13,7 @@ import {
   Routes,
   useLocation
 } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import { Header } from './components/Header'
 import { MAIN_ID, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
@@ -82,6 +83,10 @@ export const WorkspaceRedirect: FC = () => {
   )
 }
 
+/** Vercel Web Analytics (#177), cookie-free: only in the production build, so dev, tests and e2e make no outside request. */
+export const SiteAnalytics: FC<{ mode: string }> = ({ mode }) =>
+  mode === 'production' ? <Analytics /> : null
+
 export const Ingre: FC = () => {
   changeTitle('Pick')
   return (
@@ -144,6 +149,7 @@ export const Ingre: FC = () => {
                 />
               </Routes>
             </main>
+            <SiteAnalytics mode={APP_MODE} />
           </StoreProvider>
         </AuthProvider>
       </Router>
