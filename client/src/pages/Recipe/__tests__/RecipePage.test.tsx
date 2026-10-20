@@ -2,7 +2,9 @@ import '@testing-library/jest-dom'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import Home from '../../Home/Home'
+import userEvent from '@testing-library/user-event'
+import { ShoppingFlow } from '../../ShoppingList/ShoppingFlow'
+import { Header } from '../../../components/Header'
 import RecipePage, {
   KeyIngredients,
   findRecipe,
@@ -24,18 +26,15 @@ const renderAt = (path: string) =>
       <MemoryRouter initialEntries={[path]}>
         <AuthProvider>
           <StoreProvider>
+            <Header />
             <Routes>
               <Route
                 path="/"
-                element={<Home />}
+                element={<ShoppingFlow />}
               />
               <Route
                 path="/recipe/:id"
                 element={<RecipePage />}
-              />
-              <Route
-                path="/ingredients"
-                element={<p>List page</p>}
               />
             </Routes>
           </StoreProvider>
@@ -64,10 +63,15 @@ describe('recipe helpers', () => {
 })
 
 describe('RecipePage', () => {
-  it('opens from a card, shows the recipe, and goes back', () => {
+  it('opens from a header search suggestion, shows the recipe, and goes back', async () => {
+    const user = userEvent.setup()
     renderAt('/')
-    // the title is a link to the recipe; tapping it never picks the recipe
-    fireEvent.click(screen.getByRole('link', { name: 'Shaking beef' }))
+    await user.type(
+      screen.getByRole('combobox', { name: 'Search recipes or ingredients' }),
+      'shaking'
+    )
+    await user.click(screen.getByRole('option', { name: /^Shaking beef/ }))
+    // opening a recipe never picks it
     expect(localStorage.getItem(PICKED_KEY)).toBeNull()
     expect(
       screen.getByRole('heading', { level: 1, name: 'Shaking beef' })
@@ -75,7 +79,22 @@ describe('RecipePage', () => {
     expect(screen.getByText('bò lúc lắc')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Back' }))
     expect(
-      screen.getByRole('link', { name: 'Shaking beef' })
+      screen.getByRole('button', { name: 'Shaking beef' })
+    ).toBeInTheDocument()
+  })
+
+  it('View recipe on a Pick card opens the recipe, where the heart saves it (#160)', () => {
+    renderAt('/')
+    fireEvent.click(
+      screen.getByRole('link', { name: 'View recipe: Shaking beef' })
+    )
+    // opening a recipe never picks it
+    expect(localStorage.getItem(PICKED_KEY)).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Save Shaking beef' }))
+    expect(localStorage.getItem(FAVOURITES_KEY)).toBe('["shaking-beef"]')
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+    expect(
+      screen.getByRole('button', { name: 'Shaking beef' })
     ).toBeInTheDocument()
   })
 
@@ -85,24 +104,24 @@ describe('RecipePage', () => {
       .getAllByRole('listitem')
       .map((item) => item.textContent)
 
-  it('shows the same key ingredient badges on the card and the recipe page (#155)', () => {
+  it('shows the same key ingredient badges on the Pick card and the recipe page (#155)', () => {
     renderAt('/')
-    const link = screen.getByRole('link', { name: 'Shaking beef' })
+    const card = screen.getByRole('button', { name: 'Shaking beef' })
     // VoiceOver: the title, then the full names of its key ingredients (never the codes)
-    expect(link).toHaveAccessibleDescription('Beef rump steak Red onion Lime')
-    const card = link.closest('article') ?? document.body
-    const onCard = badgesIn(card)
-    expect(onCard).toEqual([
+    expect(card).toHaveAccessibleDescription('Beef rump steak Red onion Lime')
+    within(card)
+      .getAllByText(/^[A-Z?]{1,3}$/)
+      .forEach((badge) => expect(badge).toHaveAttribute('aria-hidden', 'true'))
+    renderAt('/recipe/shaking-beef')
+    const region = screen.getByRole('region', { name: 'Key ingredients' })
+    expect(badgesIn(region)).toEqual([
       'BSTBeef rump steakMeat & Seafood',
       'RONRed onionFruit & Veg',
       'LIMLimeFruit & Veg'
     ])
-    within(card)
-      .getAllByText(/^[A-Z?]{1,3}$/)
-      .forEach((badge) => expect(badge).toHaveAttribute('aria-hidden', 'true'))
-    fireEvent.click(link)
-    const region = screen.getByRole('region', { name: 'Key ingredients' })
-    expect(badgesIn(region)).toEqual(onCard)
+    expect(card).toHaveTextContent(
+      /^Shaking beefBSTBeef rump steakMeat & SeafoodRONRed onionFruit & VegLIMLimeFruit & Veg$/
+    )
     expect(within(region).getByText('BST')).toHaveClass('bg-badge-meat')
     expect(within(region).getByText('LIM')).toHaveClass('bg-badge-produce')
   })
@@ -153,7 +172,9 @@ describe('RecipePage', () => {
     })
     expect(view).toHaveTextContent('✓ Added · View list')
     fireEvent.click(view)
-    expect(screen.getByText('List page')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Pick' })
+    ).toBeInTheDocument()
   })
 
   it('shows the amber allergen line under the meta, from every ingredient', () => {
@@ -193,15 +214,15 @@ describe('RecipePage', () => {
     expect(screen.getByText("You'll also need: salt")).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Back' }))
     expect(
-      screen.getByRole('link', { name: 'Red lentil dahl' })
+      screen.getByRole('button', { name: 'Red lentil dahl' })
     ).toBeInTheDocument()
     renderAt('/recipe/1')
     expect(
       screen.getByRole('heading', { name: "We couldn't find that recipe" })
     ).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('link', { name: 'Back to Recipes' }))
+    fireEvent.click(screen.getByRole('link', { name: 'Back to Pick' }))
     expect(
-      screen.getAllByRole('link', { name: 'Red lentil dahl' }).length
+      screen.getAllByRole('button', { name: 'Red lentil dahl' }).length
     ).toBeGreaterThan(0)
   })
 })

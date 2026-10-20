@@ -43,11 +43,11 @@
   padding: 10px 16px;
   border-radius: var(--radius-pill);
   background: var(--color-text);
-  color: #fff;
+  color: var(--color-inverse-text);
   white-space: nowrap;
 }
 .cleared-note .link-button {
-  color: #fff;
+  color: var(--color-inverse-text);
   text-decoration: underline;
   min-height: 32px;
 }

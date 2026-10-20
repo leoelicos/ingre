@@ -37,13 +37,13 @@ const TapOff: FC = () => {
       <button
         type="button"
         className="btn btn-primary done-screen__start"
-        onClick={() => navigate('/ingredients', { state: START_NEW_STATE })}
+        onClick={() => navigate('/', { state: START_NEW_STATE })}
       >
         Start a new list
       </button>
       <Link
         className="done-screen__back"
-        to="/ingredients"
+        to="/"
         state={FOCUS_SHOP_BAR}
       >
         Back to my list

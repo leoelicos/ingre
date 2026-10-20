@@ -57,7 +57,7 @@ const AddToList: FC<{ id: string; title: string }> = ({ id, title }) => {
   const [pickedIds, togglePicked] = usePickedIds()
   return pickedIds.has(id) ? (
     <Link
-      to="/ingredients"
+      to="/"
       className="btn btn-primary recipe-add"
       aria-label={`${capitaliseFirst(title)} is on your list. View list`}
     >
@@ -212,7 +212,7 @@ const RecipePage: FC = () => {
         to="/"
         className="btn btn-primary recipe-missing__link"
       >
-        Back to Recipes
+        Back to Pick
       </Link>
     </main>
   ) : (

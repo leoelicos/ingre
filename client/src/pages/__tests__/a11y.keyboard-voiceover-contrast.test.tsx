@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { MockedProvider } from '@apollo/client/testing'
@@ -7,7 +7,7 @@ import { AuthProvider } from '../../utils/auth/AuthContext'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
 import { ShoppingFlow } from '../ShoppingList/ShoppingFlow'
-import Home from '../Home/Home'
+import { Header } from '../../components/Header'
 
 const renderAt = (ui: React.ReactElement, path: string) =>
   render(
@@ -64,15 +64,16 @@ describe('Keyboard-only', () => {
     expect(screen.getByRole('button', { name: /sign up/i })).toHaveFocus()
   })
 
-  it('ShoppingFlow tabs respond to arrow keys', () => {
-    renderAt(<ShoppingFlow />, '/ingredients')
-    const pick = screen.getByRole('tab', { name: 'Pick' })
-    pick.focus()
-    fireEvent.keyDown(pick, { key: 'ArrowRight' })
-    expect(screen.getByRole('tab', { name: 'At home' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
+  it('ShoppingFlow Home control works from the keyboard', async () => {
+    const user = userEvent.setup()
+    localStorage.setItem('ingre.list.step', '"home"')
+    renderAt(<ShoppingFlow />, '/')
+    const home = screen.getByRole('button', { name: 'Home' })
+    home.focus()
+    await user.keyboard('{Enter}')
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Pick' })
+    ).toHaveFocus()
   })
 })
 
@@ -104,11 +105,13 @@ describe('VoiceOver (ARIA name, role, state)', () => {
     )
   })
 
-  it('ShoppingFlow step tabs expose selected state', () => {
-    renderAt(<ShoppingFlow />, '/ingredients')
-    const tabs = screen.getAllByRole('tab')
-    expect(tabs.length).toBeGreaterThanOrEqual(3)
-    expect(tabs[0]).toHaveAttribute('aria-selected')
+  it('ShoppingFlow Saved filter exposes on/off state as a switch', async () => {
+    const user = userEvent.setup()
+    renderAt(<ShoppingFlow />, '/')
+    const saved = screen.getByRole('switch', { name: 'Saved' })
+    expect(saved).not.toBeChecked()
+    await user.click(saved)
+    expect(screen.getByRole('switch', { name: 'Saved' })).toBeChecked()
   })
 
   it('Primary action buttons have accessible names', () => {
@@ -124,8 +127,8 @@ describe('VoiceOver (ARIA name, role, state)', () => {
 })
 
 describe('High contrast / focus visibility', () => {
-  it('Interactive controls on Home are focusable', () => {
-    renderAt(<Home />, '/')
+  it('Interactive controls in the header are focusable', () => {
+    renderAt(<Header />, '/')
     const links = screen.getAllByRole('link')
     expect(links.length).toBeGreaterThan(0)
     const first = links[0]

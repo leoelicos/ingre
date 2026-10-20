@@ -42,7 +42,8 @@ import {
   faPlus,
   faCheck,
   faPrint,
-  faMinus
+  faMinus,
+  faCircleUser
 } from '@fortawesome/free-solid-svg-icons'
 
 export const addFontAwesome = () =>
@@ -88,5 +89,6 @@ export const addFontAwesome = () =>
     faPlus,
     faCheck,
     faPrint,
-    faMinus
+    faMinus,
+    faCircleUser
   )

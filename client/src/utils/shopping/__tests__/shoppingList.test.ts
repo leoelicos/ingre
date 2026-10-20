@@ -33,7 +33,9 @@ import {
   extraLines,
   sourceLabel,
   type Buy,
-  homeGroup
+  homeGroup,
+  catalogueIdOf,
+  withoutDuplicateExtras
 } from '../shoppingList'
 
 const recipe = (
@@ -598,5 +600,29 @@ describe('catalogue display (PO)', () => {
     expect(garlic && buyAmount(garlic)).toBe('1 garlic bulb')
     expect(ginger && printLine(ginger)).toBe('1 small piece ginger')
     expect(garlic && printLine(garlic)).toBe('1 garlic bulb')
+  })
+})
+
+describe('extras already on the list (#162)', () => {
+  it('reads the catalogue id behind a line id', () => {
+    expect(catalogueIdOf('garlic')).toBe('garlic')
+    expect(catalogueIdOf('extra:garlic')).toBe('garlic')
+    expect(catalogueIdOf('extra:free-candles')).toBe('free-candles')
+  })
+
+  it('leaves out an extra a picked recipe already needs, so it shows once', () => {
+    const dahl = library.filter((r) => r.id === 'dahl')
+    const recipeLines = buildShoppingList(dahl, 2, catalogue)
+    const extras = extraLines(
+      [
+        { id: 'garlic', name: 'garlic', ingredientId: 'garlic', quantity: 1 },
+        { id: 'banana', name: 'banana', ingredientId: 'banana', quantity: 1 },
+        { id: 'free-x', name: 'x', ingredientId: null, quantity: 1 }
+      ],
+      catalogue
+    )
+    expect(
+      withoutDuplicateExtras(recipeLines, extras).map((l) => l.ingredientId)
+    ).toEqual(['extra:banana', 'extra:free-x'])
   })
 })

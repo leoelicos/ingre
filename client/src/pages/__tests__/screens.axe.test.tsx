@@ -4,9 +4,8 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthProvider } from '../../utils/auth/AuthContext'
-import Home from '../Home/Home'
 import Search from '../Search/Search'
-import { Saved } from '../Saved/Saved'
+import { Header } from '../../components/Header'
 import RecipePage from '../Recipe/RecipePage'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
@@ -32,8 +31,8 @@ const renderScreen = (ui: React.ReactElement, path = '/') =>
   )
 
 describe('All screens accessibility (axe)', () => {
-  it('Home has no axe violations', async () => {
-    const { container } = renderScreen(<Home />)
+  it('Header has no axe violations', async () => {
+    const { container } = renderScreen(<Header />)
     expect(await axe(container)).toHaveNoViolations()
   })
 
@@ -42,8 +41,8 @@ describe('All screens accessibility (axe)', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('Saved has no axe violations', async () => {
-    const { container } = renderScreen(<Saved />, '/saved')
+  it('Pick with the Saved filter on has no axe violations', async () => {
+    const { container } = renderScreen(<ShoppingFlow />, '/?saved=1')
     expect(await axe(container)).toHaveNoViolations()
   })
 
@@ -68,7 +67,7 @@ describe('All screens accessibility (axe)', () => {
   })
 
   it('ShoppingFlow (Pick) has no axe violations', async () => {
-    const { container } = renderScreen(<ShoppingFlow />, '/ingredients')
+    const { container } = renderScreen(<ShoppingFlow />, '/')
     expect(await axe(container)).toHaveNoViolations()
   })
 })

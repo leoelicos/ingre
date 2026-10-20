@@ -6,7 +6,13 @@ import {
   createHttpLink
 } from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useLocation
+} from 'react-router-dom'
 import { Header } from './components/Header'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
@@ -14,9 +20,8 @@ import RecipePage from './pages/Recipe/RecipePage'
 import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
-import Home from './pages/Home/Home'
 import { ShoppingFlow } from './pages/ShoppingList/ShoppingFlow'
-import { Saved } from './pages/Saved/Saved'
+import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import Search from './pages/Search/Search'
 import TapOff from './pages/TapOff/TapOff'
 import { APP_MODE } from './appMode'
@@ -56,8 +61,28 @@ const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
 const client = new ApolloClient({ link, cache })
 
+/** Old Saved links land on Pick with the Saved filter on (#160). */
+export const SavedRedirect: FC = () => (
+  <Navigate
+    to={SAVED_PATH}
+    replace={true}
+  />
+)
+
+/** The shopping list is the workspace at "/" (#164); router state (Back to my list) comes along. */
+export const WorkspaceRedirect: FC = () => {
+  const { search, state } = useLocation()
+  return (
+    <Navigate
+      to={{ pathname: '/', search }}
+      replace={true}
+      state={state}
+    />
+  )
+}
+
 export const Ingre: FC = () => {
-  changeTitle('Recipes')
+  changeTitle('Pick')
   return (
     <ApolloProvider client={client}>
       <Router>
@@ -67,7 +92,7 @@ export const Ingre: FC = () => {
             <Routes>
               <Route
                 path="/"
-                element={<Home />}
+                element={<ShoppingFlow />}
               />
               <Route
                 path="/search"
@@ -75,11 +100,11 @@ export const Ingre: FC = () => {
               />
               <Route
                 path="/saved"
-                element={<Saved />}
+                element={<SavedRedirect />}
               />
               <Route
                 path="/ingredients"
-                element={<ShoppingFlow />}
+                element={<WorkspaceRedirect />}
               />
               <Route
                 path="/recipe/:id"

@@ -2,8 +2,11 @@ import type { FC } from 'react'
 import { useId, useState } from 'react'
 import type { LibraryIngredient } from '../../types/library'
 import { catalogue } from '../../utils/library/recipeLibrary'
+import { matchCatalogue } from '../../utils/library/catalogueMatch'
+import { placeInShop } from '../../utils/shopping/sections'
 import { displayName } from '../../utils/shopping/shoppingList'
 import type { NewExtra } from '../../utils/shopping/useShoppingList'
+import { IngredientBadge } from '../../components/IngredientBadge/IngredientBadge'
 
 const MAX_SUGGESTIONS = 6
 
@@ -17,6 +20,17 @@ export const suggest = (
   return items
     .filter((i) => words.every((w) => i.name.toLowerCase().includes(w)))
     .slice(0, MAX_SUGGESTIONS)
+}
+
+/** The catalogue item for typed text ("eggs" finds egg), else the text as free text (#162). */
+export const toExtra = (
+  text: string,
+  items: readonly LibraryIngredient[] = catalogue
+): NewExtra => {
+  const match = matchCatalogue(text, items)
+  return match.kind === 'matched'
+    ? { name: match.item.name, ingredientId: match.item.id }
+    : { name: match.text, ingredientId: null }
 }
 
 /** "Add an item": pick a catalogue match or add free text. */
@@ -35,12 +49,8 @@ export const AddItem: FC<{ onAdd: (extra: NewExtra) => void }> = ({
       className="add-item"
       onSubmit={(e) => {
         e.preventDefault()
-        const text = query.trim()
-        if (text === '') return
-        const exact = matches.find(
-          (m) => m.name.toLowerCase() === text.toLowerCase()
-        )
-        add({ name: exact?.name ?? text, ingredientId: exact?.id ?? null })
+        if (query.trim() === '') return
+        add(toExtra(query))
       }}
     >
       <label
@@ -75,9 +85,22 @@ export const AddItem: FC<{ onAdd: (extra: NewExtra) => void }> = ({
             <li key={item.id}>
               <button
                 type="button"
+                className="flex items-center gap-3 focus-visible:focus-ring"
                 onClick={() => add({ name: item.name, ingredientId: item.id })}
               >
-                {displayName(item)}
+                <IngredientBadge
+                  name={item.name}
+                  category={item.category}
+                  {...(item.badgeCode === undefined
+                    ? {}
+                    : { badgeCode: item.badgeCode })}
+                />
+                <span className="flex flex-col leading-tight">
+                  <span>{displayName(item)}</span>
+                  <span className="text-xs text-text-secondary">
+                    {placeInShop(item.category).section}
+                  </span>
+                </span>
               </button>
             </li>
           ))}

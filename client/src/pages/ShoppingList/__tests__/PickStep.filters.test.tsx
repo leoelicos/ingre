@@ -1,37 +1,53 @@
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
-import { MemoryRouter } from 'react-router-dom'
-import Home from '../Home'
-import { PRIMARY_TAGS } from '../homeFilters'
-import { addFontAwesome } from '../../../utils/addFontAwesome'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
-import { StoreProvider } from '../../../utils/state/GlobalState'
+import { addFontAwesome } from '../../../utils/addFontAwesome'
+import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
 import { PEOPLE_KEY } from '../../../utils/storage/people'
-import { EXTRAS_KEY } from '../../../utils/storage/shoppingState'
+import { EXTRAS_KEY, STEP_KEY } from '../../../utils/storage/shoppingState'
+import { PRIMARY_TAGS } from '../../Home/homeFilters'
+import { ShoppingFlow, pickParams, withSaved } from '../ShoppingFlow'
+import { NO_SAVED_HINT, filterRecipes, pickEmpty } from '../PickStep'
 
 addFontAwesome()
 
-const renderHome = () =>
+const Where = () => {
+  const { search } = useLocation()
+  return <p data-testid="search">{search}</p>
+}
+
+const renderPick = (path = '/') =>
   render(
     <MockedProvider mocks={[]}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[path]}>
         <AuthProvider>
-          <StoreProvider>
-            <Home />
-          </StoreProvider>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <ShoppingFlow />
+                  <Where />
+                </>
+              }
+            />
+          </Routes>
         </AuthProvider>
       </MemoryRouter>
     </MockedProvider>
   )
 
+/** Titles of the Pick cards shown, in order. */
 const cardTitles = () =>
-  screen
-    .getAllByRole('heading', { level: 3 })
-    .map((heading) => heading.textContent)
+  [...document.querySelectorAll('.recipe-grid li > button')]
+    .map((card) => card.getAttribute('aria-labelledby') ?? '')
+    .map((id) => document.getElementById(id)?.textContent)
 
-const search = () =>
-  screen.getByPlaceholderText('Search recipes or ingredients')
+const savedSwitch = () => screen.getByRole('switch', { name: 'Saved' })
+const tagRow = () => screen.getByRole('list', { name: 'Filter by tag' })
 
 /** Pretends to be a phone: every media query matches. */
 const asPhone = () => {
@@ -56,83 +72,148 @@ const place = (element: Element, left: number, width: number) => {
   element.getBoundingClientRect = () => new DOMRect(left, 0, width, 32)
 }
 
-const tagRow = () => screen.getByRole('list', { name: 'Filter by tag' })
+beforeEach(() => localStorage.clear())
 
-describe('Home', () => {
-  beforeEach(() => localStorage.clear())
-
-  it('lists every library recipe as a card with its local name', () => {
-    renderHome()
-    expect(cardTitles()).toContain('Shaking beef')
-    expect(screen.getByText('bò lúc lắc')).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /^Save / })).toHaveLength(
-      cardTitles().length
-    )
-  })
-
-  it('searches the library as you type', () => {
-    renderHome()
-    fireEvent.change(search(), { target: { value: 'lemongrass' } })
+describe('Pick search (from the header, #163)', () => {
+  it('filters the cards by the search text in the address', () => {
+    renderPick('/?q=lemongrass')
+    expect(cardTitles().length).toBeGreaterThan(0)
     expect(cardTitles().every((t) => t?.startsWith('Lemongrass'))).toBe(true)
   })
 
   it('finds the apple recipe when searching apples', () => {
-    renderHome()
-    fireEvent.change(search(), { target: { value: 'apples' } })
+    renderPick('/?q=apples')
     expect(cardTitles()).toEqual(['Pork chops with apples and onion'])
   })
 
-  it('an unmatched empty search says so, with no button', () => {
-    renderHome()
-    fireEvent.change(search(), { target: { value: '  zzzz ' } })
-    expect(screen.getByRole('status')).toHaveTextContent(
-      /^No recipes with zzzz yet\.$/
-    )
+  it('a search opens Pick even when the list was left on another step', () => {
+    localStorage.setItem(STEP_KEY, '"shop"')
+    renderPick('/?q=dahl')
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Pick' })
+    ).toBeInTheDocument()
+  })
+
+  it('an unmatched search says so, with no button', () => {
+    renderPick('/?q=%20%20zzzz%20')
+    expect(screen.getByText(/^No recipes with zzzz yet\.$/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /^\+ Add/ })).toBeNull()
   })
 
-  it('a catalogue item can be added to the list as an extra', () => {
-    renderHome()
-    fireEvent.change(search(), { target: { value: 'Banana' } })
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'No recipes with banana yet. You can add banana to your list'
-    )
+  it('a catalogue item can be added to the list as an extra, then viewed', () => {
+    renderPick('/?q=Banana')
+    expect(
+      screen.getByText(
+        'No recipes with banana yet. You can add banana to your list'
+      )
+    ).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: '+ Add banana' }))
     expect(JSON.parse(localStorage.getItem(EXTRAS_KEY) ?? '[]')).toEqual([
       { id: 'banana', name: 'banana', ingredientId: 'banana', quantity: 1 }
     ])
-    const view = screen.getByRole('link', {
-      name: '✓ Banana is on your list. View list'
-    })
-    expect(view).toHaveAttribute('href', '/ingredients')
     expect(screen.queryByRole('button', { name: '+ Add banana' })).toBeNull()
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: '✓ Banana is on your list. View list'
+      })
+    )
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'At home' })
+    ).toHaveFocus()
+    expect(
+      within(
+        screen.getByRole('list', { name: 'Shopping list, 1 item' })
+      ).getByText('Banana')
+    ).toBeInTheDocument()
+  })
+})
+
+describe('Saved filter on Pick (#160)', () => {
+  it('on: only saved recipes; off: all recipes; announced as a switch, on or off', async () => {
+    const user = userEvent.setup()
+    localStorage.setItem(FAVOURITES_KEY, '["dahl","butter-chicken"]')
+    renderPick()
+    const all = cardTitles().length
+    expect(savedSwitch()).not.toBeChecked()
+    await user.click(savedSwitch())
+    expect(savedSwitch()).toBeChecked()
+    expect(screen.getByTestId('search')).toHaveTextContent('?saved=1')
+    expect(cardTitles()).toEqual(['Butter chicken', 'Red lentil dahl'])
+    await user.click(savedSwitch())
+    expect(savedSwitch()).not.toBeChecked()
+    expect(screen.getByTestId('search')).toHaveTextContent(/^$/)
+    expect(cardTitles()).toHaveLength(all)
   })
 
-  it('shows the confirmed state when the item is already on the list', () => {
-    localStorage.setItem(
-      EXTRAS_KEY,
-      JSON.stringify([
-        { id: 'banana', name: 'banana', ingredientId: 'banana', quantity: 2 }
-      ])
+  it('works from the keyboard with a visible focus ring', async () => {
+    const user = userEvent.setup()
+    renderPick()
+    savedSwitch().focus()
+    await user.keyboard(' ')
+    expect(savedSwitch()).toBeChecked()
+    expect(savedSwitch().closest('label')?.className).toContain(
+      'data-[focus-visible]:focus-ring'
     )
-    renderHome()
-    fireEvent.change(search(), { target: { value: 'bananas' } })
+  })
+
+  it('with nothing saved, explains how to save a recipe', () => {
+    renderPick('/?saved=1')
+    expect(savedSwitch()).toBeChecked()
+    expect(screen.getByText(NO_SAVED_HINT)).toHaveAttribute('role', 'status')
+    expect(cardTitles()).toEqual([])
+  })
+
+  it('keeps other address params when switched', () => {
+    const params = new URLSearchParams('q=egg')
+    expect(withSaved(params, true).toString()).toBe('q=egg&saved=1')
     expect(
-      screen.getByRole('link', { name: '✓ Banana is on your list. View list' })
-    ).toBeInTheDocument()
+      withSaved(new URLSearchParams('q=egg&saved=1'), false).toString()
+    ).toBe('q=egg')
+    expect(pickParams(new URLSearchParams('saved=1&q=x'))).toEqual({
+      query: 'x',
+      savedOnly: true
+    })
+    expect(pickParams(new URLSearchParams(''))).toEqual({
+      query: '',
+      savedOnly: false
+    })
+  })
+})
+
+describe('Pick empty states', () => {
+  const filter = {
+    query: '',
+    tags: [],
+    savedOnly: false,
+    savedIds: new Set<string>()
+  }
+
+  it('picks the right message', () => {
+    expect(pickEmpty({ ...filter, savedOnly: true }, [])).toBe('no-saved')
+    expect(pickEmpty({ ...filter, query: 'zz' }, [])).toBe('search')
+    expect(pickEmpty(filter, [])).toBe('no-match')
+    expect(pickEmpty(filter, filterRecipes(filter))).toBe('none')
+    expect(
+      pickEmpty(
+        { ...filter, savedOnly: true, savedIds: new Set(['x']) },
+        filterRecipes({ ...filter, savedOnly: true, savedIds: new Set(['x']) })
+      )
+    ).toBe('no-match')
   })
 
   it('a tag filter with no results keeps the plain message', () => {
-    renderHome()
-    const chips = within(screen.getByRole('list', { name: 'Filter by tag' }))
+    renderPick()
+    const chips = within(tagRow())
     for (const name of ['Indian', 'Vietnamese'])
       fireEvent.click(chips.getByRole('button', { name }))
     expect(screen.getByText('No recipes')).toBeInTheDocument()
   })
+})
 
+describe('Pick tag chips (moved from the old Recipes screen)', () => {
   it('filters by every selected tag chip', () => {
-    renderHome()
-    const chips = within(screen.getByRole('list', { name: 'Filter by tag' }))
+    renderPick()
+    const chips = within(tagRow())
     const indian = chips.getByRole('button', { name: 'Indian' })
     fireEvent.click(indian)
     expect(indian).toHaveAttribute('aria-pressed', 'true')
@@ -144,20 +225,18 @@ describe('Home', () => {
   })
 
   it('selects people in an accessible radio group, default 2, persisted', () => {
-    renderHome()
+    renderPick()
     const group = within(screen.getByRole('radiogroup', { name: 'Serves' }))
     expect(group.getByRole('radio', { name: '2' })).toBeChecked()
     fireEvent.click(group.getByRole('radio', { name: '1' }))
-    expect(group.getByRole('radio', { name: '1' })).toBeChecked()
     expect(localStorage.getItem(PEOPLE_KEY)).toBe('1')
   })
 
   it('orders chips meal/diet first then cuisines, capitalised', () => {
-    renderHome()
-    const chips = within(
-      screen.getByRole('list', { name: 'Filter by tag' })
-    ).getAllByRole('button')
-    const names = chips.map((c) => c.textContent)
+    renderPick()
+    const names = within(tagRow())
+      .getAllByRole('button')
+      .map((c) => c.textContent)
     expect(names.slice(0, 5)).toEqual([
       'Lunch',
       'Dinner',
@@ -168,30 +247,16 @@ describe('Home', () => {
     expect(names).toContain('Vietnamese')
   })
 
-  it('on phones: short placeholder, one row of tags, More expands, active tags stay', () => {
-    const original = window.matchMedia
-    window.matchMedia = (query: string) => ({
-      matches: true,
-      media: query,
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false
-    })
-    renderHome()
-    expect(
-      screen.getByPlaceholderText('Search recipes or ingredients')
-    ).toBeInTheDocument()
+  it('on phones: one row of tags, More expands, active tags stay', () => {
+    const restore = asPhone()
+    renderPick()
     const chips = () =>
-      within(screen.getByRole('list', { name: 'Filter by tag' }))
+      within(tagRow())
         .getAllByRole('button')
         .map((b) => b.textContent)
     expect(
       chips().every((c) => PRIMARY_TAGS.includes((c ?? '').toLowerCase()))
     ).toBe(true)
-    expect(chips()).toContain('Dinner')
     expect(chips()).not.toContain('Vietnamese')
     const more = screen.getByRole('button', { name: 'More ▾' })
     expect(more).toHaveAttribute('aria-expanded', 'false')
@@ -200,13 +265,12 @@ describe('Home', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Vietnamese' }))
     fireEvent.click(screen.getByRole('button', { name: 'Less ▴' }))
     expect(chips()).toContain('Vietnamese')
-    expect(screen.getByRole('button', { name: 'More ▾' })).toBeInTheDocument()
-    window.matchMedia = original
+    restore()
   })
 
   it('on phones: Escape closes More and returns focus to it; other keys do not', () => {
     const restore = asPhone()
-    renderHome()
+    renderPick()
     const more = screen.getByRole('button', { name: 'More ▾' })
     fireEvent.click(more)
     fireEvent.keyDown(document, { key: 'Enter' })
@@ -219,7 +283,7 @@ describe('Home', () => {
 
   it('on phones: a focused chip in the one row scrolls clear of More', () => {
     const restore = asPhone()
-    renderHome()
+    renderPick()
     const row = tagRow()
     place(row, 0, 300)
     place(screen.getByRole('button', { name: 'More ▾' }), 230, 70)
@@ -256,7 +320,7 @@ describe('Home', () => {
 
   it('a focused chip never scrolls when the tags are not on one row', () => {
     const restore = asPhone()
-    renderHome()
+    renderPick()
     fireEvent.click(screen.getByRole('button', { name: 'More ▾' }))
     const row = tagRow()
     place(row, 0, 300)

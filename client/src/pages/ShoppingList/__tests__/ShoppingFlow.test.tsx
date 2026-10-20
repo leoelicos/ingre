@@ -24,8 +24,8 @@ import {
 import { PICKED_MARK } from '../../../components/Widgets/RecipeCard/PickCard'
 import {
   CLEARED_STATUS_ID,
+  HOME_LABEL,
   ShoppingFlow,
-  edgeStep,
   wantsStartNew
 } from '../ShoppingFlow'
 import { basketCount, DONE_SHOPPING } from '../ShoppingListView'
@@ -55,8 +55,41 @@ const settle = () => act(() => jest.advanceTimersByTime(2500))
 beforeEach(() => jest.useFakeTimers())
 afterEach(() => jest.useRealTimers())
 
-const tab = (name: string) => screen.getByRole('tab', { name })
-const panel = () => screen.getByRole('tabpanel')
+const STEP_NAMES = ['Pick', 'At home', 'At the shop']
+/** The current step's heading (each step panel is named by it). */
+const stepHeading = (name: string) =>
+  screen.getByRole('heading', { level: 1, name })
+const expectStep = (name: string) =>
+  expect(stepHeading(name)).toBeInTheDocument()
+const panel = () =>
+  screen.getByRole('region', { name: /^(Pick|At home|At the shop)$/ })
+const homeButton = () => screen.getByRole('button', { name: HOME_LABEL })
+const currentStep = () =>
+  STEP_NAMES.findIndex(
+    (name) => screen.queryByRole('heading', { level: 1, name }) !== null
+  )
+/** One swipe on the step viewport: -1 back a step, +1 forward. */
+const swipeStep = (direction: number) => {
+  const viewport = document.querySelector('.flow-viewport') ?? document.body
+  Object.defineProperty(viewport, 'clientWidth', {
+    value: 400,
+    configurable: true
+  })
+  fireEvent.touchStart(viewport, { touches: [{ clientX: 200, clientY: 1 }] })
+  fireEvent.touchMove(viewport, {
+    touches: [{ clientX: 200 - direction * 300, clientY: 1 }]
+  })
+  fireEvent.touchEnd(viewport)
+}
+/** Moves to a step the way a person can: Home for Pick, swipes for the others. */
+const goStep = (name: string) => {
+  if (name === 'Pick') {
+    fireEvent.click(homeButton())
+    return
+  }
+  const target = STEP_NAMES.indexOf(name)
+  while (currentStep() !== target) swipeStep(Math.sign(target - currentStep()))
+}
 const leftToBuy = () => {
   const text =
     screen.getAllByText(/^\d+ of \d+ in basket$/)[0]?.textContent ?? ''
@@ -91,7 +124,7 @@ describe('ShoppingFlow', () => {
 
   it('picks recipes without logging in, then moves on only when asked', () => {
     renderFlow()
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expectStep('Pick')
     expect(screen.getByText('0 recipes')).toBeInTheDocument()
     const card = screen.getByRole('button', { name: 'Red lentil dahl' })
     expect(card).toHaveAttribute('aria-pressed', 'false')
@@ -102,13 +135,13 @@ describe('ShoppingFlow', () => {
     expect(card).toHaveTextContent(PICKED_MARK)
     expect(screen.getByText('1 recipe')).toBeInTheDocument()
     expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl"]')
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expectStep('Pick')
     fireEvent.click(
       screen.getByRole('button', {
         name: /^Next: check at home \(\d+\)$/
       })
     )
-    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At home')
     expect(localStorage.getItem(STEP_KEY)).toBe('"home"')
     expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl"]')
     expect(localStorage.getItem(FAVOURITES_KEY)).toBeNull()
@@ -152,48 +185,52 @@ describe('ShoppingFlow', () => {
     next.focus()
     expect(next).toHaveFocus()
     fireEvent.click(next)
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expectStep('Pick')
     fireEvent.click(screen.getByRole('button', { name: 'Red lentil dahl' }))
     expect(next).not.toHaveAttribute('aria-disabled')
     expect(screen.queryByText(PICK_START_HINT)).not.toBeInTheDocument()
     expect(next).toHaveAccessibleDescription(PICK_NEXT_HINT)
     fireEvent.click(next)
-    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At home')
   })
 
-  it('reopens on the last step and switches with tabs and arrow keys', () => {
+  it('reopens on the last step; one Home control replaces the stepper (#161)', () => {
     renderFlow(['dahl'], 'shop')
-    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
-    fireEvent.keyDown(tab('At the shop'), { key: 'ArrowRight' })
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
-    expect(tab('Pick')).toHaveFocus()
-    fireEvent.keyDown(tab('Pick'), { key: 'ArrowLeft' })
-    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
-    fireEvent.keyDown(tab('At the shop'), { key: 'Enter' })
-    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
-    fireEvent.click(tab('At home'))
-    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At the shop')
+    expect(screen.queryByRole('tablist')).toBeNull()
+    expect(screen.queryAllByRole('tab')).toHaveLength(0)
+    expect(screen.getAllByRole('button', { name: HOME_LABEL })).toHaveLength(1)
+    expect(homeButton()).toHaveClass('focus-visible:focus-ring')
+    fireEvent.click(homeButton())
+    expectStep('Pick')
+    expect(stepHeading('Pick')).toHaveFocus()
+    expect(localStorage.getItem(STEP_KEY)).toBe('"pick"')
+    // selections are kept
+    expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl"]')
+    expect(
+      screen.getByRole('button', { name: 'Red lentil dahl' })
+    ).toHaveAttribute('aria-pressed', 'true')
+    // already on Pick: Home still moves focus to the heading
+    act(() => homeButton().focus())
+    fireEvent.click(homeButton())
+    expect(stepHeading('Pick')).toHaveFocus()
   })
 
-  it('Home and End jump to the first and last step, focus it and keep the page still', () => {
-    renderFlow(['dahl'], 'home')
-    const home = fireEvent.keyDown(tab('At home'), { key: 'Home' })
-    expect(home).toBe(false)
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
-    expect(tab('Pick')).toHaveFocus()
-    const end = fireEvent.keyDown(tab('Pick'), { key: 'End' })
-    expect(end).toBe(false)
-    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
-    expect(tab('At the shop')).toHaveFocus()
-    expect(edgeStep('Home')).toBe('pick')
-    expect(edgeStep('End')).toBe('shop')
-    expect(edgeStep('Enter')).toBeNull()
+  it('Next moves to the next step and focuses its heading', () => {
+    renderFlow(['dahl'])
+    fireEvent.click(
+      screen.getByRole('button', { name: /^Next: check at home \(\d+\)$/ })
+    )
+    expect(stepHeading('At home')).toHaveFocus()
+    fireEvent.click(
+      screen.getByRole('button', { name: /^Next: at the shop \(\d+\)$/ })
+    )
+    expect(stepHeading('At the shop')).toHaveFocus()
   })
 
   it('swipes past 40% of the width, snaps back otherwise, ignores vertical scrolls', () => {
     renderFlow(['dahl'], 'home')
-    const viewport =
-      screen.getByRole('tabpanel').parentElement?.parentElement ?? document.body
+    const viewport = document.querySelector('.flow-viewport') ?? document.body
     Object.defineProperty(viewport, 'clientWidth', { value: 400 })
     const swipe = (from: number, to: number, dy = 0) => {
       fireEvent.touchStart(viewport, {
@@ -202,33 +239,35 @@ describe('ShoppingFlow', () => {
       fireEvent.touchMove(viewport, {
         touches: [{ clientX: to, clientY: 100 + dy }]
       })
-      expect(screen.getAllByRole('tabpanel').length > 1).toBe(dy === 0)
+      expect(
+        document.querySelectorAll('section[id^=flow-panel]').length > 1
+      ).toBe(dy === 0)
       fireEvent.touchMove(viewport, {
         touches: [{ clientX: to, clientY: 100 + dy }]
       })
       fireEvent.touchEnd(viewport)
     }
     swipe(300, 200)
-    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At home')
     swipe(300, 100)
-    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At the shop')
     swipe(100, 300, 400)
-    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At the shop')
     swipe(100, 300)
-    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At home')
     swipe(100, 350)
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expectStep('Pick')
     swipe(100, 350)
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expectStep('Pick')
     swipe(350, 100)
-    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At home')
     fireEvent.touchStart(viewport, { touches: [] })
     fireEvent.touchMove(viewport, { touches: [] })
     fireEvent.touchEnd(viewport)
     fireEvent.touchStart(viewport, { touches: [{ clientX: 1, clientY: 1 }] })
     fireEvent.touchCancel(viewport)
     fireEvent.touchMove(viewport, { touches: [{ clientX: 300, clientY: 1 }] })
-    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At home')
   })
 
   it('at home: ticking moves items to Already have; Move to; breakdown; people', () => {
@@ -279,7 +318,7 @@ describe('ShoppingFlow', () => {
     expect(p.getByText(/in total$/).textContent).not.toBe(total)
 
     fireEvent.click(p.getByRole('button', { name: /^Next: at the shop/ }))
-    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At the shop')
   })
 
   it('at the shop: section groups, chip menu, ticks strike in place', () => {
@@ -324,7 +363,7 @@ describe('ShoppingFlow', () => {
     expect(p.getByText(/Nothing on your list yet/)).toBeInTheDocument()
     const input = p.getByRole('textbox', { name: 'Add an item' })
     fireEvent.change(input, { target: { value: 'hummus' } })
-    fireEvent.click(p.getByRole('button', { name: 'Hummus' }))
+    fireEvent.click(p.getByRole('button', { name: /^Hummus/ }))
     expect(input).toHaveValue('')
     expect(p.getByRole('region', { name: 'Deli' })).toBeInTheDocument()
     expect(p.getByText('extra')).toBeInTheDocument()
@@ -350,7 +389,7 @@ describe('ShoppingFlow', () => {
 
     fireEvent.click(p.getByRole('checkbox', { name: /Birthday candles/ }))
     settle()
-    fireEvent.click(tab('At home'))
+    goStep('At home')
     const other = within(within(panel()).getByRole('region', { name: 'Other' }))
     fireEvent.click(
       other.getByRole('button', { name: 'Details for Birthday candles' })
@@ -366,17 +405,45 @@ describe('ShoppingFlow', () => {
     expect(
       within(panel()).getByText('Assumed at home: oil, salt, pepper')
     ).toBeInTheDocument()
-    fireEvent.click(tab('At the shop'))
+    goStep('At the shop')
     expect(
       screen.getByRole('button', { name: DONE_SHOPPING })
     ).toBeInTheDocument()
     expect(screen.getByText('Nothing left to buy')).toBeInTheDocument()
   })
 
+  it('extras come from the catalogue: badge and section, and once on the list (#162)', () => {
+    renderFlow(['dahl'], 'shop')
+    const p = within(panel())
+    const input = p.getByRole('textbox', { name: 'Add an item' })
+    fireEvent.change(input, { target: { value: 'banan' } })
+    const option = p.getByRole('button', { name: /^Banana/ })
+    // the same badge as in recipes (hidden from VoiceOver) and the shop section
+    expect(option).toHaveTextContent(/^BNABananaFruit & Veg$/)
+    expect(option.querySelector('[aria-hidden="true"]')).toHaveClass(
+      'bg-badge-produce'
+    )
+    fireEvent.click(option)
+    const veg = within(p.getByRole('region', { name: 'Fruit & Veg' }))
+    expect(veg.getByRole('checkbox', { name: /Banana/ })).toBeInTheDocument()
+    // garlic is already needed by the dahl: adding it again keeps one row and one chip
+    const garlicRows = () =>
+      veg.getAllByRole('checkbox', { name: /garlic/i }).length
+    expect(garlicRows()).toBe(1)
+    fireEvent.change(input, { target: { value: 'Garlic' } })
+    fireEvent.submit(input)
+    expect(garlicRows()).toBe(1)
+    expect(
+      within(
+        screen.getByRole('list', { name: /^Shopping list, / })
+      ).getAllByText(/garlic/i)
+    ).toHaveLength(1)
+  })
+
   it('links back to Pick from an empty list', () => {
     renderFlow([], 'home')
     fireEvent.click(screen.getByRole('button', { name: 'Pick some recipes' }))
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expectStep('Pick')
   })
 })
 
@@ -395,7 +462,7 @@ describe('Shopping done', () => {
                   element={<TapOff />}
                 />
                 <Route
-                  path="/ingredients"
+                  path="/"
                   element={<ShoppingFlow />}
                 />
               </Routes>
@@ -417,7 +484,7 @@ describe('Shopping done', () => {
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: 'Back to my list' })
-    ).toHaveAttribute('href', '/ingredients')
+    ).toHaveAttribute('href', '/')
   })
 
   it('still shows the finish screen when the basket is empty', () => {
@@ -452,7 +519,7 @@ describe('Shopping done', () => {
     localStorage.setItem(STEP_KEY, JSON.stringify('shop'))
     renderTap(['dahl'])
     fireEvent.click(screen.getByRole('button', { name: 'Start a new list' }))
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expectStep('Pick')
     expect(localStorage.getItem(PICKED_KEY)).toBe('[]')
     expect(document.getElementById(CLEARED_STATUS_ID)).toHaveTextContent(
       'List cleared'
@@ -465,12 +532,12 @@ describe('Shopping done', () => {
     localStorage.setItem(STEP_KEY, JSON.stringify('shop'))
     render(
       <MockedProvider mocks={[]}>
-        <MemoryRouter initialEntries={['/ingredients']}>
+        <MemoryRouter initialEntries={['/']}>
           <AuthProvider>
             <StoreProvider>
               <Routes>
                 <Route
-                  path="/ingredients"
+                  path="/"
                   element={<ShoppingFlow />}
                 />
                 <Route
@@ -493,7 +560,7 @@ describe('Shopping done', () => {
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('link', { name: 'Back to my list' }))
     const done = screen.getByRole('button', { name: DONE_SHOPPING })
-    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At the shop')
     expect(done).toBeInTheDocument()
     expect(done).toHaveFocus()
   })
@@ -587,7 +654,7 @@ describe('Start a new list', () => {
     fireEvent.click(
       within(panel()).getByRole('button', { name: 'Start a new list' })
     )
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expectStep('Pick')
     expect(localStorage.getItem(PICKED_KEY)).toBe('[]')
     expect(localStorage.getItem(HAVE_KEY)).toBe('[]')
     expect(localStorage.getItem(BASKET_KEY)).toBe('[]')
@@ -598,7 +665,7 @@ describe('Start a new list', () => {
 
     act(() => jest.advanceTimersByTime(9999))
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At home')
     expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl"]')
     expect(localStorage.getItem(HAVE_KEY)).toBe('["onion"]')
     expect(localStorage.getItem(BASKET_KEY)).toBe('["garlic"]')
@@ -611,7 +678,7 @@ describe('Start a new list', () => {
     // the countdown only runs once focus has left the note
     act(() => jest.advanceTimersByTime(10000))
     expect(screen.getByRole('button', { name: 'Undo' })).toHaveFocus()
-    act(() => tab('Pick').focus())
+    act(() => homeButton().focus())
     act(() => jest.advanceTimersByTime(10000))
     expect(screen.queryByText(/List cleared/)).toBeNull()
     expect(
@@ -661,24 +728,24 @@ describe('Start a new list', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Butter chicken' }))
     expect(screen.queryByText(/List cleared/)).toBeNull()
     expect(clearedStatus()).toHaveTextContent(/^$/)
-    fireEvent.click(tab('At home'))
+    goStep('At home')
     expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
-    fireEvent.click(tab('At the shop'))
+    goStep('At the shop')
     expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
     expect(
       screen.getByRole('button', { name: DONE_SHOPPING })
     ).toBeInTheDocument()
     act(() => jest.advanceTimersByTime(10000))
     expect(stored(PICKED_KEY)).toEqual(['butter-chicken'])
-    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At the shop')
   })
 
   it('a step change after clearing removes the Undo for good, even back on Pick', () => {
     renderFlow(['dahl'], 'home')
     tapStartNew()
-    fireEvent.click(tab('At home'))
+    goStep('At home')
     expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
-    fireEvent.click(tab('Pick'))
+    goStep('Pick')
     expect(screen.queryByRole('button', { name: 'Undo' })).toBeNull()
     expect(stored(PICKED_KEY)).toEqual([])
   })
@@ -700,13 +767,13 @@ describe('Start a new list', () => {
     tapStartNew()
     expect(stored(HAVE_KEY)).toEqual([])
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    expect(tab('At home')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At home')
     expect(new Set(stored(HAVE_KEY))).toEqual(new Set(['carrot', 'egg']))
     fireEvent.click(screen.getByRole('button', { name: /^Already have \(2\)/ }))
     expect(box(/eggs/i)).toBeChecked()
     expect(box(/carrot/i)).toBeChecked()
 
-    fireEvent.click(tab('At the shop'))
+    goStep('At the shop')
     fireEvent.click(box(/jasmine rice/i))
     settle()
     fireEvent.click(box(/peas/i))
@@ -718,7 +785,7 @@ describe('Start a new list', () => {
     act(() => jest.advanceTimersByTime(3000))
     expect(stored(BASKET_KEY)).toEqual([])
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    expect(tab('At the shop')).toHaveAttribute('aria-selected', 'true')
+    expectStep('At the shop')
     expect(new Set(stored(BASKET_KEY))).toEqual(
       new Set(['jasmine-rice', 'tinned-peas', 'soy-sauce'])
     )
@@ -744,11 +811,11 @@ describe('Start a new list', () => {
     const undo = screen.getByRole('button', { name: 'Undo' })
     // Undo is reachable straight away: it has focus, not the Pick tab or a Serves radio
     expect(undo).toHaveFocus()
-    expect(tab('Pick')).toHaveAttribute('tabindex', '0')
+    expect(homeButton()).toBeInTheDocument()
     expect(undo).toHaveClass('focus-visible:focus-ring')
     fireEvent.click(undo)
     expect(status).toHaveTextContent(/^$/)
-    expect(tab('At home')).toHaveFocus()
+    expect(stepHeading('At home')).toHaveFocus()
   })
 
   it('pauses the 10s Undo countdown while focus is inside the note, and restarts it after', () => {
@@ -757,11 +824,11 @@ describe('Start a new list', () => {
     const undo = screen.getByRole('button', { name: 'Undo' })
     act(() => jest.advanceTimersByTime(60000))
     expect(undo).toBeInTheDocument()
-    act(() => tab('Pick').focus())
+    act(() => homeButton().focus())
     act(() => jest.advanceTimersByTime(9999))
     act(() => undo.focus())
     act(() => jest.advanceTimersByTime(60000))
-    act(() => tab('Pick').focus())
+    act(() => homeButton().focus())
     act(() => jest.advanceTimersByTime(9999))
     expect(undo).toBeInTheDocument()
     act(() => jest.advanceTimersByTime(1))
@@ -794,7 +861,7 @@ describe('Start a new list', () => {
     ).toBeGreaterThan(0)
     const done = within(screen.getByRole('region', { name: 'All done' }))
     fireEvent.click(done.getByRole('button', { name: 'Start a new list' }))
-    expect(tab('Pick')).toHaveAttribute('aria-selected', 'true')
+    expectStep('Pick')
   })
 })
 
@@ -813,7 +880,7 @@ describe('PO shopper pass', () => {
     ).toBeInTheDocument()
     expect(pantry.queryByText(/×/)).toBeNull()
     expect(leftToBuy()).toBe(1)
-    fireEvent.click(tab('At home'))
+    goStep('At home')
     const cupboard = within(screen.getByRole('region', { name: 'Cupboard' }))
     expect(cupboard.getByRole('checkbox', { name: /Salt/ })).toBeInTheDocument()
     expect(screen.queryByRole('region', { name: 'Spice rack' })).toBeNull()
@@ -839,7 +906,9 @@ describe('PO shopper pass', () => {
           b.textContent === 'Start a new list'
       )
     ).toHaveLength(1)
-    expect(container.querySelectorAll('[role=tabpanel]')).toHaveLength(1)
+    expect(container.querySelectorAll('section[id^=flow-panel]')).toHaveLength(
+      1
+    )
     expect(container.querySelectorAll('[hidden]')).toHaveLength(0)
   })
 })

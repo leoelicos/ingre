@@ -1,15 +1,19 @@
-import type { FC, KeyboardEvent, TouchEvent } from 'react'
+import type { FC, TouchEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { changeTitle } from '../../utils/changeTitle'
 import {
   NO_UNSAVED,
   useShoppingList
 } from '../../utils/shopping/useShoppingList'
-import type { UnsavedTicks } from '../../utils/shopping/useShoppingList'
+import type {
+  ShoppingListState,
+  UnsavedTicks
+} from '../../utils/shopping/useShoppingList'
 import type { FlowStep } from '../../utils/storage/shoppingState'
 import { FLOW_STEPS } from '../../utils/storage/shoppingState'
 import { PickStep } from './PickStep'
+import { IngreIconHouse } from '../../lib/icon/Icon'
 import { STEPS_BAR, measureBar } from '../../utils/measureBar'
 import { ClearedNote, LIST_CLEARED } from './StartNewList'
 import { useStartNewList } from '../../utils/shopping/useStartNewList'
@@ -36,7 +40,7 @@ interface Drag {
   dx: number
 }
 
-/** Pick · At home · At the shop: tabs everywhere, plus swipe between steps on touch screens. */
+/** Pick · At home · At the shop: one Home control, Next buttons, and swipe on touch screens. */
 /** Router state the finish screen sends when Start a new list is tapped. */
 export const START_NEW_STATE = { startNew: true }
 /** Router state sent by "Back to my list". */
@@ -55,15 +59,36 @@ export const wantsShopBarFocus = (state: unknown): boolean =>
 /** The polite live region that says "List cleared"; always rendered, so the change is announced. */
 export const CLEARED_STATUS_ID = 'list-cleared-status'
 
-/** Home and End jump to the first and last step. */
-const EDGE_STEPS: ReadonlyMap<string, FlowStep> = new Map([
-  ...FLOW_STEPS.slice(0, 1).map((step): [string, FlowStep] => ['Home', step]),
-  ...FLOW_STEPS.slice(-1).map((step): [string, FlowStep] => ['End', step])
-])
+/** Id of each step's heading: Home and the Next buttons move focus there. */
+export const stepHeadingId = (step: FlowStep): string => `flow-heading-${step}`
 
-/** The step a Home or End key jumps to; null for every other key. */
-export const edgeStep = (key: string): FlowStep | null =>
-  EDGE_STEPS.get(key) ?? null
+/** The Home control's label (#161): one control instead of the stepper. */
+export const HOME_LABEL = 'Home'
+
+/** A request to focus a step's heading once it has rendered; seq makes repeats count. */
+interface FocusRequest {
+  step: FlowStep | null
+  seq: number
+}
+
+/** "?q=" from the header search and "?saved=1" from the Saved filter or old Saved links. */
+export const pickParams = (
+  params: URLSearchParams
+): { query: string; savedOnly: boolean } => ({
+  query: params.get('q') ?? '',
+  savedOnly: params.get('saved') === '1'
+})
+
+/** The search params with the Saved filter switched on or off (other params kept). */
+export const withSaved = (
+  params: URLSearchParams,
+  on: boolean
+): URLSearchParams => {
+  const next = new URLSearchParams(params)
+  if (on) next.set('saved', '1')
+  else next.delete('saved')
+  return next
+}
 
 export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   print = () => window.print(),
@@ -72,59 +97,63 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   useEffect(() => changeTitle('Shopping list'), [])
   const list = useShoppingList()
   const startNew = useStartNewList(list, timers)
+  /** Every step change moves focus to the new step's heading, once it has rendered. */
+  const [focus, setFocus] = useState<FocusRequest>({ step: null, seq: 0 })
+  useEffect(() => {
+    if (focus.step === null) return
+    document.getElementById(stepHeadingId(focus.step))?.focus()
+  }, [focus])
+  const goTo = (step: FlowStep): void => {
+    list.setStep(step)
+    setFocus((previous) => ({ step, seq: previous.seq + 1 }))
+  }
+  const flow: ShoppingListState = { ...list, setStep: goTo }
   /** Clears; the Undo note then takes focus as it appears (ClearedNote). */
   const clearList = (unsaved: UnsavedTicks): void => startNew.start(unsaved)
-  /** After a successful Undo, focus goes to the restored step's tab (the note is gone). */
+  /** After a successful Undo, focus goes to the restored step's heading (the note is gone). */
   const [focusStep, setFocusStep] = useState(false)
   useEffect(() => {
     if (!focusStep) return
     setFocusStep(false)
-    document.getElementById(`flow-tab-${list.step}`)?.focus()
+    document.getElementById(stepHeadingId(list.step))?.focus()
   }, [focusStep, list.step])
   const undo = (): UndoResult => {
     const result = startNew.undo()
     setFocusStep(result === 'restored')
     return result
   }
-  const { state } = useLocation()
+  const { state, pathname, search } = useLocation()
+  const here = { pathname, search }
   const navigate = useNavigate()
   const handled = useRef(false)
   useEffect(() => {
     if (handled.current || !wantsStartNew(state)) return
     handled.current = true
     clearList(NO_UNSAVED)
-    navigate('/ingredients', { replace: true, state: null })
+    navigate(here, { replace: true, state: null })
   })
   useEffect(() => {
     if (!wantsShopBarFocus(state)) return
     document.getElementById(SHOP_BAR_ID)?.focus()
-    navigate('/ingredients', { replace: true, state: null })
+    navigate(here, { replace: true, state: null })
+  })
+  const [params, setParams] = useSearchParams()
+  const { query, savedOnly } = pickParams(params)
+  /** A new search or Saved link always lands on Pick, where its results are. */
+  const lastFilter = useRef('')
+  useEffect(() => {
+    const filter = params.toString()
+    if (filter === lastFilter.current) return
+    lastFilter.current = filter
+    if ((query !== '' || savedOnly) && list.step !== 'pick')
+      list.setStep('pick')
   })
   const index = FLOW_STEPS.indexOf(list.step)
   const count = FLOW_STEPS.length
   const [drag, setDrag] = useState<Drag | null>(null)
   const dragging = drag !== null && drag.horizontal === true
 
-  const go = (i: number) => {
-    const next = stepAt(i, list.step)
-    list.setStep(next)
-    document.getElementById(`flow-tab-${next}`)?.focus()
-  }
-
-  const onTabKey = (e: KeyboardEvent) => {
-    const edge = edgeStep(e.key)
-    if (edge !== null) {
-      e.preventDefault()
-      list.setStep(edge)
-      document.getElementById(`flow-tab-${edge}`)?.focus()
-      return
-    }
-    const delta = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
-    if (delta === 0) return
-    const next = stepAt((index + delta + count) % count, list.step)
-    list.setStep(next)
-    document.getElementById(`flow-tab-${next}`)?.focus()
-  }
+  const go = (i: number) => goTo(stepAt(i, list.step))
 
   const onTouchStart = (e: TouchEvent) => {
     const t = e.touches[0]
@@ -148,42 +177,17 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   return (
     <main className="flow">
       <div
-        className="flow-steps"
+        className="flow-steps justify-start"
         ref={measureBar(STEPS_BAR)}
-        role="tablist"
-        aria-label="Shopping steps"
-        onKeyDown={onTabKey}
       >
-        {FLOW_STEPS.map((step, i) => (
-          <span
-            key={step}
-            className="flow-steps__item"
-          >
-            {i > 0 && (
-              <span
-                className="flow-steps__dot"
-                aria-hidden="true"
-              >
-                ·
-              </span>
-            )}
-            <button
-              type="button"
-              role="tab"
-              id={`flow-tab-${step}`}
-              aria-selected={step === list.step}
-              aria-controls={`flow-panel-${step}`}
-              tabIndex={step === list.step ? 0 : -1}
-              className="flow-steps__tab"
-              onClick={() => {
-                list.setStep(step)
-                document.getElementById(`flow-tab-${step}`)?.focus()
-              }}
-            >
-              {STEP_LABELS[step]}
-            </button>
-          </span>
-        ))}
+        <button
+          type="button"
+          className="inline-flex min-h-[44px] items-center gap-2 rounded-pill border border-border bg-surface px-4 font-semibold text-text focus-visible:focus-ring"
+          onClick={() => goTo('pick')}
+        >
+          <IngreIconHouse />
+          {HOME_LABEL}
+        </button>
       </div>
       <div
         className="flow-viewport"
@@ -209,17 +213,28 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
               <section
                 key={step}
                 id={`flow-panel-${step}`}
-                role="tabpanel"
-                aria-labelledby={`flow-tab-${step}`}
+                aria-labelledby={stepHeadingId(step)}
                 className={
                   step === 'pick' ? 'flow-panel' : 'flow-panel flow-panel--list'
                 }
               >
+                <h1
+                  id={stepHeadingId(step)}
+                  className="list-title focus-visible:focus-ring"
+                  tabIndex={-1}
+                >
+                  {STEP_LABELS[step]}
+                </h1>
                 {step === 'pick' ? (
-                  <PickStep list={list} />
+                  <PickStep
+                    list={flow}
+                    query={query}
+                    savedOnly={savedOnly}
+                    onSavedOnly={(on) => setParams(withSaved(params, on))}
+                  />
                 ) : (
                   <ShoppingListView
-                    list={list}
+                    list={flow}
                     view={step}
                     onStartNew={clearList}
                     timers={timers}
