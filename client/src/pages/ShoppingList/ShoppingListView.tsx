@@ -4,7 +4,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ServesPicker } from '../../components/ServesPicker'
 import { PrimaryButton } from '../../components/PrimaryButton'
-import type { ShoppingListState } from '../../utils/shopping/useShoppingList'
+import type {
+  ShoppingListState,
+  UnsavedTicks
+} from '../../utils/shopping/useShoppingList'
 import {
   IngreIconChevronDown,
   IngreIconPrint,
@@ -32,7 +35,8 @@ export const ShoppingListView: FC<{
   list: ShoppingListState
   view: 'home' | 'shop'
   onPrint: () => void
-  onStartNew: () => void
+  /** gets the ticks still waiting on the tick clock, so Undo can bring them back */
+  onStartNew: (unsaved: UnsavedTicks) => void
   timers?: Timers
 }> = ({ list, view, onPrint, onStartNew, timers }) => {
   const [haveOpen, setHaveOpen] = useState(false)
@@ -55,6 +59,11 @@ export const ShoppingListView: FC<{
     'In basket',
     timers
   )
+  const startNew = (): void =>
+    onStartNew({
+      haveIds: homeTicks.takeUnsaved(),
+      basketIds: shopTicks.takeUnsaved()
+    })
   const locationMode: LocationMode = atHome ? 'move' : 'none'
   const shopBar = !atHome
   const nothingLeft = list.toBuy.length === 0
@@ -121,7 +130,7 @@ export const ShoppingListView: FC<{
             </p>
           )}
           {atHome && <p className="list-note">Tick what you already have</p>}
-          {complete && <AllDone onStart={onStartNew} />}
+          {complete && <AllDone onStart={startNew} />}
           {complete ? (
             <section className="list-basket">
               <button
@@ -198,7 +207,7 @@ export const ShoppingListView: FC<{
       {list.lineCount > 0 && (
         <p className="list-assumed">Assumed at home: {list.assumed}</p>
       )}
-      {list.lineCount > 0 && !complete && <StartNewList onStart={onStartNew} />}
+      {list.lineCount > 0 && !complete && <StartNewList onStart={startNew} />}
 
       <div
         className={shopBar ? 'list-tap list-tap--split' : 'list-tap'}

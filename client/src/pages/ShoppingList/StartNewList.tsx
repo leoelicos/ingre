@@ -1,6 +1,7 @@
 import type { FC } from 'react'
 import { IngreIconStartOver } from '../../lib/icon/Icon'
 import { PrimaryButton } from '../../components/PrimaryButton'
+import type { UndoResult } from '../../utils/shopping/useStartNewList'
 import './startNewList.css'
 
 /** Quiet text button at the foot of the list. Self-contained so it can move. */
@@ -31,16 +32,19 @@ export const AllDone: FC<{ onStart: () => void }> = ({ onStart }) => (
   </section>
 )
 
-/** Sits just above the bottom bar for UNDO_MS; static (no slide). */
-export const ClearedNote: FC<{ onUndo: () => void }> = ({ onUndo }) => (
-  <p
-    className="cleared-note"
-    role="status"
-  >
-    List cleared ·{' '}
+/** Said by the always-present polite live region in ShoppingFlow when a list is cleared. */
+export const LIST_CLEARED = 'List cleared'
+
+/**
+ * Sits just above the bottom bar for UNDO_MS; static (no slide). Gone once Undo is used or the
+ * list changes. Not itself a live region: ShoppingFlow announces LIST_CLEARED.
+ */
+export const ClearedNote: FC<{ onUndo: () => UndoResult }> = ({ onUndo }) => (
+  <p className="cleared-note">
+    {LIST_CLEARED} ·{' '}
     <button
       type="button"
-      className="link-button"
+      className="link-button focus-visible:focus-ring"
       onClick={onUndo}
     >
       Undo

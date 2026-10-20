@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { normaliseTicks, sameTicks } from './normaliseTicks'
+import { normaliseTicks, sameSet, sameTicks } from './normaliseTicks'
 import { catalogue, library } from '../library/recipeLibrary'
 import { usePeople } from '../storage/people'
 import { assumedNames } from './shoppingList'
@@ -73,6 +73,43 @@ export const EMPTY_LIST: ListSnapshot = {
   extras: [],
   step: 'pick'
 }
+
+/** Ticks still waiting on the 2s tick clock: on screen as ticked, not yet saved. */
+export interface UnsavedTicks {
+  haveIds: readonly string[]
+  basketIds: readonly string[]
+}
+
+export const NO_UNSAVED: UnsavedTicks = { haveIds: [], basketIds: [] }
+
+/** The snapshot with waiting ticks saved, exactly as the tick clock would save them. */
+export const withUnsaved = (
+  snapshot: ListSnapshot,
+  unsaved: UnsavedTicks
+): ListSnapshot => ({
+  ...snapshot,
+  haveIds: new Set([...snapshot.haveIds, ...unsaved.haveIds]),
+  basketIds: new Set([...snapshot.basketIds, ...unsaved.basketIds])
+})
+
+const sameExtra = (a: Extra, b: Extra): boolean =>
+  a.id === b.id &&
+  a.name === b.name &&
+  a.ingredientId === b.ingredientId &&
+  a.quantity === b.quantity
+
+const sameExtras = (a: readonly Extra[], b: readonly Extra[]): boolean =>
+  a.length === b.length &&
+  a.every((extra, i) =>
+    b.slice(i, i + 1).some((other) => sameExtra(extra, other))
+  )
+
+/** True when two snapshots hold the same list: picks, ticks, extras and step. */
+export const sameList = (a: ListSnapshot, b: ListSnapshot): boolean =>
+  a.step === b.step &&
+  sameSet(a.pickedIds, b.pickedIds) &&
+  sameTicks(a, b) &&
+  sameExtras(a.extras, b.extras)
 
 /** Every catalogue staple, e.g. "oil, salt, pepper". */
 export const ASSUMED_AT_HOME = assumedNames(
