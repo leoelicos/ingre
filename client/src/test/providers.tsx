@@ -37,7 +37,7 @@ export const ProfileFromToken: FC = () => {
 /** Shows the current path, so a test can assert where the app navigated. */
 export const LocationProbe: FC = () => {
   const { pathname, search } = useLocation()
-  return <output data-testid="location">{`${pathname}${search}`}</output>
+  return <p data-testid="location">{`${pathname}${search}`}</p>
 }
 
 interface Options {

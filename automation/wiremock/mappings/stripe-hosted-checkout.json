@@ -1,0 +1,12 @@
+{
+  "name": "Stand-in for Stripe's hosted checkout page: Pay returns to success_url, Cancel to cancel_url",
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/c/pay/[A-Za-z0-9_]+"
+  },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "text/html; charset=utf-8" },
+    "bodyFileName": "hosted-checkout.html"
+  }
+}

@@ -38,8 +38,13 @@ Object.defineProperty(window, 'Stripe', {
   value: () => ({ redirectToCheckout })
 })
 
-const renderUpgrade = (mocks: MockedResponse[]) =>
-  renderWithProviders(<Upgrade />, { mocks, path: '/upgrade', routes: {} })
+const checkoutDown: MockedResponse = {
+  request: { query: CHECKOUT },
+  error: new Error('could not create stripe response')
+}
+
+const renderUpgrade = (mocks: MockedResponse[], path = '/upgrade') =>
+  renderWithProviders(<Upgrade />, { mocks, path, routes: {} })
 
 describe('Upgrade', () => {
   beforeEach(() => {
@@ -77,5 +82,27 @@ describe('Upgrade', () => {
         sessionId: 'cs_test_1'
       })
     })
+  })
+
+  it('says so when Stripe checkout cannot start, and the user stays not-pro', async () => {
+    logIn(false)
+    renderUpgrade([user(false), checkoutDown])
+    fireEvent.click(
+      screen.getByRole('button', { name: /checkout with stripe/i })
+    )
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /couldn.t start the stripe checkout/i
+    )
+    expect(redirectToCheckout).not.toHaveBeenCalled()
+    expect(screen.queryByText(/you are pro/i)).toBeNull()
+  })
+
+  it('confirms a cancelled checkout without charging', async () => {
+    logIn(false)
+    renderUpgrade([user(false)], '/upgrade?checkout=cancelled')
+    expect(screen.getByRole('status')).toHaveTextContent(
+      /checkout cancelled. you have not been charged/i
+    )
+    expect(screen.queryByRole('alert')).toBeNull()
   })
 })

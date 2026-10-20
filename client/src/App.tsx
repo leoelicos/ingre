@@ -26,7 +26,7 @@ import { ShoppingFlow } from './pages/ShoppingList/ShoppingFlow'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import Search from './pages/Search/Search'
 import TapOff from './pages/TapOff/TapOff'
-import { APP_MODE } from './appMode'
+import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
 import { changeTitle } from './utils/changeTitle'
@@ -34,7 +34,8 @@ import { StoreProvider } from './utils/state/GlobalState'
 
 addFontAwesome()
 
-export function graphqlEndpoint(mode: string): string {
+export function graphqlEndpoint(mode: string, override: string): string {
+  if (override !== '') return override
   if (mode === 'production') {
     return 'https://ingre-backend.onrender.com/graphql'
   }
@@ -57,7 +58,7 @@ export const withAuthHeaders = (
 
 const authLink = setContext(withAuthHeaders)
 
-const uri = graphqlEndpoint(APP_MODE)
+const uri = graphqlEndpoint(APP_MODE, GRAPHQL_URL_OVERRIDE)
 const httpLink = createHttpLink({ uri })
 const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()

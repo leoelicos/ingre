@@ -57,11 +57,17 @@ describe('App', () => {
   })
 
   it('builds the graphql endpoint for each environment', () => {
-    expect(graphqlEndpoint('production')).toBe(
+    expect(graphqlEndpoint('production', '')).toBe(
       'https://ingre-backend.onrender.com/graphql'
     )
-    expect(graphqlEndpoint('test')).toBe('http://localhost:3001/graphql')
-    expect(graphqlEndpoint('development')).toBe('http://localhost:3001/graphql')
+    expect(graphqlEndpoint('test', '')).toBe('http://localhost:3001/graphql')
+    expect(graphqlEndpoint('development', '')).toBe(
+      'http://localhost:3001/graphql'
+    )
+    // VITE_GRAPHQL_URL wins in any mode (#175)
+    expect(
+      graphqlEndpoint('development', 'http://localhost:4311/graphql')
+    ).toBe('http://localhost:4311/graphql')
   })
 
   it('adds a bearer token when one is stored', () => {

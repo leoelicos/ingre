@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLazyQuery, useQuery } from '@apollo/client'
+import { useSearchParams } from 'react-router-dom'
 import { loadStripe } from '@stripe/stripe-js'
 import type { Stripe } from '@stripe/stripe-js'
 import { CHECKOUT, GET_USER } from '../../lib/apollo/graphQL/queries'
@@ -18,7 +19,11 @@ export const useUpgrade = (load: typeof loadCheckout = loadCheckout) => {
   const [auth] = useAuthContext()
   const loggedIn = auth.loggedIn
 
-  const [getCheckout, { data }] = useLazyQuery(CHECKOUT, {
+  const [searchParams] = useSearchParams()
+  /** Stripe sends a cancelled checkout back here (cancel_url). */
+  const cancelled = searchParams.get('checkout') === 'cancelled'
+
+  const [getCheckout, { data, error: checkoutError }] = useLazyQuery(CHECKOUT, {
     fetchPolicy: 'network-only'
     // nextFetchPolicy: 'cache-first'
   })
@@ -48,5 +53,11 @@ export const useUpgrade = (load: typeof loadCheckout = loadCheckout) => {
     }
   }, [userLoading, userError, userData])
 
-  return { pro, loggedIn, getCheckout }
+  return {
+    pro,
+    loggedIn,
+    getCheckout,
+    cancelled,
+    checkoutFailed: checkoutError !== undefined
+  }
 }

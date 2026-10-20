@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
+import { MemoryRouter } from 'react-router-dom'
 import { CHECKOUT, GET_USER } from '../../../lib/apollo/graphQL/queries'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { useUpgrade } from '../useUpgrade'
@@ -16,7 +17,9 @@ const wrapper = ({ children }: { children: ReactNode }) => (
     ]}
     addTypename={false}
   >
-    <AuthProvider>{children}</AuthProvider>
+    <MemoryRouter>
+      <AuthProvider>{children}</AuthProvider>
+    </MemoryRouter>
   </MockedProvider>
 )
 

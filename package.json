@@ -8,7 +8,10 @@
     "develop": "concurrently \"cd server && npm run watch\" \"cd client && npm start\"",
     "install": "cd server && npm i && cd ../client && npm i",
     "seed": "cd server && npm run seed",
-    "build": "cd client && npm run build"
+    "build": "cd client && npm run build",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "npm --prefix client test -- --coverage --coverageThreshold='{\"global\":{\"branches\":100,\"functions\":100,\"lines\":100,\"statements\":100}}' && npm --prefix server test",
+    "test:e2e": "npm --prefix automation test"
   },
   "repository": {
     "type": "git",

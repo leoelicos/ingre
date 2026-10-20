@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type Server } from 'http'
 import Stripe from 'stripe'
-import { StripeApi, getStripe } from './stripe'
+import { StripeApi, getStripe, stripeConnection, stripeKey } from './stripe'
 
 /* No module mocks: the real stripe-node client talks to a local stand-in for api.stripe.com. */
 
@@ -69,6 +69,37 @@ const props = {
   rootEndpoint: 'https://www.example.com'
 }
 
+describe('Stripe configuration', () => {
+  it('uses api.stripe.com and the sample test key when nothing is set', () => {
+    expect(stripeConnection({})).toEqual({})
+    expect(stripeConnection({ STRIPE_API_HOST: '' })).toEqual({})
+    expect(stripeKey({})).toMatch(/^sk_test_4/)
+  })
+
+  it('reads a stand-in host, port and protocol from the environment', () => {
+    expect(
+      stripeConnection({
+        STRIPE_API_HOST: 'localhost',
+        STRIPE_API_PORT: '4312',
+        STRIPE_API_PROTOCOL: 'http'
+      })
+    ).toEqual({ host: 'localhost', port: '4312', protocol: 'http' })
+    expect(stripeConnection({ STRIPE_API_HOST: 'stripe.local' })).toEqual({
+      host: 'stripe.local',
+      port: 443,
+      protocol: 'https'
+    })
+    expect(
+      stripeKey({
+        STRIPE_API_HOST: 'localhost',
+        STRIPE_API_KEY: 'sk_test_dummy'
+      })
+    ).toBe('sk_test_dummy')
+    // a key alone never replaces the sample key: only with a stand-in host
+    expect(stripeKey({ STRIPE_API_KEY: 'sk_test_dummy' })).toMatch(/^sk_test_4/)
+  })
+})
+
 describe('StripeApi', () => {
   let stripeApi: StripeApi
 
@@ -91,6 +122,19 @@ describe('StripeApi', () => {
   it('getStripe returns a real Stripe client, and is the default', () => {
     expect(getStripe()).toBeInstanceOf(Stripe)
     expect(new StripeApi()).toBeInstanceOf(StripeApi)
+  })
+
+  it('reaches the env-configured Stripe host with the env key (e2e WireMock)', async () => {
+    const api = new StripeApi(
+      getStripe({
+        STRIPE_API_KEY: 'sk_test_env',
+        STRIPE_API_HOST: '127.0.0.1',
+        STRIPE_API_PORT: String(portOf(fakeStripe)),
+        STRIPE_API_PROTOCOL: 'http'
+      })
+    )
+    await api.stripePay(props)
+    expect(calls).toHaveLength(3)
   })
 
   it('creates a product, a price, then a checkout session', async () => {
@@ -117,7 +161,7 @@ describe('StripeApi', () => {
       'line_items[0][quantity]': '1',
       mode: 'payment',
       success_url: `${props.rootEndpoint}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${props.rootEndpoint}/`
+      cancel_url: `${props.rootEndpoint}/upgrade?checkout=cancelled`
     })
   })
 
