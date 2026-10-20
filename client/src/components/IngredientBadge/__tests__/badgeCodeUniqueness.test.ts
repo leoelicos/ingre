@@ -37,37 +37,53 @@ describe('badge code uniqueness', () => {
     ).toEqual(['LEM: lemon, lime'])
   })
 
-  it('uses the overrides product chose for items whose derived codes clashed', () => {
+  /** Product lead's overrides (#168) and the accessible-content reviewer's swaps (Batch 1). */
+  const OVERRIDES: readonly (readonly [string, string])[] = [
+    ['beef-mince', 'BEF'],
+    ['pork-mince', 'PKM'],
+    ['butter', 'BTR'],
+    ['parmesan', 'PRM'],
+    ['ginger', 'GNG'],
+    ['carrot', 'CRT'],
+    ['spring-onion', 'SPR'],
+    ['spaghetti', 'SPG'],
+    ['crushed-tomatoes', 'CCT'],
+    ['potato', 'PTT'],
+    ['baby-spinach', 'SPI'],
+    ['cooked-prawns', 'CPW'],
+    ['lemongrass', 'LGR'],
+    ['fresh-mint', 'MNT'],
+    ['bean-sprouts', 'BSP'],
+    ['apple', 'APL'],
+    ['banana', 'BNA'],
+    ['mandarin', 'MDN'],
+    ['pear', 'PRA'],
+    ['lemon', 'LEM'],
+    ['watermelon', 'WML'],
+    ['broccoli', 'BRC'],
+    ['full-cream-milk', 'FCM'],
+    ['sliced-ham', 'HAM'],
+    ['hummus', 'HUS'],
+    ['chicken-breast', 'CKB'],
+    ['bacon', 'BCN'],
+    ['white-bread', 'WHB'],
+    ['wholemeal-bread', 'WMB'],
+    ['bread-rolls', 'BRL'],
+    ['breakfast-cereal', 'CRL'],
+    ['tea-bags', 'TEA']
+  ]
+
+  it('uses exactly the overrides product and the content reviewer chose', () => {
     const codeOf = (id: string): string =>
       resolveBadgeCode(
         catalogue.find((item) => item.id === id) ?? { name: `missing ${id}` }
       )
+    expect(OVERRIDES.map(([id]) => [id, codeOf(id)])).toEqual(OVERRIDES)
     expect(
-      [
-        'baby-spinach',
-        'bean-sprouts',
-        'lemongrass',
-        'lemon',
-        'white-bread',
-        'wholemeal-bread',
-        'broccoli',
-        'bread-rolls',
-        'fresh-mint',
-        'full-cream-milk',
-        'beef-mince'
-      ].map(codeOf)
-    ).toEqual([
-      'SPI',
-      'BSP',
-      'LGR',
-      'LEM',
-      'WHB',
-      'WMB',
-      'BRC',
-      'BRO',
-      'MNT',
-      'MLK',
-      'BEF'
-    ])
+      catalogue
+        .filter((item) => item.badgeCode !== undefined)
+        .map((item) => item.id)
+        .sort()
+    ).toEqual(OVERRIDES.map(([id]) => id).sort())
   })
 })
