@@ -3,6 +3,7 @@ import recipeData from '../../../data/recipes.json'
 import {
   LibraryDataError,
   parseCatalogue,
+  parseSectionColours,
   parseIngredient,
   parseRecipe,
   parseRecipes
@@ -161,5 +162,40 @@ describe('parseCatalogue / parseRecipes', () => {
     expect(() => parseCatalogue([])).toThrow('catalogue: expected an object')
     expect(() => parseCatalogue({})).toThrow('catalogue.ingredients')
     expect(() => parseRecipes({ recipes: [null] })).toThrow('recipes[0]')
+  })
+})
+
+describe('parseSectionColours', () => {
+  const valid = {
+    sectionColours: {
+      'Fruit & Veg': 'produce',
+      'Meat & Seafood': 'meat',
+      'Dairy, Eggs & Fridge': 'dairy',
+      Deli: 'deli',
+      Bakery: 'bakery',
+      Pantry: 'pantry',
+      Frozen: 'frozen',
+      Other: 'neutral'
+    }
+  }
+
+  it('maps every shop section to a badge tone, produce green', () => {
+    expect(parseSectionColours(valid)).toEqual(valid.sectionColours)
+    expect(parseSectionColours(ingredientData)['Fruit & Veg']).toBe('produce')
+  })
+
+  it('fails loudly on a missing map, a missing section or an unknown tone', () => {
+    expect(() => parseSectionColours({})).toThrow(
+      'catalogue.sectionColours: expected an object'
+    )
+    expect(() =>
+      parseSectionColours({
+        sectionColours: { ...valid.sectionColours, Deli: 'pink' }
+      })
+    ).toThrow(LibraryDataError)
+    const { Frozen: _frozen, ...missing } = valid.sectionColours
+    expect(() => parseSectionColours({ sectionColours: missing })).toThrow(
+      'catalogue.sectionColours.Frozen'
+    )
   })
 })

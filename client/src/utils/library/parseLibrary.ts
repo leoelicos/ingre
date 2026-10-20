@@ -10,6 +10,9 @@ import type {
   SoldType
 } from '../../types/library'
 import { AISLES } from '../shopping/sections'
+import type { ShopSection } from '../shopping/sections'
+import { BADGE_TONES } from '../../components/IngredientBadge/tones'
+import type { BadgeTone } from '../../components/IngredientBadge/tones'
 
 export const BASE_UNITS: readonly BaseUnit[] = ['g', 'ml', 'count']
 export const SOLD_TYPES: readonly SoldType[] = [
@@ -172,6 +175,26 @@ export const parseCatalogue = (data: unknown): LibraryIngredient[] =>
   arr(rec(data, 'catalogue')['ingredients'], 'catalogue.ingredients').map(
     (v, i) => parseIngredient(v, `ingredients[${i}]`)
   )
+
+/** The section-to-colour map for ingredient badges; every shop section needs a known tone. */
+export const parseSectionColours = (
+  data: unknown
+): Readonly<Record<ShopSection, BadgeTone>> => {
+  const path = 'catalogue.sectionColours'
+  const map = rec(rec(data, 'catalogue')['sectionColours'], path)
+  const tone = (section: ShopSection): BadgeTone =>
+    oneOf(BADGE_TONES, map[section], `${path}.${section}`)
+  return {
+    'Fruit & Veg': tone('Fruit & Veg'),
+    'Meat & Seafood': tone('Meat & Seafood'),
+    'Dairy, Eggs & Fridge': tone('Dairy, Eggs & Fridge'),
+    Deli: tone('Deli'),
+    Bakery: tone('Bakery'),
+    Pantry: tone('Pantry'),
+    Frozen: tone('Frozen'),
+    Other: tone('Other')
+  }
+}
 
 export const parseRecipes = (data: unknown): LibraryRecipe[] =>
   arr(rec(data, 'library')['recipes'], 'library.recipes').map((v, i) =>

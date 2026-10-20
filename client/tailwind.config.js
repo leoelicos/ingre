@@ -15,6 +15,23 @@ module.exports = {
         'added-pill': 'var(--color-added-pill)',
         border: 'var(--color-border)',
         success: 'var(--color-success)',
+        /* ingredient badges (#154): one background + ink pair per shop section */
+        'badge-produce': 'var(--color-badge-produce)',
+        'badge-produce-ink': 'var(--color-badge-produce-ink)',
+        'badge-meat': 'var(--color-badge-meat)',
+        'badge-meat-ink': 'var(--color-badge-meat-ink)',
+        'badge-dairy': 'var(--color-badge-dairy)',
+        'badge-dairy-ink': 'var(--color-badge-dairy-ink)',
+        'badge-deli': 'var(--color-badge-deli)',
+        'badge-deli-ink': 'var(--color-badge-deli-ink)',
+        'badge-bakery': 'var(--color-badge-bakery)',
+        'badge-bakery-ink': 'var(--color-badge-bakery-ink)',
+        'badge-pantry': 'var(--color-badge-pantry)',
+        'badge-pantry-ink': 'var(--color-badge-pantry-ink)',
+        'badge-frozen': 'var(--color-badge-frozen)',
+        'badge-frozen-ink': 'var(--color-badge-frozen-ink)',
+        'badge-neutral': 'var(--color-badge-neutral)',
+        'badge-neutral-ink': 'var(--color-badge-neutral-ink)',
         /* Charlie: text mixed ~70% toward green; dimmed bg from #125 */
         'primary-disabled-bg':
           'color-mix(in srgb, var(--color-primary) 45%, var(--color-bg))',

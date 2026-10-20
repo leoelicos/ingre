@@ -7,13 +7,19 @@ import type {
   LibraryRecipe,
   LibrarySearch
 } from '../../types/library'
-import { parseCatalogue, parseRecipes } from './parseLibrary'
+import {
+  parseCatalogue,
+  parseRecipes,
+  parseSectionColours
+} from './parseLibrary'
 import { normaliseTerm } from './searchTerms'
 
 export const PLACEHOLDER_PICTURE = '/ingre.png'
 
 export const catalogue: LibraryIngredient[] = parseCatalogue(ingredientData)
 export const library: LibraryRecipe[] = parseRecipes(recipeData)
+/** Badge colour per shop section (data/ingredients.json `sectionColours`). */
+export const sectionColours = parseSectionColours(ingredientData)
 
 export function toClientRecipe(
   recipe: LibraryRecipe,
