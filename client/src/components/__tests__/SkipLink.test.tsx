@@ -1,7 +1,10 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { axe, toHaveNoViolations } from 'jest-axe'
 import { focusMain, MAIN_ID, SkipLink } from '../SkipLink'
+
+expect.extend(toHaveNoViolations)
 
 const Page = () => (
   <>
@@ -39,6 +42,14 @@ describe('SkipLink (#131)', () => {
     expect(document.getElementById(MAIN_ID)).toHaveFocus()
     await user.tab()
     expect(screen.getByRole('button', { name: 'First in main' })).toHaveFocus()
+  })
+
+  it('has no axe violations, focused or not', async () => {
+    const user = userEvent.setup()
+    const { container } = render(<Page />)
+    expect(await axe(container)).toHaveNoViolations()
+    await user.tab()
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('does nothing when the page has no main landmark', () => {

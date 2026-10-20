@@ -1,9 +1,15 @@
 import '@testing-library/jest-dom'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import type { MockedResponse } from '@apollo/client/testing'
+import { axe, toHaveNoViolations } from 'jest-axe'
 import { CHECKOUT, GET_USER } from '../../../lib/apollo/graphQL/queries'
 import { logIn, renderWithProviders } from '../../../test/providers'
 import { Upgrade } from '../Upgrade'
+
+expect.extend(toHaveNoViolations)
+
+// The page renders inside App's <main>; here it is rendered alone.
+const IN_APP_MAIN = { rules: { region: { enabled: false } } }
 
 const user = (pro: boolean): MockedResponse => ({
   request: { query: GET_USER },
@@ -95,6 +101,7 @@ describe('Upgrade', () => {
     )
     expect(redirectToCheckout).not.toHaveBeenCalled()
     expect(screen.queryByText(/you are pro/i)).toBeNull()
+    expect(await axe(document.body, IN_APP_MAIN)).toHaveNoViolations()
   })
 
   it('confirms a cancelled checkout without charging', async () => {
@@ -104,5 +111,6 @@ describe('Upgrade', () => {
       /checkout cancelled. you have not been charged/i
     )
     expect(screen.queryByRole('alert')).toBeNull()
+    expect(await axe(document.body, IN_APP_MAIN)).toHaveNoViolations()
   })
 })
