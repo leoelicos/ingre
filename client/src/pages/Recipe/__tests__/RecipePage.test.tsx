@@ -74,6 +74,44 @@ describe('RecipePage', () => {
     ).toBeInTheDocument()
   })
 
+  /** Codes, names and sections drawn in a card or the recipe page, in order. */
+  const badgesIn = (root: HTMLElement) =>
+    within(root)
+      .getAllByRole('listitem')
+      .map((item) => item.textContent)
+
+  it('shows the same key ingredient badges on the card and the recipe page (#155)', () => {
+    renderAt('/')
+    const link = screen.getByRole('link', { name: 'Shaking beef' })
+    // VoiceOver: the title, then the full names of its key ingredients (never the codes)
+    expect(link).toHaveAccessibleDescription('Beef rump steak Red onion Lime')
+    const card = link.closest('article') ?? document.body
+    const onCard = badgesIn(card)
+    expect(onCard).toEqual([
+      'BSTBeef rump steakMeat & Seafood',
+      'RONRed onionFruit & Veg',
+      'LIMLimeFruit & Veg'
+    ])
+    within(card)
+      .getAllByText(/^[A-Z?]{1,3}$/)
+      .forEach((badge) => expect(badge).toHaveAttribute('aria-hidden', 'true'))
+    fireEvent.click(link)
+    const region = screen.getByRole('region', { name: 'Key ingredients' })
+    expect(badgesIn(region)).toEqual(onCard)
+    expect(within(region).getByText('BST')).toHaveClass('bg-badge-meat')
+    expect(within(region).getByText('LIM')).toHaveClass('bg-badge-produce')
+  })
+
+  it('names key ingredients in the same casing as the buy list', () => {
+    renderAt('/recipe/greek-salad-haloumi')
+    const region = screen.getByRole('region', { name: 'Key ingredients' })
+    const buy = within(screen.getByRole('region', { name: 'What to buy' }))
+    ;['Haloumi', 'Tomatoes', 'Lebanese cucumber'].forEach((name) => {
+      expect(within(region).getByText(name)).toBeInTheDocument()
+      expect(buy.getByText(name)).toBeInTheDocument()
+    })
+  })
+
   it('shows buy rows, staples, method, serves, heart and the add button', () => {
     renderAt('/recipe/butter-chicken')
     expect(

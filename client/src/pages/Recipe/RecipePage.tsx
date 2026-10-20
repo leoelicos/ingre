@@ -1,5 +1,5 @@
 import type { FC } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useId } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ServesPicker } from '../../components/ServesPicker'
 import { SaveButton } from '../../components/Widgets/RecipeCard/components/SaveButton'
@@ -23,6 +23,8 @@ import {
   usesLabel
 } from '../../utils/shopping/shoppingList'
 import { usePeople } from '../../utils/storage/people'
+import { KeyIngredientList } from '../../components/IngredientBadge/KeyIngredients'
+import { keyIngredientsOf } from '../../utils/library/keyIngredients'
 import { usePickedIds } from '../../utils/storage/shoppingState'
 import '../../styles/segmented.css'
 import '../ShoppingList/shoppingList.css'
@@ -73,6 +75,29 @@ const AddToList: FC<{ id: string; title: string }> = ({ id, title }) => {
   )
 }
 
+/** The same key ingredient badges as the recipe's card (#155); nothing when it names none. */
+const KeyIngredients: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
+  const id = useId()
+  const items = keyIngredientsOf(recipe)
+  return items.length === 0 ? null : (
+    <section
+      aria-labelledby={`${id}-heading`}
+      className="mt-4"
+    >
+      <h2
+        id={`${id}-heading`}
+        className="recipe-heading"
+      >
+        Key ingredients
+      </h2>
+      <KeyIngredientList
+        items={items}
+        idPrefix={id}
+      />
+    </section>
+  )
+}
+
 const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
   const { title, localName } = splitTitle(recipe.name)
   useEffect(() => changeTitle(title), [title])
@@ -112,6 +137,7 @@ const RecipeView: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => {
         )}
         <p className="recipe-meta">{recipeMeta(recipe.tags)}</p>
         {contains !== '' && <p className="recipe-allergens">{contains}</p>}
+        <KeyIngredients recipe={recipe} />
         <ServesPicker
           people={people}
           onChange={setPeople}

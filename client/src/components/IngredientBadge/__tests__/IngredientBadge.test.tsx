@@ -2,6 +2,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import { IngredientBadge } from '../IngredientBadge'
+import { EMPTY_CODE } from '../badgeCode'
 
 expect.extend(toHaveNoViolations)
 
@@ -13,22 +14,25 @@ describe('IngredientBadge', () => {
         category="fruit & veg"
       />
     )
-    const badge = screen.getByRole('img', { name: 'Tomato' })
-    expect(badge).toHaveTextContent('TOM')
+    const badge = screen.getByText('TOM')
     expect(badge).toHaveClass('rounded-pill', 'bg-badge-produce')
     expect(badge).toHaveClass('text-badge-produce-ink')
     expect(container.querySelector('img, svg, picture')).toBeNull()
   })
 
-  it('reads the full name, not the code', () => {
-    render(
+  it('is decorative: hidden from screen readers, no image role or label', () => {
+    const { container } = render(
       <IngredientBadge
         name="beef mince"
         category="meat"
       />
     )
-    expect(screen.getByRole('img')).toHaveAccessibleName('beef mince')
-    expect(screen.getByText('BMI')).toHaveAttribute('aria-hidden', 'true')
+    const badge = screen.getByText('BMI')
+    expect(badge).toHaveAttribute('aria-hidden', 'true')
+    expect(badge).not.toHaveAttribute('role')
+    expect(badge).not.toHaveAttribute('aria-label')
+    expect(screen.queryByRole('img')).toBeNull()
+    expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(1)
   })
 
   it('shows the catalogue badgeCode instead of the derived code', () => {
@@ -36,22 +40,22 @@ describe('IngredientBadge', () => {
       <IngredientBadge
         name="full cream milk"
         category="dairy & eggs"
-        badgeCode="MLK"
+        badgeCode="FCM"
       />
     )
-    expect(screen.getByRole('img')).toHaveAccessibleName('full cream milk')
-    expect(screen.getByText('MLK')).toHaveAttribute('aria-hidden', 'true')
+    expect(screen.getByText('FCM')).toHaveAttribute('aria-hidden', 'true')
     expect(screen.queryByText('FMI')).toBeNull()
   })
 
-  it('is neutral for an unknown section and is never focusable', () => {
+  it('is a neutral "?" for an item the catalogue does not know, and never focusable', () => {
     render(
       <IngredientBadge
         name="Mystery"
         category="other"
+        badgeCode={EMPTY_CODE}
       />
     )
-    const badge = screen.getByRole('img', { name: 'Mystery' })
+    const badge = screen.getByText('?')
     expect(badge).toHaveClass('bg-badge-neutral', 'text-badge-neutral-ink')
     expect(badge).not.toHaveAttribute('tabindex')
   })

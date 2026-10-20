@@ -16,7 +16,7 @@ export const stillCleared = (current: ListSnapshot): boolean =>
 /**
  * "Start a new list": one tap clears picks, ticks (saved and still waiting on the tick clock),
  * extras and step, and returns to Pick (no confirm). Undo within UNDO_MS restores that exact
- * state, once. The snapshot is dropped as soon as the list changes (a pick, a tick, a new item or a
+ * state, once. The countdown is paused while focus is inside the note (pause/resume). The snapshot is dropped as soon as the list changes (a pick, a tick, a new item or a
  * step change), so Undo can never put an old list over a newer one.
  */
 export const useStartNewList = (
@@ -54,15 +54,28 @@ export const useStartNewList = (
     [timers]
   )
 
-  const start = (unsaved: UnsavedTicks): void => {
-    const before = withUnsaved(list.snapshot(), unsaved)
-    list.restore(EMPTY_LIST)
+  /** (Re)starts the full UNDO_MS countdown; when it runs out the snapshot is dropped. */
+  const countDown = (): void => {
     stop()
-    hold(before)
     clock.current = timers.setTimeout(() => {
       clock.current = null
       hold(null)
     }, UNDO_MS)
+  }
+
+  const start = (unsaved: UnsavedTicks): void => {
+    const before = withUnsaved(list.snapshot(), unsaved)
+    list.restore(EMPTY_LIST)
+    hold(before)
+    countDown()
+  }
+
+  /** Focus is inside the note: the countdown stops, so a keyboard user is never timed out. */
+  const pause = (): void => stop()
+
+  /** Focus left the note: a fresh UNDO_MS countdown starts, if there is still something to undo. */
+  const resume = (): void => {
+    if (held.current !== null) countDown()
   }
 
   const undo = (): UndoResult => {
@@ -73,5 +86,5 @@ export const useStartNewList = (
     return 'restored'
   }
 
-  return { canUndo: holding && unchanged, start, undo }
+  return { canUndo: holding && unchanged, start, undo, pause, resume }
 }

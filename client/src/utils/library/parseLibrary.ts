@@ -163,9 +163,43 @@ const parseRecipeIngredient = (
   }
 }
 
+/** Most defining ingredients a recipe may name. */
+export const MAX_KEY_INGREDIENTS = 3
+
+/** One key ingredient: an id the recipe itself uses. */
+const parseKeyIngredient = (
+  v: unknown,
+  usedIds: readonly string[],
+  path: string
+): string => {
+  const id = str(v, path)
+  return usedIds.includes(id)
+    ? id
+    : fail(path, 'an ingredientId of this recipe')
+}
+
+/** `keyIngredients`: 1 to MAX_KEY_INGREDIENTS distinct ids from the recipe's own ingredients. */
+export const parseKeyIngredients = (
+  v: unknown,
+  usedIds: readonly string[],
+  path: string
+): string[] => {
+  const ids = arr(v, path).map((id, i) =>
+    parseKeyIngredient(id, usedIds, `${path}[${i}]`)
+  )
+  const distinct = new Set(ids).size === ids.length
+  return ids.length > 0 && ids.length <= MAX_KEY_INGREDIENTS && distinct
+    ? ids
+    : fail(path, `1 to ${MAX_KEY_INGREDIENTS} different ingredient ids`)
+}
+
 export const parseRecipe = (v: unknown, path = 'recipe'): LibraryRecipe => {
   const r = rec(v, path)
   const picture = r['picture_url']
+  const ingredients = arr(r['ingredients'], `${path}.ingredients`).map((g, i) =>
+    parseRecipeIngredient(g, `${path}.ingredients[${i}]`)
+  )
+  const keys = r['keyIngredients']
   return {
     id: str(r['id'], `${path}.id`),
     name: str(r['name'], `${path}.name`),
@@ -173,9 +207,16 @@ export const parseRecipe = (v: unknown, path = 'recipe'): LibraryRecipe => {
     tags: arr(r['tags'], `${path}.tags`).map((t, i) =>
       str(t, `${path}.tags[${i}]`)
     ),
-    ingredients: arr(r['ingredients'], `${path}.ingredients`).map((g, i) =>
-      parseRecipeIngredient(g, `${path}.ingredients[${i}]`)
-    ),
+    ingredients,
+    ...(keys === undefined
+      ? {}
+      : {
+          keyIngredients: parseKeyIngredients(
+            keys,
+            ingredients.map((g) => g.ingredientId),
+            `${path}.keyIngredients`
+          )
+        }),
     method: arr(r['method'], `${path}.method`).map((m, i) =>
       str(m, `${path}.method[${i}]`)
     ),
