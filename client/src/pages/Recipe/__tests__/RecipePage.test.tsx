@@ -116,7 +116,7 @@ describe('RecipePage', () => {
     renderAt('/recipe/greek-salad-haloumi')
     const region = screen.getByRole('region', { name: 'Key ingredients' })
     const buy = within(screen.getByRole('region', { name: 'What to buy' }))
-    ;['Haloumi', 'Tomatoes', 'Lebanese cucumber'].forEach((name) => {
+    ;['Haloumi', 'Tomatoes', 'Kalamata olives'].forEach((name) => {
       expect(within(region).getByText(name)).toBeInTheDocument()
       expect(buy.getByText(name)).toBeInTheDocument()
     })

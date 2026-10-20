@@ -1,5 +1,5 @@
 {
-  "_note": "Generic, brand-free everyday dishes cookable in under an hour. All quantities are PER SERVE (portions: 1); the app multiplies by the number of people. Ingredients reference ingredients.json by id; `keyIngredients` (DRAFT 2026-10-20, for Jess to confirm) lists up to three defining ingredient ids, drawn as badges on cards and the recipe page; tags are many-to-many (cuisines, diets, meals).",
+  "_note": "Generic, brand-free everyday dishes cookable in under an hour. All quantities are PER SERVE (portions: 1); the app multiplies by the number of people. Ingredients reference ingredients.json by id; `keyIngredients` (confirmed by the product lead, 2026-10-20) lists up to three defining ingredient ids, drawn as badges on cards and the recipe page; tags are many-to-many (cuisines, diets, meals).",
   "recipes": [
     {
       "id": "spaghetti-bolognese",
@@ -70,7 +70,7 @@
       "name": "Egg fried rice",
       "portions": 1,
       "tags": ["Chinese", "vegetarian", "lunch", "dinner"],
-      "keyIngredients": ["jasmine-rice", "egg", "tinned-peas"],
+      "keyIngredients": ["jasmine-rice", "egg", "soy-sauce"],
       "ingredients": [
         {
           "ingredientId": "jasmine-rice",
@@ -204,7 +204,7 @@
       "name": "Greek salad with haloumi",
       "portions": 1,
       "tags": ["Greek", "Mediterranean", "vegetarian", "gluten-free", "lunch"],
-      "keyIngredients": ["haloumi", "tomato", "cucumber"],
+      "keyIngredients": ["haloumi", "tomato", "kalamata-olives"],
       "ingredients": [
         {
           "ingredientId": "haloumi",
@@ -413,7 +413,7 @@
       "name": "Red lentil dahl",
       "portions": 1,
       "tags": ["Indian", "dinner", "vegetarian"],
-      "keyIngredients": ["red-lentils", "tomato", "ground-turmeric"],
+      "keyIngredients": ["red-lentils", "ground-turmeric", "cumin-seeds"],
       "ingredients": [
         {
           "ingredientId": "red-lentils",

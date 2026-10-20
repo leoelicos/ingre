@@ -45,8 +45,23 @@ describe('key ingredients', () => {
     expect(keyIngredientsFor('no-such-recipe')).toEqual([])
     expect(keyIngredientsFor('dahl').map((k) => k.name)).toEqual([
       'Red lentils',
-      'Tomatoes',
-      'Ground turmeric'
+      'Ground turmeric',
+      'Cumin seeds'
+    ])
+  })
+
+  it("uses the product lead's confirmed edits", () => {
+    const ids = (id: string) => keyIngredientsFor(id).map((k) => k.id)
+    expect(ids('egg-fried-rice')).toEqual(['jasmine-rice', 'egg', 'soy-sauce'])
+    expect(ids('greek-salad-haloumi')).toEqual([
+      'haloumi',
+      'tomato',
+      'kalamata-olives'
+    ])
+    expect(ids('dahl')).toEqual([
+      'red-lentils',
+      'ground-turmeric',
+      'cumin-seeds'
     ])
   })
 
