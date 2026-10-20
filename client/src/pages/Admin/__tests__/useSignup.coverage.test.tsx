@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import { ApolloLink, Observable } from '@apollo/client'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { useSignup } from '../useSignup'
 import { CHECK_EMAIL_ALREADY_EXISTS } from '../../../lib/apollo/graphQL/queries'
@@ -89,11 +90,24 @@ const errorAddMock: MockedResponse = {
   error: new Error('exists')
 }
 
+/** A real link whose first request throws, so the email lookup itself rejects. */
+const throwsOnceLink = () => {
+  let calls = 0
+  return new ApolloLink(() => {
+    calls += 1
+    if (calls === 1) throw new Error('link down')
+    return Observable.of({ data: { checkEmailAlreadyExists: false } })
+  })
+}
+
 const wrapper =
-  (mocks: MockedResponse[]) =>
+  (mocks: MockedResponse[], link?: ApolloLink) =>
   ({ children }: { children: React.ReactNode }) =>
     (
-      <MockedProvider mocks={mocks}>
+      <MockedProvider
+        mocks={mocks}
+        {...(link === undefined ? {} : { link })}
+      >
         <MemoryRouter
           initialEntries={[{ pathname: '/signup', state: { from: '/' } }]}
         >
@@ -266,5 +280,46 @@ describe('useSignup coverage', () => {
       message: "Couldn't sign you up."
     })
     expect(result.current.validationMessage).toBe("Couldn't sign you up.")
+  })
+
+  it('returns a validation result when the password is too short', async () => {
+    const { result } = renderHook(() => useSignup(), {
+      wrapper: wrapper([])
+    })
+    act(() => {
+      fill(result.current)
+      result.current.onPasswordChange({ target: { value: 'abcd' } })
+    })
+    let outcome: SignupOutcome = { ok: true }
+    await act(async () => {
+      outcome = await submit(result.current)
+    })
+    expect(outcome).toEqual({
+      ok: false,
+      reason: 'validation',
+      message: 'Password must be at least 5 characters.'
+    })
+    expect(result.current.validationMessage).toBe(
+      'Password must be at least 5 characters.'
+    )
+  })
+
+  it('returns a check error when the email lookup throws', async () => {
+    const { result } = renderHook(() => useSignup(), {
+      wrapper: wrapper([], throwsOnceLink())
+    })
+    act(() => {
+      fill(result.current)
+    })
+    let outcome: SignupOutcome = { ok: true }
+    await act(async () => {
+      outcome = await submit(result.current)
+    })
+    expect(outcome).toEqual({
+      ok: false,
+      reason: 'error',
+      message: "Couldn't check that email."
+    })
+    expect(result.current.validationMessage).toBe("Couldn't check that email.")
   })
 })

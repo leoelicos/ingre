@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { renderHook, act, waitFor } from '@testing-library/react'
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import { AuthProvider, useAuthContext } from '../../utils/auth/AuthContext'
 import { LOGIN } from '../../lib/apollo/graphQL/mutations'
@@ -15,11 +15,6 @@ const loginMock: MockedResponse = {
     variables: { email: 'ada@b.c', password: 'secret' }
   },
   result: { data: { login: { token: VALID_TOKEN } } }
-}
-
-const Probe = () => {
-  const loc = useLocation()
-  return <span data-testid="where">{loc.pathname}</span>
 }
 
 const wrapper =

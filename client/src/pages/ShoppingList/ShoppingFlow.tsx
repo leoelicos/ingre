@@ -47,6 +47,16 @@ export const wantsShopBarFocus = (state: unknown): boolean =>
   'focusShopBar' in state &&
   state.focusShopBar === true
 
+/** Home and End jump to the first and last step. */
+const EDGE_STEPS: ReadonlyMap<string, FlowStep> = new Map([
+  ...FLOW_STEPS.slice(0, 1).map((step): [string, FlowStep] => ['Home', step]),
+  ...FLOW_STEPS.slice(-1).map((step): [string, FlowStep] => ['End', step])
+])
+
+/** The step a Home or End key jumps to; null for every other key. */
+export const edgeStep = (key: string): FlowStep | null =>
+  EDGE_STEPS.get(key) ?? null
+
 export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   print = () => window.print(),
   timers = browserTimers
@@ -81,17 +91,11 @@ export const ShoppingFlow: FC<{ print?: () => void; timers?: Timers }> = ({
   }
 
   const onTabKey = (e: KeyboardEvent) => {
-    if (e.key === 'Home') {
+    const edge = edgeStep(e.key)
+    if (edge !== null) {
       e.preventDefault()
-      list.setStep(FLOW_STEPS[0]!)
-      document.getElementById(`flow-tab-${FLOW_STEPS[0]}`)?.focus()
-      return
-    }
-    if (e.key === 'End') {
-      e.preventDefault()
-      const last = FLOW_STEPS[count - 1]!
-      list.setStep(last)
-      document.getElementById(`flow-tab-${last}`)?.focus()
+      list.setStep(edge)
+      document.getElementById(`flow-tab-${edge}`)?.focus()
       return
     }
     const delta = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
