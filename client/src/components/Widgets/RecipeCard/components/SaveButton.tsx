@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import { useFavourite } from '../../../../utils/storage/favourites'
 
-const HeartIcon: FC<{ filled: boolean }> = ({ filled }) => (
+export const HeartIcon: FC<{ filled: boolean }> = ({ filled }) => (
   <svg
     aria-hidden="true"
     viewBox="0 0 24 24"
@@ -25,7 +25,7 @@ export const SaveButton: FC<{ recipeName: string; libraryId: string }> = ({
   return (
     <button
       type="button"
-      className="icon-button"
+      className="icon-button focus-visible:focus-ring"
       aria-label={saved ? `Unsave ${recipeName}` : `Save ${recipeName}`}
       aria-pressed={saved}
       onClick={toggle}

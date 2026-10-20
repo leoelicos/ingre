@@ -433,7 +433,23 @@ export const EXTRA_WEIGHED_GRAMS = 500
 /** Shop section for free-text extras (they have no home location). */
 export const FREE_TEXT_SECTION: ShopSection = 'Other'
 
-export const extraLineId = (extra: Pick<Extra, 'id'>) => `extra:${extra.id}`
+const EXTRA_PREFIX = 'extra:'
+
+export const extraLineId = (extra: Pick<Extra, 'id'>) =>
+  `${EXTRA_PREFIX}${extra.id}`
+
+/** The catalogue id behind a line id: recipe lines use it as is, catalogue extras prefix it. */
+export const catalogueIdOf = (lineId: string): string =>
+  lineId.startsWith(EXTRA_PREFIX) ? lineId.slice(EXTRA_PREFIX.length) : lineId
+
+/** Extras a picked recipe already needs are left out, so each item is on the list once (#162). */
+export const withoutDuplicateExtras = (
+  recipeLines: readonly ShopLine[],
+  extras: readonly ShopLine[]
+): ShopLine[] => {
+  const needed = new Set(recipeLines.map((line) => line.ingredientId))
+  return extras.filter((line) => !needed.has(catalogueIdOf(line.ingredientId)))
+}
 
 const extraBuy = (item: LibraryIngredient, quantity: number): Buy => {
   const option = item.sold.find(isSized)

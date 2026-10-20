@@ -17,7 +17,8 @@ import {
   extraLineId,
   extraLines,
   splitByHave,
-  withLocations
+  withLocations,
+  withoutDuplicateExtras
 } from './shoppingList'
 
 /** What the user typed or chose in "Add an item". */
@@ -126,10 +127,11 @@ export const useShoppingList = () => {
   const [overrides, setLocation] = useLocationOverrides()
   const [step, setStep] = useFlowStep()
   const recipes = library.filter((r) => pickedIds.has(r.id))
+  const recipeLines = buildShoppingList(recipes, people, catalogue)
   const lines = withLocations(
     [
-      ...buildShoppingList(recipes, people, catalogue),
-      ...extraLines(extras, catalogue)
+      ...recipeLines,
+      ...withoutDuplicateExtras(recipeLines, extraLines(extras, catalogue))
     ],
     overrides
   )
@@ -177,6 +179,7 @@ export const useShoppingList = () => {
     addBasket,
     setLocation,
     lineCount: lines.filter((l) => !l.staple).length,
+    extras,
     /** new extras start unticked: not had, not in the basket */
     addExtra: (extra: NewExtra) => {
       const lineId = extraLineId({ id: extraId(extra) })

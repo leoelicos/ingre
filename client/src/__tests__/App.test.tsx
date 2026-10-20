@@ -1,39 +1,52 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { authHeaders, graphqlEndpoint, Ingre, withAuthHeaders } from '../App'
+import { STEP_KEY } from '../utils/storage/shoppingState'
 
-jest.mock('../pages/Home/Home', () => () => <div>Home page</div>)
-jest.mock('../pages/Search/Search', () => () => <div>Search page</div>)
-jest.mock('../pages/Saved/Saved', () => ({
-  Saved: () => <div>Saved page</div>
-}))
-jest.mock('../pages/ShoppingList/ShoppingFlow', () => ({
-  ShoppingFlow: () => <div>Ingredients page</div>
-}))
-jest.mock('../pages/TapOff/TapOff', () => () => <div>Tapoff page</div>)
-jest.mock('../pages/Admin/Login', () => ({
-  Login: () => <div>Login page</div>
-}))
-jest.mock('../pages/Admin/Signup', () => ({
-  Signup: () => <div>Signup page</div>
-}))
-jest.mock('../pages/Admin/Upgrade', () => () => <div>Upgrade page</div>)
-jest.mock('../pages/Admin/Success', () => ({
-  Success: () => <div>Success page</div>
-}))
-jest.mock('../pages/Admin/NoMatch', () => ({
-  NoMatch: () => <div>No match</div>
-}))
-jest.mock('../components/Header', () => ({ Header: () => <div>Header</div> }))
+/** Renders the whole app at a path, as a browser would open it. */
+const openAt = (path: string) => {
+  window.history.pushState({}, '', path)
+  return render(<Ingre />)
+}
 
 describe('App', () => {
   beforeEach(() => {
     localStorage.clear()
   })
 
-  it('renders the home route', () => {
-    render(<Ingre />)
-    expect(screen.getByText('Home page')).toBeInTheDocument()
+  it('opens on the workspace: the header and Pick (#164)', () => {
+    openAt('/')
+    expect(screen.getByRole('link', { name: 'ingré' })).toHaveAttribute(
+      'href',
+      '/'
+    )
+    expect(
+      screen.getByRole('combobox', { name: 'Search recipes or ingredients' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Account' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Pick' })
+    ).toBeInTheDocument()
+  })
+
+  it('old Saved links open Pick with the Saved filter on (#160)', () => {
+    localStorage.setItem(STEP_KEY, '"shop"')
+    openAt('/saved')
+    expect(window.location.pathname).toBe('/')
+    expect(window.location.search).toBe('?saved=1')
+    expect(screen.getByRole('switch', { name: 'Saved' })).toBeChecked()
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Pick' })
+    ).toBeInTheDocument()
+  })
+
+  it('the old shopping list address opens the workspace', () => {
+    localStorage.setItem(STEP_KEY, '"home"')
+    openAt('/ingredients')
+    expect(window.location.pathname).toBe('/')
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'At home' })
+    ).toBeInTheDocument()
   })
 
   it('builds the graphql endpoint for each environment', () => {

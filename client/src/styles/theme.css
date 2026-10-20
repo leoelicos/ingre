@@ -67,6 +67,9 @@
   --color-badge-neutral: #e8e6e4;
   --color-badge-neutral-ink: #4a4542;
 
+  /* inverse: text on a var(--color-text) background (the Undo note) */
+  --color-inverse-text: var(--palette-white);
+
   /* print: black on white */
   --color-print-ink: #000000;
   --color-print-paper: #ffffff;
@@ -83,6 +86,81 @@
   --layout-max-width: 1100px;
   --layout-gutter: 16px;
   --space-nav-gap: 24px;
+
+  color-scheme: light;
+}
+
+/*
+ * Dark mode (#165): follows the device setting. Only the values change; every
+ * component keeps using the same tokens, so nothing else needs a dark variant.
+ * Text >= 4.5:1 and icons/outlines >= 3:1 on bg and surface (badgeContrast test).
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* palette */
+    --palette-night: #141815;
+    --palette-charcoal: #202622;
+    --palette-mint: #74c995;
+    --palette-salmon: #ff8a73;
+    --palette-paper: #f2ede7;
+    --palette-ash: #bdb5ae;
+    --palette-gold: #f5b041;
+
+    /* surfaces */
+    --color-bg: var(--palette-night);
+    --color-surface: var(--palette-charcoal);
+    --color-highlight: #1a1f1b;
+
+    /* brand */
+    --color-primary: var(--palette-mint);
+    --color-on-primary: #0f1a13;
+    --color-accent: var(--palette-salmon);
+    --color-brand: var(--palette-mint);
+    --color-success: var(--palette-mint);
+    --color-allergen: var(--palette-gold);
+
+    /* text */
+    --color-text: var(--palette-paper);
+    --color-text-secondary: var(--palette-ash);
+    --color-text-strong: #ffffff;
+    --color-placeholder: #a8a09a;
+    --color-added-pill: #8fdcae;
+
+    /* lines */
+    --color-border: #8a827c;
+
+    /* meal tints */
+    --color-tint-dinner: #1f3a2a;
+    --color-tint-lunch: #3d2420;
+    --color-tint-dinner-ink: #4f8f66;
+    --color-tint-lunch-ink: #b5675a;
+    --color-chip-active: var(--color-tint-dinner);
+
+    /* ingredient badges: dark background + light ink per shop section; ink on bg >= 8:1 */
+    --color-badge-produce: #1e3b29;
+    --color-badge-produce-ink: #a6e0bb;
+    --color-badge-meat: #48201b;
+    --color-badge-meat-ink: #ffc2b8;
+    --color-badge-dairy: #1c3250;
+    --color-badge-dairy-ink: #b5d3f7;
+    --color-badge-deli: #47290f;
+    --color-badge-deli-ink: #f8c9a3;
+    --color-badge-bakery: #3f3210;
+    --color-badge-bakery-ink: #f0d999;
+    --color-badge-pantry: #36234a;
+    --color-badge-pantry-ink: #dcc3f2;
+    --color-badge-frozen: #103c44;
+    --color-badge-frozen-ink: #a3e3ee;
+    --color-badge-neutral: #34312f;
+    --color-badge-neutral-ink: #dcd7d3;
+
+    --color-inverse-text: var(--palette-night);
+
+    /* elevation */
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.5);
+
+    color-scheme: dark;
+  }
 }
 
 html body {

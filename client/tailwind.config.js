@@ -1,6 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  /* dark mode follows the device (#165); the tokens in theme.css switch, classes stay the same */
+  darkMode: 'media',
   theme: {
     extend: {
       colors: {
@@ -9,6 +11,9 @@ module.exports = {
         primary: 'var(--color-primary)',
         'on-primary': 'var(--color-on-primary)',
         accent: 'var(--color-accent)',
+        brand: 'var(--color-brand)',
+        highlight: 'var(--color-highlight)',
+        'inverse-text': 'var(--color-inverse-text)',
         text: 'var(--color-text)',
         'text-secondary': 'var(--color-text-secondary)',
         placeholder: 'var(--color-placeholder)',

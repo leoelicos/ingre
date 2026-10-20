@@ -14,6 +14,8 @@ import {
   IngreIconBasket
 } from '../../lib/icon/Icon'
 import { AddItem } from './AddItem'
+import { ShoppingChips } from './ShoppingChips'
+import type { ShopLine } from '../../utils/shopping/shoppingList'
 import { AllDone, StartNewList } from './StartNewList'
 import { LineGroups } from './LineGroups'
 import type { LocationMode } from './ListRow'
@@ -29,6 +31,12 @@ export const basketCount = (inBasket: number, total: number) =>
 export const DONE_SHOPPING = "I'm done shopping"
 
 export const SHOP_BAR_ID = 'shop-done-button'
+
+/** To buy, less anything just ticked at home (still on its 2s Undo clock), so chips update live. */
+export const stillNeeded = (
+  toBuy: readonly ShopLine[],
+  checkedAtHome: ReadonlySet<string>
+): ShopLine[] => toBuy.filter((line) => !checkedAtHome.has(line.ingredientId))
 
 /** "At home" (check your kitchen) or "At the shop" (to buy) over the same list. */
 export const ShoppingListView: FC<{
@@ -92,6 +100,13 @@ export const ShoppingListView: FC<{
         </button>
       </div>
       <AddItem onAdd={list.addExtra} />
+      {list.lineCount > 0 && (
+        <ShoppingChips
+          lines={
+            atHome ? stillNeeded(list.toBuy, homeTicks.checkedIds) : list.toBuy
+          }
+        />
+      )}
 
       {list.lineCount === 0 ? (
         <p className="list-empty">
@@ -101,7 +116,6 @@ export const ShoppingListView: FC<{
             className="link-button"
             onClick={() => {
               list.setStep('pick')
-              document.getElementById('flow-tab-pick')?.focus()
             }}
           >
             Pick some recipes
@@ -217,7 +231,6 @@ export const ShoppingListView: FC<{
           <PrimaryButton
             onPress={() => {
               list.setStep('shop')
-              document.getElementById('flow-tab-shop')?.focus()
             }}
             className="list-tap__button w-full"
           >

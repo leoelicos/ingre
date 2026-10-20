@@ -98,31 +98,6 @@
     background: var(--color-bg);
     box-shadow: var(--shadow-card);
   }
-  .flow-steps__item {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .flow-steps__dot {
-    color: var(--color-text-secondary);
-  }
-  .flow-steps__tab {
-    min-height: 44px;
-    padding: 0 8px;
-    border: 0;
-    background: none;
-    color: var(--color-text-secondary);
-    font-weight: 600;
-  }
-  .flow-steps__tab[aria-selected='true'] {
-    color: var(--color-primary);
-    text-decoration: underline;
-    text-underline-offset: 6px;
-    text-decoration-thickness: 2px;
-  }
-  .flow-steps__tab:focus-visible {
-    @apply focus-ring;
-  }
   .flow-viewport {
     overflow: hidden;
     touch-action: pan-y;

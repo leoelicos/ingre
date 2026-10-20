@@ -130,3 +130,4 @@ export const IngreIconServes = () => <Icon icon={['fas', 'user-group']} />
 export const IngreIconPrint = () => <Icon icon={['fas', 'print']} />
 export const IngreIconBack = () => <Icon icon={['fas', 'arrow-left']} />
 export const IngreIconStartOver = () => <Icon icon={['fas', 'rotate-right']} />
+export const IngreIconAccount = () => <Icon icon={['fas', 'circle-user']} />
