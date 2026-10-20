@@ -19,15 +19,16 @@ export const Icon: FC<{
 }
 
 /* header */
+// Egg-and-tick brand mark (public/images/ingre-icon.svg). Decorative: the
+// header link already carries the 'ingré' wordmark text.
 export const IngreIconLogoEgg = () => (
-  <Icon
-    icon={['fas', 'egg']}
-    extraStyle={{
-      marginRight: '0.3rem',
-      color: 'var(--color-accent)',
-      fontSize: '1.8rem',
-      paddingBottom: '2px'
-    }}
+  <img
+    src="/images/ingre-icon.svg"
+    alt=""
+    aria-hidden="true"
+    width={32}
+    height={32}
+    style={{ height: '2rem', width: '2rem' }}
   />
 )
 
