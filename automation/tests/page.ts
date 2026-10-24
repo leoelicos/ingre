@@ -138,3 +138,15 @@ export const box = async (l: Locator) => {
 /** Distance from the top of the document, so scrolling does not change it. */
 export const pageTop = (l: Locator) =>
   l.evaluate((el) => el.getBoundingClientRect().top + window.scrollY)
+
+/**
+ * Clicks an option in a combo box's list once the list is shown. On touch screens React Aria
+ * reveals the list after the on-screen keyboard settles, so it is briefly transparent first.
+ */
+export const pickOption = async (page: Page, name: string) => {
+  await expect(page.locator('[data-trigger="ComboBox"]')).toHaveCSS(
+    'opacity',
+    '1'
+  )
+  await page.getByRole('option', { name, exact: true }).click()
+}

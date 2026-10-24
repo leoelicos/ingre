@@ -13,6 +13,7 @@ import {
   ingredientsRegion,
   openExplore,
   panel,
+  pickOption,
   pickRows,
   recipesRegion,
   row,
@@ -50,13 +51,20 @@ const choose = async (
   await input.click()
   await input.pressSequentially(option)
   await expect(input).toHaveValue(option)
-  await page.getByRole('option', { name: option, exact: true }).click()
+  await pickOption(page, option)
   await page.keyboard.press('Escape')
 }
 /** Closes Explore however this width shows it, so it can't take focus from the filter. */
 const closeExplore = async (page: Page) => {
   const close = page.getByRole('button', { name: 'Close Explore' })
   if (await close.isVisible()) await close.click()
+}
+/** Adds a catalogue item to Extra by hand, from the search. */
+const addExtra = async (page: Page, query: string, name: string) => {
+  await openExplore(page)
+  await page.getByRole('searchbox').fill(query)
+  await page.getByRole('button', { name: `${name}, on your list` }).click()
+  await expect(chip(page, query, 'extra')).toHaveCount(1)
 }
 const openRow = (page: Page, title: string) =>
   recipesRegion(page)
@@ -173,12 +181,26 @@ test.describe('Extra (#182)', () => {
     ).toBeVisible()
   })
 
-  test('staples go in Extra on pick and stay after unpicking; they show in Ingredients too (answer 7, F1)', async ({
+  test('staples belong to their recipe at its amount; unpicking the last recipe removes them (owner decision 1)', async ({
     page
   }) => {
     await pickRows(page, DAHL)
-    await expect(chip(page, 'salt', 'extra')).toHaveCount(1)
     await expect(chip(page, 'salt')).toHaveCount(1)
+    await expect(chip(page, 'salt', 'extra')).toHaveCount(0)
+    await chevron(page, 'salt').click()
+    await expect(sourceBox(panel(page, 'Salt'), DAHL)).toHaveValue('0.5')
+    await openRow(page, DAHL)
+    await expect(chip(page, 'salt', 'row-dahl')).toHaveCount(1)
+    await exploreRow(page, DAHL).click()
+    await expect(chip(page, 'salt')).toHaveCount(0)
+    await expect(chip(page, 'butter')).toHaveCount(0)
+  })
+
+  test('a staple added by hand with the plus goes in Extra and stays after unpicking (owner decision 1)', async ({
+    page
+  }) => {
+    await pickRows(page, DAHL)
+    await addExtra(page, 'salt', 'Salt')
     await exploreRow(page, DAHL).click()
     await expect(chip(page, 'salt', 'extra')).toHaveCount(1)
     await expect(chip(page, 'butter')).toHaveCount(0)
@@ -210,6 +232,8 @@ test.describe('Extra (#182)', () => {
     page
   }) => {
     await pickRows(page, DAHL)
+    await addExtra(page, 'salt', 'Salt')
+    await closeExplore(page)
     await chipToggle(page, 'salt', 'extra').click()
     await expect(chipToggle(page, 'salt')).toHaveAttribute(
       'aria-pressed',
@@ -231,6 +255,8 @@ test.describe('Extra (#182)', () => {
     page
   }) => {
     await pickRows(page, DAHL)
+    await addExtra(page, 'salt', 'Salt')
+    await closeExplore(page)
     await chipToggle(page, 'salt', 'extra').click()
     await openFilter(page, 'Extra')
     const filter = page.getByRole('group', { name: 'Filter extra' })
@@ -252,6 +278,7 @@ test.describe('layout (#182, answers 14-15)', () => {
     await page.setViewportSize({ width: 1280, height: 800 })
     await page.goto('/')
     await pickRows(page, DAHL)
+    await addExtra(page, 'salt', 'Salt')
     const heading = (name: string) =>
       page.getByRole('heading', { level: 2, name, exact: true })
     await expect(section(page, 'Extra')).toHaveCount(0)
@@ -456,5 +483,70 @@ test.describe('#181 fixes', () => {
   test('the /search route is gone', async ({ page }) => {
     await page.goto('/search')
     await expect(page.getByText('Page Not Found')).toBeVisible()
+  })
+})
+
+test.describe('owner decisions (#182)', () => {
+  test('counted items read in a buying unit, singular or plural, never a bare number (owner decision 2)', async ({
+    page
+  }) => {
+    await pickRows(page, DAHL)
+    await expect(chipToggle(page, 'garlic')).toHaveAccessibleName(
+      /^Garlic, 2 cloves, /
+    )
+    await expect(chipToggle(page, 'onion')).toHaveAccessibleName(
+      /^Brown onion, ½ onion, /
+    )
+    await expect(chipToggle(page, 'tomato')).toHaveAccessibleName(
+      /^Tomatoes, 1 tomato, /
+    )
+    await addExtra(page, 'garlic', 'Garlic')
+    await expect(chip(page, 'garlic', 'extra')).toContainText('1 head')
+    await expect(chipToggle(page, 'garlic')).toHaveAccessibleName(
+      /^Garlic, 12 cloves, /
+    )
+    await closeExplore(page)
+    await chevron(page, 'garlic', 'extra').click()
+    const garlic = panel(page, 'Garlic', 'extra')
+    await expect(
+      garlic.getByRole('textbox', { name: `${DAHL}, garlic (cloves)` })
+    ).toHaveValue('2')
+    await setBox(sourceBox(garlic, 'Extra'), '2')
+    await expect(chip(page, 'garlic', 'extra')).toContainText('2 heads')
+  })
+
+  test('Save in Explore saves the list copy with its customisations; off the list, the original (owner decision 4)', async ({
+    page
+  }) => {
+    await signUp(page, newAccount())
+    await pickRows(page, DAHL)
+    await chevron(page, 'butter').click()
+    await setBox(sourceBox(panel(page, 'Butter'), DAHL), '30')
+    await openExplore(page)
+    const see = explore(page).getByRole('button', {
+      name: `See recipe: ${DAHL}`
+    })
+    await see.click()
+    const save = explore(page).getByRole('button', { name: `Save ${DAHL}` })
+    const unsave = explore(page).getByRole('button', {
+      name: `Unsave ${DAHL}`
+    })
+    const sent = async (click: () => Promise<void>) => {
+      const request = page.waitForRequest((r) =>
+        (r.postData() ?? '').includes('saveRecipe')
+      )
+      await click()
+      return (await request).postData() ?? ''
+    }
+    const customised = await sent(() => save.click())
+    expect(customised).toMatch(/"customisations":\{[^}]*"butter"/)
+    await expect(unsave).toHaveAttribute('aria-pressed', 'true')
+    await unsave.click()
+    await expect(save).toBeVisible()
+    await exploreRow(page, DAHL).click()
+    await expect(row(page, DAHL)).toHaveCount(0)
+    const original = await sent(() => save.click())
+    expect(original).toContain('"customisations"')
+    expect(original).not.toMatch(/"customisations":\{[^}]*"butter"/)
   })
 })

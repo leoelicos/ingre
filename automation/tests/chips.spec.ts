@@ -103,7 +103,9 @@ test.describe('ingredient chips (#181)', () => {
     await page.getByRole('button', { name: 'Brown onion details' }).click()
     const panel = page.getByRole('group', { name: 'Brown onion details' })
     await expect(panel.getByRole('heading', { name: 'Used in' })).toBeVisible()
-    await expect(panel.getByRole('listitem')).toHaveText([DAHL, CURRY])
+    // each recipe with its box, which reads in onions (#182, owner decision 2)
+    await expect(panel.getByRole('listitem')).toContainText([DAHL, CURRY])
+    await expect(panel.getByRole('listitem')).toHaveCount(2)
   })
 
   test('the open panel stays in place, with a fan stemming down from its chip', async ({

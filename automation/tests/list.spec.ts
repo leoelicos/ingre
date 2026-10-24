@@ -128,7 +128,9 @@ test.describe('ingredients-first page (#179)', () => {
     await expect(chevron).toHaveAttribute('aria-expanded', 'true')
     const panel = page.getByRole('group', { name: 'Brown onion details' })
     await expect(panel).toBeVisible()
-    await expect(panel.getByRole('listitem')).toHaveText([DAHL, CURRY])
+    // each recipe with its box, which reads in onions (#182, owner decision 2)
+    await expect(panel.getByRole('listitem')).toContainText([DAHL, CURRY])
+    await expect(panel.getByRole('listitem')).toHaveCount(2)
     await expect.poll(() => pageTop(recipes)).toBeGreaterThan(before)
     await chevron.click()
     await expect(panel).toBeHidden()
@@ -437,7 +439,7 @@ test.describe('ingredients-first page (#179)', () => {
     await expect(onion).toBeFocused()
     await page.keyboard.press('Space')
     await expect(onion).toHaveAccessibleName(
-      'Brown onion, 1, Fruit & Veg, in 2 recipes, crossed off'
+      'Brown onion, 1 onion, Fruit & Veg, in 2 recipes, crossed off'
     )
     await expect(onion).toHaveAttribute('aria-pressed', 'true')
     const ring = (l: Locator) =>

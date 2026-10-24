@@ -10,6 +10,7 @@ import {
   extraRegion,
   openExplore,
   panel,
+  pickOption,
   pickRows,
   recipesRegion,
   row,
@@ -91,7 +92,9 @@ test.describe('recipe copies, more (#182)', () => {
       'aria-pressed',
       'true'
     )
-    await expect(chip(page, 'salt', 'extra')).toHaveCount(1)
+    // staples belong to the recipe (owner decision 1): Refresh keeps them and adds no Extra
+    await expect(chip(page, 'salt')).toHaveCount(1)
+    await expect(chip(page, 'salt', 'extra')).toHaveCount(0)
   })
 
   test('an expanded row has no "You\'ll also need" (F6)', async ({ page }) => {
@@ -115,7 +118,7 @@ test.describe('recipe copies, more (#182)', () => {
     await input.click()
     await input.pressSequentially('Butter')
     await expect(input).toHaveValue('Butter')
-    await page.getByRole('option', { name: 'Butter', exact: true }).click()
+    await pickOption(page, 'Butter')
     await page.keyboard.press('Escape')
     await expect(exploreRow(page, DAHL)).toBeVisible()
     await expect(exploreRow(page, 'Shaking beef (bò lúc lắc)')).toHaveCount(0)
