@@ -20,11 +20,10 @@ import RecipePage from './pages/Recipe/RecipePage'
 import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
-import { ShoppingFlow } from './pages/ShoppingList/ShoppingFlow'
+import { ListPage } from './pages/List/ListPage'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import Search from './pages/Search/Search'
-import TapOff from './pages/TapOff/TapOff'
-import { APP_MODE } from './appMode'
+import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
 import { changeTitle } from './utils/changeTitle'
@@ -32,7 +31,8 @@ import { StoreProvider } from './utils/state/GlobalState'
 
 addFontAwesome()
 
-export function graphqlEndpoint(mode: string): string {
+export function graphqlEndpoint(mode: string, override: string): string {
+  if (override !== '') return override
   if (mode === 'production') {
     return 'https://ingre-backend.onrender.com/graphql'
   }
@@ -55,13 +55,13 @@ export const withAuthHeaders = (
 
 const authLink = setContext(withAuthHeaders)
 
-const uri = graphqlEndpoint(APP_MODE)
+const uri = graphqlEndpoint(APP_MODE, GRAPHQL_URL_OVERRIDE)
 const httpLink = createHttpLink({ uri })
 const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
 const client = new ApolloClient({ link, cache })
 
-/** Old Saved links land on Pick with the Saved filter on (#160). */
+/** Old Saved links land on the page with the Saved filter on (#160). */
 export const SavedRedirect: FC = () => (
   <Navigate
     to={SAVED_PATH}
@@ -69,7 +69,7 @@ export const SavedRedirect: FC = () => (
   />
 )
 
-/** The shopping list is the workspace at "/" (#164); router state (Back to my list) comes along. */
+/** Old list and step URLs (/ingredients, /tapoff) land on the one page at "/" (#164, #179). */
 export const WorkspaceRedirect: FC = () => {
   const { search, state } = useLocation()
   return (
@@ -82,7 +82,7 @@ export const WorkspaceRedirect: FC = () => {
 }
 
 export const Ingre: FC = () => {
-  changeTitle('Pick')
+  changeTitle('Shopping list')
   return (
     <ApolloProvider client={client}>
       <Router>
@@ -92,7 +92,7 @@ export const Ingre: FC = () => {
             <Routes>
               <Route
                 path="/"
-                element={<ShoppingFlow />}
+                element={<ListPage />}
               />
               <Route
                 path="/search"
@@ -112,7 +112,7 @@ export const Ingre: FC = () => {
               />
               <Route
                 path="/tapoff"
-                element={<TapOff />}
+                element={<WorkspaceRedirect />}
               />
               {/* admin */}
               <Route

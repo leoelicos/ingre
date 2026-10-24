@@ -67,8 +67,8 @@ const SuggestionOption: FC<{ suggestion: Suggestion }> = ({ suggestion }) => (
 
 /**
  * Header search (#163): an accessible combobox on the device's own keyboard. Typing shows
- * suggestions; Tab accepts the highlighted (or first) one; Enter searches Pick. Choosing a recipe
- * opens it; choosing an ingredient searches Pick for it.
+ * suggestions; Tab accepts the highlighted (or first) one; Enter searches the list. Choosing a recipe
+ * opens it; choosing an ingredient searches the list for it.
  */
 export const HeaderSearch: FC = () => {
   const navigate = useNavigate()

@@ -10,7 +10,6 @@ import type {
 import type { Extra } from '../storage/shoppingState'
 import type { ShopSection } from './sections'
 import { placeInShop } from './sections'
-import { HOME_LOCATIONS } from '../library/parseLibrary'
 import { splitTitle } from '../../components/Widgets/RecipeCard/recipeCardHelpers'
 import { convert, formatAmount, toBase } from './units'
 
@@ -190,34 +189,6 @@ export const groupBy = <T, K extends string>(
     .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))
     .map((key) => ({ key, items: items.filter((i) => keyOf(i) === key) }))
 }
-
-/** Home group heading for a line: its location, or Other for free text. */
-export const OTHER_GROUP = 'Other'
-export const homeGroup = (line: Pick<ShopLine, 'location'>): string =>
-  line.location ?? OTHER_GROUP
-export const HOME_GROUPS: readonly string[] = [...HOME_LOCATIONS, OTHER_GROUP]
-
-/** Splits lines into those still to buy and those already at home. */
-export const splitByHave = (
-  lines: readonly ShopLine[],
-  haveIds: ReadonlySet<string>
-): { toBuy: ShopLine[]; alreadyHave: ShopLine[] } => ({
-  toBuy: lines.filter((l) => !haveIds.has(l.ingredientId)),
-  alreadyHave: lines.filter((l) => haveIds.has(l.ingredientId))
-})
-
-/** Applies the user's per-ingredient home-location choices. */
-export const withLocations = (
-  lines: readonly ShopLine[],
-  overrides: Readonly<Record<string, HomeLocation>>
-): ShopLine[] =>
-  lines.map((line) => ({
-    ...line,
-    location:
-      line.location === null
-        ? null
-        : overrides[line.ingredientId] ?? line.location
-  }))
 
 export const buildShoppingList = (
   recipes: readonly LibraryRecipe[],

@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { authHeaders, graphqlEndpoint, Ingre, withAuthHeaders } from '../App'
-import { STEP_KEY } from '../utils/storage/shoppingState'
 
 /** Renders the whole app at a path, as a browser would open it. */
 const openAt = (path: string) => {
@@ -14,7 +13,7 @@ describe('App', () => {
     localStorage.clear()
   })
 
-  it('opens on the workspace: the header and Pick (#164)', () => {
+  it('opens on the one page: the header, Ingredients and Recipes (#164, #179)', () => {
     openAt('/')
     expect(screen.getByRole('link', { name: 'ingré' })).toHaveAttribute(
       'href',
@@ -25,36 +24,52 @@ describe('App', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Account' })).toBeInTheDocument()
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Pick' })
+      screen.getByRole('heading', { level: 1, name: 'Shopping list' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Ingredients' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Recipes' })
+    ).toBeInTheDocument()
+    expect(screen.queryByText('At home')).not.toBeInTheDocument()
+    expect(screen.queryByText('At the shop')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Home' })).toBeNull()
   })
 
-  it('old Saved links open Pick with the Saved filter on (#160)', () => {
-    localStorage.setItem(STEP_KEY, '"shop"')
+  it('old Saved links open the page with the Saved filter on (#160)', () => {
     openAt('/saved')
     expect(window.location.pathname).toBe('/')
     expect(window.location.search).toBe('?saved=1')
     expect(screen.getByRole('switch', { name: 'Saved' })).toBeChecked()
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Pick' })
-    ).toBeInTheDocument()
   })
 
-  it('the old shopping list address opens the workspace', () => {
-    localStorage.setItem(STEP_KEY, '"home"')
-    openAt('/ingredients')
-    expect(window.location.pathname).toBe('/')
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'At home' })
-    ).toBeInTheDocument()
-  })
+  it.each(['/ingredients', '/tapoff'])(
+    'the old step address %s redirects to the one page (#179)',
+    (path) => {
+      openAt(`${path}?q=dahl`)
+      expect(window.location.pathname).toBe('/')
+      expect(window.location.search).toBe('?q=dahl')
+      expect(
+        screen.getByRole('heading', { level: 1, name: 'Shopping list' })
+      ).toBeInTheDocument()
+    }
+  )
 
   it('builds the graphql endpoint for each environment', () => {
-    expect(graphqlEndpoint('production')).toBe(
+    expect(graphqlEndpoint('production', '')).toBe(
       'https://ingre-backend.onrender.com/graphql'
     )
-    expect(graphqlEndpoint('test')).toBe('http://localhost:3001/graphql')
-    expect(graphqlEndpoint('development')).toBe('http://localhost:3001/graphql')
+    expect(graphqlEndpoint('test', '')).toBe('http://localhost:3001/graphql')
+    expect(graphqlEndpoint('development', '')).toBe(
+      'http://localhost:3001/graphql'
+    )
+  })
+
+  it('uses the override when one is set (the e2e server)', () => {
+    expect(
+      graphqlEndpoint('development', 'http://localhost:4311/graphql')
+    ).toBe('http://localhost:4311/graphql')
   })
 
   it('adds a bearer token when one is stored', () => {

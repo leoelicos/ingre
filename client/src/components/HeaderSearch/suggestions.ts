@@ -11,7 +11,7 @@ export interface Suggestion {
   readonly name: string
   /** the quiet second line: "Recipe" or the ingredient's shop section */
   readonly detail: string
-  /** where choosing it goes: the recipe page, or Pick searched for the ingredient */
+  /** where choosing it goes: the recipe page, or the list searched for the ingredient */
   readonly path: string
 }
 
@@ -29,7 +29,7 @@ export const queryWords = (query: string): string[] =>
 export const hasEveryWord = (name: string, words: readonly string[]): boolean =>
   words.every((word) => name.toLowerCase().includes(word))
 
-/** Where a search goes: Pick, filtered by the text (or unfiltered when blank). */
+/** Where a search goes: the list, filtered by the text (or unfiltered when blank). */
 export const searchPath = (text: string): string => {
   const q = text.trim()
   return q === '' ? '/' : `/?q=${encodeURIComponent(q)}`

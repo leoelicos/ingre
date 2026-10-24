@@ -26,5 +26,5 @@ const ACTIONS: readonly AccountAction[] = ['login', 'signup', 'saved', 'logout']
 export const actionsFor = (key: unknown): AccountAction[] =>
   ACTIONS.filter((action) => action === key)
 
-/** Saved is a filter on Pick (#160), not a page. */
+/** Saved is a filter on the recipe rows (#160, #179), not a page. */
 export const SAVED_PATH = '/?saved=1'

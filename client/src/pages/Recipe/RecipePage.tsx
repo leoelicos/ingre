@@ -27,7 +27,6 @@ import { KeyIngredientList } from '../../components/IngredientBadge/KeyIngredien
 import { keyIngredientsOf } from '../../utils/library/keyIngredients'
 import { usePickedIds } from '../../utils/storage/shoppingState'
 import '../../styles/segmented.css'
-import '../ShoppingList/shoppingList.css'
 import '../../components/Widgets/RecipeCard/recipeCard.css'
 import './recipe.css'
 
@@ -212,7 +211,7 @@ const RecipePage: FC = () => {
         to="/"
         className="btn btn-primary recipe-missing__link"
       >
-        Back to Pick
+        Back to your list
       </Link>
     </main>
   ) : (

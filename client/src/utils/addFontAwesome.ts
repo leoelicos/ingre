@@ -19,7 +19,6 @@ import {
   faRightFromBracket,
   faUserPlus,
   faTruckLoading,
-  faRotateRight,
   faEraser,
   faCropSimple,
   faDownLeftAndUpRightToCenter,
@@ -27,8 +26,6 @@ import {
   faUserGroup,
   faSpinner,
   faBookOpen,
-  faHouse,
-  faBasketShopping,
   faChevronDown,
   faLocationDot,
   faDrumstickBite,
@@ -41,7 +38,6 @@ import {
   faUtensils,
   faPlus,
   faCheck,
-  faPrint,
   faMinus,
   faCircleUser
 } from '@fortawesome/free-solid-svg-icons'
@@ -66,7 +62,6 @@ export const addFontAwesome = () =>
     faRightFromBracket,
     faUserPlus,
     faTruckLoading,
-    faRotateRight,
     faEraser,
     faCropSimple,
     faDownLeftAndUpRightToCenter,
@@ -74,8 +69,6 @@ export const addFontAwesome = () =>
     faUserGroup,
     faSpinner,
     faBookOpen,
-    faHouse,
-    faBasketShopping,
     faChevronDown,
     faLocationDot,
     faDrumstickBite,
@@ -88,7 +81,6 @@ export const addFontAwesome = () =>
     faUtensils,
     faPlus,
     faCheck,
-    faPrint,
     faMinus,
     faCircleUser
   )

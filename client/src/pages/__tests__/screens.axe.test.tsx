@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import { MockedProvider } from '@apollo/client/testing'
@@ -9,8 +9,8 @@ import { Header } from '../../components/Header'
 import RecipePage from '../Recipe/RecipePage'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
-import TapOff from '../TapOff/TapOff'
-import { ShoppingFlow } from '../ShoppingList/ShoppingFlow'
+import { ListPage } from '../List/ListPage'
+import { PICKED_KEY } from '../../utils/storage/shoppingState'
 
 expect.extend(toHaveNoViolations)
 
@@ -41,8 +41,8 @@ describe('All screens accessibility (axe)', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('Pick with the Saved filter on has no axe violations', async () => {
-    const { container } = renderScreen(<ShoppingFlow />, '/?saved=1')
+  it('The list with the Saved filter on has no axe violations', async () => {
+    const { container } = renderScreen(<ListPage />, '/?saved=1')
     expect(await axe(container)).toHaveNoViolations()
   })
 
@@ -61,13 +61,24 @@ describe('All screens accessibility (axe)', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('TapOff has no axe violations', async () => {
-    const { container } = renderScreen(<TapOff />, '/tapoff')
+  it('The list, empty, has no axe violations', async () => {
+    localStorage.clear()
+    const { container } = renderScreen(<ListPage />, '/')
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('ShoppingFlow (Pick) has no axe violations', async () => {
-    const { container } = renderScreen(<ShoppingFlow />, '/')
+  it('The list with chips, an open chip panel, the plus area and an open row has no axe violations', async () => {
+    localStorage.setItem(
+      PICKED_KEY,
+      JSON.stringify(['dahl', 'vegetable-curry'])
+    )
+    const { container } = renderScreen(<ListPage />, '/')
+    fireEvent.click(screen.getByRole('button', { name: 'Brown onion details' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add an ingredient' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Red lentil dahl details' })
+    )
     expect(await axe(container)).toHaveNoViolations()
+    localStorage.clear()
   })
 })
