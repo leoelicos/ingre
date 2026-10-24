@@ -3,7 +3,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
-import { ShoppingFlow } from '../../ShoppingList/ShoppingFlow'
+import { ListPage } from '../../List/ListPage'
 import { Header } from '../../../components/Header'
 import RecipePage, {
   KeyIngredients,
@@ -15,7 +15,7 @@ import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { StoreProvider } from '../../../utils/state/GlobalState'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
-import { HAVE_KEY, PICKED_KEY } from '../../../utils/storage/shoppingState'
+import { CROSSED_KEY, PICKED_KEY } from '../../../utils/storage/shoppingState'
 import { usesLabel } from '../../../utils/shopping/shoppingList'
 
 addFontAwesome()
@@ -30,7 +30,7 @@ const renderAt = (path: string) =>
             <Routes>
               <Route
                 path="/"
-                element={<ShoppingFlow />}
+                element={<ListPage />}
               />
               <Route
                 path="/recipe/:id"
@@ -83,28 +83,13 @@ describe('RecipePage', () => {
     ).toBeInTheDocument()
   })
 
-  it('View recipe on a Pick card opens the recipe, where the heart saves it (#160)', () => {
-    renderAt('/')
-    fireEvent.click(
-      screen.getByRole('link', { name: 'View recipe: Shaking beef' })
-    )
-    // opening a recipe never picks it
-    expect(localStorage.getItem(PICKED_KEY)).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Save Shaking beef' }))
-    expect(localStorage.getItem(FAVOURITES_KEY)).toBe('["shaking-beef"]')
-    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
-    expect(
-      screen.getByRole('button', { name: 'Shaking beef' })
-    ).toBeInTheDocument()
-  })
-
   /** Codes, names and sections drawn in a card or the recipe page, in order. */
   const badgesIn = (root: HTMLElement) =>
     within(root)
       .getAllByRole('listitem')
       .map((item) => item.textContent)
 
-  it('shows the same key ingredient badges on the Pick card and the recipe page (#155)', () => {
+  it('shows the same key ingredient badges on the recipe row and the recipe page (#155)', () => {
     renderAt('/')
     const card = screen.getByRole('button', { name: 'Shaking beef' })
     // VoiceOver: the title, then the full names of its key ingredients (never the codes)
@@ -173,14 +158,14 @@ describe('RecipePage', () => {
     expect(view).toHaveTextContent('✓ Added · View list')
     fireEvent.click(view)
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Pick' })
+      screen.getByRole('heading', { level: 1, name: 'Shopping list' })
     ).toBeInTheDocument()
   })
 
   it('shows the amber allergen line under the meta, from every ingredient', () => {
     window.localStorage.setItem(PICKED_KEY, JSON.stringify(['chicken-korma']))
     window.localStorage.setItem(
-      HAVE_KEY,
+      CROSSED_KEY,
       JSON.stringify(['butter', 'cream', 'natural-yoghurt', 'ground-almonds'])
     )
     const { container } = renderAt('/recipe/chicken-korma')
@@ -204,7 +189,7 @@ describe('RecipePage', () => {
     expect(screen.queryByText(/contains:|allergen/i)).toBeNull()
   })
 
-  it('keeps allergens off the recipe cards', () => {
+  it('keeps allergens out of recipe rows until one is opened', () => {
     renderAt('/')
     expect(screen.queryByText(/contains:/i)).toBeNull()
   })
@@ -220,7 +205,7 @@ describe('RecipePage', () => {
     expect(
       screen.getByRole('heading', { name: "We couldn't find that recipe" })
     ).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('link', { name: 'Back to Pick' }))
+    fireEvent.click(screen.getByRole('link', { name: 'Back to your list' }))
     expect(
       screen.getAllByRole('button', { name: 'Red lentil dahl' }).length
     ).toBeGreaterThan(0)

@@ -24,16 +24,13 @@ import {
   roundMeasure,
   buyAmount,
   displayName,
-  splitByHave,
   toShopUnits,
   totalNeed,
-  withLocations,
   partLabel,
   EXTRA_WEIGHED_GRAMS,
   extraLines,
   sourceLabel,
   type Buy,
-  homeGroup,
   catalogueIdOf,
   withoutDuplicateExtras
 } from '../shoppingList'
@@ -255,29 +252,6 @@ describe('groupBy', () => {
       'z'
     ])
     expect(groupBy([], (i: { k: string }) => i.k)).toEqual([])
-  })
-})
-
-describe('splitByHave / withLocations', () => {
-  const lines = buildShoppingList(
-    [
-      recipe('A', [
-        { ingredientId: 'onion', quantity: 1, measure: 'whole' },
-        { ingredientId: 'mince', quantity: 100, measure: 'g' }
-      ])
-    ],
-    1,
-    [onion, mince]
-  )
-  it('moves ticked ids to alreadyHave', () => {
-    const { toBuy, alreadyHave } = splitByHave(lines, new Set(['onion']))
-    expect(toBuy.map((l) => l.ingredientId)).toEqual(['mince'])
-    expect(alreadyHave.map((l) => l.ingredientId)).toEqual(['onion'])
-  })
-  it('overrides home locations without mutating', () => {
-    const moved = withLocations(lines, { onion: 'Bench' })
-    expect(moved.map((l) => l.location)).toEqual(['Bench', 'Fridge'])
-    expect(lines[0]?.location).toBe('Cupboard')
   })
 })
 
@@ -576,13 +550,6 @@ describe('need formatting', () => {
     expect(
       needLabel({ need: g(337.5), parts: [part('g', 1)], buy: weighed })
     ).toBe('need 340 g')
-  })
-})
-
-describe('homeGroup', () => {
-  it('uses the location, or Other for free text', () => {
-    expect(homeGroup({ location: libIngredient().pantry })).toBe('Cupboard')
-    expect(homeGroup({ location: null })).toBe('Other')
   })
 })
 

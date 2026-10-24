@@ -6,7 +6,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { AuthProvider } from '../../utils/auth/AuthContext'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
-import { ShoppingFlow } from '../ShoppingList/ShoppingFlow'
+import { ListPage } from '../List/ListPage'
 import { Header } from '../../components/Header'
 
 const renderAt = (ui: React.ReactElement, path: string) =>
@@ -64,16 +64,16 @@ describe('Keyboard-only', () => {
     expect(screen.getByRole('button', { name: /sign up/i })).toHaveFocus()
   })
 
-  it('ShoppingFlow Home control works from the keyboard', async () => {
+  it('the list has no Home control, and its section headers work from the keyboard', async () => {
     const user = userEvent.setup()
-    localStorage.setItem('ingre.list.step', '"home"')
-    renderAt(<ShoppingFlow />, '/')
-    const home = screen.getByRole('button', { name: 'Home' })
-    home.focus()
+    renderAt(<ListPage />, '/')
+    expect(screen.queryByRole('button', { name: 'Home' })).toBeNull()
+    const ingredients = screen.getByRole('button', { name: /^Ingredients/ })
+    ingredients.focus()
     await user.keyboard('{Enter}')
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Pick' })
-    ).toHaveFocus()
+    expect(ingredients).toHaveAttribute('aria-expanded', 'false')
+    await user.keyboard(' ')
+    expect(ingredients).toHaveAttribute('aria-expanded', 'true')
   })
 })
 
@@ -105,9 +105,9 @@ describe('VoiceOver (ARIA name, role, state)', () => {
     )
   })
 
-  it('ShoppingFlow Saved filter exposes on/off state as a switch', async () => {
+  it('the list Saved filter exposes on/off state as a switch', async () => {
     const user = userEvent.setup()
-    renderAt(<ShoppingFlow />, '/')
+    renderAt(<ListPage />, '/')
     const saved = screen.getByRole('switch', { name: 'Saved' })
     expect(saved).not.toBeChecked()
     await user.click(saved)
@@ -147,7 +147,7 @@ describe('High contrast / focus visibility', () => {
 
   it('Focus-visible styles exist for primary buttons (outline via tokens)', () => {
     // Covered by CSS: .btn-primary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-    // and PrimaryButton isFocusVisible class. This asserts the class contract.
+    //. This asserts the class contract.
     renderAt(<Login />, '/login')
     const submit = screen.getByRole('button', { name: /log in/i })
     submit.focus()
