@@ -3,6 +3,7 @@ import { expect, test } from './fixtures'
 import {
   DAHL,
   box,
+  chevron,
   chip,
   drawer,
   explore,
@@ -10,6 +11,7 @@ import {
   ingredientsRegion,
   openExplore,
   pageTop,
+  panel,
   pickRows,
   rail,
   recipesRegion,
@@ -397,16 +399,19 @@ test.describe('Explore (#181)', () => {
     )
   })
 
-  test('an ingredient result adds an extra', async ({ page }) => {
+  test('an ingredient result adds an extra, in Extra and in Ingredients (#182)', async ({
+    page
+  }) => {
     await typeQuery(page, 'banana')
     await explore(page).getByRole('button', { name: 'Add banana' }).click()
     await expect(chip(page, 'banana')).toHaveCount(1)
+    await expect(chip(page, 'banana', 'extra')).toHaveCount(1)
     await expect(
       explore(page).getByRole('button', { name: 'Banana, on your list' })
     ).toBeVisible()
   })
 
-  test('an ingredient already on the list scrolls to its chip and opens it', async ({
+  test('an ingredient already on the list adds an Extra source at 1, then scrolls to its chip and opens it (#182, answer 8)', async ({
     page
   }) => {
     await pickRows(page, DAHL)
@@ -415,12 +420,15 @@ test.describe('Explore (#181)', () => {
       .getByRole('button', { name: 'Butter, on your list' })
       .click()
     await expect(chip(page, 'butter')).toHaveCount(1)
-    const chevron = page.getByRole('button', { name: 'Butter details' })
-    await expect(chevron).toHaveAttribute('aria-expanded', 'true')
+    await expect(chip(page, 'butter', 'extra')).toContainText('1 g')
+    await expect(chevron(page, 'butter')).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    )
     await expect(chip(page, 'butter')).toBeInViewport()
-    await expect(
-      page.getByRole('group', { name: 'Butter details' })
-    ).toBeVisible()
+    const details = panel(page, 'Butter')
+    await expect(details).toBeVisible()
+    await expect(details.getByText('Total: 16 g')).toBeVisible()
   })
 
   test('ingredient results show their allergen tags', async ({ page }) => {

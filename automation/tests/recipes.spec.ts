@@ -1,5 +1,16 @@
 import { expect, test } from './fixtures'
-import { DAHL, explore, openExplore, pickRows, recipesRegion } from './page'
+import {
+  DAHL,
+  chevron,
+  chipToggle,
+  explore,
+  openExplore,
+  panel,
+  pickRows,
+  recipesRegion,
+  setBox,
+  sourceBox
+} from './page'
 
 /* #181 Recipes: every ingredient inline, no recipe page, no tags; allergens from ingredients. */
 
@@ -23,44 +34,68 @@ test.describe('recipes (#181)', () => {
     await page.goto('/')
   })
 
-  test('an expanded row lists all its ingredients as chips, not just the top 3', async ({
+  test('an expanded row lists all its ingredients as editable chips, not just the top 3 (#182)', async ({
     page
   }) => {
     await pickRows(page, DAHL)
     await recipesRegion(page)
       .getByRole('button', { name: `${DAHL} details` })
       .click()
-    const chips = recipesRegion(page).locator('[data-ingredient]')
+    const chips = page.locator('[data-scope="row-dahl"][data-chip]')
     await expect(chips).toHaveCount(DAHL_INGREDIENTS.length)
     expect(
       (
         await chips.evaluateAll((els) =>
-          els.map((el) => el.getAttribute('data-ingredient'))
+          els.map((el) => el.getAttribute('data-chip'))
         )
       ).sort()
     ).toEqual([...DAHL_INGREDIENTS].sort())
-    // read-only for now: no buttons on the chips
-    await expect(chips.getByRole('button')).toHaveCount(0)
+    // a tap crosses off; the chevron opens the recipe's box (#182, answer 27)
+    await chipToggle(page, 'tomato', 'row-dahl').click()
+    await expect(chipToggle(page, 'tomato')).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
+    await chevron(page, 'tomato', 'row-dahl').click()
+    await expect(
+      sourceBox(panel(page, 'Tomatoes', 'row-dahl'), DAHL)
+    ).toHaveValue('1')
   })
 
-  test('row chips scale with servings', async ({ page }) => {
+  test('row chips and edits scale with whole-number portions; Explore is fixed at 2 (#182, answers 30-32)', async ({
+    page
+  }) => {
+    await pickRows(page, DAHL)
+    await recipesRegion(page)
+      .getByRole('button', { name: `${DAHL} details` })
+      .click()
+    const lentils = chipToggle(page, 'red-lentils', 'row-dahl')
+    await expect(lentils).toContainText('150 g')
+    await chevron(page, 'butter', 'row-dahl').click()
+    await setBox(sourceBox(panel(page, 'Butter', 'row-dahl'), DAHL), '30')
+    await expect(
+      recipesRegion(page).getByText('Butter 15 g → 30 g')
+    ).toBeVisible()
+    const portions = recipesRegion(page).getByRole('textbox', {
+      name: 'Portions'
+    })
+    await expect(portions).toHaveValue('2')
+    await setBox(portions, '4')
+    await expect(lentils).toContainText('300 g')
+    await expect(
+      recipesRegion(page).getByText('Butter 30 g → 60 g')
+    ).toBeVisible()
+    await expect(recipesRegion(page).getByText('Portions 2 → 4')).toBeVisible()
+    await expect(chipToggle(page, 'red-lentils')).toContainText('300 g')
     await openExplore(page)
     await explore(page)
       .getByRole('button', { name: `See recipe: ${DAHL}` })
       .click()
-    const chips = explore(page).locator('[data-ingredient]')
-    const serves = (n: string) =>
-      explore(page)
-        .locator('.segmented label')
-        .filter({ hasText: new RegExp(`^${n}$`) })
-        .click()
-    const amounts = () => chips.allTextContents()
-    await serves('1')
-    const one = await amounts()
-    await serves('3')
-    await expect.poll(amounts).not.toEqual(one)
-    await serves('1')
-    await expect.poll(amounts).toEqual(one)
+    const original = explore(page).locator('[data-ingredient="red-lentils"]')
+    await expect(original).toContainText('150 g')
+    await expect(
+      explore(page).getByRole('textbox', { name: 'Portions' })
+    ).toHaveCount(0)
   })
 
   test('the recipe page is gone: /recipe/... is Not Found', async ({

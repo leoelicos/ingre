@@ -1,15 +1,15 @@
 import { expect, newAccount, signUp, test } from './fixtures'
 import { DAHL, explore, exploreRow, openExplore } from './page'
 
-test.describe('saved (#181: a filter on Explore)', () => {
-  test('save from the inline row; the Saved filter narrows Explore to saved recipes', async ({
+test.describe('saved (#182, F4: server hearts; Saved is an Explore filter)', () => {
+  test('save from the inline row; the heart comes from the server after a reload; the Saved filter narrows Explore', async ({
     page
   }) => {
     await signUp(page, newAccount())
     await openExplore(page)
-    await explore(page)
-      .getByRole('button', { name: `See recipe: ${DAHL}` })
-      .click()
+    const see = () =>
+      explore(page).getByRole('button', { name: `See recipe: ${DAHL}` })
+    await see().click()
     await explore(page)
       .getByRole('button', { name: `Save ${DAHL}` })
       .click()
@@ -17,8 +17,25 @@ test.describe('saved (#181: a filter on Explore)', () => {
       explore(page).getByRole('button', { name: `Unsave ${DAHL}` })
     ).toHaveAttribute('aria-pressed', 'true')
 
+    // the heart is on the server, not just this page
+    await page.evaluate(() => {
+      for (const key of Object.keys(localStorage))
+        if (!/token/i.test(key)) localStorage.removeItem(key)
+    })
+    await page.reload()
+    await openExplore(page)
+    await see().click()
+    await expect(
+      explore(page).getByRole('button', { name: `Unsave ${DAHL}` })
+    ).toHaveAttribute('aria-pressed', 'true')
+
+    await explore(page)
+      .getByRole('toolbar', { name: 'Explore actions' })
+      .getByRole('button', { name: /^Filter/ })
+      .click()
+    const filter = explore(page).getByRole('group', { name: 'Filter Explore' })
     const rows = explore(page).getByRole('button', { name: /^See recipe: / })
-    const saved = explore(page).getByRole('switch', { name: 'Saved' })
+    const saved = filter.getByRole('switch', { name: 'Saved' })
     const toggle = async () => {
       await saved.focus()
       await page.keyboard.press('Space')
