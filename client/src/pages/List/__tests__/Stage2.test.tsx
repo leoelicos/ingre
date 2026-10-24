@@ -442,6 +442,24 @@ describe('Feature: Recipe copies (#182)', () => {
     ).toBeNull()
   })
 
+  it('Scenario: Allergens follow the customised ingredients; Explore keeps the original', async () => {
+    const user = userEvent.setup()
+    pick('dahl')
+    renderList()
+    const row = await openRow(user, 'Red lentil dahl')
+    expect(row.getByText('Contains: milk')).toBeInTheDocument()
+    await user.click(chevronOf('butter', 'row-dahl'))
+    await setBox(user, box('Butter details', /^Red lentil dahl, /), '0')
+    await answer(user, 'Remove butter from Red lentil dahl?', 'Yes')
+    expect(row.queryByText('Contains: milk')).toBeNull()
+    expect(row.getByText('Butter removed')).toBeInTheDocument()
+    act(() => searchBox().focus())
+    await user.click(
+      explore().getByRole('button', { name: 'See recipe: Red lentil dahl' })
+    )
+    expect(explore().getByText('Contains: milk')).toBeInTheDocument()
+  })
+
   it('Scenario: Unpicking removes the copy; picking again starts from the original', async () => {
     const user = userEvent.setup()
     pick('dahl')

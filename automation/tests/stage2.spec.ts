@@ -7,6 +7,7 @@ import {
   chevron,
   chip,
   chipToggle,
+  explore,
   exploreRow,
   extraRegion,
   ingredientsRegion,
@@ -46,16 +47,16 @@ const choose = async (
   option: string
 ) => {
   const input = filter.getByRole('combobox', { name: picker })
-  // retried: the panel is still opening when the first keys arrive
+  // retried: the panel is still opening when the first keys arrive, and on a phone
+  // the list can still be moving when it is first tapped
   await expect(async () => {
     await input.click()
     await input.fill('')
     await input.pressSequentially(option)
     const shown = page.getByRole('option', { name: option, exact: true })
     if (!(await shown.isVisible())) await input.press('ArrowDown')
-    await expect(shown).toBeVisible({ timeout: 1000 })
+    await shown.click({ timeout: 2000 })
   }).toPass()
-  await page.getByRole('option', { name: option, exact: true }).click()
   await page.keyboard.press('Escape')
 }
 /** Closes Explore however this width shows it, so it can't take focus from the filter. */
@@ -112,7 +113,7 @@ test.describe('balance-sheet ingredients (#182)', () => {
     await expect(chipToggle(page, 'butter')).toHaveAccessibleName(/in 1 recipe/)
   })
 
-  test('removed from every recipe, a chip greys at 0, cannot be crossed off, and a number restores it (answers 16-19)', async ({
+  test('removed from every recipe, a chip greys at 0, cannot be crossed off, stays after Sort and a reload, and a number restores it (answers 16-19)', async ({
     page
   }) => {
     await pickRows(page, DAHL)
@@ -126,6 +127,13 @@ test.describe('balance-sheet ingredients (#182)', () => {
     )
     await expect(chipToggle(page, 'red-lentils')).toBeDisabled()
     await expect(chipToggle(page, 'red-lentils')).toContainText('0')
+    await page.getByRole('button', { name: 'Sort', exact: true }).click()
+    await page.reload()
+    await expect(chip(page, 'red-lentils')).toHaveAttribute(
+      'data-greyed',
+      'true'
+    )
+    await chevron(page, 'red-lentils').click()
     await setBox(sourceBox(lentils, DAHL), '150')
     await expect(chip(page, 'red-lentils')).toHaveAttribute(
       'data-greyed',
@@ -329,6 +337,24 @@ test.describe('recipe copies (#182)', () => {
     )
   })
 
+  test('allergens follow the customised ingredients; Explore keeps the original (answer 29)', async ({
+    page
+  }) => {
+    await pickRows(page, DAHL)
+    await openRow(page, DAHL)
+    await expect(recipesRegion(page).getByText('Contains: milk')).toBeVisible()
+    await chevron(page, 'butter', 'row-dahl').click()
+    await setBox(sourceBox(panel(page, 'Butter', 'row-dahl'), DAHL), '0')
+    await answer(page, `Remove butter from ${DAHL}?`, 'Yes')
+    await expect(recipesRegion(page).getByText('Butter removed')).toBeVisible()
+    await expect(recipesRegion(page).getByText('Contains: milk')).toHaveCount(0)
+    await openExplore(page)
+    await explore(page)
+      .getByRole('button', { name: `See recipe: ${DAHL}` })
+      .click()
+    await expect(explore(page).getByText('Contains: milk')).toBeVisible()
+  })
+
   test('signed in, a copy saves with its customisations (answers 47-48)', async ({
     page
   }) => {
@@ -364,6 +390,8 @@ test.describe('filters (#182)', () => {
     await setBox(sourceBox(panel(page, 'Butter'), DAHL), '30')
     await openFilter(page, 'Ingredients')
     const filter = page.getByRole('group', { name: 'Filter ingredients' })
+    // answer 44: no allergen filter
+    await expect(filter.getByText(/allergen/i)).toHaveCount(0)
     await tick(filter, 'Customised')
     await expect(
       toolbar(page, 'Ingredients actions').getByRole('button', {
