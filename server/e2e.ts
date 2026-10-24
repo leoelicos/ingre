@@ -1,6 +1,7 @@
 /*
  * npm run start:e2e (#175): the normal server on a fresh in-memory MongoDB, for the
  * Playwright suites in ../automation. Every start is an empty database.
+ * Stripe is pointed elsewhere only through env (STRIPE_API_HOST/_PORT/_PROTOCOL/_KEY).
  */
 import { MongoMemoryServer } from 'mongodb-memory-server'
 

@@ -13,7 +13,9 @@ import {
   Routes,
   useLocation
 } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import { Header } from './components/Header'
+import { PageMain, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
 import { Signup } from './pages/Admin/Signup'
@@ -80,6 +82,10 @@ export const WorkspaceRedirect: FC = () => {
   )
 }
 
+/** Vercel Web Analytics (#177), cookie-free: only in the production build, so dev, tests and e2e make no outside request. */
+export const SiteAnalytics: FC<{ mode: string }> = ({ mode }) =>
+  mode === 'production' ? <Analytics /> : null
+
 export const Ingre: FC = () => {
   changeTitle('Shopping list')
   return (
@@ -88,6 +94,7 @@ export const Ingre: FC = () => {
         <AuthProvider>
           <StoreProvider>
             <ExploreProvider>
+              <SkipLink />
               <Header />
               <Routes>
                 <Route
@@ -109,25 +116,46 @@ export const Ingre: FC = () => {
                 {/* admin */}
                 <Route
                   path="/login"
-                  element={<Login />}
+                  element={
+                    <PageMain>
+                      <Login />
+                    </PageMain>
+                  }
                 />
                 <Route
                   path="/signup"
-                  element={<Signup />}
+                  element={
+                    <PageMain>
+                      <Signup />
+                    </PageMain>
+                  }
                 />
                 <Route
                   path="/upgrade"
-                  element={<Upgrade />}
+                  element={
+                    <PageMain>
+                      <Upgrade />
+                    </PageMain>
+                  }
                 />
                 <Route
                   path="/success"
-                  element={<Success />}
+                  element={
+                    <PageMain>
+                      <Success />
+                    </PageMain>
+                  }
                 />
                 <Route
                   path="*"
-                  element={<NoMatch />}
+                  element={
+                    <PageMain>
+                      <NoMatch />
+                    </PageMain>
+                  }
                 />
               </Routes>
+              <SiteAnalytics mode={APP_MODE} />
             </ExploreProvider>
           </StoreProvider>
         </AuthProvider>

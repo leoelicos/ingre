@@ -1,25 +1,29 @@
 import { expect, test as base, type Page } from '@playwright/test'
+import { urls } from './env'
+
+const STRIPE_JS = /^https:\/\/js\.stripe\.com\//
 
 const isLocal = (url: string): boolean =>
   /^(https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/|data:|blob:)/.test(url)
 
-/*
- * Outside requests main still makes until #176 (self-hosted fonts) and the Upgrade
- * page's Stripe.js land; they are blocked, but not counted as failures.
+/**
+ * Every test: Stripe.js comes from WireMock, and any other request that leaves
+ * localhost fails the test (fonts are self-hosted, #176; no analytics in dev, #177).
  */
-const KNOWN_OUTSIDE =
-  /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|js\.stripe\.com)\//
-
-/** Every test: any other request that leaves localhost is blocked and fails the test. */
 export const test = base.extend<{ outsideRequests: string[] }>({
   outsideRequests: [
     async ({ context }, use) => {
       const outside: string[] = []
+      await context.route(STRIPE_JS, async (route) => {
+        const response = await route.fetch({
+          url: `${urls.wiremock}/stripe-js/v3`
+        })
+        await route.fulfill({ response })
+      })
       await context.route(
-        (url) => !isLocal(url.href),
+        (url) => !isLocal(url.href) && !STRIPE_JS.test(url.href),
         async (route) => {
-          const url = route.request().url()
-          if (!KNOWN_OUTSIDE.test(url)) outside.push(url)
+          outside.push(route.request().url())
           await route.abort()
         }
       )

@@ -1,0 +1,18 @@
+{
+  "name": "Stripe: create price (checkout.ts step 2)",
+  "request": {
+    "method": "POST",
+    "urlPath": "/v1/prices"
+  },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "price_e2e",
+      "object": "price",
+      "currency": "usd",
+      "unit_amount": 500,
+      "livemode": false
+    }
+  }
+}

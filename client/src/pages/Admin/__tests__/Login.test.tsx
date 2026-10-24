@@ -1,25 +1,13 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { screen } from '@testing-library/react'
+import { renderWithProviders } from '../../../test/providers'
 import { Login } from '../Login'
 
-jest.mock('../../../hooks/useAuth', () => ({
-  useAuth: () => ({ login: jest.fn(), loginError: null, loginLoading: false })
-}))
-
-jest.mock('../../../utils/auth/AuthContext', () => ({
-  useAuthContext: () => [{ loggedIn: false }, jest.fn()]
-}))
-
-jest.mock('../../../utils/changeTitle', () => ({ changeTitle: jest.fn() }))
-
 describe('Login', () => {
-  it('renders login form', () => {
-    render(
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    )
+  it('renders the login form and titles the page', () => {
+    localStorage.clear()
+    renderWithProviders(<Login />, { mocks: [], path: '/login', routes: {} })
     expect(screen.getByRole('heading', { name: /log in/i })).toBeInTheDocument()
+    expect(document.title).toMatch(/log in/i)
   })
 })

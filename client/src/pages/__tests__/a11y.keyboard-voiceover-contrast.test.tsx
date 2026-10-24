@@ -154,8 +154,7 @@ describe('High contrast / focus visibility', () => {
   })
 
   it('Focus-visible styles exist for primary buttons (outline via tokens)', () => {
-    // Covered by CSS: .btn-primary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-    //. This asserts the class contract.
+    // Login's submit is a PrimaryButton (#170): the shared focus-ring on focus-visible.
     renderAt(<Login />, '/login')
     const submit = screen.getByRole('button', { name: /log in/i })
     submit.focus()

@@ -1,0 +1,19 @@
+{
+  "name": "Stripe: create checkout session (checkout.ts step 3); url is the stand-in hosted checkout",
+  "request": {
+    "method": "POST",
+    "urlPath": "/v1/checkout/sessions"
+  },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": {
+      "id": "cs_test_e2e",
+      "object": "checkout.session",
+      "mode": "payment",
+      "payment_status": "unpaid",
+      "livemode": false,
+      "url": "{{request.baseUrl}}/c/pay/cs_test_e2e"
+    }
+  }
+}

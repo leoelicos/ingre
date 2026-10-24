@@ -6,6 +6,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuthContext } from '../../../utils/auth/AuthContext'
 import { ExploreProvider } from '../../../utils/explore/ExploreContext'
 import { Header } from '../../Header'
+import { logIn } from '../../../test/providers'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { ACCOUNT_LABEL, AccountMenu } from '../AccountMenu'
 import { SAVED_PATH, accountItems, actionsFor } from '../accountItems'
@@ -104,7 +105,7 @@ describe('AccountMenu (#164)', () => {
 
   it('Saved opens Pick with the Saved filter; Log out signs out', async () => {
     const user = userEvent.setup()
-    localStorage.setItem('id_token', 'token')
+    logIn(false)
     renderMenu(true)
     await user.click(trigger())
     await user.click(screen.getByRole('menuitem', { name: 'Saved' }))

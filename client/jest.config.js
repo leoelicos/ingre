@@ -27,7 +27,10 @@ module.exports = {
   moduleNameMapper: {
     '\\.(css|scss|sass)$': '<rootDir>/src/test/styleMock.js',
     '^react-router/dom$':
-      '<rootDir>/node_modules/react-router/dist/development/dom-export.js'
+      '<rootDir>/node_modules/react-router/dist/development/dom-export.js',
+    /* jsdom picks the package's ESM "browser" build; Jest runs CommonJS (#177) */
+    '^@vercel/analytics/react$':
+      '<rootDir>/node_modules/@vercel/analytics/dist/react/index.js'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   coveragePathIgnorePatterns: ['/node_modules/', 'src/setupTests.ts'],

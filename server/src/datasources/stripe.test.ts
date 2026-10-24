@@ -1,213 +1,178 @@
+import { createServer, type IncomingMessage, type Server } from 'http'
 import Stripe from 'stripe'
-import { StripeApi, getStripe } from './stripe'
+import { StripeApi, getStripe, stripeConnection, stripeKey } from './stripe'
 
-const mockProduct = {
-  id: 'prod_123',
-  object: 'product',
-  active: true,
-  attributes: [],
-  created: 1234567890,
-  description: 'A product for testing',
-  images: ['https://example.com/image.png'],
-  livemode: false,
-  metadata: {},
-  name: 'Test Product',
-  package_dimensions: null,
-  shippable: null,
-  statement_descriptor: null,
-  type: 'service',
-  unit_label: null,
-  updated: 1234567890,
-  url: null,
-  caption: '',
-  tax_code: null,
-  lastResponse: {
-    headers: {},
-    requestId: '',
-    statusCode: 200,
-    apiVersion: '',
-    idempotencyKey: '',
-    stripeAccount: ''
+/* No module mocks: the real stripe-node client talks to a local stand-in for api.stripe.com. */
+
+interface Call {
+  path: string
+  body: Record<string, string>
+}
+
+const RESPONSES: Record<string, object> = {
+  '/v1/products': { id: 'prod_123', object: 'product' },
+  '/v1/prices': { id: 'price_123', object: 'price' },
+  '/v1/checkout/sessions': {
+    id: 'cs_test_123',
+    object: 'checkout.session',
+    url: 'https://checkout.example/pay/cs_test_123'
   }
 }
 
-const mockPrice = {
-  id: 'price_123',
-  object: 'price',
-  active: true,
-  billing_scheme: 'per_unit',
-  created: Math.floor(Date.now() / 1000),
-  currency: 'usd',
-  currency_options: {
-    usd: {
-      custom_unit_amount: null,
-      tax_behavior: 'exclusive',
-      unit_amount: 2000,
-      unit_amount_decimal: '2000'
-    }
-  },
-  custom_unit_amount: null,
-  lastResponse: {
-    headers: { headerKey: 'headerValue' },
-    requestId: '1',
-    statusCode: 2,
-    apiVersion: '3',
-    idempotencyKey: '4',
-    stripeAccount: '5'
-  },
-  livemode: false,
-  lookup_key: 'standard_price',
-  metadata: {},
-  nickname: 'Standard Plan',
-  product: 'prod_123',
-  recurring: {
-    aggregate_usage: null,
-    interval: 'month',
-    interval_count: 1,
-    trial_period_days: null,
-    usage_type: 'licensed'
-  },
-  tax_behavior: 'exclusive',
-  tiers_mode: null,
-  tiers: [],
-  transform_quantity: null,
-  type: 'recurring',
-  unit_amount: 2000,
-  unit_amount_decimal: '2000'
-}
+const calls: Call[] = []
+const failing = new Set<string>()
 
-const mockSession: Stripe.Checkout.Session = {
-  id: 'cs_test_123',
-  object: 'checkout.session',
-  after_expiration: null,
-  allow_promotion_codes: null,
-  amount_subtotal: 5000,
-  amount_total: 5000,
-  automatic_tax: { enabled: false, status: null },
-  billing_address_collection: 'auto',
-  cancel_url: 'https://example.com/cancel',
-  client_reference_id: 'client_123',
-  consent: null,
-  consent_collection: null,
-  currency: 'usd',
-  customer: 'cus_123',
-  customer_creation: 'always',
-  customer_details: null,
-  customer_email: 'test@example.com',
-  expires_at: Math.floor(Date.now() / 1000) + 3600,
-  livemode: false,
-  locale: null,
-  metadata: {},
-  mode: 'payment',
-  payment_intent: 'pi_123',
-  payment_link: null,
-  payment_method_options: null,
-  payment_method_types: ['card'],
-  payment_status: 'unpaid',
-  phone_number_collection: { enabled: false },
-  recovered_from: null,
-  setup_intent: null,
-  shipping: null,
-  shipping_address_collection: null,
-  shipping_options: [],
-  shipping_rate: null,
-  status: 'open',
-  submit_type: null,
-  subscription: null,
-  success_url: 'https://example.com/success',
-  total_details: { amount_discount: 0, amount_shipping: 0, amount_tax: 0 },
-  url: 'https://checkout.stripe.com/pay/cs_test_123'
-}
+const readBody = (req: IncomingMessage): Promise<string> =>
+  new Promise((resolve) => {
+    let body = ''
+    req.on('data', (chunk: Buffer) => {
+      body += chunk.toString()
+    })
+    req.on('end', () => resolve(body))
+  })
 
-const mockRootUrl = 'https://www.example.com'
-
-const mockProductsCreate = jest.fn().mockResolvedValue(mockProduct)
-const mockSessionsCreate = jest.fn().mockResolvedValue(mockSession)
-const mockPricesCreate = jest.fn().mockResolvedValue(mockPrice)
-
-let mockStripeInstance = {
-  products: { create: (e: unknown) => mockProductsCreate(e) },
-  checkout: { sessions: { create: (e: unknown) => mockSessionsCreate(e) } },
-  prices: { create: (e: unknown) => mockPricesCreate(e) }
-}
-
-jest.mock('stripe', () => {
-  return jest.fn().mockImplementation(() => mockStripeInstance)
+const fakeStripe: Server = createServer(async (req, res) => {
+  const path = req.url ?? ''
+  const body = Object.fromEntries(new URLSearchParams(await readBody(req)))
+  calls.push({ path, body })
+  const ok = !failing.has(path) && path in RESPONSES
+  res.writeHead(ok ? 200 : 500, { 'Content-Type': 'application/json' })
+  res.end(
+    JSON.stringify(
+      ok ? RESPONSES[path] : { error: { type: 'api_error', message: 'down' } }
+    )
+  )
 })
 
-describe('StripeApi class', () => {
-  const mockProps = {
-    productName: mockProduct.name,
-    productDescription: mockProduct.description ?? '',
-    productImages: mockProduct.images,
-    productCost: mockPrice.unit_amount ?? 0,
-    productCurrency: mockPrice.currency,
-    rootEndpoint: mockRootUrl
+const portOf = (server: Server): number => {
+  const address = server.address()
+  if (address === null || typeof address === 'string') {
+    throw new Error('fake Stripe is not listening')
   }
+  return address.port
+}
 
+const clientFor = (server: Server): Stripe =>
+  new Stripe('sk_test_local', {
+    apiVersion: '2020-08-27',
+    host: '127.0.0.1',
+    port: portOf(server),
+    protocol: 'http'
+  })
+
+const props = {
+  productName: 'ingré PRO',
+  productDescription: 'Access instructions',
+  productImages: ['https://example.com/image.png'],
+  productCost: 500,
+  productCurrency: 'usd',
+  rootEndpoint: 'https://www.example.com'
+}
+
+describe('Stripe configuration', () => {
+  it('uses api.stripe.com and the sample test key when nothing is set', () => {
+    expect(stripeConnection({})).toEqual({})
+    expect(stripeConnection({ STRIPE_API_HOST: '' })).toEqual({})
+    expect(stripeKey({})).toMatch(/^sk_test_4/)
+  })
+
+  it('reads a stand-in host, port and protocol from the environment', () => {
+    expect(
+      stripeConnection({
+        STRIPE_API_HOST: 'localhost',
+        STRIPE_API_PORT: '4312',
+        STRIPE_API_PROTOCOL: 'http'
+      })
+    ).toEqual({ host: 'localhost', port: '4312', protocol: 'http' })
+    expect(stripeConnection({ STRIPE_API_HOST: 'stripe.local' })).toEqual({
+      host: 'stripe.local',
+      port: 443,
+      protocol: 'https'
+    })
+    expect(
+      stripeKey({
+        STRIPE_API_HOST: 'localhost',
+        STRIPE_API_KEY: 'sk_test_dummy'
+      })
+    ).toBe('sk_test_dummy')
+    // a key alone never replaces the sample key: only with a stand-in host
+    expect(stripeKey({ STRIPE_API_KEY: 'sk_test_dummy' })).toMatch(/^sk_test_4/)
+  })
+})
+
+describe('StripeApi', () => {
   let stripeApi: StripeApi
+
+  beforeAll(async () => {
+    await new Promise<void>((resolve) =>
+      fakeStripe.listen(0, '127.0.0.1', resolve)
+    )
+  })
+
+  afterAll(async () => {
+    await new Promise((resolve) => fakeStripe.close(resolve))
+  })
+
   beforeEach(() => {
-    jest.clearAllMocks()
-
-    stripeApi = new StripeApi()
+    calls.length = 0
+    failing.clear()
+    stripeApi = new StripeApi(clientFor(fakeStripe))
   })
 
-  it('getStripe should return stripe', async () => {
-    const stripe = getStripe()
-    expect(stripe).toBe(mockStripeInstance)
+  it('getStripe returns a real Stripe client, and is the default', () => {
+    expect(getStripe()).toBeInstanceOf(Stripe)
+    expect(new StripeApi()).toBeInstanceOf(StripeApi)
   })
 
-  it('should complete the payment process by creating a product, price, and session', async () => {
-    const result = await stripeApi.stripePay(mockProps)
-    expect(result).toEqual(mockSession)
-    expect(mockProductsCreate).toHaveBeenCalledWith({
-      description: mockProduct.description,
-      images: mockProduct.images,
-      name: mockProduct.name
+  it('reaches the env-configured Stripe host with the env key (e2e WireMock)', async () => {
+    const api = new StripeApi(
+      getStripe({
+        STRIPE_API_KEY: 'sk_test_env',
+        STRIPE_API_HOST: '127.0.0.1',
+        STRIPE_API_PORT: String(portOf(fakeStripe)),
+        STRIPE_API_PROTOCOL: 'http'
+      })
+    )
+    await api.stripePay(props)
+    expect(calls).toHaveLength(3)
+  })
+
+  it('creates a product, a price, then a checkout session', async () => {
+    const session = await stripeApi.stripePay(props)
+    expect(session.id).toBe('cs_test_123')
+    expect(calls.map((c) => c.path)).toEqual([
+      '/v1/products',
+      '/v1/prices',
+      '/v1/checkout/sessions'
+    ])
+    expect(calls[0]?.body).toEqual({
+      name: props.productName,
+      description: props.productDescription,
+      'images[0]': props.productImages[0]
     })
-    expect(mockPricesCreate).toHaveBeenCalledWith({
-      currency: mockPrice.currency,
-      product: mockProduct.id,
-      unit_amount: mockPrice.unit_amount
+    expect(calls[1]?.body).toEqual({
+      product: 'prod_123',
+      unit_amount: '500',
+      currency: 'usd'
     })
-    expect(mockSessionsCreate).toHaveBeenCalledWith({
-      cancel_url: `${mockRootUrl}/`,
-      line_items: [
-        {
-          price: mockPrice.id,
-          quantity: 1
-        }
-      ],
+    expect(calls[2]?.body).toEqual({
+      'payment_method_types[0]': 'card',
+      'line_items[0][price]': 'price_123',
+      'line_items[0][quantity]': '1',
       mode: 'payment',
-      payment_method_types: ['card'],
-      success_url: mockRootUrl + '/success?session_id={CHECKOUT_SESSION_ID}'
+      success_url: `${props.rootEndpoint}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${props.rootEndpoint}/upgrade?checkout=cancelled`
     })
   })
 
-  it('should throw if createProduct throws', async () => {
-    mockProductsCreate.mockRejectedValueOnce(null)
-    try {
-      await stripeApi.stripePay(mockProps)
-    } catch (error) {
-      expect(error).toStrictEqual(new Error('could not process stripe payment'))
+  it.each(['/v1/products', '/v1/prices', '/v1/checkout/sessions'])(
+    'fails with one clear error when %s fails',
+    async (path) => {
+      failing.add(path)
+      await expect(stripeApi.stripePay(props)).rejects.toStrictEqual(
+        new Error('could not process stripe payment')
+      )
+      expect(calls.at(-1)?.path).toBe(path)
     }
-  })
-
-  it('should throw if createPrices throws', async () => {
-    mockPricesCreate.mockRejectedValueOnce(null)
-    try {
-      await stripeApi.stripePay(mockProps)
-    } catch (error) {
-      expect(error).toStrictEqual(new Error('could not process stripe payment'))
-    }
-  })
-
-  it('should throw if createSession throws', async () => {
-    mockSessionsCreate.mockRejectedValueOnce(null)
-    try {
-      await stripeApi.stripePay(mockProps)
-    } catch (error) {
-      expect(error).toStrictEqual(new Error('could not process stripe payment'))
-    }
-  })
+  )
 })

@@ -20,6 +20,7 @@ import {
 import { LayoutToggle } from './LayoutToggle'
 import { Recipes } from './Recipes'
 import { ScrollToTop } from './ScrollToTop'
+import { PageMain } from '../../components/SkipLink'
 
 /** "?saved=1" from the Saved account link or old Saved links: Explore's Saved filter (#181). */
 export const savedParam = (params: URLSearchParams): boolean =>
@@ -68,7 +69,7 @@ export const ListPage: FC = () => {
   }
   return (
     <div className="mx-auto flex w-full max-w-layout gap-6 px-gutter">
-      <main className="flex min-w-0 flex-1 flex-col gap-6 pb-24 pt-4">
+      <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-24 pt-4">
         <h1 className="sr-only">Shopping list</h1>
         {!wide && exploreOpen && <Explore {...exploreProps} />}
         <LayoutToggle
@@ -106,7 +107,7 @@ export const ListPage: FC = () => {
           watchId={INGREDIENTS_ID}
           headingId={INGREDIENTS_HEADING_ID}
         />
-      </main>
+      </PageMain>
       {wide && (
         <ExploreDrawer
           open={exploreOpen}

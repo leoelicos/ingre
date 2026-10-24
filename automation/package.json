@@ -2,17 +2,19 @@
   "name": "automation",
   "version": "1.0.0",
   "private": true,
-  "description": "End-to-end Playwright tests: real client and server, in-memory MongoDB (#175, #179)",
+  "description": "End-to-end Playwright tests: real client and server, in-memory MongoDB, WireMock for Stripe (#175)",
   "scripts": {
     "pretest": "node scripts/prepare.mjs",
     "test": "npm run check && playwright test",
     "check": "prettier --check \"**/*.{ts,mjs,json,md}\" && tsc --noEmit",
+    "wiremock": "wiremock --root-dir wiremock --global-response-templating --disable-banner",
     "report": "playwright show-report"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
     "@types/node": "^22.20.5",
     "prettier": "^2.8.8",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "wiremock": "^3.13.2"
   }
 }

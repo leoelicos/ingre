@@ -1,6 +1,13 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
-import { authHeaders, graphqlEndpoint, Ingre, withAuthHeaders } from '../App'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import {
+  authHeaders,
+  graphqlEndpoint,
+  Ingre,
+  SiteAnalytics,
+  withAuthHeaders
+} from '../App'
 
 /** Renders the whole app at a path, as a browser would open it. */
 const openAt = (path: string) => {
@@ -88,5 +95,52 @@ describe('App', () => {
   it('uses an empty authorization header without a token', () => {
     expect(authHeaders(undefined)).toEqual({ headers: { authorization: '' } })
     expect(withAuthHeaders({}, {}).headers['authorization']).toBe('')
+  })
+})
+
+describe('App skip link (#131)', () => {
+  it('the first Tab on a page lands on "Skip to content", which targets the main landmark', async () => {
+    const user = userEvent.setup()
+    window.history.pushState({}, '', '/login')
+    render(<Ingre />)
+    await user.tab()
+    const link = screen.getByRole('link', { name: 'Skip to content' })
+    expect(link).toHaveFocus()
+    await user.click(link)
+    expect(screen.getByRole('main')).toHaveFocus()
+    expect(screen.getByRole('main')).toHaveAttribute('id', 'main')
+  })
+
+  it('on the list page, Skip to content lands on the list column, beside the Explore drawer (#131, #181)', async () => {
+    const user = userEvent.setup()
+    openAt('/')
+    await user.tab()
+    await user.keyboard('{Enter}')
+    const main = screen.getByRole('main')
+    expect(main).toHaveFocus()
+    expect(screen.getAllByRole('main')).toHaveLength(1)
+    expect(main).toContainElement(
+      screen.getByRole('heading', { level: 2, name: 'Ingredients' })
+    )
+  })
+})
+
+describe('SiteAnalytics (#177)', () => {
+  const insightsScripts = () =>
+    Array.from(document.querySelectorAll('script')).filter((s) =>
+      /insights|vercel-scripts/.test(s.src)
+    )
+
+  it('renders nothing outside the production build', () => {
+    const { container } = render(<SiteAnalytics mode="test" />)
+    expect(container).toBeEmptyDOMElement()
+    expect(insightsScripts()).toEqual([])
+  })
+
+  it('adds the Vercel Analytics script in the production build', async () => {
+    render(<SiteAnalytics mode="production" />)
+    await waitFor(() => {
+      expect(insightsScripts()).toHaveLength(1)
+    })
   })
 })
