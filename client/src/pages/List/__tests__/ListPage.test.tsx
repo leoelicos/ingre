@@ -135,7 +135,11 @@ describe('Scenario: Chip panel pushes content', () => {
       within(details)
         .getAllByRole('listitem')
         .map((li) => li.textContent)
-    ).toEqual(['Red lentil dahl', 'Potato, cauliflower and chickpea curry'])
+    ).toEqual([
+      // each recipe's box, then its unit (#182: never a bare number)
+      'Red lentil dahlonion',
+      'Potato, cauliflower and chickpea curryonion'
+    ])
     fireEvent.click(chevronOf('garlic'))
     expect(chevron).toHaveAttribute('aria-expanded', 'false')
     fireEvent.click(chevronOf('garlic'))
@@ -638,7 +642,7 @@ describe('Scenario: Accessibility', () => {
     renderList()
     fireEvent.click(toggleOf('onion'))
     expect(toggleOf('onion')).toHaveAccessibleName(
-      'Brown onion, 1, Fruit & Veg, in 2 recipes, crossed off'
+      'Brown onion, 1 onion, Fruit & Veg, in 2 recipes, crossed off'
     )
     expect(toggleOf('onion')).toHaveAttribute('aria-pressed', 'true')
     ;[

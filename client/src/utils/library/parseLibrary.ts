@@ -2,6 +2,7 @@
 import type {
   Amount,
   BaseUnit,
+  CountUnit,
   LibraryIngredient,
   LibraryRecipe,
   LibraryRecipeIngredient,
@@ -116,6 +117,14 @@ const parseMeasureGrams = (v: unknown, path: string): Record<string, number> =>
     {}
   )
 
+const parseCountUnit = (v: unknown, path: string): CountUnit => {
+  const r = rec(v, path)
+  return {
+    one: str(r['one'], `${path}.one`),
+    other: str(r['other'], `${path}.other`)
+  }
+}
+
 export const parseIngredient = (
   v: unknown,
   path = 'ingredient'
@@ -148,7 +157,13 @@ export const parseIngredient = (
         }),
     ...(r['badgeCode'] === undefined
       ? {}
-      : { badgeCode: parseBadgeCode(r['badgeCode'], `${path}.badgeCode`) })
+      : { badgeCode: parseBadgeCode(r['badgeCode'], `${path}.badgeCode`) }),
+    ...(r['countUnit'] === undefined
+      ? {}
+      : { countUnit: parseCountUnit(r['countUnit'], `${path}.countUnit`) }),
+    ...(r['partMeasure'] === undefined
+      ? {}
+      : { partMeasure: str(r['partMeasure'], `${path}.partMeasure`) })
   }
 }
 

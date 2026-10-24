@@ -33,12 +33,14 @@ export const confirmYesId = (id: string, scope = INGREDIENTS_SCOPE): string =>
   `${scope}-${id}-yes`
 
 /** The chip's amount (#181, #182): its total, "1 kg" rather than packs. */
-export const chipAmount = (chip: Pick<Chip, 'total'>): string =>
-  formatAmount(chip.total)
+export const chipAmount = (chip: Pick<Chip, 'total' | 'item'>): string =>
+  formatAmount(chip.total, chip.item)
 
 /** The Extra amount, in the chip's unit. */
-export const extraAmount = (chip: Pick<Chip, 'extra' | 'unit'>): string =>
-  formatAmount({ amount: chip.extra ?? 0, unit: chip.unit })
+export const extraAmount = (
+  chip: Pick<Chip, 'extra' | 'unit' | 'item'>
+): string =>
+  formatAmount({ amount: chip.extra ?? 0, unit: chip.unit }, chip.item)
 
 /**
  * What VoiceOver reads for a chip (#179, #182): name, amount, category, where it is used, and

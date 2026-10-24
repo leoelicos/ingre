@@ -1,4 +1,5 @@
 import type { Amount, BaseUnit, LibraryIngredient } from '../../types/library'
+import { amountText, countWord, fraction } from './shoppingList'
 
 /** Recipe measures that map directly onto a base unit (Australian spoons/cups). */
 const MEASURE_TO_BASE: Readonly<Record<string, Amount>> = {
@@ -46,9 +47,49 @@ const round = (n: number) => Math.round(n * 100) / 100
 
 const BIG_UNIT: Readonly<Record<'g' | 'ml', string>> = { g: 'kg', ml: 'L' }
 
-/** "1.5", "250 g", "1 kg", "1.5 L". */
-export const formatAmount = ({ amount, unit }: Amount): string => {
-  if (unit === 'count') return `${round(amount)}`
+/** What a counted total needs: its unit word, and a part for totals that are not whole. */
+export type CountedItem = Pick<
+  LibraryIngredient,
+  'countUnit' | 'partMeasure' | 'approxGrams' | 'measureGrams'
+>
+
+/** A counted amount in parts: garlic 0.3 -> 3 cloves. */
+export interface Parts {
+  readonly quantity: number
+  readonly measure: string
+}
+
+/** The amount in the item's parts, or null when it has none. */
+export const partsOf = (
+  amount: number,
+  item: CountedItem | null
+): Parts | null => {
+  const measure = item?.partMeasure
+  const each = item?.approxGrams
+  const grams =
+    measure === undefined ? undefined : item?.measureGrams?.[measure]
+  return measure === undefined || each === undefined || grams === undefined
+    ? null
+    : { quantity: (amount * each) / grams, measure }
+}
+
+/**
+ * A counted total (#182): "2 heads", "1½ onions", "3 eggs"; items bought whole but used in
+ * parts read in parts until the total is whole: "3 cloves", "13 cloves", "1 head".
+ */
+export const countText = (amount: number, item: CountedItem | null): string => {
+  const parts = partsOf(amount, item)
+  return parts === null || Number.isInteger(round(amount))
+    ? `${fraction(amount)} ${countWord(amount, item)}`
+    : amountText(parts.quantity, parts.measure)
+}
+
+/** "3 eggs", "250 g", "1 kg", "1.5 L". */
+export const formatAmount = (
+  { amount, unit }: Amount,
+  item: CountedItem | null = null
+): string => {
+  if (unit === 'count') return countText(amount, item)
   return amount >= 1000
     ? `${round(amount / 1000)} ${BIG_UNIT[unit]}`
     : `${round(amount)} ${unit}`

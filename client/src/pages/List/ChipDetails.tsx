@@ -36,22 +36,20 @@ export const sourceMeasure = (
   chip: Pick<Chip, 'unit'>
 ): string => (source.kind === 'extra' ? unitMeasure(chip.unit) : source.measure)
 
-/** The unit after a box: "g", "tbsp", "cloves"; empty for whole items. */
-export const sourceUnit = (source: Source, chip: Pick<Chip, 'unit'>) =>
-  measureWord(source.quantity, sourceMeasure(source, chip))
+/** The unit after a box: "g", "tbsp", "cloves", "heads" (#182: never a bare number). */
+export const sourceUnit = (source: Source, chip: Pick<Chip, 'unit' | 'item'>) =>
+  measureWord(source.quantity, sourceMeasure(source, chip), chip.item)
 
 /** The box's visible label: the recipe's name, or "Extra". */
 export const sourceLabel = (source: Source): string =>
   source.kind === 'extra' ? 'Extra' : source.label
 
-/** "Butter chicken, butter (g)"; whole items read "(whole)". */
+/** "Butter chicken, butter (g)"; counted items read their unit: "(onions)". */
 export const sourceAriaLabel = (
   source: Source,
-  chip: Pick<Chip, 'name' | 'unit'>
+  chip: Pick<Chip, 'name' | 'unit' | 'item'>
 ): string =>
-  `${sourceLabel(source)}, ${chip.name} (${
-    sourceUnit(source, chip) || 'whole'
-  })`
+  `${sourceLabel(source)}, ${chip.name} (${sourceUnit(source, chip)})`
 
 /** "Remove butter from Butter chicken?" or "Remove butter from Extra?" */
 export const removeQuestion = (source: Source, name: string): string =>

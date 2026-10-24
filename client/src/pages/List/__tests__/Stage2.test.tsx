@@ -352,6 +352,53 @@ describe('Feature: Extra (#182)', () => {
   })
 })
 
+describe('Feature: Counted items have a buying unit (#182, owner decision 2)', () => {
+  it('Scenario: Counted items read in their own unit, singular or plural, never a bare number', async () => {
+    const user = userEvent.setup()
+    pick('dahl')
+    renderList()
+    expect(toggleOf('garlic')).toHaveAccessibleName(/^Garlic, 2 cloves, /)
+    expect(toggleOf('onion')).toHaveAccessibleName(/^Brown onion, ½ onion, /)
+    expect(toggleOf('tomato')).toHaveAccessibleName(/^Tomatoes, 1 tomato, /)
+    expect(toggleOf('ginger')).toHaveAccessibleName(/^Ginger, 10 g, /)
+    await user.click(chevronOf('garlic'))
+    expect(
+      box('Garlic details', 'Red lentil dahl, garlic (cloves)')
+    ).toHaveValue('2')
+    const plus = within(region('Extra')).getByRole('button', {
+      name: 'Add an ingredient'
+    })
+    await user.click(plus)
+    await user.click(screen.getByRole('tab', { name: 'Fruit & Veg' }))
+    await user.click(
+      screen.getByRole('button', { name: 'Garlic, on your list' })
+    )
+    expect(chip('garlic', 'extra')).toHaveTextContent('1 head')
+    expect(toggleOf('garlic')).toHaveAccessibleName(/^Garlic, 12 cloves, /)
+    const extraBox = () =>
+      scopedPanel('garlic', 'chip').getByRole('textbox', {
+        name: 'Extra, garlic (head)'
+      })
+    await setBox(user, extraBox(), '2')
+    expect(chip('garlic', 'extra')).toHaveTextContent('2 heads')
+    expect(
+      scopedPanel('garlic', 'chip').getByRole('textbox', {
+        name: 'Extra, garlic (heads)'
+      })
+    ).toHaveValue('2')
+  })
+
+  it('Scenario: A recipe row and its customisations show counted amounts with their unit', async () => {
+    const user = userEvent.setup()
+    pick('dahl')
+    renderList()
+    const row = await openRow(user, 'Red lentil dahl')
+    expect(row.getByText('2 cloves')).toBeInTheDocument()
+    expect(row.getByText('½ onion')).toBeInTheDocument()
+    expect(row.getByText('1 tomato')).toBeInTheDocument()
+  })
+})
+
 describe('Feature: Ingredients filter (#182)', () => {
   it('Scenario: Any ticked value in a group matches; every group must match; N hidden with Clear', async () => {
     const user = userEvent.setup()

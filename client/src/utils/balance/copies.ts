@@ -197,12 +197,17 @@ export const customisationsOf = (
 const bulletOf = (line: CopyLine): string => {
   const name = displayName(line)
   if (line.original === null)
-    return `Added ${line.name} ${amountText(line.quantity, line.measure)}`
+    return `Added ${line.name} ${amountText(
+      line.quantity,
+      line.measure,
+      line.item
+    )}`
   if (line.quantity === 0) return `${name} removed`
-  return `${name} ${amountText(line.original, line.measure)} → ${amountText(
-    line.quantity,
-    line.measure
-  )}`
+  return `${name} ${amountText(
+    line.original,
+    line.measure,
+    line.item
+  )} → ${amountText(line.quantity, line.measure, line.item)}`
 }
 
 const RANK = (line: CopyLine): number =>

@@ -34,6 +34,6 @@ describe('chip ids (#182)', () => {
   })
 
   it('shows 0 for a chip with no Extra amount', () => {
-    expect(extraAmount({ extra: null, unit: 'g' })).toBe('0 g')
+    expect(extraAmount({ extra: null, unit: 'g', item: null })).toBe('0 g')
   })
 })

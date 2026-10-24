@@ -1,4 +1,13 @@
-import { convert, formatAmount, itemUnit, toBase, unitMeasure } from '../units'
+import { itemById } from '../../../test/library'
+import {
+  convert,
+  countText,
+  formatAmount,
+  itemUnit,
+  partsOf,
+  toBase,
+  unitMeasure
+} from '../units'
 
 describe('toBase', () => {
   it.each([
@@ -43,7 +52,7 @@ describe('convert', () => {
 
 describe('formatAmount', () => {
   it('formats counts, small and large masses', () => {
-    expect(formatAmount({ amount: 1.456, unit: 'count' })).toBe('1.46')
+    expect(formatAmount({ amount: 1.456, unit: 'count' })).toBe('1.46 items')
     expect(formatAmount({ amount: 250, unit: 'g' })).toBe('250 g')
     expect(formatAmount({ amount: 1000, unit: 'g' })).toBe('1 kg')
     expect(formatAmount({ amount: 1500, unit: 'ml' })).toBe('1.5 L')
@@ -59,5 +68,46 @@ describe('item units (#182)', () => {
     expect(itemUnit(null)).toBe('count')
     expect(unitMeasure('count')).toBe('whole')
     expect(unitMeasure('g')).toBe('g')
+  })
+})
+
+describe('counted totals (owner decision 2, #182)', () => {
+  const garlic = itemById('garlic')
+  const eggs = itemById('egg')
+  const springOnion = itemById('spring-onion')
+
+  it('read in the item unit, singular up to 1', () => {
+    expect(countText(1, eggs)).toBe('1 egg')
+    expect(countText(12, eggs)).toBe('12 eggs')
+    expect(countText(0, eggs)).toBe('0 eggs')
+    expect(countText(1.5, itemById('onion'))).toBe('1½ onions')
+    expect(formatAmount({ amount: 2, unit: 'count' }, null)).toBe('2 items')
+  })
+
+  it('items used in parts read in parts until the total is whole', () => {
+    expect(countText(0.3, garlic)).toBe('3 cloves')
+    expect(countText(0.1, garlic)).toBe('1 clove')
+    expect(countText(1.3, garlic)).toBe('13 cloves')
+    expect(countText(1, garlic)).toBe('1 head')
+    expect(countText(2, garlic)).toBe('2 heads')
+    expect(countText(0.2, springOnion)).toBe('2 stalks')
+    expect(countText(1, springOnion)).toBe('1 bunch')
+  })
+
+  it('has no parts without a part measure, an item weight and a part weight', () => {
+    expect(partsOf(0.5, null)).toBeNull()
+    expect(partsOf(0.5, eggs)).toBeNull()
+    expect(partsOf(0.5, { partMeasure: 'clove', approxGrams: 60 })).toBeNull()
+    expect(
+      partsOf(0.5, { partMeasure: 'clove', measureGrams: { clove: 6 } })
+    ).toBeNull()
+    expect(
+      partsOf(0.5, {
+        partMeasure: 'clove',
+        approxGrams: 60,
+        measureGrams: { tbsp: 6 }
+      })
+    ).toBeNull()
+    expect(partsOf(0.5, garlic)).toEqual({ quantity: 5, measure: 'clove' })
   })
 })

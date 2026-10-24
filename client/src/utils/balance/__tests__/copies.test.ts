@@ -123,7 +123,7 @@ describe('Feature: Recipe copies and customisations (#182)', () => {
     copy = withPortions(copy, 4)
     const lines = copyLines(chicken, copy, catalogue)
     expect(customisationBullets(lines, copy)).toEqual([
-      'Added red chilli 2',
+      'Added red chilli 2 chillies',
       'Butter removed',
       'Thickened cream ½ cup → 1 cup',
       'Portions 2 → 4'

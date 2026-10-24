@@ -1,5 +1,6 @@
 /* Shared wording for amounts and names on the list (#182: no packs, real amounts only). */
 import { capitaliseFirst } from '../capitaliseFirst'
+import type { CountUnit, LibraryIngredient } from '../../types/library'
 import type { ShopSection } from './sections'
 
 /** Generic grouping: groups in `order`, then unknown keys alphabetically; item order kept. */
@@ -93,24 +94,52 @@ const DECIMAL_MEASURES: readonly string[] = ['g', 'ml', 'g tin', 'ml tin']
 /** Measures that take a plural (spoons never do). */
 const COUNTED_MEASURES: readonly string[] = ['cup', 'clove', 'stalk', 'bunch']
 
-/**
- * The unit word after a recipe amount (#182): "g", "tbsp", "cloves", "½ clove"; empty for
- * whole items, which are just a number. Up to 1 is singular.
- */
-export const measureWord = (quantity: number, measure: string): string => {
-  if (measure === 'whole') return ''
-  if (!COUNTED_MEASURES.includes(measure)) return measure
+/** What a counted item needs for its unit word. */
+export type CountItem = Pick<LibraryIngredient, 'countUnit'>
+
+/** The unit word of free text (#182): counted things are never a bare number. */
+export const GENERIC_COUNT_UNIT: CountUnit = { one: 'item', other: 'items' }
+
+/** A counted item's unit: its own ("head", "eggs"), else the generic one. */
+export const countUnitOf = (item: CountItem | null): CountUnit =>
+  item?.countUnit ?? GENERIC_COUNT_UNIT
+
+/** Up to 1 reads singular: "½ clove", "1 head", "2 heads". */
+const isSingular = (quantity: number): boolean => {
   const value = rounded(quantity)
-  return value > 0 && value <= 1 ? measure : pluralise(measure)
+  return value > 0 && value <= 1
 }
 
-/** A recipe amount in its own unit (#182): "37.5 g", "½ tbsp", "1½ cloves", "2". */
-export const amountText = (quantity: number, measure: string): string => {
+/** A counted item's unit word for an amount (#182): "1 head", "2 heads", "3 eggs". */
+export const countWord = (quantity: number, item: CountItem | null): string => {
+  const unit = countUnitOf(item)
+  return isSingular(quantity) ? unit.one : unit.other
+}
+
+/**
+ * The unit word after a recipe amount (#182): "g", "tbsp", "cloves", "½ clove"; whole items
+ * take the item's own unit ("2 onions", "1 head"). Up to 1 is singular.
+ */
+export const measureWord = (
+  quantity: number,
+  measure: string,
+  item: CountItem | null = null
+): string => {
+  if (measure === 'whole') return countWord(quantity, item)
+  if (!COUNTED_MEASURES.includes(measure)) return measure
+  return isSingular(quantity) ? measure : pluralise(measure)
+}
+
+/** A recipe amount in its own unit (#182): "37.5 g", "½ tbsp", "1½ cloves", "2 onions". */
+export const amountText = (
+  quantity: number,
+  measure: string,
+  item: CountItem | null = null
+): string => {
   const number = DECIMAL_MEASURES.includes(measure)
     ? String(rounded(quantity))
     : fraction(quantity)
-  const word = measureWord(quantity, measure)
-  return word === '' ? number : `${number} ${word}`
+  return `${number} ${measureWord(quantity, measure, item)}`
 }
 
 /** Shop section for free-text extras (they have no catalogue category). */

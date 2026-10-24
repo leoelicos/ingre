@@ -72,7 +72,9 @@ const OriginalChip: FC<{ line: CopyLine }> = ({ line }) => (
     }`}
   >
     <span className="font-semibold">{displayName(line)}</span>
-    <span className="text-xs">{amountText(line.quantity, line.measure)}</span>
+    <span className="text-xs">
+      {amountText(line.quantity, line.measure, line.item)}
+    </span>
   </li>
 )
 
@@ -179,7 +181,7 @@ const CopyChips: FC<{ entry: CopyEntry; list: ChipsState; chips: Chip[] }> = ({
     amountOf: (chip) =>
       chip.sources
         .map((source) =>
-          amountText(source.quantity, sourceMeasure(source, chip))
+          amountText(source.quantity, sourceMeasure(source, chip), chip.item)
         )
         .join(', '),
     onToggle: list.toggleCrossed,

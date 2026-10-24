@@ -1,6 +1,9 @@
 import {
   FREE_TEXT_SECTION,
+  GENERIC_COUNT_UNIT,
   amountText,
+  countUnitOf,
+  countWord,
   displayName,
   fraction,
   groupBy,
@@ -9,6 +12,8 @@ import {
   rounded,
   singularise
 } from '../shoppingList'
+
+const ONION = { countUnit: { one: 'onion', other: 'onions' } }
 
 describe('groupBy', () => {
   const items = [
@@ -72,7 +77,7 @@ describe('fractions and plurals', () => {
 })
 
 describe('amounts in recipe units (#182)', () => {
-  it('writes weights and volumes as decimals, others as fractions, whole items as a number', () => {
+  it('writes weights and volumes as decimals, others as fractions, whole items in their own unit', () => {
     expect(amountText(37.5, 'g')).toBe('37.5 g')
     expect(amountText(400, 'g tin')).toBe('400 g tin')
     expect(amountText(0.5, 'tbsp')).toBe('½ tbsp')
@@ -81,9 +86,21 @@ describe('amounts in recipe units (#182)', () => {
     expect(amountText(0.5, 'cup')).toBe('½ cup')
     expect(amountText(1, 'bunch')).toBe('1 bunch')
     expect(amountText(0, 'cup')).toBe('0 cups')
-    expect(amountText(2, 'whole')).toBe('2')
+    expect(amountText(2, 'whole')).toBe('2 items')
+    expect(amountText(1, 'whole', null)).toBe('1 item')
+    expect(amountText(0.5, 'whole', ONION)).toBe('½ onion')
+    expect(amountText(2, 'whole', ONION)).toBe('2 onions')
     expect(measureWord(3, 'stalk')).toBe('stalks')
-    expect(measureWord(3, 'whole')).toBe('')
+    expect(measureWord(3, 'whole')).toBe('items')
+    expect(measureWord(0, 'whole', ONION)).toBe('onions')
+  })
+
+  it('counted items spell their unit out, singular up to 1 (owner decision 2)', () => {
+    expect(countUnitOf(null)).toEqual(GENERIC_COUNT_UNIT)
+    expect(countUnitOf({})).toEqual({ one: 'item', other: 'items' })
+    expect(countUnitOf(ONION)).toEqual(ONION.countUnit)
+    expect(countWord(1, ONION)).toBe('onion')
+    expect(countWord(1.5, ONION)).toBe('onions')
   })
 
   it('capitalises names; free text sits in Other', () => {
