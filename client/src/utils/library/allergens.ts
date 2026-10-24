@@ -16,3 +16,10 @@ export const recipeAllergens = (
 /** "Contains: milk, tree nut (almond)"; empty string when there are none. */
 export const containsLine = (allergens: readonly string[]): string =>
   allergens.length === 0 ? '' : `Contains: ${allergens.join(', ')}`
+
+/** An ingredient's allergen tags from the catalogue, by catalogue or extra id; none when unknown. */
+export const allergensOf = (
+  ingredientId: string,
+  ingredients: readonly LibraryIngredient[]
+): readonly string[] =>
+  ingredients.find((item) => item.id === ingredientId)?.allergens ?? []

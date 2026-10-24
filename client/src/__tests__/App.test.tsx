@@ -13,19 +13,20 @@ describe('App', () => {
     localStorage.clear()
   })
 
-  it('opens on the one page: the header, Ingredients and Recipes (#164, #179)', () => {
+  it('opens on the one page: the header, Explore, Ingredients and Recipes (#164, #179, #181)', () => {
     openAt('/')
     expect(screen.getByRole('link', { name: 'ingré' })).toHaveAttribute(
       'href',
       '/'
     )
     expect(
-      screen.getByRole('combobox', { name: 'Search recipes or ingredients' })
+      screen.getByRole('searchbox', { name: 'Search ingredients and recipes' })
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Account' })).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { level: 1, name: 'Shopping list' })
     ).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Explore' })).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { level: 2, name: 'Ingredients' })
     ).toBeInTheDocument()

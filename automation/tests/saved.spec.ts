@@ -1,31 +1,32 @@
-import { expect, test } from './fixtures'
+import { expect, newAccount, signUp, test } from './fixtures'
+import { DAHL, explore, exploreRow, openExplore } from './page'
 
-test.describe('saved', () => {
-  test('save from the recipe page; the Saved filter shows only saved recipes', async ({
+test.describe('saved (#181: a filter on Explore)', () => {
+  test('save from the inline row; the Saved filter narrows Explore to saved recipes', async ({
     page
   }) => {
-    await page.goto('/recipe/dahl')
-    const heart = page.getByRole('button', { name: 'Save Red lentil dahl' })
-    await heart.click()
+    await signUp(page, newAccount())
+    await openExplore(page)
+    await explore(page)
+      .getByRole('button', { name: `See recipe: ${DAHL}` })
+      .click()
+    await explore(page)
+      .getByRole('button', { name: `Save ${DAHL}` })
+      .click()
     await expect(
-      page.getByRole('button', { name: 'Unsave Red lentil dahl' })
+      explore(page).getByRole('button', { name: `Unsave ${DAHL}` })
     ).toHaveAttribute('aria-pressed', 'true')
 
-    await page.goto('/')
-    const rows = page
-      .getByRole('region', { name: 'Recipes' })
-      .getByRole('button', { name: / details$/ })
-    const saved = page.getByRole('switch', { name: 'Saved' })
+    const rows = explore(page).getByRole('button', { name: /^See recipe: / })
+    const saved = explore(page).getByRole('switch', { name: 'Saved' })
     const toggle = async () => {
       await saved.focus()
       await page.keyboard.press('Space')
     }
     await toggle()
     await expect(saved).toBeChecked()
-    await expect(page).toHaveURL('/?saved=1')
-    await expect(
-      page.getByRole('button', { name: 'Red lentil dahl', exact: true })
-    ).toBeVisible()
+    await expect(page).toHaveURL(/[?&]saved=1/)
+    await expect(exploreRow(page, DAHL)).toBeVisible()
     await expect(rows).toHaveCount(1)
 
     // turning the filter off shows the whole library again

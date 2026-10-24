@@ -201,7 +201,10 @@ export const buildShoppingList = (
 export const displayName = ({ name }: Pick<ShopLine, 'name'>) =>
   capitaliseFirst(name)
 
-/** What to put in the trolley: "2", "1 garlic bulb", "1 × 500 g", "1 bunch", "1 × carton of 6", "100 g". */
+/**
+ * What to put in the trolley: "2", "1 garlic bulb", "500 g", "2 × 500 g", "1 bunch",
+ * "1 × carton of 6", "100 g". One pack of a mass or volume drops its "1 ×" (#181).
+ */
 export const buyAmount = ({ buy }: Pick<ShopLine, 'buy'>): string => {
   if (buy.kind === 'weighed') return formatAmount(buy.amount)
   if (buy.kind === 'count') return `${buy.count}`
@@ -220,7 +223,9 @@ export const buyAmount = ({ buy }: Pick<ShopLine, 'buy'>): string => {
       : option.label === undefined
       ? formatAmount(option.size)
       : `${formatAmount(option.size)} ${option.label}`
-  return `${count} × ${what}`
+  return count === 1 && option.size.unit !== 'count'
+    ? what
+    : `${count} × ${what}`
 }
 
 /** Print line: "1 small piece ginger", or just "1 garlic bulb" when the amount names it. */

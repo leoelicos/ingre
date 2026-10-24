@@ -41,12 +41,10 @@
   /* lines */
   --color-border: var(--palette-stone);
 
-  /* meal tints (photo-free card headers) */
+  /* card header tint (photo-free) */
   --color-tint-dinner: #e6f2ea;
-  --color-tint-lunch: #fde8e3;
-  /* darker shades of the tints for card illustrations */
+  /* darker shade of the tint for card illustrations */
   --color-tint-dinner-ink: #8fbf9f;
-  --color-tint-lunch-ink: #e9a597;
   --color-chip-active: var(--color-tint-dinner);
 
   /* ingredient badges: background + ink per shop section (#154); ink on bg >= 6.7:1 */
@@ -136,9 +134,7 @@
 
     /* meal tints */
     --color-tint-dinner: #1f3a2a;
-    --color-tint-lunch: #3d2420;
     --color-tint-dinner-ink: #4f8f66;
-    --color-tint-lunch-ink: #b5675a;
     --color-chip-active: var(--color-tint-dinner);
 
     /* ingredient badges: dark background + light ink per shop section; ink on bg >= 8:1 */

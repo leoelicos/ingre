@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../../utils/auth/AuthContext'
+import { ExploreProvider } from '../../utils/explore/ExploreContext'
 import { addFontAwesome } from '../../utils/addFontAwesome'
 import { Header, LOGO_TEXT } from '../Header'
 
@@ -14,7 +15,9 @@ describe('Header (#164)', () => {
       <MockedProvider mocks={[]}>
         <MemoryRouter>
           <AuthProvider>
-            <Header />
+            <ExploreProvider>
+              <Header />
+            </ExploreProvider>
           </AuthProvider>
         </MemoryRouter>
       </MockedProvider>
@@ -24,7 +27,7 @@ describe('Header (#164)', () => {
     expect(logo).toHaveAttribute('href', '/')
     expect(logo).toHaveClass('focus-visible:focus-ring')
     expect(header.getAllByRole('link')).toEqual([logo])
-    expect(header.getAllByRole('combobox')).toHaveLength(1)
+    expect(header.getAllByRole('searchbox')).toHaveLength(1)
     expect(header.getAllByRole('button')).toEqual([
       header.getByRole('button', { name: 'Account' })
     ])

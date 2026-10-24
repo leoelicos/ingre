@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from './fixtures'
+import { DAHL, explore, exploreRow, openExplore } from './page'
 
 const background = (page: Page) =>
   page.evaluate(() => getComputedStyle(document.body).backgroundColor)
@@ -22,13 +23,13 @@ test.describe('dark mode', () => {
   }) => {
     await page.emulateMedia({ colorScheme: 'dark' })
     await page.goto('/')
-    const dahl = page.getByRole('button', {
-      name: 'Red lentil dahl',
-      exact: true
-    })
+    await openExplore(page)
+    const dahl = exploreRow(page, DAHL)
     await dahl.click()
     await expect(dahl.getByTestId('row-check')).toHaveText('✓')
-    const item = page.getByRole('listitem').filter({ has: dahl })
+    const item = explore(page)
+      .getByRole('listitem')
+      .filter({ has: page.getByRole('button', { name: DAHL, exact: true }) })
     await expect(item).not.toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)')
   })
 })

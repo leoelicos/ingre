@@ -47,7 +47,7 @@ export interface LibraryIngredient {
   measureGrams?: Record<string, number>
   /** default home location (user can override) */
   pantry: HomeLocation
-  /** FSANZ mandatory allergens, e.g. 'milk', 'tree nut (almond)'; empty when none */
+  /** allergen tags from the FSANZ list (utils/library/fsanz), e.g. 'milk'; empty when none */
   allergens: string[]
   /** badge code override: exactly three letters A-Z; when absent the code is derived from the name */
   badgeCode?: string
@@ -63,8 +63,6 @@ export interface LibraryRecipe {
   id: string
   name: string
   portions: number
-  /** many-to-many: cuisines, diets, meals */
-  tags: string[]
   /** defining ingredients (ids from `ingredients`), drawn as badges on cards and the recipe page */
   keyIngredients?: string[]
   ingredients: LibraryRecipeIngredient[]
@@ -74,5 +72,4 @@ export interface LibraryRecipe {
 
 export interface LibrarySearch {
   q?: string
-  tags?: string[]
 }

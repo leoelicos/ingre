@@ -67,6 +67,7 @@ module.exports = {
     }
   },
   plugins: [
+    require('@tailwindcss/container-queries'),
     function ({ addUtilities }) {
       addUtilities({
         '.focus-ring': {

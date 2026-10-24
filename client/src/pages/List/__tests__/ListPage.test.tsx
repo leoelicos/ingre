@@ -1,110 +1,38 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MockedProvider } from '@apollo/client/testing'
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { MOTION } from '../../../components/Collapse'
-import { Header } from '../../../components/Header'
-import { AuthProvider, useAuthContext } from '../../../utils/auth/AuthContext'
-import { StoreProvider } from '../../../utils/state/GlobalState'
 import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
 import { PICKED_KEY } from '../../../utils/storage/shoppingState'
-import { ListPage, listParams, toggled, withSaved } from '../ListPage'
-
-const TOKEN = `e30.${btoa(
-  JSON.stringify({
-    data: { firstName: 'Ada', email: 'a@b.c', _id: '1', pro: false },
-    exp: Date.now() / 1000 + 3600
-  })
-)}.sig`
-
-const PretendLogin = () => {
-  const [, dispatch] = useAuthContext()
-  return (
-    <button
-      type="button"
-      onClick={() => dispatch({ type: 'LOGIN', data: TOKEN })}
-    >
-      Pretend login
-    </button>
-  )
-}
-
-const Where = () => {
-  const { search } = useLocation()
-  return <output aria-label="where">{search}</output>
-}
-
-const renderList = (path = '/') =>
-  render(
-    <MockedProvider mocks={[]}>
-      <MemoryRouter initialEntries={[path]}>
-        <AuthProvider>
-          <StoreProvider>
-            <Header />
-            <PretendLogin />
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <>
-                    <ListPage />
-                    <Where />
-                  </>
-                }
-              />
-            </Routes>
-          </StoreProvider>
-        </AuthProvider>
-      </MemoryRouter>
-    </MockedProvider>
-  )
-
-const pick = (...ids: string[]) =>
-  localStorage.setItem(PICKED_KEY, JSON.stringify(ids))
-
-/** The chip's list item, found by catalogue id. */
-const chip = (id: string): HTMLElement => {
-  const found = document.querySelector<HTMLElement>(`[data-chip="${id}"]`)
-  if (found === null) throw new Error(`no chip ${id}`)
-  return found
-}
-const hasChipEl = (id: string) =>
-  document.querySelectorAll(`[data-chip="${id}"]`).length
-const chipToggle = (id: string) => within(chip(id)).getAllByRole('button')[0]
-const toggleOf = (id: string): HTMLElement => {
-  const button = chipToggle(id)
-  if (button === undefined) throw new Error(`no toggle ${id}`)
-  return button
-}
-const chipOrder = () =>
-  Array.from(document.querySelectorAll('[data-chip]'), (el) =>
-    el.getAttribute('data-chip')
-  )
-/** The category heading a chip sits under. */
-const groupOf = (id: string) =>
-  chip(id).closest('[role="group"]')?.querySelector('h3')?.textContent
-const panel = (name: string) => screen.getByRole('group', { name })
-const ingredientsHeader = () =>
-  screen.getByRole('button', { name: /^Ingredients/ })
-const recipesHeader = () => screen.getByRole('button', { name: /^Recipes/ })
-const region = (name: string) => screen.getByRole('region', { name })
+import {
+  chip,
+  chipOrder,
+  explore,
+  groupOf,
+  hasChipEl,
+  ingredientsHeader,
+  panel,
+  pick,
+  pickFromExplore,
+  recipes,
+  recipesHeader,
+  region,
+  searchBox,
+  renderList,
+  toggleOf
+} from '../../../test/renderList'
+import { savedParam, toggled, withSaved } from '../ListPage'
+import { isAbove } from '../ScrollToTop'
 
 beforeEach(() => localStorage.clear())
 
 describe('list helpers', () => {
-  it('reads the search and Saved params, and switches Saved', () => {
-    expect(listParams(new URLSearchParams('q=dahl&saved=1'))).toEqual({
-      query: 'dahl',
-      savedOnly: true
-    })
-    expect(listParams(new URLSearchParams())).toEqual({
-      query: '',
-      savedOnly: false
-    })
-    const on = withSaved(new URLSearchParams('q=x'), true)
-    expect(on.toString()).toBe('q=x&saved=1')
-    expect(withSaved(on, false).toString()).toBe('q=x')
+  it('reads and switches the Saved param, and toggles ids', () => {
+    expect(savedParam(new URLSearchParams('saved=1'))).toBe(true)
+    expect(savedParam(new URLSearchParams())).toBe(false)
+    const on = withSaved(new URLSearchParams('x=1'), true)
+    expect(on.toString()).toBe('x=1&saved=1')
+    expect(withSaved(on, false).toString()).toBe('x=1')
     expect([...toggled(new Set(['a']), 'b')]).toEqual(['a', 'b'])
     expect([...toggled(new Set(['a', 'b']), 'a')]).toEqual(['b'])
   })
@@ -121,9 +49,12 @@ describe('Scenario: One page', () => {
       level: 2,
       name: /^Ingredients/
     })
-    const recipes = screen.getByRole('heading', { level: 2, name: /^Recipes/ })
+    const recipesHeading = screen.getByRole('heading', {
+      level: 2,
+      name: /^Recipes/
+    })
     expect(
-      ingredients.compareDocumentPosition(recipes) &
+      ingredients.compareDocumentPosition(recipesHeading) &
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Home' })).toBeNull()
@@ -133,38 +64,27 @@ describe('Scenario: One page', () => {
     expect(screen.queryByRole('checkbox')).toBeNull()
     expect(screen.queryByRole('link', { name: /View recipe/ })).toBeNull()
     expect(screen.getByText(/Nothing on your list yet/)).toBeInTheDocument()
+    expect(recipes().getByText(/^No recipes picked yet/)).toBeInTheDocument()
   })
 })
 
 describe('Scenario: Chips from recipes, grouped by category', () => {
   it('shows chips grouped by category; unpicking removes only chips no other pick needs', () => {
     renderList()
-    fireEvent.click(screen.getByRole('button', { name: 'Red lentil dahl' }))
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: 'Potato, cauliflower and chickpea curry'
-      })
-    )
+    fireEvent.click(pickFromExplore('Red lentil dahl'))
+    fireEvent.click(pickFromExplore('Potato, cauliflower and chickpea curry'))
     expect(groupOf('onion')).toBe('Fruit & Veg')
     expect(groupOf('potato')).toBe('Fruit & Veg')
     expect(groupOf('butter')).toBe('Dairy')
     expect(groupOf('red-lentils')).toBe('Pantry')
     // staples are notes, not chips
     expect(hasChipEl('salt')).toBe(0)
-    // a count badge when two or more picked recipes need it
-    expect(within(chip('onion')).getByTestId('chip-count')).toHaveTextContent(
-      '2'
-    )
-    expect(within(chip('potato')).queryByTestId('chip-count')).toBeNull()
+    // no count badge (#181): the count stays in the spoken label and in Used in
+    expect(within(chip('onion')).queryByTestId('chip-count')).toBeNull()
     expect(toggleOf('onion')).toHaveAccessibleName(/in 2 recipes/)
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: 'Potato, cauliflower and chickpea curry'
-      })
-    )
+    fireEvent.click(pickFromExplore('Potato, cauliflower and chickpea curry'))
     expect(hasChipEl('potato')).toBe(0)
     expect(hasChipEl('onion')).toBe(1)
-    expect(within(chip('onion')).queryByTestId('chip-count')).toBeNull()
     expect(region('Ingredients')).toHaveTextContent(/\d+ items/)
   })
 })
@@ -205,7 +125,9 @@ describe('Scenario: Chip panel pushes content', () => {
     const item = details.closest('li')
     expect(item?.previousElementSibling).toBe(chip('onion'))
     expect(item).toHaveClass('basis-full')
-    expect(item?.className).not.toMatch(/absolute|fixed/)
+    const classes = item?.className.split(' ')
+    expect(classes).not.toContain('absolute')
+    expect(classes).not.toContain('fixed')
     expect(
       within(details)
         .getAllByRole('listitem')
@@ -219,7 +141,7 @@ describe('Scenario: Chip panel pushes content', () => {
     ).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('Done closes the panel and returns focus to the chevron', async () => {
+  it('has no Done button: changes apply at once and the chevron closes it (#181)', async () => {
     const user = userEvent.setup()
     pick('dahl')
     renderList()
@@ -227,9 +149,11 @@ describe('Scenario: Chip panel pushes content', () => {
     await user.click(chevron)
     const details = panel('Tomatoes details')
     expect(within(details).queryByRole('button', { name: 'Remove' })).toBeNull()
-    await user.click(within(details).getByRole('button', { name: 'Done' }))
+    expect(within(details).queryByRole('button', { name: 'Done' })).toBeNull()
+    await user.click(within(details).getByRole('button', { name: /Increase/ }))
+    expect(toggleOf('tomato')).toHaveAccessibleName(/^Tomatoes, 2\b/)
+    await user.click(chevron)
     expect(chevron).toHaveAttribute('aria-expanded', 'false')
-    expect(chevron).toHaveFocus()
     expect(details).not.toBeVisible()
   })
 })
@@ -422,7 +346,7 @@ describe('Scenario: Close the plus area', () => {
 describe('Scenario: Recipe rows', () => {
   it('one tap selects the row: pressed, bordered, ticked and announced; there is no Add button', () => {
     renderList()
-    const row = screen.getByRole('button', { name: 'Red lentil dahl' })
+    const row = pickFromExplore('Red lentil dahl')
     const item = row.closest('li')
     expect(row).toHaveAttribute('aria-pressed', 'false')
     expect(item).toHaveClass('shadow-raised')
@@ -437,16 +361,25 @@ describe('Scenario: Recipe rows', () => {
       within(region('Recipes')).queryByRole('button', { name: /\bAdd\b/ })
     ).toBeNull()
     expect(within(item ?? document.body).getAllByRole('button')).toHaveLength(2)
+    // the Recipes section shows only picked recipes (#181)
+    expect(
+      recipes().getByRole('button', { name: 'Red lentil dahl' })
+    ).toHaveAttribute('aria-pressed', 'true')
+    expect(recipes().queryByRole('button', { name: 'Shaking beef' })).toBeNull()
     fireEvent.click(row)
     expect(row).toHaveAttribute('aria-pressed', 'false')
+    expect(recipes().getByText(/^No recipes picked yet/)).toBeInTheDocument()
   })
 })
 
 describe('Scenario: Multiple rows open', () => {
   it('keeps both rows open, each with ingredients, servings, method and notes', () => {
+    pick('dahl', 'vegetable-curry')
     renderList()
-    const dahl = screen.getByRole('button', { name: 'Red lentil dahl details' })
-    const curry = screen.getByRole('button', {
+    const dahl = recipes().getByRole('button', {
+      name: 'Red lentil dahl details'
+    })
+    const curry = recipes().getByRole('button', {
       name: 'Potato, cauliflower and chickpea curry details'
     })
     fireEvent.click(dahl)
@@ -467,14 +400,14 @@ describe('Scenario: Multiple rows open', () => {
     })
     expect(open(dahl).getByText("You'll also need: salt")).toBeVisible()
     expect(open(dahl).getByText('Contains: milk')).toBeVisible()
-    expect(open(dahl).getByText(/^Red lentils/)).toBeVisible()
+    expect(open(dahl).getByText('Red lentils')).toBeVisible()
     fireEvent.click(open(dahl).getByRole('radio', { name: '3' }))
     expect(open(curry).getByRole('radio', { name: '3' })).toBeChecked()
     fireEvent.click(dahl)
     expect(dahl).toHaveAttribute('aria-expanded', 'false')
     expect(curry).toHaveAttribute('aria-expanded', 'true')
     // picking is separate from opening
-    expect(localStorage.getItem(PICKED_KEY)).toBeNull()
+    expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl","vegetable-curry"]')
   })
 })
 
@@ -482,7 +415,7 @@ describe('Scenario: Save visibility', () => {
   it('hides Save in expanded rows when signed out, and shows it when signed in', () => {
     renderList()
     fireEvent.click(
-      screen.getByRole('button', { name: 'Red lentil dahl details' })
+      explore().getByRole('button', { name: 'See recipe: Red lentil dahl' })
     )
     expect(
       screen.queryByRole('button', { name: /Save Red lentil dahl/ })
@@ -492,56 +425,6 @@ describe('Scenario: Save visibility', () => {
       screen.getByRole('button', { name: 'Save Red lentil dahl' })
     )
     expect(localStorage.getItem(FAVOURITES_KEY)).toBe('["dahl"]')
-  })
-})
-
-describe('Saved filter and empty states', () => {
-  it('filters to saved recipes, and says when there are none', () => {
-    renderList()
-    fireEvent.click(screen.getByRole('switch', { name: 'Saved' }))
-    expect(screen.getByLabelText('where')).toHaveTextContent('?saved=1')
-    expect(screen.getByText(/^No saved recipes yet/)).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('switch', { name: 'Saved' }))
-    expect(screen.getByLabelText('where')).toHaveTextContent('')
-  })
-
-  it('says No recipes when saved ids match nothing', () => {
-    localStorage.setItem(FAVOURITES_KEY, JSON.stringify(['gone']))
-    renderList('/?saved=1')
-    expect(screen.getByText('No recipes')).toBeInTheDocument()
-  })
-
-  it('shows only saved recipes', () => {
-    localStorage.setItem(FAVOURITES_KEY, JSON.stringify(['dahl']))
-    renderList('/?saved=1')
-    expect(
-      screen.getByRole('button', { name: 'Red lentil dahl' })
-    ).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Shaking beef' })).toBeNull()
-  })
-
-  it('an ingredient search with no recipes offers it as a chip, then points to the list', () => {
-    renderList('/?q=banana')
-    expect(
-      screen.getByText(
-        'No recipes with banana yet. You can add banana to your list'
-      )
-    ).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: '+ Add banana' }))
-    expect(hasChipEl('banana')).toBe(1)
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: '✓ Banana is on your list. View list'
-      })
-    )
-    expect(
-      screen.getByRole('heading', { level: 2, name: /^Ingredients/ })
-    ).toHaveFocus()
-  })
-
-  it('a search matching nothing says so', () => {
-    renderList('/?q=zzzz')
-    expect(screen.getByText('No recipes with zzzz yet.')).toBeInTheDocument()
   })
 })
 
@@ -559,10 +442,12 @@ describe('Scenario: Collapsible sections', () => {
     expect(chip('tomato')).toBeVisible()
     await user.click(recipesHeader())
     expect(recipesHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(screen.queryByRole('button', { name: 'Red lentil dahl' })).toBeNull()
+    expect(
+      recipes().queryByRole('button', { name: 'Red lentil dahl' })
+    ).toBeNull()
     await user.click(recipesHeader())
     expect(
-      screen.getByRole('button', { name: 'Red lentil dahl' })
+      recipes().getByRole('button', { name: 'Red lentil dahl' })
     ).toBeVisible()
   })
 })
@@ -633,8 +518,10 @@ describe('Scenario: Scroll to top', () => {
 
   it('appears once the chips are scrolled past; brings them back and focuses the Ingredients heading', async () => {
     const user = userEvent.setup()
-    const scrolls: ScrollToOptions[] = []
-    window.scrollTo = (options?: ScrollToOptions | number) => {
+    const scrolls: ScrollIntoViewOptions[] = []
+    Element.prototype.scrollIntoView = function (
+      options?: boolean | ScrollIntoViewOptions
+    ) {
       if (typeof options === 'object') scrolls.push(options)
     }
     window.IntersectionObserver = FakeObserver
@@ -644,7 +531,7 @@ describe('Scenario: Scroll to top', () => {
     expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
     fire({})
     await user.click(screen.getByRole('button', { name: 'Scroll to top' }))
-    expect(scrolls).toEqual([{ top: 0, behavior: 'smooth' }])
+    expect(scrolls).toEqual([{ block: 'start', behavior: 'smooth' }])
     expect(
       screen.getByRole('heading', { level: 2, name: /^Ingredients/ })
     ).toHaveFocus()
@@ -652,6 +539,23 @@ describe('Scenario: Scroll to top', () => {
     expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
     unmount()
     expect(disconnected).toEqual(['yes'])
+  })
+
+  it('hides again when a jump to the very top leaves the chips below the screen', () => {
+    window.IntersectionObserver = FakeObserver
+    renderList()
+    fire({})
+    expect(
+      screen.getByRole('button', { name: 'Scroll to top' })
+    ).toBeInTheDocument()
+    fireEvent.scroll(window)
+    expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
+  })
+
+  it('treats only a box wholly above the screen as scrolled past', () => {
+    expect(isAbove({ bottom: -1 })).toBe(true)
+    expect(isAbove({ bottom: 0 })).toBe(false)
+    expect(isAbove({ bottom: 400 })).toBe(false)
   })
 
   it('never shows without IntersectionObserver', () => {
@@ -664,7 +568,7 @@ describe('Scenario: State kept', () => {
   it('keeps picks, crossed off chips, edits, extras and chip order after a refresh', async () => {
     const user = userEvent.setup()
     const first = renderList()
-    await user.click(screen.getByRole('button', { name: 'Red lentil dahl' }))
+    await user.click(pickFromExplore('Red lentil dahl'))
     await user.click(toggleOf('tomato'))
     await user.click(screen.getByRole('button', { name: 'Butter details' }))
     await user.click(
@@ -685,7 +589,7 @@ describe('Scenario: State kept', () => {
 
     renderList()
     expect(
-      screen.getByRole('button', { name: 'Red lentil dahl' })
+      recipes().getByRole('button', { name: 'Red lentil dahl' })
     ).toHaveAttribute('aria-pressed', 'true')
     expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'true')
     expect(toggleOf('butter')).toHaveAccessibleName(/, Deli, /)
@@ -712,7 +616,7 @@ describe('Scenario: Accessibility', () => {
       ingredientsHeader(),
       recipesHeader(),
       screen.getByRole('button', { name: 'Brown onion details' }),
-      screen.getByRole('button', { name: 'Red lentil dahl details' }),
+      recipes().getByRole('button', { name: 'Red lentil dahl details' }),
       screen.getByRole('button', { name: 'Add an ingredient' })
     ].forEach((button) => {
       expect(button.tagName).toBe('BUTTON')
@@ -751,7 +655,8 @@ describe('Scenario: Accessibility', () => {
     expect(screen.getAllByRole('tab')[0]).toHaveFocus()
     await user.keyboard('{Escape}')
     expect(plus).toHaveFocus()
-    const row = screen.getByRole('button', { name: 'Shaking beef' })
+    act(() => searchBox().focus())
+    const row = pickFromExplore('Shaking beef')
     row.focus()
     await user.keyboard('{Enter}')
     expect(row).toHaveAttribute('aria-pressed', 'true')

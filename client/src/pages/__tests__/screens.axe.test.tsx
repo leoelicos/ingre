@@ -4,27 +4,33 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthProvider } from '../../utils/auth/AuthContext'
+import { ExploreProvider } from '../../utils/explore/ExploreContext'
 import Search from '../Search/Search'
 import { Header } from '../../components/Header'
-import RecipePage from '../Recipe/RecipePage'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
 import { ListPage } from '../List/ListPage'
+import { SearchBox } from '../../components/SearchBox/SearchBox'
 import { PICKED_KEY } from '../../utils/storage/shoppingState'
 
 expect.extend(toHaveNoViolations)
+
+const searchBox = () =>
+  screen.getByRole('searchbox', { name: 'Search ingredients and recipes' })
 
 const renderScreen = (ui: React.ReactElement, path = '/') =>
   render(
     <MockedProvider mocks={[]}>
       <MemoryRouter initialEntries={[path]}>
         <AuthProvider>
-          <Routes>
-            <Route
-              path="*"
-              element={ui}
-            />
-          </Routes>
+          <ExploreProvider>
+            <Routes>
+              <Route
+                path="*"
+                element={ui}
+              />
+            </Routes>
+          </ExploreProvider>
         </AuthProvider>
       </MemoryRouter>
     </MockedProvider>
@@ -46,10 +52,30 @@ describe('All screens accessibility (axe)', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('Recipe page has no axe violations', async () => {
-    const { container } = renderScreen(<RecipePage />, '/recipe/dahl')
+  it('Explore browsing, with an open See recipe row, has no axe violations (#181)', async () => {
+    localStorage.clear()
+    const { container } = renderScreen(<ListPage />, '/')
+    fireEvent.click(
+      screen.getByRole('button', { name: 'See recipe: Red lentil dahl' })
+    )
     expect(await axe(container)).toHaveNoViolations()
   })
+
+  it.each(['chick', 'zzqx'])(
+    'Explore searching %s (matches, then no matches) has no axe violations (#181)',
+    async (query) => {
+      localStorage.clear()
+      const { container } = renderScreen(
+        <>
+          <SearchBox />
+          <ListPage />
+        </>,
+        '/'
+      )
+      fireEvent.change(searchBox(), { target: { value: query } })
+      expect(await axe(container)).toHaveNoViolations()
+    }
+  )
 
   it('Login has no axe violations', async () => {
     const { container } = renderScreen(<Login />, '/login')

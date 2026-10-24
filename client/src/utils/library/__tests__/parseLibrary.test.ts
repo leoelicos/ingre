@@ -27,7 +27,6 @@ const validRecipe = {
   id: 'r',
   name: 'R',
   portions: 1,
-  tags: ['dinner'],
   ingredients: [{ ingredientId: 'garlic', quantity: 1, measure: 'clove' }],
   method: ['Cook'],
   picture_url: '/p.png'
@@ -145,7 +144,6 @@ describe('parseRecipe', () => {
   })
   it.each([
     ['bad portions', { ...validRecipe, portions: 0 }, 'recipe.portions'],
-    ['bad tag', { ...validRecipe, tags: [1] }, 'recipe.tags[0]'],
     [
       'bad ingredient',
       { ...validRecipe, ingredients: [{ ingredientId: 'x', quantity: 1 }] },

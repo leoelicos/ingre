@@ -3,7 +3,6 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 
 import {
   faStar,
-  faArrowLeft,
   faBars,
   faEgg,
   faCircleInfo,
@@ -44,7 +43,6 @@ import {
 
 export const addFontAwesome = () =>
   library.add(
-    faArrowLeft,
     faStar,
     faBars,
     faEgg,

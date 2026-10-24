@@ -11,6 +11,7 @@ import type {
 } from '../../types/library'
 import { AISLES, SHOP_SECTIONS } from '../shopping/sections'
 import type { ShopSection } from '../shopping/sections'
+import { FSANZ_ALLERGENS } from './fsanz'
 import { BADGE_TONES } from '../../components/IngredientBadge/tones'
 import type { BadgeTone } from '../../components/IngredientBadge/tones'
 
@@ -131,7 +132,7 @@ export const parseIngredient = (
     sold,
     pantry: oneOf(HOME_LOCATIONS, r['pantry'], `${path}.pantry`),
     allergens: arr(r['allergens'], `${path}.allergens`).map((a, i) =>
-      str(a, `${path}.allergens[${i}]`)
+      oneOf(FSANZ_ALLERGENS, a, `${path}.allergens[${i}]`)
     ),
     ...(r['staple'] === true ? { staple: true } : {}),
     ...(r['approxGrams'] === undefined
@@ -204,9 +205,6 @@ export const parseRecipe = (v: unknown, path = 'recipe'): LibraryRecipe => {
     id: str(r['id'], `${path}.id`),
     name: str(r['name'], `${path}.name`),
     portions: num(r['portions'], `${path}.portions`),
-    tags: arr(r['tags'], `${path}.tags`).map((t, i) =>
-      str(t, `${path}.tags[${i}]`)
-    ),
     ingredients,
     ...(keys === undefined
       ? {}

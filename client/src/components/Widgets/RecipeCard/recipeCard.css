@@ -50,10 +50,6 @@
   background: var(--color-tint-dinner);
   color: var(--color-tint-dinner-ink);
 }
-.recipe-card__tint--lunch {
-  background: var(--color-tint-lunch);
-  color: var(--color-tint-lunch-ink);
-}
 .recipe-card__title {
   margin: 0;
   color: var(--color-text);
@@ -114,20 +110,6 @@
   @apply focus-ring;
 }
 
-/* The title link covers the whole card; the heart and pill sit above it. */
-.recipe-card__link {
-  color: inherit;
-  text-decoration: none;
-}
-.recipe-card__link::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-card);
-}
-.recipe-card__link:focus-visible::after {
-  @apply focus-ring;
-}
 .recipe-card .icon-button {
   z-index: 1;
 }
