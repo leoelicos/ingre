@@ -2,8 +2,7 @@ import '@testing-library/jest-dom'
 import { act, fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MOTION } from '../../../components/Collapse'
-import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
-import { PICKED_KEY } from '../../../utils/storage/shoppingState'
+import { saveMock, savedQuery } from '../../../test/savedMocks'
 import {
   chip,
   chipOrder,
@@ -13,6 +12,8 @@ import {
   ingredientsHeader,
   panel,
   pick,
+  pickedIds,
+  chevronOf,
   pickFromExplore,
   recipes,
   recipesHeader,
@@ -21,7 +22,8 @@ import {
   renderList,
   toggleOf
 } from '../../../test/renderList'
-import { savedParam, toggled, withSaved } from '../ListPage'
+import { savedParam, withSaved } from '../ListPage'
+import { toggled } from '../Recipes'
 import { isAbove } from '../ScrollToTop'
 
 beforeEach(() => localStorage.clear())
@@ -77,8 +79,9 @@ describe('Scenario: Chips from recipes, grouped by category', () => {
     expect(groupOf('potato')).toBe('Fruit & Veg')
     expect(groupOf('butter')).toBe('Dairy')
     expect(groupOf('red-lentils')).toBe('Pantry')
-    // staples are notes, not chips
-    expect(hasChipEl('salt')).toBe(0)
+    // staples belong to their recipe and show in Ingredients, not Extra (#182)
+    expect(hasChipEl('salt')).toBe(1)
+    expect(hasChipEl('salt', 'extra')).toBe(0)
     // no count badge (#181): the count stays in the spoken label and in Used in
     expect(within(chip('onion')).queryByTestId('chip-count')).toBeNull()
     expect(toggleOf('onion')).toHaveAccessibleName(/in 2 recipes/)
@@ -115,7 +118,7 @@ describe('Scenario: Chip panel pushes content', () => {
   it('opens inline after the chip, listing every picked recipe that uses it; one at a time', () => {
     pick('dahl', 'vegetable-curry')
     renderList()
-    const chevron = screen.getByRole('button', { name: 'Brown onion details' })
+    const chevron = chevronOf('onion')
     expect(chevron).toHaveAttribute('aria-expanded', 'false')
     fireEvent.click(chevron)
     expect(chevron).toHaveAttribute('aria-expanded', 'true')
@@ -132,25 +135,32 @@ describe('Scenario: Chip panel pushes content', () => {
       within(details)
         .getAllByRole('listitem')
         .map((li) => li.textContent)
-    ).toEqual(['Red lentil dahl', 'Potato, cauliflower and chickpea curry'])
-    fireEvent.click(screen.getByRole('button', { name: 'Garlic details' }))
+    ).toEqual([
+      // each recipe's box, then its unit (#182: never a bare number)
+      'Red lentil dahlonion',
+      'Potato, cauliflower and chickpea curryonion'
+    ])
+    fireEvent.click(chevronOf('garlic'))
     expect(chevron).toHaveAttribute('aria-expanded', 'false')
-    fireEvent.click(screen.getByRole('button', { name: 'Garlic details' }))
-    expect(
-      screen.getByRole('button', { name: 'Garlic details' })
-    ).toHaveAttribute('aria-expanded', 'false')
+    fireEvent.click(chevronOf('garlic'))
+    expect(chevronOf('garlic')).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('has no Done button: changes apply at once and the chevron closes it (#181)', async () => {
     const user = userEvent.setup()
     pick('dahl')
     renderList()
-    const chevron = screen.getByRole('button', { name: 'Tomatoes details' })
+    const chevron = chevronOf('tomato')
     await user.click(chevron)
     const details = panel('Tomatoes details')
     expect(within(details).queryByRole('button', { name: 'Remove' })).toBeNull()
     expect(within(details).queryByRole('button', { name: 'Done' })).toBeNull()
-    await user.click(within(details).getByRole('button', { name: /Increase/ }))
+    const box = within(details).getByRole('textbox', {
+      name: /^Red lentil dahl, /
+    })
+    await user.clear(box)
+    await user.type(box, '2')
+    await user.tab()
     expect(toggleOf('tomato')).toHaveAccessibleName(/^Tomatoes, 2\b/)
     await user.click(chevron)
     expect(chevron).toHaveAttribute('aria-expanded', 'false')
@@ -163,11 +173,15 @@ describe('Scenario: Edit quantity', () => {
     const user = userEvent.setup()
     pick('dahl')
     renderList()
-    await user.click(screen.getByRole('button', { name: 'Tomatoes details' }))
+    await user.click(chevronOf('tomato'))
     const details = panel('Tomatoes details')
-    const quantity = within(details).getByRole('textbox', { name: 'Quantity' })
+    const quantity = within(details).getByRole('textbox', {
+      name: /^Red lentil dahl, /
+    })
     expect(quantity).toHaveValue('1')
-    await user.click(within(details).getByRole('button', { name: /Increase/ }))
+    await user.clear(quantity)
+    await user.type(quantity, '2')
+    await user.tab()
     expect(quantity).toHaveValue('2')
     expect(toggleOf('tomato')).toHaveAccessibleName(/^Tomatoes, 2\b/)
     expect(within(toggleOf('tomato')).getByText(/^2\b/)).toBeInTheDocument()
@@ -189,7 +203,7 @@ describe('Scenario: Category change does not reorder', () => {
     renderList()
     const before = chipOrder()
     const toneBefore = chip('tomato').className
-    await user.click(screen.getByRole('button', { name: 'Tomatoes details' }))
+    await user.click(chevronOf('tomato'))
     const details = panel('Tomatoes details')
     expect(
       within(details).queryByRole('button', { name: 'Sort now' })
@@ -229,11 +243,11 @@ describe('Scenario: Sort button', () => {
     const user = userEvent.setup()
     pick('dahl')
     renderList()
-    await user.click(screen.getByRole('button', { name: 'Tomatoes details' }))
+    await user.click(chevronOf('tomato'))
     await user.click(
       within(panel('Tomatoes details')).getByRole('radio', { name: 'Deli' })
     )
-    await user.click(screen.getByRole('button', { name: 'Butter details' }))
+    await user.click(chevronOf('butter'))
     await user.click(
       within(panel('Butter details')).getByRole('radio', { name: 'Frozen' })
     )
@@ -263,17 +277,19 @@ describe('Scenario: Add an extra', () => {
     await user.click(within(tabs).getByRole('tab', { name: 'Dairy' }))
     await user.click(within(area).getByRole('button', { name: 'Butter' }))
     expect(hasChipEl('butter')).toBe(1)
+    expect(hasChipEl('butter', 'extra')).toBe(1)
     expect(groupOf('butter')).toBe('Dairy')
+    expect(groupOf('butter', 'extra')).toBe('Dairy')
     expect(screen.getByRole('status', { name: '' })).toHaveTextContent(
-      'Butter added'
+      'Butter added to Extra'
     )
     expect(
       within(area).getByRole('button', { name: 'Butter, on your list' })
     ).toHaveTextContent('On your list')
-    expect(toggleOf('butter')).toHaveAccessibleName(/, added by you$/)
+    expect(toggleOf('butter')).toHaveAccessibleName(/, in Extra$/)
   })
 
-  it('Remove takes an extra off the list and focus goes to the plus', async () => {
+  it('0 in the Extra box asks; Yes takes the extra off and focus goes to the plus', async () => {
     const user = userEvent.setup()
     renderList()
     const plus = screen.getByRole('button', { name: 'Add an ingredient' })
@@ -281,13 +297,20 @@ describe('Scenario: Add an extra', () => {
     await user.click(screen.getByRole('tab', { name: 'Dairy' }))
     await user.click(screen.getByRole('button', { name: 'Butter' }))
     await user.keyboard('{Escape}')
-    await user.click(screen.getByRole('button', { name: 'Butter details' }))
+    await user.click(chevronOf('butter'))
     const details = panel('Butter details')
-    expect(within(details).getByText('Added by you')).toBeInTheDocument()
-    await user.click(within(details).getByRole('button', { name: 'Remove' }))
+    const box = within(details).getByRole('textbox', { name: /^Extra, / })
+    await user.clear(box)
+    await user.type(box, '0')
+    await user.tab()
+    await user.click(
+      within(
+        screen.getByRole('group', { name: 'Remove butter from Extra?' })
+      ).getByRole('button', { name: 'Yes' })
+    )
     expect(hasChipEl('butter')).toBe(0)
+    expect(hasChipEl('butter', 'extra')).toBe(0)
     expect(plus).toHaveFocus()
-    expect(screen.getByText('Removed')).toBeInTheDocument()
   })
 })
 
@@ -306,7 +329,9 @@ describe('Scenario: Add an existing ingredient', () => {
       screen.getByRole('button', { name: 'Butter, on your list' })
     )
     expect(hasChipEl('butter')).toBe(1)
-    const chevron = screen.getByRole('button', { name: 'Butter details' })
+    // it gains an Extra source at 1 (#182, answer 8)
+    expect(hasChipEl('butter', 'extra')).toBe(1)
+    const chevron = chevronOf('butter')
     expect(chevron).toHaveAttribute('aria-expanded', 'true')
     expect(panel('Butter details')).toBeVisible()
     expect(scrolled).toEqual([chevron])
@@ -355,7 +380,7 @@ describe('Scenario: Recipe rows', () => {
     expect(row).toHaveAttribute('aria-pressed', 'true')
     expect(item).toHaveClass('shadow-pressed', 'border-primary')
     expect(within(row).getByTestId('row-check')).toHaveTextContent('✓')
-    expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl"]')
+    expect(pickedIds()).toEqual(['dahl'])
     expect(region('Recipes')).toHaveTextContent('1 recipe picked')
     expect(
       within(region('Recipes')).queryByRole('button', { name: /\bAdd\b/ })
@@ -373,7 +398,7 @@ describe('Scenario: Recipe rows', () => {
 })
 
 describe('Scenario: Multiple rows open', () => {
-  it('keeps both rows open, each with ingredients, servings, method and notes', () => {
+  it('keeps both rows open, each with ingredients, portions, method and notes', () => {
     pick('dahl', 'vegetable-curry')
     renderList()
     const dahl = recipes().getByRole('button', {
@@ -393,27 +418,29 @@ describe('Scenario: Multiple rows open', () => {
       return within(region)
     }
     ;[dahl, curry].forEach((button) => {
-      ;['Ingredients', 'Method', 'Notes'].forEach((name) =>
+      ;['Ingredients', 'Method'].forEach((name) =>
         expect(open(button).getByRole('heading', { name })).toBeVisible()
       )
-      expect(open(button).getByRole('radiogroup')).toBeVisible()
+      expect(
+        open(button).getByRole('textbox', { name: 'Portions' })
+      ).toHaveValue('2')
     })
-    expect(open(dahl).getByText("You'll also need: salt")).toBeVisible()
+    // F6: no "You'll also need"
+    expect(open(dahl).queryByText(/also need/)).toBeNull()
+    expect(open(dahl).getByRole('heading', { name: 'Notes' })).toBeVisible()
     expect(open(dahl).getByText('Contains: milk')).toBeVisible()
     expect(open(dahl).getByText('Red lentils')).toBeVisible()
-    fireEvent.click(open(dahl).getByRole('radio', { name: '3' }))
-    expect(open(curry).getByRole('radio', { name: '3' })).toBeChecked()
     fireEvent.click(dahl)
     expect(dahl).toHaveAttribute('aria-expanded', 'false')
     expect(curry).toHaveAttribute('aria-expanded', 'true')
     // picking is separate from opening
-    expect(localStorage.getItem(PICKED_KEY)).toBe('["dahl","vegetable-curry"]')
+    expect(pickedIds()).toEqual(['dahl', 'vegetable-curry'])
   })
 })
 
 describe('Scenario: Save visibility', () => {
-  it('hides Save in expanded rows when signed out, and shows it when signed in', () => {
-    renderList()
+  it('hides Save in expanded rows when signed out, and saves on the server when signed in (F4)', async () => {
+    renderList('/', [savedQuery(), saveMock('dahl')])
     fireEvent.click(
       explore().getByRole('button', { name: 'See recipe: Red lentil dahl' })
     )
@@ -424,7 +451,9 @@ describe('Scenario: Save visibility', () => {
     fireEvent.click(
       screen.getByRole('button', { name: 'Save Red lentil dahl' })
     )
-    expect(localStorage.getItem(FAVOURITES_KEY)).toBe('["dahl"]')
+    expect(
+      await screen.findByRole('button', { name: 'Unsave Red lentil dahl' })
+    ).toBeInTheDocument()
   })
 })
 
@@ -456,7 +485,7 @@ describe('Scenario: Motion', () => {
   it('every opening part animates in 0.2 s and is instant with reduced motion', () => {
     pick('dahl')
     renderList()
-    fireEvent.click(screen.getByRole('button', { name: 'Tomatoes details' }))
+    fireEvent.click(chevronOf('tomato'))
     fireEvent.click(screen.getByRole('button', { name: 'Add an ingredient' }))
     const parts = [
       ...document.querySelectorAll('[data-collapse]'),
@@ -570,10 +599,13 @@ describe('Scenario: State kept', () => {
     const first = renderList()
     await user.click(pickFromExplore('Red lentil dahl'))
     await user.click(toggleOf('tomato'))
-    await user.click(screen.getByRole('button', { name: 'Butter details' }))
-    await user.click(
-      within(panel('Butter details')).getByRole('button', { name: /Increase/ })
-    )
+    await user.click(chevronOf('butter'))
+    const butter = within(panel('Butter details')).getByRole('textbox', {
+      name: /^Red lentil dahl, /
+    })
+    await user.clear(butter)
+    await user.type(butter, '20')
+    await user.tab()
     await user.click(
       within(panel('Butter details')).getByRole('radio', { name: 'Deli' })
     )
@@ -592,14 +624,15 @@ describe('Scenario: State kept', () => {
       recipes().getByRole('button', { name: 'Red lentil dahl' })
     ).toHaveAttribute('aria-pressed', 'true')
     expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'true')
-    expect(toggleOf('butter')).toHaveAccessibleName(/, Deli, /)
+    expect(toggleOf('butter')).toHaveAccessibleName(/^Butter, 20 g, Deli, /)
     expect(chip('butter')).toHaveAttribute('data-category', 'Deli')
     expect(groupOf('butter')).toBe('Dairy')
     expect(chipOrder()).toEqual(order)
     expect(chipOrder()).toHaveLength(order.length)
+    // in Ingredients and in Extra
     expect(
-      screen.getByRole('heading', { level: 3, name: 'Bakery' })
-    ).toBeVisible()
+      screen.getAllByRole('heading', { level: 3, name: 'Bakery' })
+    ).toHaveLength(2)
   })
 })
 
@@ -609,13 +642,13 @@ describe('Scenario: Accessibility', () => {
     renderList()
     fireEvent.click(toggleOf('onion'))
     expect(toggleOf('onion')).toHaveAccessibleName(
-      'Brown onion, 1, Fruit & Veg, in 2 recipes, crossed off'
+      'Brown onion, 1 onion, Fruit & Veg, in 2 recipes, crossed off'
     )
     expect(toggleOf('onion')).toHaveAttribute('aria-pressed', 'true')
     ;[
       ingredientsHeader(),
       recipesHeader(),
-      screen.getByRole('button', { name: 'Brown onion details' }),
+      chevronOf('onion'),
       recipes().getByRole('button', { name: 'Red lentil dahl details' }),
       screen.getByRole('button', { name: 'Add an ingredient' })
     ].forEach((button) => {
@@ -635,14 +668,14 @@ describe('Scenario: Accessibility', () => {
     await user.keyboard(' ')
     expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'false')
     await user.tab()
-    const chevron = screen.getByRole('button', { name: 'Tomatoes details' })
+    const chevron = chevronOf('tomato')
     expect(chevron).toHaveFocus()
     await user.keyboard('{Enter}')
     expect(chevron).toHaveAttribute('aria-expanded', 'true')
     await user.tab()
     expect(
       within(panel('Tomatoes details')).getByRole('textbox', {
-        name: 'Quantity'
+        name: /^Red lentil dahl, /
       })
     ).toHaveFocus()
     screen.getByRole('button', { name: 'Sort' }).focus()

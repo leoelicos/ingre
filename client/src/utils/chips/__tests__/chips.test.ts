@@ -1,201 +1,216 @@
-import type { Buy, ShopLine } from '../../shopping/shoppingList'
-import type { ChipLayout } from '../../storage/shoppingState'
+import { libIngredient } from '../../../test/fixtures'
+import { itemById, recipeById } from '../../../test/library'
+import { newCopy, withAmount } from '../../balance/copies'
+import { catalogue } from '../../library/recipeLibrary'
 import { EMPTY_LAYOUT } from '../../storage/shoppingState'
-import type { Chip } from '../chips'
+import type { ChipEdit } from '../../storage/shoppingState'
+import type { Chip, ChipState, Placement, Source } from '../chips'
 import {
-  applyEdit,
+  buildBalances,
   buildChips,
   categoryLabel,
-  chipId,
   editFor,
+  extraChipId,
   groupChips,
   needsSort,
   placementsOf,
-  recipeCountText,
-  rescaleBuy,
+  recipeSources,
+  rowChips,
   sortLayout,
-  startQuantity,
+  sourceAmount,
+  sourceLabel,
+  startSection,
+  totalOf,
+  usedInSummary,
   withPlacements
 } from '../chips'
+import { copyEntries } from '../useChips'
 
-const PACK: Buy = {
-  kind: 'packs',
-  option: { type: 'tin', size: { amount: 400, unit: 'g' } },
-  count: 1
+const NONE: ChipState = {
+  edits: {},
+  layout: EMPTY_LAYOUT,
+  crossedIds: new Set()
 }
 
-const line = (over: Partial<ShopLine> = {}): ShopLine => ({
-  ingredientId: 'chickpeas',
-  name: 'chickpeas',
-  section: 'Pantry',
-  subsection: null,
-  location: 'Cupboard',
-  staple: false,
-  need: { amount: 400, unit: 'g' },
-  buy: PACK,
-  recipes: ['Curry'],
-  parts: [],
-  extraQuantity: null,
-  ...over
-})
+const chipOf = (chips: readonly Chip[], id: string): Chip => {
+  const found = chips.find((c) => c.id === id)
+  if (found === undefined) throw new Error(`no chip ${id}`)
+  return found
+}
 
-describe('chip ids and labels', () => {
-  it('uses the catalogue id for recipe lines and catalogue extras alike', () => {
-    expect(chipId({ ingredientId: 'butter' })).toBe('butter')
-    expect(chipId({ ingredientId: 'extra:butter' })).toBe('butter')
+const butterExtra = {
+  id: 'butter',
+  name: 'butter',
+  ingredientId: 'butter',
+  quantity: 1
+}
+const candles = {
+  id: 'free-candles',
+  name: 'birthday candles',
+  ingredientId: null,
+  quantity: 2
+}
+
+describe('Feature: Balance sheet (#182)', () => {
+  const chicken = recipeById('butter-chicken')
+  const dahl = recipeById('dahl')
+  const both = copyEntries([newCopy(chicken.id), newCopy(dahl.id)])
+
+  it('Scenario: Both sides balance: one chip per recipe ingredient (staples too) and extra', () => {
+    const balances = buildBalances(both, [butterExtra, candles], catalogue)
+    const ids = balances.map((b) => b.id)
+    expect(ids).toContain('salt')
+    expect(balances.find((b) => b.id === 'salt')?.sources).toEqual([
+      expect.objectContaining({ kind: 'recipe', recipeId: 'dahl' })
+    ])
+    expect(ids).toContain('chicken-thigh')
+    expect(ids).toContain('red-lentils')
+    expect(ids.slice(-1)).toEqual(['free-candles'])
+    expect(new Set(ids).size).toBe(ids.length)
   })
 
-  it('shortens Dairy, Eggs & Fridge to Dairy and keeps the rest', () => {
+  it('Scenario: A chip total comes from its sources, added, never rounded (F3)', () => {
+    const chips = buildChips(
+      buildBalances(both, [butterExtra], catalogue),
+      NONE
+    )
+    const butter = chipOf(chips, 'butter')
+    expect(butter.sources.map((s) => s.quantity)).toEqual([25, 15, 1])
+    expect(butter.total).toEqual({ amount: 41, unit: 'g' })
+    expect(butter.extra).toBe(1)
+    expect(usedInSummary(butter)).toBe('in 2 recipes and Extra')
+    expect(chipOf(chips, 'garlic').total.unit).toBe('count')
+  })
+
+  it('Scenario: No sources left leaves a greyed chip; a typed extra sits in Other', () => {
+    const removed = copyEntries([
+      withAmount(newCopy(chicken.id), chicken, 'butter', 0)
+    ])
+    const chips = buildChips(buildBalances(removed, [candles], catalogue), NONE)
+    const butter = chipOf(chips, 'butter')
+    expect(butter).toMatchObject({
+      greyed: true,
+      customised: true,
+      total: { amount: 0, unit: 'g' }
+    })
+    expect(usedInSummary(butter)).toBe('removed from every recipe')
+    const typed = chipOf(chips, 'free-candles')
+    expect(typed).toMatchObject({
+      name: 'birthday candles',
+      item: null,
+      section: 'Other',
+      unit: 'count',
+      greyed: false,
+      total: { amount: 2, unit: 'count' }
+    })
+    expect(usedInSummary(typed)).toBe('in Extra')
+    expect(usedInSummary(chipOf(chips, 'garlic'))).toBe('in 1 recipe')
+  })
+
+  it('names an unknown id by itself', () => {
+    const balances = buildBalances(
+      [],
+      [{ id: 'x', name: 'x', ingredientId: 'mystery', quantity: 1 }],
+      catalogue
+    )
+    expect(balances[0]?.name).toBe('x')
+    expect(buildBalances(both, [], [])[0]?.name).toBe('chicken-thigh')
+  })
+})
+
+describe('source amounts', () => {
+  const butter = itemById('butter')
+  it('converts to the chip unit, or keeps the raw number when it cannot', () => {
+    const source = { quantity: 2, measure: 'tbsp', removed: false }
+    expect(sourceAmount({ ...source, removed: true }, butter, 'g')).toBe(0)
+    expect(sourceAmount(source, null, 'count')).toBe(2)
+    expect(sourceAmount({ ...source, measure: 'pinch' }, butter, 'g')).toBe(2)
+    expect(sourceAmount(source, libIngredient(), 'count')).toBe(2)
+    const extra: Source = { kind: 'extra', quantity: 3 }
+    expect(totalOf([extra], null, 'count')).toEqual({
+      amount: 3,
+      unit: 'count'
+    })
+  })
+
+  it('labels repeated recipe names "(2)" (answer 21)', () => {
+    expect(sourceLabel([], 'Dahl')).toBe('Dahl')
+    expect(sourceLabel(['Dahl', 'Curry'], 'Dahl')).toBe('Dahl (2)')
+    expect(extraChipId(candles)).toBe('free-candles')
+    expect(extraChipId(butterExtra)).toBe('butter')
+  })
+})
+
+describe('layout and sorting (#179)', () => {
+  it('places new chips once, and sort moves them to their current category', () => {
+    const placements: Placement[] = [
+      { id: 'a', section: 'Deli' },
+      { id: 'b', section: 'Pantry' }
+    ]
+    const placed = withPlacements(EMPTY_LAYOUT, placements)
+    expect(withPlacements(placed, placements)).toBe(placed)
+    const moved = sortLayout(placed, [{ id: 'a', section: 'Frozen' }])
+    expect(moved.placed).toEqual({ a: 'Frozen', b: 'Pantry' })
+    expect(editFor({}, 'a')).toEqual({ section: null })
+    expect(startSection(null)).toBe('Other')
     expect(categoryLabel('Dairy, Eggs & Fridge')).toBe('Dairy')
-    expect(categoryLabel('Fruit & Veg')).toBe('Fruit & Veg')
   })
 
-  it('says how many recipes need a chip, or that it was added by hand', () => {
-    expect(recipeCountText({ line: line({ recipes: [] }) })).toBe(
-      'added by you'
-    )
-    expect(recipeCountText({ line: line() })).toBe('in 1 recipe')
-    expect(recipeCountText({ line: line({ recipes: ['A', 'B'] }) })).toBe(
-      'in 2 recipes'
-    )
-  })
-})
-
-describe('quantities', () => {
-  it('starts at the pack or item count, the extra quantity, or 1 when weighed', () => {
-    expect(startQuantity(line())).toBe(1)
-    expect(startQuantity(line({ buy: { kind: 'count', count: 3 } }))).toBe(3)
+  it('a category edit changes the colour, not the group, until sorted', () => {
+    const entries = copyEntries([newCopy('dahl')])
+    const balances = buildBalances(entries, [], catalogue)
+    const edits: Record<string, ChipEdit> = { butter: { section: 'Frozen' } }
+    const layout = withPlacements(EMPTY_LAYOUT, placementsOf(balances, {}))
+    const chips = buildChips(balances, { ...NONE, edits, layout })
+    const butter = chipOf(chips, 'butter')
+    expect(butter.section).toBe('Frozen')
+    expect(butter.group).toBe('Dairy, Eggs & Fridge')
+    expect(needsSort(butter)).toBe(true)
+    const groups = groupChips(chips)
+    expect(groups.map((g) => g.section)).not.toContain('Frozen')
+    const sorted = sortLayout(layout, placementsOf(balances, edits))
     expect(
-      startQuantity(
-        line({ buy: { kind: 'weighed', amount: { amount: 450, unit: 'g' } } })
+      groupChips(buildChips(balances, { ...NONE, edits, layout: sorted })).map(
+        (g) => g.section
       )
-    ).toBe(1)
-    expect(startQuantity(line({ extraQuantity: 4 }))).toBe(4)
+    ).toContain('Frozen')
   })
 
-  it('rescales packs and counts to the quantity, and weights in proportion', () => {
-    expect(rescaleBuy(PACK, 1, 2)).toEqual({ ...PACK, count: 2 })
-    expect(rescaleBuy({ kind: 'count', count: 3 }, 3, 5)).toEqual({
-      kind: 'count',
-      count: 5
-    })
-    expect(
-      rescaleBuy({ kind: 'weighed', amount: { amount: 450, unit: 'g' } }, 1, 2)
-    ).toEqual({ kind: 'weighed', amount: { amount: 900, unit: 'g' } })
-  })
-
-  it('applies an edit: category and quantity, or nothing', () => {
-    expect(applyEdit(line(), { quantity: null, section: null })).toEqual(line())
-    const edited = applyEdit(line(), { quantity: 2, section: 'Deli' })
-    expect(edited.section).toBe('Deli')
-    expect(edited.buy).toEqual({ ...PACK, count: 2 })
-  })
-
-  it('finds a chip edit, or none', () => {
-    const edit = { quantity: 2, section: null }
-    expect(editFor({ a: edit }, 'a')).toBe(edit)
-    expect(editFor({}, 'a')).toEqual({ quantity: null, section: null })
-  })
-})
-
-describe('layout', () => {
-  it('places new chips at the end of their group, and leaves placed chips alone', () => {
-    const placed = withPlacements(EMPTY_LAYOUT, [
-      { id: 'a', section: 'Pantry' },
-      { id: 'b', section: 'Deli' }
-    ])
-    expect(placed).toEqual({
-      order: ['a', 'b'],
-      placed: { a: 'Pantry', b: 'Deli' }
-    })
-    expect(withPlacements(placed, [{ id: 'a', section: 'Frozen' }])).toBe(
-      placed
+  it('unplaced chips go last', () => {
+    const balances = buildBalances(
+      copyEntries([newCopy('dahl')]),
+      [],
+      catalogue
     )
-  })
-
-  it('sort moves every chip into the group of its current category', () => {
-    const layout: ChipLayout = { order: ['a'], placed: { a: 'Pantry' } }
-    expect(
-      sortLayout(layout, [
-        { id: 'a', section: 'Deli' },
-        { id: 'b', section: 'Frozen' }
-      ])
-    ).toEqual({ order: ['a', 'b'], placed: { a: 'Deli', b: 'Frozen' } })
-  })
-
-  it('places chips by their edited category', () => {
-    expect(
-      placementsOf([line()], { chickpeas: { quantity: null, section: 'Deli' } })
-    ).toEqual([{ id: 'chickpeas', section: 'Deli' }])
+    const chips = buildChips(balances, {
+      ...NONE,
+      layout: { order: ['butter'], placed: {} }
+    })
+    expect(chips[0]?.id).toBe('butter')
   })
 })
 
-describe('building and grouping chips', () => {
-  const onion = line({
-    ingredientId: 'onion',
-    name: 'brown onion',
-    section: 'Fruit & Veg'
-  })
-  const butter = line({
-    ingredientId: 'extra:butter',
-    name: 'butter',
-    section: 'Dairy, Eggs & Fridge',
-    recipes: [],
-    extraQuantity: 1
-  })
-
-  it('keeps first-seen order, and puts unplaced chips last', () => {
-    const chips = buildChips({
-      lines: [onion, line(), butter],
-      edits: {},
-      layout: { order: ['butter', 'chickpeas'], placed: {} },
-      crossedIds: new Set(['onion'])
-    })
-    expect(chips.map((chip) => chip.id)).toEqual([
-      'butter',
-      'chickpeas',
-      'onion'
+describe('Feature: Recipe rows (#182)', () => {
+  it('Scenario: Expanded row has chips for every ingredient, staples included; removed ones are greyed', () => {
+    const dahl = recipeById('dahl')
+    const [entry] = copyEntries([
+      withAmount(newCopy('dahl'), dahl, 'butter', 0)
     ])
-    const [first, , last] = chips
-    expect(first).toMatchObject({ extra: true, crossed: false, quantity: 1 })
-    expect(last).toMatchObject({
-      extra: false,
-      crossed: true,
-      group: 'Fruit & Veg'
+    if (entry === undefined) throw new Error('no entry')
+    const chips = rowChips(entry, {
+      ...NONE,
+      crossedIds: new Set(['salt']),
+      edits: { onion: { section: 'Pantry' } }
     })
-  })
-
-  it('a category edit changes the section but not the group until sorted', () => {
-    const [chip] = buildChips({
-      lines: [onion],
-      edits: { onion: { quantity: 3, section: 'Dairy, Eggs & Fridge' } },
-      layout: { order: ['onion'], placed: { onion: 'Fruit & Veg' } },
-      crossedIds: new Set()
+    expect(chips).toHaveLength(dahl.ingredients.length)
+    expect(chipOf(chips, 'salt').crossed).toBe(true)
+    expect(chipOf(chips, 'butter')).toMatchObject({
+      greyed: true,
+      customised: true
     })
-    expect(chip).toMatchObject({
-      section: 'Dairy, Eggs & Fridge',
-      group: 'Fruit & Veg',
-      quantity: 3
-    })
-    expect(chip !== undefined && needsSort(chip)).toBe(true)
-  })
-
-  it('groups chips in shop order, chips in their order within a group', () => {
-    const chips = buildChips({
-      lines: [butter, onion, line()],
-      edits: {},
-      layout: EMPTY_LAYOUT,
-      crossedIds: new Set()
-    })
-    expect(
-      groupChips(chips).map((group) => [
-        group.section,
-        group.chips.map((chip: Chip) => chip.id)
-      ])
-    ).toEqual([
-      ['Fruit & Veg', ['onion']],
-      ['Dairy, Eggs & Fridge', ['butter']],
-      ['Pantry', ['chickpeas']]
-    ])
+    expect(chipOf(chips, 'onion').section).toBe('Pantry')
+    expect(recipeSources(chipOf(chips, 'onion'))[0]?.label).toBe(
+      'Red lentil dahl'
+    )
   })
 })

@@ -23,3 +23,11 @@ export const allergensOf = (
   ingredients: readonly LibraryIngredient[]
 ): readonly string[] =>
   ingredients.find((item) => item.id === ingredientId)?.allergens ?? []
+
+/** Unique, lowercased, alphabetical allergens of these items (#182: a customised recipe's). */
+export const itemsAllergens = (
+  items: readonly Pick<LibraryIngredient, 'allergens'>[]
+): string[] =>
+  Array.from(
+    new Set(items.flatMap((i) => i.allergens.map((a) => a.toLowerCase())))
+  ).sort()

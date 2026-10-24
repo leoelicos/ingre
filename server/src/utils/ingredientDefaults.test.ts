@@ -11,7 +11,8 @@ describe('withIngredientDefaults', () => {
         name: '',
         quantity: 0,
         measure: '',
-        category: ''
+        category: '',
+        ingredientId: ''
       })
     ).toEqual(DEFAULT_INGREDIENT)
   })
@@ -20,7 +21,8 @@ describe('withIngredientDefaults', () => {
       name: 'egg',
       quantity: 2,
       measure: 'whole',
-      category: 'dairy'
+      category: 'dairy',
+      ingredientId: 'egg'
     }
     expect(withIngredientDefaults(input)).toEqual(input)
   })

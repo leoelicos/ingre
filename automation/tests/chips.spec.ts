@@ -3,9 +3,13 @@ import {
   CURRY,
   DAHL,
   box,
+  chevron,
   chip,
   chipToggle,
+  panel,
   pickRows,
+  setBox,
+  sourceBox,
   useVertical
 } from './page'
 
@@ -52,21 +56,19 @@ test.describe('ingredient chips (#181)', () => {
     ).toBeHidden()
   })
 
-  test('masses and volumes drop "1×"; two packs read "2 × 500 g"', async ({
+  test('the chip shows the total; masses and volumes drop "1×" (#182, F3)', async ({
     page
   }) => {
     await pickRows(page, DAHL)
     const lentils = chipToggle(page, 'red-lentils')
-    await expect(lentils).toContainText('500 g')
+    await expect(lentils).toContainText('150 g')
     await expect(lentils).not.toContainText('×')
-    await chip(page, 'red-lentils')
-      .getByRole('button', { name: 'Red lentils details' })
-      .click()
-    await page
-      .getByRole('group', { name: 'Red lentils details' })
-      .getByRole('button', { name: /Increase/ })
-      .click()
-    await expect(lentils).toContainText('2 × 500 g')
+    await chevron(page, 'red-lentils').click()
+    const details = panel(page, 'Red lentils')
+    await setBox(sourceBox(details, DAHL), '520')
+    await expect(lentils).toContainText('520 g')
+    await expect(lentils).not.toContainText('×')
+    await expect(details.getByText('Total: 520 g')).toBeVisible()
   })
 
   test('the chevron is a neumorphic button of its own, pressed in while open; it opens and closes the panel', async ({
@@ -101,7 +103,9 @@ test.describe('ingredient chips (#181)', () => {
     await page.getByRole('button', { name: 'Brown onion details' }).click()
     const panel = page.getByRole('group', { name: 'Brown onion details' })
     await expect(panel.getByRole('heading', { name: 'Used in' })).toBeVisible()
-    await expect(panel.getByRole('listitem')).toHaveText([DAHL, CURRY])
+    // each recipe with its box, which reads in onions (#182, owner decision 2)
+    await expect(panel.getByRole('listitem')).toContainText([DAHL, CURRY])
+    await expect(panel.getByRole('listitem')).toHaveCount(2)
   })
 
   test('the open panel stays in place, with a fan stemming down from its chip', async ({
@@ -177,14 +181,14 @@ test.describe('ingredient chips (#181)', () => {
 
   test('no Done button: changes apply at once', async ({ page }) => {
     await pickRows(page, DAHL)
-    await page.getByRole('button', { name: 'Tomatoes details' }).click()
-    const panel = page.getByRole('group', { name: 'Tomatoes details' })
-    await expect(panel.getByRole('button', { name: 'Done' })).toHaveCount(0)
-    await panel.getByRole('button', { name: /Increase/ }).click()
+    await chevron(page, 'tomato').click()
+    const details = panel(page, 'Tomatoes')
+    await expect(details.getByRole('button', { name: 'Done' })).toHaveCount(0)
+    await setBox(sourceBox(details, DAHL), '2')
     await expect(chipToggle(page, 'tomato')).toHaveAccessibleName(
       /^Tomatoes, 2\b/
     )
-    await expect(panel).toBeVisible()
+    await expect(details).toBeVisible()
   })
 
   test('allergens show as tags on the ingredient', async ({ page }) => {

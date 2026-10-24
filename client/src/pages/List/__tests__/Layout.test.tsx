@@ -21,18 +21,21 @@ const grid = () => {
   return found
 }
 const sectionHeaderButtons = () =>
-  screen.queryAllByRole('button', { name: /^(Ingredients|Recipes)/ })
+  screen.queryAllByRole('button', { name: /^(Ingredients|Recipes|Extra)/ })
 const drawer = () =>
   screen.queryByRole('complementary', { name: 'Explore drawer' })
 
 describe('Scenario: Mobile first, vertical below 576px (#181)', () => {
-  it('stacks the sections, offers no layout toggle, and keeps the collapse buttons', () => {
+  it('stacks the sections, offers no layout toggle, and keeps the collapse buttons, Extra too (#182, answer 15)', () => {
     setViewportWidth(575)
     renderList()
     expect(layout()).toBeNull()
     expect(grid()).toHaveAttribute('data-split', 'vertical')
     expect(grid()).toHaveClass('grid-cols-1')
-    expect(sectionHeaderButtons()).toHaveLength(2)
+    expect(sectionHeaderButtons()).toHaveLength(3)
+    const extra = screen.getByRole('button', { name: /^Extra/ })
+    fireEvent.click(extra)
+    expect(extra).toHaveAttribute('aria-expanded', 'false')
     expect(drawer()).toBeNull()
   })
 })
@@ -68,7 +71,7 @@ describe('Scenario: Side by side from 576px (#181)', () => {
     expect(region('Ingredients').querySelector('[data-chip]')).toBeVisible()
     choose('Vertical')
     expect(grid()).toHaveAttribute('data-split', 'vertical')
-    expect(sectionHeaderButtons()).toHaveLength(2)
+    expect(sectionHeaderButtons()).toHaveLength(3)
   })
 })
 

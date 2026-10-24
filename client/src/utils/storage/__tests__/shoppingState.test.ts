@@ -6,7 +6,10 @@ import {
   EMPTY_LAYOUT,
   EXTRAS_KEY,
   LAYOUT_KEY,
+  COPIES_KEY,
   PICKED_KEY,
+  legacyCopies,
+  parseCopies,
   parseEdits,
   parseExtras,
   parseLayout,
@@ -14,9 +17,10 @@ import {
   useChipEdits,
   useChipLayout,
   useCrossedIds,
-  useExtras,
-  usePickedIds
+  useCopies,
+  useExtras
 } from '../shoppingState'
+import { PEOPLE_KEY } from '../people'
 
 const stored = (key: string): unknown =>
   JSON.parse(localStorage.getItem(key) ?? 'null')
@@ -55,21 +59,18 @@ describe('parsers', () => {
     expect(parseSection(3)).toBeNull()
   })
 
-  it('parses chip edits, keeping only whole quantities and known sections (#179)', () => {
+  it('parses chip edits, keeping only known sections and dropping old quantity overrides (#182)', () => {
     expect(
       parseEdits({
         tomato: { quantity: 2, section: null },
         onion: { quantity: null, section: 'Pantry' },
         both: { quantity: 3, section: 'Deli' },
-        badQuantity: { quantity: 1.5, section: 'Deli' },
         empty: { quantity: 0, section: 'Garage' },
         notRecord: 'x'
       })
     ).toEqual({
-      tomato: { quantity: 2, section: null },
-      onion: { quantity: null, section: 'Pantry' },
-      both: { quantity: 3, section: 'Deli' },
-      badQuantity: { quantity: null, section: 'Deli' }
+      onion: { section: 'Pantry' },
+      both: { section: 'Deli' }
     })
     expect(parseEdits(null)).toBeNull()
     expect(parseEdits(['x'])).toBeNull()
@@ -88,6 +89,46 @@ describe('parsers', () => {
     })
     expect(parseLayout({ order: 'a' })).toBeNull()
     expect(parseLayout(null)).toBeNull()
+  })
+})
+
+describe('recipe copies (#182)', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('parses copies: one per recipe, portions clamped, amounts of 0 or more', () => {
+    expect(
+      parseCopies([
+        {
+          recipeId: 'dahl',
+          portions: 30,
+          amounts: { butter: 0, x: -1, y: 'a' }
+        },
+        { recipeId: 'dahl', portions: 3, amounts: {} },
+        { recipeId: 'curry', portions: 2.4 },
+        { recipeId: 1, portions: 2 },
+        { recipeId: 'x' },
+        'nope'
+      ])
+    ).toEqual([
+      { recipeId: 'dahl', portions: 12, amounts: { butter: 0 } },
+      { recipeId: 'curry', portions: 2, amounts: {} }
+    ])
+    expect(parseCopies({})).toBeNull()
+  })
+
+  it('migrates old picks with the old Serves as portions, else 2', () => {
+    expect(legacyCopies()).toEqual([])
+    localStorage.setItem(PICKED_KEY, JSON.stringify(['dahl']))
+    expect(legacyCopies()).toEqual([
+      { recipeId: 'dahl', portions: 2, amounts: {} }
+    ])
+    localStorage.setItem(PEOPLE_KEY, '3')
+    const { result } = renderHook(() => useCopies())
+    expect(result.current[0]).toEqual([
+      { recipeId: 'dahl', portions: 3, amounts: {} }
+    ])
+    act(() => result.current[1]((copies) => copies.slice(1)))
+    expect(stored(COPIES_KEY)).toEqual([])
   })
 })
 
@@ -113,10 +154,7 @@ describe('stored hooks', () => {
     expect(stored('s')).toEqual([])
   })
 
-  it('remembers picks, crossed off chips, extras, edits and the layout', () => {
-    const picked = renderHook(() => usePickedIds())
-    act(() => picked.result.current[1]('dahl'))
-    expect(stored(PICKED_KEY)).toEqual(['dahl'])
+  it('remembers crossed off chips, extras, edits and the layout', () => {
     const crossed = renderHook(() => useCrossedIds())
     act(() => crossed.result.current[1]('onion'))
     expect(stored(CROSSED_KEY)).toEqual(['onion'])
@@ -132,10 +170,10 @@ describe('stored hooks', () => {
     expect(edits.result.current[0]).toEqual({})
     act(() =>
       edits.result.current[1](() => ({
-        onion: { quantity: 2, section: null }
+        onion: { section: 'Pantry' }
       }))
     )
-    expect(stored(EDITS_KEY)).toEqual({ onion: { quantity: 2, section: null } })
+    expect(stored(EDITS_KEY)).toEqual({ onion: { section: 'Pantry' } })
     const layout = renderHook(() => useChipLayout())
     expect(layout.result.current[0]).toEqual(EMPTY_LAYOUT)
     act(() =>

@@ -4,7 +4,8 @@ export const DEFAULT_INGREDIENT: IngredientInput = {
   name: 'Generic',
   quantity: 1,
   measure: 'unit',
-  category: 'Generic'
+  category: 'Generic',
+  ingredientId: ''
 }
 
 /** Replaces falsy ingredient fields with their defaults. */
@@ -14,7 +15,8 @@ export const withIngredientDefaults = (
   name: input.name || DEFAULT_INGREDIENT.name,
   quantity: input.quantity || DEFAULT_INGREDIENT.quantity,
   measure: input.measure || DEFAULT_INGREDIENT.measure,
-  category: input.category || DEFAULT_INGREDIENT.category
+  category: input.category || DEFAULT_INGREDIENT.category,
+  ingredientId: input.ingredientId
 })
 
 /** Keeps the values of fulfilled promises, dropping rejections. */

@@ -10,19 +10,22 @@ export class IngredientApi {
     name,
     quantity,
     measure,
-    category
+    category,
+    ingredientId = null
   }: {
     name: string
     quantity: number
     measure: string
     category: Types.ObjectId
+    ingredientId?: string | null
   }): Promise<CreatedIngredient> => {
     try {
       const ingredient = await Ingredient.create({
         name,
         quantity,
         measure,
-        category
+        category,
+        ingredientId
       })
       return await Ingredient.findById(ingredient._id)
         .select('-__v')

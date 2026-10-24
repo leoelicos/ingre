@@ -1,5 +1,11 @@
 import { render, screen } from '@testing-library/react'
-import { Chevron, Collapse, collapseClass, MOTION } from '../Collapse'
+import {
+  Chevron,
+  Collapse,
+  COLLAPSE_INNER,
+  collapseClass,
+  MOTION
+} from '../Collapse'
 
 describe('Collapse', () => {
   it('animates in 0.2 s, and not at all with reduced motion', () => {
@@ -30,6 +36,21 @@ describe('Collapse', () => {
     )
     expect(screen.getByRole('button', { name: 'Inside' })).toBeTruthy()
     expect(container.querySelector('#c')?.className).toContain('extra')
+  })
+
+  it('clips its content without being scrollable, so focusing a field while it opens scrolls nothing (#182)', () => {
+    const { container } = render(
+      <Collapse
+        id="c"
+        open
+      >
+        <input aria-label="Contains" />
+      </Collapse>
+    )
+    const inner = container.querySelector('#c > div')
+    expect(inner?.className).toBe(COLLAPSE_INNER)
+    expect(COLLAPSE_INNER).toContain('overflow-clip')
+    expect(COLLAPSE_INNER).not.toContain('overflow-hidden')
   })
 
   it('turns the chevron when open', () => {

@@ -21,7 +21,6 @@ import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
 import { ListPage } from './pages/List/ListPage'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
-import Search from './pages/Search/Search'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
@@ -94,10 +93,6 @@ export const Ingre: FC = () => {
                 <Route
                   path="/"
                   element={<ListPage />}
-                />
-                <Route
-                  path="/search"
-                  element={<Search />}
                 />
                 <Route
                   path="/saved"

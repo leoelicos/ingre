@@ -1,50 +1,23 @@
-import type { FC } from 'react'
+import type { FC, ReactNode } from 'react'
 import { useLayoutEffect, useRef } from 'react'
+import { Button, ToggleButton } from 'react-aria-components'
 import {
-  Button,
-  Group,
-  Input,
-  Label,
-  NumberField,
-  Radio,
-  RadioGroup,
-  ToggleButton
-} from 'react-aria-components'
-import { Chevron, MOTION, collapseClass } from '../../components/Collapse'
-import { AllergenTags } from '../../components/AllergenTags'
+  COLLAPSE_INNER,
+  Chevron,
+  MOTION,
+  collapseClass
+} from '../../components/Collapse'
 import {
   TONE_CLASSES,
   sectionTone
 } from '../../components/IngredientBadge/badgeTone'
 import type { BadgeTone } from '../../components/IngredientBadge/tones'
 import type { Chip, ChipGroup } from '../../utils/chips/chips'
-import { categoryLabel, needsSort } from '../../utils/chips/chips'
-import { allergensOf } from '../../utils/library/allergens'
-import { catalogue } from '../../utils/library/recipeLibrary'
+import { categoryLabel } from '../../utils/chips/chips'
 import type { ShopSection } from '../../utils/shopping/sections'
-import { SHOP_SECTIONS } from '../../utils/shopping/sections'
-import {
-  buyAmount,
-  catalogueIdOf,
-  displayName
-} from '../../utils/shopping/shoppingList'
-import {
-  chipChevronId,
-  chipLabel,
-  chipCategoryId,
-  chipPanelId,
-  chipToggleId,
-  usedInText
-} from './chipText'
-
-/** What a chip can do; the page owns the state. */
-export interface ChipActions {
-  readonly onToggle: (id: string) => void
-  readonly onQuantity: (id: string, quantity: number) => void
-  readonly onCategory: (id: string, section: ShopSection) => void
-  readonly onSortNow: (id: string) => void
-  readonly onRemove: (id: string) => void
-}
+import { displayName } from '../../utils/shopping/shoppingList'
+import type { ChipScope } from './chipText'
+import { chipChevronId, chipLabel, chipPanelId, chipToggleId } from './chipText'
 
 /** Which chip's panel is open, or closing (kept mounted so it can animate shut). */
 export interface PanelState {
@@ -53,14 +26,25 @@ export interface PanelState {
   readonly onChevron: (id: string) => void
 }
 
-/** "Dairy, Eggs & Fridge" -> "chips-dairy-eggs-fridge" */
-export const groupHeadingId = (section: ShopSection): string =>
-  `chips-${section.toLowerCase().replace(/[^a-z]+/g, '-')}`
+/** How a set of chips is shown and what a tap does (#182: Ingredients, Extra and recipe rows). */
+export interface ChipView {
+  readonly scope: ChipScope
+  /** the amount under the name */
+  readonly amountOf: (chip: Chip) => string
+  readonly onToggle: (id: string) => void
+  readonly panel: PanelState
+  /** the open panel's content */
+  readonly details: (chip: Chip) => ReactNode
+}
 
-const toneOf = (section: ShopSection): string =>
+/** "Dairy, Eggs & Fridge" -> "chips-dairy-eggs-fridge"; scoped outside Ingredients. */
+export const groupHeadingId = (section: ShopSection, scope = 'chip'): string =>
+  `${scope}s-${section.toLowerCase().replace(/[^a-z]+/g, '-')}`
+
+export const toneOf = (section: ShopSection): string =>
   TONE_CLASSES[sectionTone(section)]
 
-const SMALL_BUTTON =
+export const SMALL_BUTTON =
   'inline-flex min-h-[44px] items-center justify-center rounded-pill border-2 border-current px-4 text-sm font-semibold data-[focus-visible]:focus-ring data-[pressed]:opacity-80'
 
 /** The checkbox in the chip: ticked once crossed off. The chip itself is the control. */
@@ -76,38 +60,46 @@ const ChipCheck: FC<{ crossed: boolean }> = ({ crossed }) => (
   </span>
 )
 
-/** The chip itself: a tap anywhere, the checkbox included, crosses off or restores (#181). */
-const ChipToggle: FC<{ chip: Chip; onToggle: (id: string) => void }> = ({
-  chip,
-  onToggle
-}) => (
-  <ToggleButton
-    id={chipToggleId(chip.id)}
-    isSelected={chip.crossed}
-    onChange={() => onToggle(chip.id)}
-    aria-label={chipLabel(chip)}
-    className="flex min-h-[44px] items-center gap-2 rounded-l-pill py-1 pl-3 pr-1 text-left data-[focus-visible]:focus-ring"
-  >
-    <ChipCheck crossed={chip.crossed} />
-    <span
-      className={`flex flex-col leading-tight ${
-        chip.crossed ? 'line-through opacity-70' : ''
-      }`}
+/**
+ * The chip itself: a tap anywhere, the checkbox included, crosses off or restores (#181). A
+ * greyed chip (removed from every recipe) can't be crossed off (#182).
+ */
+const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
+  const amount = view.amountOf(chip)
+  return (
+    <ToggleButton
+      id={chipToggleId(chip.id, view.scope)}
+      isSelected={chip.crossed}
+      isDisabled={chip.greyed}
+      onChange={() => view.onToggle(chip.id)}
+      aria-label={chipLabel(chip, amount)}
+      className="flex min-h-[44px] items-center gap-2 rounded-l-pill py-1 pl-3 pr-1 text-left data-[focus-visible]:focus-ring"
     >
-      <span className="font-semibold">{displayName(chip.line)}</span>
-      <span className="text-xs">{buyAmount(chip.line)}</span>
-    </span>
-  </ToggleButton>
-)
+      <ChipCheck crossed={chip.crossed} />
+      <span
+        className={`flex flex-col leading-tight ${
+          chip.crossed ? 'line-through opacity-70' : ''
+        }`}
+      >
+        <span className="font-semibold">{displayName(chip)}</span>
+        <span className="text-xs">{amount}</span>
+      </span>
+    </ToggleButton>
+  )
+}
 
 /**
  * Skeuomorphic chip (#181): a lit, raised pill that sinks in once crossed off. Its own soft
- * shadow and the gap keep it apart from its neighbours.
+ * shadow and the gap keep it apart from its neighbours. Greyed, it is flat and dashed (#182).
  */
-export const chipClass = (chip: Pick<Chip, 'crossed' | 'section'>): string =>
-  `flex items-center gap-1 rounded-pill border bg-gradient-to-b from-white/50 to-white/0 transition-shadow ${MOTION} ${
-    chip.crossed ? 'shadow-pressed' : 'shadow-raised'
-  } ${toneOf(chip.section)}`
+export const chipClass = (
+  chip: Pick<Chip, 'crossed' | 'section' | 'greyed'>
+): string =>
+  chip.greyed
+    ? 'flex items-center gap-1 rounded-pill border-2 border-dashed border-text-secondary bg-surface text-text-secondary'
+    : `flex items-center gap-1 rounded-pill border bg-gradient-to-b from-white/50 to-white/0 transition-shadow ${MOTION} ${
+        chip.crossed ? 'shadow-pressed' : 'shadow-raised'
+      } ${toneOf(chip.section)}`
 
 /** The chevron: a neumorphic button of its own, pressed in while its panel is open. */
 const chevronClass = (expanded: boolean): string =>
@@ -116,28 +108,26 @@ const chevronClass = (expanded: boolean): string =>
   }`
 
 /** A chip and its chevron, coloured by its current category. */
-const ChipItem: FC<{
-  chip: Chip
-  actions: ChipActions
-  panel: PanelState
-}> = ({ chip, actions, panel }) => {
-  const expanded = panel.open && panel.id === chip.id
+const ChipItem: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
+  const expanded = view.panel.open && view.panel.id === chip.id
   return (
     <li
       data-chip={chip.id}
+      data-scope={view.scope}
       data-category={categoryLabel(chip.section)}
+      data-greyed={chip.greyed}
       className={chipClass(chip)}
     >
       <ChipToggle
         chip={chip}
-        onToggle={actions.onToggle}
+        view={view}
       />
       <Button
-        id={chipChevronId(chip.id)}
-        aria-label={`${displayName(chip.line)} details`}
+        id={chipChevronId(chip.id, view.scope)}
+        aria-label={`${displayName(chip)} details`}
         aria-expanded={expanded}
-        aria-controls={chipPanelId(chip.id)}
-        onPress={() => panel.onChevron(chip.id)}
+        aria-controls={chipPanelId(chip.id, view.scope)}
+        onPress={() => view.panel.onChevron(chip.id)}
         className={chevronClass(expanded)}
       >
         <Chevron open={expanded} />
@@ -145,89 +135,6 @@ const ChipItem: FC<{
     </li>
   )
 }
-
-/** Quantity, editable (#179). Whole numbers from 1. */
-const QuantityField: FC<{ chip: Chip; actions: ChipActions }> = ({
-  chip,
-  actions
-}) => (
-  <NumberField
-    value={chip.quantity}
-    minValue={1}
-    step={1}
-    onChange={(value) =>
-      [value]
-        .filter((n) => Number.isInteger(n) && n >= 1)
-        .forEach((n) => actions.onQuantity(chip.id, n))
-    }
-    className="flex flex-col gap-1"
-  >
-    <Label className="text-sm font-semibold">Quantity</Label>
-    <Group className="flex items-center gap-2">
-      <Button
-        slot="decrement"
-        className={SMALL_BUTTON}
-      >
-        −
-      </Button>
-      <Input className="h-11 w-16 rounded-control border border-border bg-surface px-2 text-center text-text focus-visible:focus-ring" />
-      <Button
-        slot="increment"
-        className={SMALL_BUTTON}
-      >
-        +
-      </Button>
-    </Group>
-  </NumberField>
-)
-
-/** Category, editable: only the chip's colour changes until Sort now or Sort. */
-const CategoryField: FC<{ chip: Chip; actions: ChipActions }> = ({
-  chip,
-  actions
-}) => (
-  <RadioGroup
-    id={chipCategoryId(chip.id)}
-    value={chip.section}
-    onChange={(value) =>
-      SHOP_SECTIONS.filter((section) => section === value).forEach((section) =>
-        actions.onCategory(chip.id, section)
-      )
-    }
-    orientation="horizontal"
-    className="flex flex-col gap-1"
-  >
-    <div className="flex flex-wrap items-center gap-2">
-      <Label className="text-sm font-semibold">Category</Label>
-      {needsSort(chip) && (
-        <Button
-          onPress={() => actions.onSortNow(chip.id)}
-          className={SMALL_BUTTON}
-        >
-          Sort now
-        </Button>
-      )}
-    </div>
-    <div className="flex flex-wrap gap-2">
-      {SHOP_SECTIONS.map((section) => (
-        <Radio
-          key={section}
-          value={section}
-          className={`inline-flex min-h-[44px] cursor-pointer items-center gap-1 rounded-pill border px-3 text-sm data-[selected]:border-2 data-[selected]:font-bold data-[focus-visible]:focus-ring ${toneOf(
-            section
-          )}`}
-        >
-          {({ isSelected }) => (
-            <>
-              {isSelected && <span aria-hidden="true">✓</span>}
-              {categoryLabel(section)}
-            </>
-          )}
-        </Radio>
-      ))}
-    </div>
-  </RadioGroup>
-)
 
 /** The fan's colour: the chip's own, so the panel reads as coming out of that chip. */
 const FAN_TONES: Readonly<Record<BadgeTone, string>> = {
@@ -295,63 +202,28 @@ const useFan = (chipId: string, open: boolean) => {
 }
 
 /** The chip's inline panel: pushes the chips below it down. Changes apply as they are made. */
-const ChipPanel: FC<{
-  chip: Chip
-  actions: ChipActions
-  panel: PanelState
-}> = ({ chip, actions, panel }) => {
-  const open = panel.open && panel.id === chip.id
+const ChipPanel: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
+  const open = view.panel.open && view.panel.id === chip.id
   const ref = useFan(chip.id, open)
   return (
     <li
       ref={ref}
-      id={chipPanelId(chip.id)}
+      id={chipPanelId(chip.id, view.scope)}
       hidden={!open}
       data-fan=""
       className={`basis-full ${FAN} ${
         FAN_TONES[sectionTone(chip.section)]
       } ${collapseClass(open)}`}
     >
-      <div className="min-h-0 overflow-hidden">
+      <div className={COLLAPSE_INNER}>
         <div className="p-1.5">
           <div
             role="group"
-            aria-label={`${displayName(chip.line)} details`}
+            aria-label={`${displayName(chip)} details`}
             className={`rounded-card border-2 p-1 ${toneOf(chip.section)}`}
           >
             <div className="flex flex-col gap-4 rounded-[10px] bg-surface p-3 text-text">
-              <div>
-                <h4 className="m-0 text-sm font-semibold">Used in</h4>
-                <ul className="m-0 list-disc pl-5 text-sm">
-                  {usedInText(chip).map((name) => (
-                    <li key={name}>{name}</li>
-                  ))}
-                </ul>
-              </div>
-              <AllergenTags
-                allergens={allergensOf(
-                  catalogueIdOf(chip.line.ingredientId),
-                  catalogue
-                )}
-              />
-              <QuantityField
-                chip={chip}
-                actions={actions}
-              />
-              <CategoryField
-                chip={chip}
-                actions={actions}
-              />
-              {chip.extra && (
-                <div>
-                  <Button
-                    onPress={() => actions.onRemove(chip.id)}
-                    className={SMALL_BUTTON}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              )}
+              {view.details(chip)}
             </div>
           </div>
         </div>
@@ -360,45 +232,53 @@ const ChipPanel: FC<{
   )
 }
 
-/** Chips under their category headings; the open chip's panel follows it in the flow. */
+/** Chips in a wrapping row; the open chip's panel follows it in the flow. */
+export const ChipList: FC<{ chips: readonly Chip[]; view: ChipView }> = ({
+  chips,
+  view
+}) => (
+  <ul className="relative m-0 flex list-none flex-wrap gap-3 p-0">
+    {chips.flatMap((chip) => [
+      <ChipItem
+        key={chip.id}
+        chip={chip}
+        view={view}
+      />,
+      ...(view.panel.id === chip.id
+        ? [
+            <ChipPanel
+              key={`${chip.id}-panel`}
+              chip={chip}
+              view={view}
+            />
+          ]
+        : [])
+    ])}
+  </ul>
+)
+
+/** Chips under their category headings. */
 export const ChipGroups: FC<{
   groups: readonly ChipGroup[]
-  actions: ChipActions
-  panel: PanelState
-}> = ({ groups, actions, panel }) => (
+  view: ChipView
+}> = ({ groups, view }) => (
   <div className="flex flex-col gap-4">
     {groups.map((group) => (
       <div
         key={group.section}
         role="group"
-        aria-labelledby={groupHeadingId(group.section)}
+        aria-labelledby={groupHeadingId(group.section, view.scope)}
       >
         <h3
-          id={groupHeadingId(group.section)}
+          id={groupHeadingId(group.section, view.scope)}
           className="m-0 mb-2 text-sm font-semibold uppercase tracking-wide text-text-secondary"
         >
           {categoryLabel(group.section)}
         </h3>
-        <ul className="relative m-0 flex list-none flex-wrap gap-3 p-0">
-          {group.chips.flatMap((chip) => [
-            <ChipItem
-              key={chip.id}
-              chip={chip}
-              actions={actions}
-              panel={panel}
-            />,
-            ...(panel.id === chip.id
-              ? [
-                  <ChipPanel
-                    key={`${chip.id}-panel`}
-                    chip={chip}
-                    actions={actions}
-                    panel={panel}
-                  />
-                ]
-              : [])
-          ])}
-        </ul>
+        <ChipList
+          chips={group.chips}
+          view={view}
+        />
       </div>
     ))}
   </div>

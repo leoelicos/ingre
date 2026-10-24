@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 import type {
   Operation,
-  Recipe,
   RecipeVariables,
+  SavedRecipe,
   User,
   UserInput,
   UserProfile
@@ -63,7 +63,7 @@ export const LOGIN: Operation<
 `
 
 export const SAVE_RECIPE: Operation<
-  { saveRecipe: Recipe },
+  { saveRecipe: SavedRecipe },
   RecipeVariables
 > = gql`
   mutation SaveRecipe($input: RecipeInput!) {
@@ -76,6 +76,7 @@ export const SAVE_RECIPE: Operation<
         name
         quantity
         measure
+        ingredientId
         category {
           _id
           name
@@ -84,6 +85,26 @@ export const SAVE_RECIPE: Operation<
       picture_url
       libraryId
       instructions
+      customisations {
+        __typename
+        ... on AddedIngredient {
+          ingredientId
+          to
+        }
+        ... on RemovedIngredient {
+          ingredientId
+          from
+        }
+        ... on ChangedIngredient {
+          ingredientId
+          from
+          to
+        }
+        ... on PortionsChange {
+          fromPortions: from
+          toPortions: to
+        }
+      }
     }
   }
 `

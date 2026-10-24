@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+import type { FC, ReactNode } from 'react'
 import { useId, useState } from 'react'
 import { Button, ToggleButton } from 'react-aria-components'
 import { Chevron, Collapse, MOTION } from '../../components/Collapse'
@@ -6,127 +6,27 @@ import {
   KeyIngredientLines,
   keyNameIds
 } from '../../components/IngredientBadge/KeyIngredients'
-import { ServesPicker } from '../../components/ServesPicker'
-import { SaveButton } from '../../components/Widgets/RecipeCard/components/SaveButton'
-import { splitTitle } from '../../components/Widgets/RecipeCard/recipeCardHelpers'
+import { splitTitle } from '../../components/recipeTitle'
 import type { LibraryRecipe } from '../../types/library'
-import { containsLine, recipeAllergens } from '../../utils/library/allergens'
 import { keyIngredientsOf } from '../../utils/library/keyIngredients'
-import { catalogue } from '../../utils/library/recipeLibrary'
-import {
-  TONE_CLASSES,
-  sectionTone
-} from '../../components/IngredientBadge/badgeTone'
-import type { ShopLine } from '../../utils/shopping/shoppingList'
-import {
-  assumedNames,
-  buildShoppingList,
-  buyAmount,
-  displayName
-} from '../../utils/shopping/shoppingList'
-import type { People } from '../../utils/storage/people'
 
-/** What every row shares: picks, open rows, servings and whether Save is offered. */
+/** What every row shares: picks, open rows, and what an open row shows. */
 export interface RowControls {
   readonly pickedIds: ReadonlySet<string>
-  readonly onTogglePicked: (id: string) => void
+  readonly onTogglePicked: (recipe: LibraryRecipe) => void
   readonly openIds: ReadonlySet<string>
   readonly onToggleOpen: (id: string) => void
-  readonly people: People
-  readonly onPeople: (people: People) => void
-  /** Save (the heart) shows only when signed in (#179) */
-  readonly canSave: boolean
   /** Explore's rows open with a "See recipe" button; list rows with a chevron (#181) */
   readonly seeRecipe: boolean
 }
 
-/** The notes under the method: allergens and the staples assumed at home; empty when none. */
-export const recipeNotes = (
-  recipe: LibraryRecipe,
-  people: People
-): string[] => {
-  const staples = buildShoppingList([recipe], people, catalogue).filter(
-    (line) => line.staple
-  )
-  return [
-    containsLine(recipeAllergens(recipe, catalogue)),
-    staples.length === 0 ? '' : `You'll also need: ${assumedNames(staples)}`
-  ].filter((note) => note !== '')
+/** A row: its recipe and what it shows open, the original in Explore or the copy in Recipes (#182). */
+export interface Row {
+  readonly recipe: LibraryRecipe
+  readonly details: (title: string) => ReactNode
 }
 
-const HEADING = 'm-0 text-sm font-semibold uppercase tracking-wide'
-
-/** An ingredient chip in an open row: read-only for now (#181), coloured by its category. */
-const IngredientChip: FC<{ line: ShopLine }> = ({ line }) => (
-  <li
-    data-ingredient={line.ingredientId}
-    className={`flex flex-col rounded-pill border bg-gradient-to-b from-white/50 to-white/0 px-3 py-1 leading-tight shadow-raised ${
-      TONE_CLASSES[sectionTone(line.section)]
-    }`}
-  >
-    <span className="font-semibold">{displayName(line)}</span>
-    <span className="text-xs">{buyAmount(line)}</span>
-  </li>
-)
-
-/** The expanded row: ingredients, servings, method, notes, and Save when signed in. */
-const RecipeDetails: FC<{
-  recipe: LibraryRecipe
-  title: string
-  controls: RowControls
-}> = ({ recipe, title, controls }) => {
-  const lines = buildShoppingList([recipe], controls.people, catalogue)
-  const notes = recipeNotes(recipe, controls.people)
-  return (
-    <div className="flex flex-col gap-4 border-t border-border px-4 pb-4 pt-3 text-text">
-      {controls.canSave && (
-        <div className="flex items-center gap-2">
-          <SaveButton
-            recipeName={title}
-            libraryId={recipe.id}
-          />
-          <span className="text-sm">Save</span>
-        </div>
-      )}
-      <ServesPicker
-        people={controls.people}
-        onChange={controls.onPeople}
-      />
-      <div>
-        <h3 className={HEADING}>Ingredients</h3>
-        <ul className="m-0 mt-2 flex list-none flex-wrap gap-2 p-0">
-          {lines.map((line) => (
-            <IngredientChip
-              key={line.ingredientId}
-              line={line}
-            />
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h3 className={HEADING}>Method</h3>
-        <ol className="m-0 pl-5">
-          {recipe.method.map((step) => (
-            <li key={step}>{step}</li>
-          ))}
-        </ol>
-      </div>
-      {notes.length > 0 && (
-        <div>
-          <h3 className={HEADING}>Notes</h3>
-          {notes.map((note) => (
-            <p
-              key={note}
-              className="m-0 text-sm"
-            >
-              {note}
-            </p>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
+export const ROW_HEADING = 'm-0 text-sm font-semibold uppercase tracking-wide'
 
 /** Raised when not picked; pressed in, with a border and a check mark, once picked. */
 const rowClass = (picked: boolean): string =>
@@ -166,9 +66,10 @@ export const useShownOnce = (open: boolean): boolean => {
  * VoiceOver reads "selected"); the chevron opens its details inline. No Add button.
  */
 export const RecipeRow: FC<{
-  recipe: LibraryRecipe
+  row: Row
   controls: RowControls
-}> = ({ recipe, controls }) => {
+}> = ({ row, controls }) => {
+  const { recipe } = row
   const id = useId()
   const { title } = splitTitle(recipe.name)
   const items = keyIngredientsOf(recipe)
@@ -177,10 +78,13 @@ export const RecipeRow: FC<{
   const detailsId = `${id}-details`
   const shown = useShownOnce(open)
   return (
-    <li className={rowClass(picked)}>
+    <li
+      data-recipe={recipe.id}
+      className={rowClass(picked)}
+    >
       <ToggleButton
         isSelected={picked}
-        onChange={() => controls.onTogglePicked(recipe.id)}
+        onChange={() => controls.onTogglePicked(recipe)}
         aria-labelledby={`${id}-title`}
         aria-describedby={keyNameIds(id, items)}
         className="flex min-h-[44px] items-start gap-3 rounded-l-card p-4 text-left data-[focus-visible]:focus-ring"
@@ -217,11 +121,9 @@ export const RecipeRow: FC<{
         className="col-span-2"
       >
         {shown && (
-          <RecipeDetails
-            recipe={recipe}
-            title={title}
-            controls={controls}
-          />
+          <div className="flex flex-col gap-4 border-t border-border px-4 pb-4 pt-3 text-text">
+            {row.details(title)}
+          </div>
         )}
       </Collapse>
     </li>
@@ -230,16 +132,44 @@ export const RecipeRow: FC<{
 
 /** The recipe rows: a single-column grid of rows, not cards. */
 export const RecipeRows: FC<{
-  recipes: readonly LibraryRecipe[]
+  rows: readonly Row[]
   controls: RowControls
-}> = ({ recipes, controls }) => (
+}> = ({ rows, controls }) => (
   <ul className="m-0 grid list-none grid-cols-1 gap-4 p-1">
-    {recipes.map((recipe) => (
+    {rows.map((row) => (
       <RecipeRow
-        key={recipe.id}
-        recipe={recipe}
+        key={row.recipe.id}
+        row={row}
         controls={controls}
       />
     ))}
   </ul>
 )
+
+/** The method steps. */
+export const Method: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => (
+  <div>
+    <h3 className={ROW_HEADING}>Method</h3>
+    <ol className="m-0 pl-5">
+      {recipe.method.map((step) => (
+        <li key={step}>{step}</li>
+      ))}
+    </ol>
+  </div>
+)
+
+/** The notes under the method; nothing when there are none. */
+export const Notes: FC<{ notes: readonly string[] }> = ({ notes }) =>
+  notes.length === 0 ? null : (
+    <div>
+      <h3 className={ROW_HEADING}>Notes</h3>
+      {notes.map((note) => (
+        <p
+          key={note}
+          className="m-0 text-sm"
+        >
+          {note}
+        </p>
+      ))}
+    </div>
+  )

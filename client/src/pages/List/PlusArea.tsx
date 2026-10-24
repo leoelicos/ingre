@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import { useEffect } from 'react'
 import { Button, Tab, TabList, TabPanel, Tabs } from 'react-aria-components'
-import { collapseClass } from '../../components/Collapse'
+import { COLLAPSE_INNER, collapseClass } from '../../components/Collapse'
 import { resolveBadgeCode } from '../../components/IngredientBadge/badgeCode'
 import { IngredientBadge } from '../../components/IngredientBadge/IngredientBadge'
 import {
@@ -60,15 +60,18 @@ const useDismiss = (open: boolean, onClose: (refocus: boolean) => void) => {
 const ROW =
   'flex min-h-[44px] w-full items-center gap-3 rounded-control px-2 py-1 text-left text-text data-[hovered]:bg-chip-active data-[focus-visible]:focus-ring'
 
+/** The note on an item already there: "On your list", or "In this recipe" in a row. */
+export const ON_LIST = 'On your list'
+
 const ItemRow: FC<{
   item: LibraryIngredient
-  onList: boolean
+  mark: string | null
   onPick: (item: LibraryIngredient) => void
-}> = ({ item, onList, onPick }) => (
+}> = ({ item, mark, onPick }) => (
   <Button
     onPress={() => onPick(item)}
     aria-label={`${capitaliseFirst(item.name)}${
-      onList ? ', on your list' : ''
+      mark === null ? '' : `, ${mark.toLowerCase()}`
     }`}
     className={ROW}
   >
@@ -78,28 +81,35 @@ const ItemRow: FC<{
       category={item.category}
     />
     <span className="flex-1">{capitaliseFirst(item.name)}</span>
-    {onList && (
-      <span className="text-xs font-semibold text-text-secondary">
-        On your list
-      </span>
+    {mark !== null && (
+      <span className="text-xs font-semibold text-text-secondary">{mark}</span>
     )}
   </Button>
 )
 
 /** The plus button: opens the add area in place, below the last chip. */
-export const PlusButton: FC<{ open: boolean; onPress: () => void }> = ({
+export const PlusButton: FC<{
+  open: boolean
+  onPress: () => void
+  id?: string
+  areaId?: string
+  label?: string
+}> = ({
   open,
-  onPress
+  onPress,
+  id = PLUS_ID,
+  areaId = PLUS_AREA_ID,
+  label = 'Add an ingredient'
 }) => (
   <span
     data-plus-zone=""
     className="inline-flex"
   >
     <Button
-      id={PLUS_ID}
-      aria-label="Add an ingredient"
+      id={id}
+      aria-label={label}
       aria-expanded={open}
-      aria-controls={PLUS_AREA_ID}
+      aria-controls={areaId}
       onPress={onPress}
       className="inline-flex h-11 w-11 items-center justify-center rounded-pill border-2 border-dashed border-text-secondary text-2xl leading-none text-text data-[focus-visible]:focus-ring"
     >
@@ -117,20 +127,31 @@ export const PlusArea: FC<{
   onClose: (refocus: boolean) => void
   onPick: (item: LibraryIngredient) => void
   hasChip: (id: string) => boolean
-}> = ({ open, onClose, onPick, hasChip }) => {
+  id?: string
+  label?: string
+  mark?: string
+}> = ({
+  open,
+  onClose,
+  onPick,
+  hasChip,
+  id = PLUS_AREA_ID,
+  label = 'Add an ingredient',
+  mark = ON_LIST
+}) => {
   useDismiss(open, onClose)
   return (
     <div
-      id={PLUS_AREA_ID}
+      id={id}
       hidden={!open}
       className={collapseClass(open)}
     >
-      <div className="min-h-0 overflow-hidden">
+      <div className={COLLAPSE_INNER}>
         <div className="p-1.5">
           <div
             data-plus-zone=""
             role="group"
-            aria-label="Add an ingredient"
+            aria-label={label}
             className="rounded-card border-2 border-text-secondary p-1"
           >
             <Tabs className="flex flex-col gap-2 rounded-[10px] bg-surface p-3">
@@ -161,7 +182,7 @@ export const PlusArea: FC<{
                       <li key={item.id}>
                         <ItemRow
                           item={item}
-                          onList={hasChip(item.id)}
+                          mark={hasChip(item.id) ? mark : null}
                           onPick={onPick}
                         />
                       </li>

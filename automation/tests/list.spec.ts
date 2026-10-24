@@ -3,17 +3,23 @@ import { expect, signUp, newAccount, test } from './fixtures'
 import {
   CURRY,
   DAHL,
+  chevron,
   chip,
   chipOrder,
   chipToggle,
   explore,
   exploreRow,
   groupOf,
+  extraRegion,
+  ingredientsRegion,
   pageTop,
+  panel,
   pickRows,
   recipesRegion,
   row,
   section,
+  setBox,
+  sourceBox,
   useVertical
 } from './page'
 
@@ -122,21 +128,24 @@ test.describe('ingredients-first page (#179)', () => {
     await expect(chevron).toHaveAttribute('aria-expanded', 'true')
     const panel = page.getByRole('group', { name: 'Brown onion details' })
     await expect(panel).toBeVisible()
-    await expect(panel.getByRole('listitem')).toHaveText([DAHL, CURRY])
+    // each recipe with its box, which reads in onions (#182, owner decision 2)
+    await expect(panel.getByRole('listitem')).toContainText([DAHL, CURRY])
+    await expect(panel.getByRole('listitem')).toHaveCount(2)
     await expect.poll(() => pageTop(recipes)).toBeGreaterThan(before)
     await chevron.click()
     await expect(panel).toBeHidden()
     await expect(chevron).toHaveAttribute('aria-expanded', 'false')
   })
 
-  test('Edit quantity: Tomatoes to 2', async ({ page }) => {
+  test('Edit the recipe amount: Tomatoes to 2 (#182)', async ({ page }) => {
     await pickRows(page, DAHL)
-    await page.getByRole('button', { name: 'Tomatoes details' }).click()
-    const quantity = page
-      .getByRole('group', { name: 'Tomatoes details' })
-      .getByRole('textbox', { name: 'Quantity' })
-    await quantity.fill('2')
-    await quantity.press('Tab')
+    await chevron(page, 'tomato').click()
+    const details = panel(page, 'Tomatoes')
+    // #182, answer 6: no Quantity override, only the recipe's box
+    await expect(
+      details.getByRole('textbox', { name: 'Quantity' })
+    ).toHaveCount(0)
+    await setBox(sourceBox(details, DAHL), '2')
     await expect(chipToggle(page, 'tomato')).toHaveAccessibleName(
       /^Tomatoes, 2\b/
     )
@@ -191,7 +200,12 @@ test.describe('ingredients-first page (#179)', () => {
     expect(await groupOf(page, 'butter')).toBe('Frozen')
   })
 
-  test('Add an extra: plus, Dairy tab, Butter', async ({ page }) => {
+  test('Add an extra: the plus in Extra, Dairy tab, Butter (#182, answer 9)', async ({
+    page
+  }) => {
+    await expect(
+      ingredientsRegion(page).getByRole('button', { name: 'Add an ingredient' })
+    ).toHaveCount(0)
     await plus(page).click()
     await expect(plus(page)).toHaveAttribute('aria-expanded', 'true')
     const area = plusArea(page)
@@ -202,10 +216,12 @@ test.describe('ingredients-first page (#179)', () => {
     await area.getByRole('tab', { name: 'Dairy' }).click()
     await area.getByRole('button', { name: 'Butter', exact: true }).click()
     await expect(chip(page, 'butter')).toHaveCount(1)
+    await expect(chip(page, 'butter', 'extra')).toContainText('1 g')
     expect(await groupOf(page, 'butter')).toBe('Dairy')
+    expect(await groupOf(page, 'butter', 'extra')).toBe('Dairy')
   })
 
-  test('Add an existing ingredient: scrolls to it and opens its panel, no duplicate', async ({
+  test('Add an existing ingredient: an Extra source at 1, then scrolls to it and opens its panel, no duplicate (#182, answer 8)', async ({
     page
   }) => {
     await pickRows(page, DAHL)
@@ -215,13 +231,12 @@ test.describe('ingredients-first page (#179)', () => {
       .getByRole('button', { name: 'Butter, on your list' })
       .click()
     await expect(chip(page, 'butter')).toHaveCount(1)
-    const chevron = page.getByRole('button', { name: 'Butter details' })
-    await expect(chevron).toHaveAttribute('aria-expanded', 'true')
-    await expect(chevron).toBeFocused()
+    await expect(chip(page, 'butter', 'extra')).toContainText('1 g')
+    const butter = chevron(page, 'butter')
+    await expect(butter).toHaveAttribute('aria-expanded', 'true')
+    await expect(butter).toBeFocused()
     await expect(chip(page, 'butter')).toBeInViewport()
-    await expect(
-      page.getByRole('group', { name: 'Butter details' })
-    ).toBeVisible()
+    await expect(sourceBox(panel(page, 'Butter'), 'Extra')).toHaveValue('1')
     await expect(plusArea(page)).toBeHidden()
   })
 
@@ -283,9 +298,13 @@ test.describe('ingredients-first page (#179)', () => {
     for (const chevron of [dahl, curry]) {
       const id = (await chevron.getAttribute('aria-controls')) ?? ''
       const details = page.locator(`[id="${id}"]`)
-      for (const name of ['Ingredients', 'Method', 'Notes'])
+      for (const name of ['Ingredients', 'Method'])
         await expect(details.getByRole('heading', { name })).toBeVisible()
-      await expect(details.getByRole('radiogroup')).toBeVisible()
+      // #182, answer 32: Explore shows the original at 2 portions, with no picker
+      await expect(details.getByRole('radiogroup')).toHaveCount(0)
+      await expect(
+        details.getByRole('textbox', { name: 'Portions' })
+      ).toHaveCount(0)
     }
     await expect(exploreRow(page, DAHL)).toHaveAttribute(
       'aria-pressed',
@@ -376,9 +395,9 @@ test.describe('ingredients-first page (#179)', () => {
   }) => {
     await pickRows(page, DAHL)
     await chipToggle(page, 'tomato').click()
-    await page.getByRole('button', { name: 'Butter details' }).click()
-    const butter = page.getByRole('group', { name: 'Butter details' })
-    await butter.getByRole('button', { name: /Increase/ }).click()
+    await chevron(page, 'butter').click()
+    const butter = panel(page, 'Butter')
+    await setBox(sourceBox(butter, DAHL), '30')
     await chooseCategory(butter, 'Deli')
     await plus(page).click()
     await plusArea(page).getByRole('tab', { name: 'Bakery' }).click()
@@ -395,12 +414,15 @@ test.describe('ingredients-first page (#179)', () => {
       'true'
     )
     await expect(chipToggle(page, 'butter')).toHaveAccessibleName(
-      /^Butter, 2\b.*, Deli, /
+      /^Butter, 30 g, Deli, /
     )
     expect(await groupOf(page, 'butter')).toBe('Dairy')
     expect(await chipOrder(page)).toEqual(order)
     await expect(
-      page.getByRole('heading', { level: 3, name: 'Bakery' })
+      ingredientsRegion(page).getByRole('heading', { level: 3, name: 'Bakery' })
+    ).toBeVisible()
+    await expect(
+      extraRegion(page).getByRole('heading', { level: 3, name: 'Bakery' })
     ).toBeVisible()
   })
 
@@ -417,7 +439,7 @@ test.describe('ingredients-first page (#179)', () => {
     await expect(onion).toBeFocused()
     await page.keyboard.press('Space')
     await expect(onion).toHaveAccessibleName(
-      'Brown onion, 1, Fruit & Veg, in 2 recipes, crossed off'
+      'Brown onion, 1 onion, Fruit & Veg, in 2 recipes, crossed off'
     )
     await expect(onion).toHaveAttribute('aria-pressed', 'true')
     const ring = (l: Locator) =>
@@ -425,16 +447,17 @@ test.describe('ingredients-first page (#179)', () => {
     expect(await ring(onion)).toBe('solid')
 
     await page.keyboard.press('Tab')
-    const chevron = page.getByRole('button', { name: 'Brown onion details' })
-    await expect(chevron).toBeFocused()
-    expect(await ring(chevron)).toBe('solid')
+    const onionChevron = chevron(page, 'onion')
+    await expect(onionChevron).toBeFocused()
+    expect(await ring(onionChevron)).toBe('solid')
     await page.keyboard.press('Enter')
-    await expect(chevron).toHaveAttribute('aria-expanded', 'true')
+    await expect(onionChevron).toHaveAttribute('aria-expanded', 'true')
 
     const expanders = [
       section(page, 'Ingredients'),
       section(page, 'Recipes'),
-      chevron,
+      section(page, 'Extra'),
+      onionChevron,
       page.getByRole('button', { name: `${DAHL} details` }),
       plus(page)
     ]

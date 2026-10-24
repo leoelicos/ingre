@@ -7,6 +7,7 @@ export interface IngredientSchema extends Document {
   quantity: number
   measure: string
   text: string
+  ingredientId?: string | null
   category: CategorySchema
 }
 
@@ -29,6 +30,11 @@ const ingredientSchema = new mongoose.Schema<IngredientSchema>({
   },
   text: {
     type: String
+  },
+  // #182: catalogue id, so a saved recipe can be matched to the library
+  ingredientId: {
+    type: String,
+    default: null
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,

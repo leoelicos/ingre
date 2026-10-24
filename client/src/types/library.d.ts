@@ -51,6 +51,16 @@ export interface LibraryIngredient {
   allergens: string[]
   /** badge code override: exactly three letters A-Z; when absent the code is derived from the name */
   badgeCode?: string
+  /** the buying unit of a counted item, spelled out (#182): { one: 'head', other: 'heads' } */
+  countUnit?: CountUnit
+  /** a part a recipe uses, shown when the total is not a whole count (#182): 'clove' */
+  partMeasure?: string
+}
+
+/** A counted item's unit word, singular and plural. */
+export interface CountUnit {
+  one: string
+  other: string
 }
 
 export interface LibraryRecipeIngredient {

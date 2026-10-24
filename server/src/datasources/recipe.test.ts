@@ -1,3 +1,4 @@
+import { toCustomisation } from '../schemas/resolvers/recipe/toRecipePopulated'
 import { UserApi } from './user'
 import mongoose, { Types } from 'mongoose'
 import { CategoryApi } from './category'
@@ -75,6 +76,33 @@ describe('recipeApi', () => {
       portions: mockRecipe.portions
     })
     expect(result?.ingredients.length).toBe(2)
+  }, 30000)
+
+  it('createRecipe stores catalogue ids and customisations (#182)', async () => {
+    const dairy = await categoryApi.createCategory('Dairy')
+    const butter = await ingredientApi.createIngredient({
+      name: 'Butter',
+      quantity: 25,
+      measure: 'g',
+      category: dairy._id,
+      ingredientId: 'butter'
+    })
+    const result = await recipeApi.createRecipe({
+      name: mockRecipe.name,
+      portions: 4,
+      ingredients: [butter._id],
+      picture_url: mockRecipe.picture_url,
+      libraryId: mockRecipe.libraryId,
+      customisations: [
+        { kind: 'ChangedIngredient', ingredientId: 'butter', from: 25, to: 50 },
+        { kind: 'PortionsChange', from: 2, to: 4 }
+      ]
+    })
+    expect(result.ingredients[0]?.ingredientId).toBe('butter')
+    expect(result.customisations.map(toCustomisation)).toStrictEqual([
+      { kind: 'ChangedIngredient', ingredientId: 'butter', from: 25, to: 50 },
+      { kind: 'PortionsChange', from: 2, to: 4 }
+    ])
   }, 30000)
 
   it('getRecipe gets one recipe', async () => {

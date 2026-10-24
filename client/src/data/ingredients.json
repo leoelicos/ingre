@@ -109,7 +109,11 @@
       ],
       "approxGrams": 55,
       "pantry": "Fridge",
-      "allergens": ["egg"]
+      "allergens": ["egg"],
+      "countUnit": {
+        "one": "egg",
+        "other": "eggs"
+      }
     },
     {
       "id": "butter",
@@ -290,7 +294,11 @@
       ],
       "approxGrams": 150,
       "pantry": "Bench",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "onion",
+        "other": "onions"
+      }
     },
     {
       "id": "red-onion",
@@ -314,7 +322,11 @@
       ],
       "approxGrams": 150,
       "pantry": "Bench",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "onion",
+        "other": "onions"
+      }
     },
     {
       "id": "garlic",
@@ -343,7 +355,12 @@
         "clove": 6
       },
       "pantry": "Bench",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "head",
+        "other": "heads"
+      },
+      "partMeasure": "clove"
     },
     {
       "id": "ginger",
@@ -351,12 +368,8 @@
       "category": "fruit & veg",
       "sold": [
         {
-          "type": "each",
-          "size": {
-            "amount": 1,
-            "unit": "count"
-          },
-          "label": "small piece"
+          "type": "weighed",
+          "size": null
         }
       ],
       "approxGrams": 50,
@@ -387,7 +400,11 @@
       "approxGrams": 120,
       "pantry": "Fridge",
       "allergens": [],
-      "badgeCode": "CRT"
+      "badgeCode": "CRT",
+      "countUnit": {
+        "one": "carrot",
+        "other": "carrots"
+      }
     },
     {
       "id": "celery",
@@ -444,7 +461,12 @@
       },
       "pantry": "Fridge",
       "allergens": [],
-      "badgeCode": "SPR"
+      "badgeCode": "SPR",
+      "countUnit": {
+        "one": "bunch",
+        "other": "bunches"
+      },
+      "partMeasure": "stalk"
     },
     {
       "id": "iceberg-lettuce",
@@ -461,7 +483,11 @@
       ],
       "approxGrams": 600,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "head",
+        "other": "heads"
+      }
     },
     {
       "id": "tomato",
@@ -482,7 +508,11 @@
       ],
       "approxGrams": 120,
       "pantry": "Bench",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "tomato",
+        "other": "tomatoes"
+      }
     },
     {
       "id": "cucumber",
@@ -499,7 +529,11 @@
       ],
       "approxGrams": 350,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "cucumber",
+        "other": "cucumbers"
+      }
     },
     {
       "id": "capsicum",
@@ -516,7 +550,11 @@
       ],
       "approxGrams": 180,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "capsicum",
+        "other": "capsicums"
+      }
     },
     {
       "id": "tinned-peas",
@@ -917,7 +955,11 @@
       ],
       "approxGrams": 60,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "bunch",
+        "other": "bunches"
+      }
     },
     {
       "id": "potato",
@@ -946,7 +988,11 @@
       "approxGrams": 200,
       "pantry": "Bench",
       "allergens": [],
-      "badgeCode": "PTT"
+      "badgeCode": "PTT",
+      "countUnit": {
+        "one": "potato",
+        "other": "potatoes"
+      }
     },
     {
       "id": "cauliflower",
@@ -972,7 +1018,11 @@
       ],
       "approxGrams": 1000,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "head",
+        "other": "heads"
+      }
     },
     {
       "id": "baby-spinach",
@@ -1017,7 +1067,11 @@
       ],
       "approxGrams": 10,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "chilli",
+        "other": "chillies"
+      }
     },
     {
       "id": "red-lentils",
@@ -1258,7 +1312,11 @@
       ],
       "approxGrams": 10,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "chilli",
+        "other": "chillies"
+      }
     },
     {
       "id": "lime",
@@ -1275,7 +1333,11 @@
       ],
       "approxGrams": 70,
       "pantry": "Bench",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "lime",
+        "other": "limes"
+      }
     },
     {
       "id": "fresh-mint",
@@ -1293,7 +1355,11 @@
       "approxGrams": 50,
       "pantry": "Fridge",
       "allergens": [],
-      "badgeCode": "MNT"
+      "badgeCode": "MNT",
+      "countUnit": {
+        "one": "bunch",
+        "other": "bunches"
+      }
     },
     {
       "id": "bean-sprouts",
@@ -1514,7 +1580,11 @@
       "approxGrams": 185,
       "pantry": "Bench",
       "allergens": [],
-      "badgeCode": "APL"
+      "badgeCode": "APL",
+      "countUnit": {
+        "one": "apple",
+        "other": "apples"
+      }
     },
     {
       "id": "banana",
@@ -1532,7 +1602,11 @@
       "approxGrams": 120,
       "pantry": "Bench",
       "allergens": [],
-      "badgeCode": "BNA"
+      "badgeCode": "BNA",
+      "countUnit": {
+        "one": "banana",
+        "other": "bananas"
+      }
     },
     {
       "id": "orange",
@@ -1556,7 +1630,11 @@
       ],
       "approxGrams": 200,
       "pantry": "Bench",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "orange",
+        "other": "oranges"
+      }
     },
     {
       "id": "mandarin",
@@ -1581,7 +1659,11 @@
       "approxGrams": 90,
       "pantry": "Bench",
       "allergens": [],
-      "badgeCode": "MDN"
+      "badgeCode": "MDN",
+      "countUnit": {
+        "one": "mandarin",
+        "other": "mandarins"
+      }
     },
     {
       "id": "pear",
@@ -1599,7 +1681,11 @@
       "approxGrams": 180,
       "pantry": "Bench",
       "allergens": [],
-      "badgeCode": "PRA"
+      "badgeCode": "PRA",
+      "countUnit": {
+        "one": "pear",
+        "other": "pears"
+      }
     },
     {
       "id": "lemon",
@@ -1617,7 +1703,11 @@
       "approxGrams": 120,
       "pantry": "Bench",
       "allergens": [],
-      "badgeCode": "LEM"
+      "badgeCode": "LEM",
+      "countUnit": {
+        "one": "lemon",
+        "other": "lemons"
+      }
     },
     {
       "id": "avocado",
@@ -1634,7 +1724,11 @@
       ],
       "approxGrams": 200,
       "pantry": "Bench",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "avocado",
+        "other": "avocados"
+      }
     },
     {
       "id": "grapes",
@@ -1696,7 +1790,11 @@
       ],
       "approxGrams": 80,
       "pantry": "Bench",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "kiwifruit",
+        "other": "kiwifruit"
+      }
     },
     {
       "id": "watermelon",
@@ -1718,7 +1816,11 @@
       "approxGrams": 3000,
       "pantry": "Fridge",
       "allergens": [],
-      "badgeCode": "WML"
+      "badgeCode": "WML",
+      "countUnit": {
+        "one": "watermelon",
+        "other": "watermelons"
+      }
     },
     {
       "id": "broccoli",
@@ -1740,7 +1842,11 @@
       "approxGrams": 350,
       "pantry": "Fridge",
       "allergens": [],
-      "badgeCode": "BRC"
+      "badgeCode": "BRC",
+      "countUnit": {
+        "one": "head",
+        "other": "heads"
+      }
     },
     {
       "id": "zucchini",
@@ -1757,7 +1863,11 @@
       ],
       "approxGrams": 200,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "zucchini",
+        "other": "zucchinis"
+      }
     },
     {
       "id": "sweet-potato",
@@ -1778,7 +1888,11 @@
       ],
       "approxGrams": 400,
       "pantry": "Bench",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "sweet potato",
+        "other": "sweet potatoes"
+      }
     },
     {
       "id": "pumpkin",
@@ -1828,7 +1942,11 @@
       ],
       "approxGrams": 250,
       "pantry": "Fridge",
-      "allergens": []
+      "allergens": [],
+      "countUnit": {
+        "one": "cob",
+        "other": "cobs"
+      }
     },
     {
       "id": "salad-mix",
@@ -2097,7 +2215,11 @@
       ],
       "pantry": "Bench",
       "allergens": ["wheat", "soy"],
-      "badgeCode": "BRL"
+      "badgeCode": "BRL",
+      "countUnit": {
+        "one": "roll",
+        "other": "rolls"
+      }
     },
     {
       "id": "wraps",
@@ -2114,7 +2236,11 @@
         }
       ],
       "pantry": "Cupboard",
-      "allergens": ["wheat"]
+      "allergens": ["wheat"],
+      "countUnit": {
+        "one": "wrap",
+        "other": "wraps"
+      }
     },
     {
       "id": "rolled-oats",
@@ -2243,7 +2369,11 @@
       ],
       "pantry": "Cupboard",
       "allergens": [],
-      "badgeCode": "TEA"
+      "badgeCode": "TEA",
+      "countUnit": {
+        "one": "tea bag",
+        "other": "tea bags"
+      }
     },
     {
       "id": "plain-flour",
