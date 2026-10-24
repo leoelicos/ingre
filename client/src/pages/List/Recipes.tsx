@@ -1,3 +1,4 @@
+import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
 import { useState } from 'react'
 import type { CopyLine } from '../../utils/balance/copies'
@@ -24,8 +25,7 @@ import { RecipeRows } from './RecipeRows'
 import { CopyDetails } from './RowDetails'
 import { Section } from './Section'
 
-export const NO_PICKS_HINT =
-  'No recipes picked yet. Tick recipes in Explore and they show here.'
+export const NO_PICKS_HINT = translate('recipes.empty')
 
 /** A set with one id added, or removed when it is already there. */
 export const toggled = (
@@ -56,6 +56,7 @@ export const Recipes: FC<{
   saved: SavedState | null
   collapsible: boolean
 }> = ({ list, saved, collapsible }) => {
+  const t = useT()
   const [open, setOpen] = useState(true)
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set())
   const [filterOpen, setFilterOpen] = useState(false)
@@ -66,14 +67,16 @@ export const Recipes: FC<{
   return (
     <Section
       id="recipes"
-      title="Recipes"
+      title={t('recipes.title')}
       collapsible={collapsible}
       open={open}
       onToggle={() => setOpen(!open)}
-      summary={`${recipeCount(list.entries.length)} picked`}
+      summary={t('recipes.picked', {
+        recipes: recipeCount(list.entries.length)
+      })}
     >
       <div className="flex flex-col gap-4">
-        <ActionsRow label="Recipes actions">
+        <ActionsRow label={t('recipes.actions')}>
           <FilterButton
             panelId={FILTER_ID}
             open={filterOpen}
@@ -84,7 +87,7 @@ export const Recipes: FC<{
         <RecipeFilterPanel
           id={FILTER_ID}
           open={filterOpen}
-          label="Filter recipes"
+          label={t('recipes.filter')}
           options={filterOptions(list.entries.flatMap((e) => e.lines))}
           saved={false}
           filter={filter}

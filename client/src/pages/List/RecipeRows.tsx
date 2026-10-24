@@ -1,3 +1,4 @@
+import { translate, useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
 import { useId, useState } from 'react'
 import { Button, ToggleButton } from 'react-aria-components'
@@ -69,6 +70,7 @@ export const RecipeRow: FC<{
   row: Row
   controls: RowControls
 }> = ({ row, controls }) => {
+  const t = useT()
   const { recipe } = row
   const id = useId()
   const { title } = splitTitle(recipe.name)
@@ -105,14 +107,16 @@ export const RecipeRow: FC<{
       </ToggleButton>
       <Button
         aria-label={
-          controls.seeRecipe ? `See recipe: ${title}` : `${title} details`
+          controls.seeRecipe
+            ? t('row.seeRecipeLabel', { title })
+            : t('row.details', { title })
         }
         aria-expanded={open}
         aria-controls={detailsId}
         onPress={() => controls.onToggleOpen(recipe.id)}
         className="flex min-h-[44px] min-w-[44px] items-start justify-center gap-1 whitespace-nowrap rounded-r-card p-4 text-sm font-semibold text-text data-[focus-visible]:focus-ring"
       >
-        {controls.seeRecipe && <span>See recipe</span>}
+        {controls.seeRecipe && <span>{t('row.seeRecipe')}</span>}
         <Chevron open={open} />
       </Button>
       <Collapse
@@ -149,7 +153,7 @@ export const RecipeRows: FC<{
 /** The method steps. */
 export const Method: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => (
   <div>
-    <h3 className={ROW_HEADING}>Method</h3>
+    <h3 className={ROW_HEADING}>{translate('row.method')}</h3>
     <ol className="m-0 pl-5">
       {recipe.method.map((step) => (
         <li key={step}>{step}</li>
@@ -162,7 +166,7 @@ export const Method: FC<{ recipe: LibraryRecipe }> = ({ recipe }) => (
 export const Notes: FC<{ notes: readonly string[] }> = ({ notes }) =>
   notes.length === 0 ? null : (
     <div>
-      <h3 className={ROW_HEADING}>Notes</h3>
+      <h3 className={ROW_HEADING}>{translate('row.notes')}</h3>
       {notes.map((note) => (
         <p
           key={note}

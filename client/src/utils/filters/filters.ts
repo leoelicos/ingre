@@ -2,6 +2,7 @@
  * Filters (#182): within a group any ticked value matches, and every group with something
  * ticked must match. Kept in React state only, so they reset on reload.
  */
+import { translate } from '../../i18n'
 import type { Chip } from '../chips/chips'
 import type { ShopSection } from '../shopping/sections'
 
@@ -9,10 +10,10 @@ import type { ShopSection } from '../shopping/sections'
 export type ChipStatus = 'crossed' | 'customised' | 'extra' | 'removed'
 
 export const STATUS_LABELS: Readonly<Record<ChipStatus, string>> = {
-  crossed: 'Crossed off',
-  customised: 'Customised',
-  extra: 'Extra',
-  removed: 'Removed'
+  crossed: translate('status.crossed'),
+  customised: translate('status.customised'),
+  extra: translate('status.extra'),
+  removed: translate('status.removed')
 }
 
 /** Ingredients offers every status; Extra only crossed off (#182). */
@@ -88,7 +89,8 @@ export const recipeFilterOn = (filter: RecipeFilter): boolean =>
   filter.contains.length + filter.excludes.length > 0 || filter.savedOnly
 
 /** "3 hidden by filter" */
-export const hiddenText = (n: number): string => `${n} hidden by filter`
+export const hiddenText = (n: number): string =>
+  translate('filter.hidden', { count: n })
 
 /** A set with one value added, or removed when it is already there. */
 export const toggledIn = <T>(set: ReadonlySet<T>, value: T): ReadonlySet<T> =>

@@ -1,4 +1,5 @@
 /* Hearts on the server (#182, F4): saveRecipe and removeRecipe, read back with getSavedRecipes. */
+import { translate } from '../../i18n'
 import type { ApolloCache } from '@apollo/client'
 import { useApolloClient, useMutation, useQuery } from '@apollo/client'
 import { useState } from 'react'
@@ -7,7 +8,7 @@ import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries'
 import type { SavedRecipe } from '../../lib/apollo/graphQL/typedefs'
 import type { RecipeInput } from '../../types/payloads'
 
-export const SAVE_FAILED = "Couldn't update your saved recipes. Try again."
+export const SAVE_FAILED = translate('saved.failed')
 
 /** The library ids with a heart. */
 export const savedLibraryIds = (

@@ -1,3 +1,4 @@
+import { translate, useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
 import {
   Button,
@@ -30,7 +31,9 @@ export const ACTION_BUTTON =
 
 /** "Filter", or "Filter (2)" while two values are ticked. */
 export const filterButtonText = (active: number): string =>
-  active === 0 ? 'Filter' : `Filter (${active})`
+  active === 0
+    ? translate('filter.button')
+    : translate('filter.buttonActive', { count: active })
 
 /** The Filter button in a section's actions row; it opens the panel inline. */
 export const FilterButton: FC<{
@@ -129,7 +132,7 @@ export const ChipFilterPanel: FC<{
       className={PANEL}
     >
       <CheckGroup
-        label="Category"
+        label={translate('filter.category')}
         options={SHOP_SECTIONS.map((section) => ({
           value: section,
           label: categoryLabel(section)
@@ -145,7 +148,7 @@ export const ChipFilterPanel: FC<{
         }
       />
       <CheckGroup
-        label="Status"
+        label={translate('filter.status')}
         options={statuses.map((status) => ({
           value: status,
           label: STATUS_LABELS[status]
@@ -178,6 +181,7 @@ const IngredientPicker: FC<{
   value: readonly string[]
   onChange: (value: string[]) => void
 }> = ({ label, options, value, onChange }) => {
+  const t = useT()
   const nameOf = (id: string) =>
     displayName({ name: options.find((o) => o.id === id)?.name ?? id })
   return (
@@ -213,7 +217,7 @@ const IngredientPicker: FC<{
       </ComboBox>
       {value.length > 0 && (
         <TagGroup
-          aria-label={`${label}: chosen`}
+          aria-label={t('filter.chosen', { label })}
           onRemove={(keys) => onChange(value.filter((id) => !keys.has(id)))}
         >
           <TagList className="flex flex-wrap gap-2">
@@ -227,7 +231,7 @@ const IngredientPicker: FC<{
                 {nameOf(id)}
                 <Button
                   slot="remove"
-                  aria-label={`Remove ${nameOf(id)}`}
+                  aria-label={t('filter.remove', { name: nameOf(id) })}
                   className="inline-flex h-11 w-11 items-center justify-center rounded-pill data-[focus-visible]:focus-ring"
                 >
                   <span aria-hidden="true">✕</span>
@@ -268,13 +272,13 @@ export const RecipeFilterPanel: FC<{
         />
       )}
       <IngredientPicker
-        label="Contains"
+        label={translate('filter.contains')}
         options={options}
         value={filter.contains}
         onChange={(contains) => onChange({ ...filter, contains })}
       />
       <IngredientPicker
-        label="Excludes"
+        label={translate('filter.excludes')}
         options={options}
         value={filter.excludes}
         onChange={(excludes) => onChange({ ...filter, excludes })}
@@ -300,7 +304,7 @@ export const HiddenNote: FC<{ hidden: number; onClear: () => void }> = ({
         onPress={onClear}
         className={ACTION_BUTTON}
       >
-        Clear
+        {translate('filter.clear')}
       </Button>
     </div>
   )

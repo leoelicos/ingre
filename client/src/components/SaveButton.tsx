@@ -1,3 +1,4 @@
+import { translate } from '../i18n'
 import type { FC } from 'react'
 import { ToggleButton } from 'react-aria-components'
 
@@ -25,7 +26,9 @@ export const SaveButton: FC<{
   <ToggleButton
     isSelected={saved}
     onChange={onToggle}
-    aria-label={saved ? `Unsave ${recipeName}` : `Save ${recipeName}`}
+    aria-label={translate(saved ? 'saved.unsaveRecipe' : 'saved.saveRecipe', {
+      name: recipeName
+    })}
     className="inline-flex h-11 w-11 items-center justify-center rounded-pill text-primary data-[focus-visible]:focus-ring"
   >
     <HeartIcon filled={saved} />

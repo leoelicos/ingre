@@ -1,3 +1,4 @@
+import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
 import { useEffect } from 'react'
 import { Button, Tab, TabList, TabPanel, Tabs } from 'react-aria-components'
@@ -61,7 +62,7 @@ const ROW =
   'flex min-h-[44px] w-full items-center gap-3 rounded-control px-2 py-1 text-left text-text data-[hovered]:bg-chip-active data-[focus-visible]:focus-ring'
 
 /** The note on an item already there: "On your list", or "In this recipe" in a row. */
-export const ON_LIST = 'On your list'
+export const ON_LIST = translate('plus.onList')
 
 const ItemRow: FC<{
   item: LibraryIngredient
@@ -70,9 +71,14 @@ const ItemRow: FC<{
 }> = ({ item, mark, onPick }) => (
   <Button
     onPress={() => onPick(item)}
-    aria-label={`${capitaliseFirst(item.name)}${
-      mark === null ? '' : `, ${mark.toLowerCase()}`
-    }`}
+    aria-label={
+      mark === null
+        ? capitaliseFirst(item.name)
+        : translate('plus.marked', {
+            name: capitaliseFirst(item.name),
+            mark: mark.toLowerCase()
+          })
+    }
     className={ROW}
   >
     <IngredientBadge
@@ -99,7 +105,7 @@ export const PlusButton: FC<{
   onPress,
   id = PLUS_ID,
   areaId = PLUS_AREA_ID,
-  label = 'Add an ingredient'
+  label = translate('plus.add')
 }) => (
   <span
     data-plus-zone=""
@@ -136,9 +142,10 @@ export const PlusArea: FC<{
   onPick,
   hasChip,
   id = PLUS_AREA_ID,
-  label = 'Add an ingredient',
+  label = translate('plus.add'),
   mark = ON_LIST
 }) => {
+  const t = useT()
   useDismiss(open, onClose)
   return (
     <div
@@ -156,7 +163,7 @@ export const PlusArea: FC<{
           >
             <Tabs className="flex flex-col gap-2 rounded-[10px] bg-surface p-3">
               <TabList
-                aria-label="Categories"
+                aria-label={t('plus.categories')}
                 className="flex flex-wrap gap-2"
               >
                 {plusTabs().map((tab) => (

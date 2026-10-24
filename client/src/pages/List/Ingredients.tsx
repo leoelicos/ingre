@@ -1,3 +1,4 @@
+import { formatItemCount, translate, useT } from '../../i18n'
 import type { FC } from 'react'
 import { useState } from 'react'
 import { Button } from 'react-aria-components'
@@ -48,20 +49,20 @@ export const INGREDIENTS_ID = 'ingredients'
 export const INGREDIENTS_HEADING_ID = `${INGREDIENTS_ID}-heading`
 
 /** Shown when there are no chips yet. */
-export const NO_CHIPS_HINT =
-  'Nothing on your list yet. Tick recipes in Explore, or add an ingredient with the plus in Extra.'
+export const NO_CHIPS_HINT = translate('ingredients.empty')
 
 /** The question before Refresh (#182, answer 35). */
-export const REFRESH_QUESTION =
-  'Reset every recipe to its original ingredients and 2 portions?'
+export const REFRESH_QUESTION = translate('ingredients.refreshQuestion')
 
 /** "5 items, 2 crossed off" */
 export const ingredientsSummary = (
   chips: readonly { crossed: boolean }[]
 ): string => {
   const crossed = chips.filter((chip) => chip.crossed).length
-  const items = `${chips.length} ${chips.length === 1 ? 'item' : 'items'}`
-  return crossed === 0 ? items : `${items}, ${crossed} crossed off`
+  const items = formatItemCount(chips.length)
+  return crossed === 0
+    ? items
+    : translate('ingredients.summaryCrossed', { items, count: crossed })
 }
 
 /** Count of ticked filter values, for the Filter button. */
@@ -120,7 +121,9 @@ export const useIngredients = (list: ChipsState) => {
       focusAfterRender({ kind: 'reveal', id: chipChevronId(item.id) })
       return true
     }
-    setMessage(`${capitaliseFirst(item.name)} added to Extra`)
+    setMessage(
+      translate('ingredients.added', { name: capitaliseFirst(item.name) })
+    )
     return false
   }
   return {
@@ -155,7 +158,9 @@ export const chipView = (
     details: (chip) => (
       <>
         <div className="flex flex-col gap-2">
-          <h4 className="m-0 text-sm font-semibold">Used in</h4>
+          <h4 className="m-0 text-sm font-semibold">
+            {translate('ingredients.usedIn')}
+          </h4>
           <SourceFields
             chip={chip}
             scope={scope}
@@ -202,6 +207,7 @@ export const Ingredients: FC<{
   state: IngredientsState
   collapsible: boolean
 }> = ({ state, collapsible }) => {
+  const t = useT()
   const { list, filter, setFilter } = state
   const [filterOpen, setFilterOpen] = useState(false)
   const [asking, setAsking] = useState(false)
@@ -210,14 +216,14 @@ export const Ingredients: FC<{
   return (
     <Section
       id={INGREDIENTS_ID}
-      title="Ingredients"
+      title={t('ingredients.title')}
       collapsible={collapsible}
       open={state.open}
       onToggle={state.toggle}
       summary={ingredientsSummary(list.chips)}
     >
       <div className="flex flex-col gap-4">
-        <ActionsRow label="Ingredients actions">
+        <ActionsRow label={t('ingredients.actions')}>
           <FilterButton
             panelId={FILTER_ID}
             open={filterOpen}
@@ -228,14 +234,14 @@ export const Ingredients: FC<{
             onPress={list.sort}
             className={ACTION_BUTTON}
           >
-            Sort
+            {t('ingredients.sort')}
           </Button>
           <Button
             id={REFRESH_ID}
             onPress={() => setAsking(true)}
             className={ACTION_BUTTON}
           >
-            Refresh
+            {t('ingredients.refresh')}
           </Button>
         </ActionsRow>
         {asking && (
@@ -250,7 +256,7 @@ export const Ingredients: FC<{
         <ChipFilterPanel
           id={FILTER_ID}
           open={filterOpen}
-          label="Filter ingredients"
+          label={t('ingredients.filter')}
           statuses={INGREDIENT_STATUSES}
           filter={filter}
           onChange={setFilter}

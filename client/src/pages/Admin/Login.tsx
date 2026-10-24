@@ -1,3 +1,4 @@
+import { translate, useT } from '../../i18n'
 import type { FC, ChangeEvent, FormEvent } from 'react'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
@@ -29,6 +30,7 @@ const useLoginForm = () => {
   }
 }
 export const Login: FC = () => {
+  const t = useT()
   const navigate = useNavigate()
   const location = useLocation()
   const [auth] = useAuthContext()
@@ -51,11 +53,11 @@ export const Login: FC = () => {
     e.preventDefault()
     setValidationMessage(null)
     if (!email.trim()) {
-      setValidationMessage('Please enter an email address.')
+      setValidationMessage(t('auth.enterEmail'))
       return
     }
     if (!password) {
-      setValidationMessage('Please enter a password.')
+      setValidationMessage(t('auth.enterPassword'))
       return
     }
     login({ email, password })
@@ -63,20 +65,20 @@ export const Login: FC = () => {
 
   // Redirect only when this page opens. A successful login navigates itself.
   useEffect(() => {
-    changeTitle('Log in')
+    changeTitle(translate('auth.logIn'))
     if (auth.loggedIn) navigate(from, { replace: true })
   }, [auth.loggedIn, from, navigate])
   return (
     <div className="auth-page">
-      <h1 className="auth-page__title">Log in</h1>
+      <h1 className="auth-page__title">{t('auth.logIn')}</h1>
       {loginLoading ? (
-        <p role="status">Loading</p>
+        <p role="status">{t('auth.loading')}</p>
       ) : loginError ? (
         <p
           className="auth-page__error"
           role="alert"
         >
-          Couldn't log you in.
+          {t('auth.loginFailed')}
         </p>
       ) : (
         <form
@@ -87,7 +89,7 @@ export const Login: FC = () => {
             className="auth-form__label"
             htmlFor="email"
           >
-            Email
+            {t('auth.email')}
           </label>
           <input
             id="email"
@@ -102,7 +104,7 @@ export const Login: FC = () => {
             className="auth-form__label"
             htmlFor="password"
           >
-            Password
+            {t('auth.password')}
           </label>
           <div className="auth-form__password">
             <input
@@ -121,7 +123,7 @@ export const Login: FC = () => {
               aria-controls="password"
               onClick={togglePasswordVisibility}
             >
-              {showPassword ? 'Hide' : 'Show'}
+              {t(showPassword ? 'auth.hide' : 'auth.show')}
             </button>
           </div>
           {validationMessage && (
@@ -137,18 +139,18 @@ export const Login: FC = () => {
             size="snug"
             className="auth-form__submit"
           >
-            Log in
+            {t('auth.logIn')}
           </PrimaryButton>
         </form>
       )}
       <p className="auth-page__alt">
-        No account?{' '}
+        {t('auth.noAccount')}{' '}
         <Link
           to="/signup"
           state={{ from }}
           className="focus-visible:focus-ring"
         >
-          Sign up
+          {t('auth.signUp')}
         </Link>
       </p>
     </div>

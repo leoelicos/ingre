@@ -1,3 +1,4 @@
+import { translate } from '../../i18n'
 import type { FC } from 'react'
 import type { Key } from 'react-aria-components'
 import {
@@ -13,7 +14,7 @@ import { IngreIconAccount } from '../../lib/icon/Icon'
 import type { AccountAction } from './accountItems'
 import { SAVED_PATH, accountItems, actionsFor } from './accountItems'
 
-export const ACCOUNT_LABEL = 'Account'
+export const ACCOUNT_LABEL = translate('account.label')
 
 const TRIGGER =
   'inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-pill border border-border bg-surface text-xl text-text outline-none data-[pressed]:bg-chip-active data-[focus-visible]:focus-ring'

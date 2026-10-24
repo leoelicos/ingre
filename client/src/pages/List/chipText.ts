@@ -1,3 +1,4 @@
+import { translate } from '../../i18n'
 import type { Chip } from '../../utils/chips/chips'
 import { categoryLabel, usedInSummary } from '../../utils/chips/chips'
 import { displayName } from '../../utils/shopping/shoppingList'
@@ -52,5 +53,5 @@ export const chipLabel = (chip: Chip, amount: string) =>
     amount,
     categoryLabel(chip.section),
     usedInSummary(chip),
-    ...(chip.crossed ? ['crossed off'] : [])
-  ].join(', ')
+    ...(chip.crossed ? [translate('chip.crossedOff')] : [])
+  ].join(translate('chip.labelSeparator'))

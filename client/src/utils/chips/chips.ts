@@ -2,6 +2,7 @@
  * The chips (#179, #182): one per item, balancing every recipe copy that uses it and Extra.
  * Pure functions from the copies, extras, edits and layout.
  */
+import { formatRecipeCount, translate } from '../../i18n'
 import type {
   Amount,
   BaseUnit,
@@ -68,14 +69,14 @@ export interface Chip {
 
 /** Short category names (#179): "Dairy" reads better on a tab than the full section name. */
 export const CATEGORY_LABELS: Readonly<Record<ShopSection, string>> = {
-  'Fruit & Veg': 'Fruit & Veg',
-  'Meat & Seafood': 'Meat & Seafood',
-  'Dairy, Eggs & Fridge': 'Dairy',
-  Deli: 'Deli',
-  Bakery: 'Bakery',
-  Pantry: 'Pantry',
-  Frozen: 'Frozen',
-  Other: 'Other'
+  'Fruit & Veg': translate('section.fruitVeg'),
+  'Meat & Seafood': translate('section.meatSeafood'),
+  'Dairy, Eggs & Fridge': translate('section.dairy'),
+  Deli: translate('section.deli'),
+  Bakery: translate('section.bakery'),
+  Pantry: translate('section.pantry'),
+  Frozen: translate('section.frozen'),
+  Other: translate('section.other')
 }
 
 export const categoryLabel = (section: ShopSection): string =>
@@ -87,7 +88,7 @@ export const sourceLabel = (
   name: string
 ): string => {
   const seen = earlier.filter((n) => n === name).length
-  return seen === 0 ? name : `${name} (${seen + 1})`
+  return seen === 0 ? name : translate('sourceLabel', { name, n: seen + 1 })
 }
 
 /** The id of the chip an extra belongs to: its catalogue id, or its own for free text. */
@@ -325,9 +326,14 @@ export const usedInSummary = (
 ): string => {
   const n = recipeSources(chip).filter((source) => !source.removed).length
   if (n === 0)
-    return chip.extra === null ? 'removed from every recipe' : 'in Extra'
-  const recipes = `in ${n} ${n === 1 ? 'recipe' : 'recipes'}`
-  return chip.extra === null ? recipes : `${recipes} and Extra`
+    return translate(
+      chip.extra === null ? 'usedIn.nowhere' : 'usedIn.extraOnly'
+    )
+  const recipes = formatRecipeCount(n)
+  return translate(
+    chip.extra === null ? 'usedIn.recipes' : 'usedIn.recipesAndExtra',
+    { recipes }
+  )
 }
 
 /**

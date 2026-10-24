@@ -1,3 +1,4 @@
+import { translate } from '../i18n'
 import type { FC, MouseEvent, ReactNode } from 'react'
 
 /** The id of the one main landmark the skip link targets (#131). */
@@ -21,7 +22,7 @@ export const SkipLink: FC = () => (
     onClick={onSkip}
     className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:inline-flex focus:min-h-[44px] focus:items-center focus:rounded-control focus:bg-surface focus:px-4 focus:text-primary focus:shadow-card focus:focus-ring"
   >
-    Skip to content
+    {translate('skipLink')}
   </a>
 )
 

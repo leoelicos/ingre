@@ -1,3 +1,4 @@
+import { formatItemCount, translate, useT } from '../../i18n'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
 import { groupChips } from '../../utils/chips/chips'
@@ -27,12 +28,10 @@ import { usePanel } from './usePanel'
 export const EXTRA_ID = 'extra'
 
 /** Shown when nothing is in Extra (#182, answer 11). */
-export const NO_EXTRA_HINT =
-  'Nothing extra yet. Add staples and anything else with the plus.'
+export const NO_EXTRA_HINT = translate('extra.empty')
 
 /** "3 items" */
-export const extraSummary = (n: number): string =>
-  `${n} ${n === 1 ? 'item' : 'items'}`
+export const extraSummary = (n: number): string => formatItemCount(n)
 
 const FILTER_ID = `${EXTRA_ID}-filter`
 
@@ -44,6 +43,7 @@ export const Extra: FC<{ state: IngredientsState; collapsible: boolean }> = ({
   state,
   collapsible
 }) => {
+  const t = useT()
   const { list } = state
   const { panel } = usePanel()
   const [open, setOpen] = useState(true)
@@ -61,14 +61,14 @@ export const Extra: FC<{ state: IngredientsState; collapsible: boolean }> = ({
   return (
     <Section
       id={EXTRA_ID}
-      title="Extra"
+      title={t('extra.title')}
       collapsible={collapsible}
       open={open}
       onToggle={() => setOpen(!open)}
       summary={extraSummary(list.extraChips.length)}
     >
       <div className="flex flex-col gap-4">
-        <ActionsRow label="Extra actions">
+        <ActionsRow label={t('extra.actions')}>
           <FilterButton
             panelId={FILTER_ID}
             open={filterOpen}
@@ -79,7 +79,7 @@ export const Extra: FC<{ state: IngredientsState; collapsible: boolean }> = ({
         <ChipFilterPanel
           id={FILTER_ID}
           open={filterOpen}
-          label="Filter extra"
+          label={t('extra.filter')}
           statuses={EXTRA_STATUSES}
           filter={filter}
           onChange={setFilter}
