@@ -26,15 +26,18 @@ npm test
 installs Playwright's Chromium, checks formatting and types, then runs every suite.
 From the repo root, `npm test` runs the client and server unit tests and then this.
 
-Playwright's `webServer` starts three processes and stops them afterwards:
+Playwright's `webServer` starts four processes and stops them afterwards:
 
 1. WireMock on port 4312 (`wiremock/`, response templating on).
 2. The server on 4311: `npm --prefix ../server run start:e2e`, with
    `STRIPE_API_HOST`, `STRIPE_API_PORT`, `STRIPE_API_PROTOCOL` and a dummy
    `STRIPE_API_KEY` pointing stripe-node at WireMock. Production sets none of these.
 3. The client dev server on 4310 with `VITE_GRAPHQL_URL` pointing at that server.
+4. The production build on 4313 (`vite build` into `.preview-dist/`, then
+   `vite preview`), also pointed at that server. Only the analytics test (#177)
+   uses it, because analytics loads in production builds only.
 
-Ports busy? Set `E2E_CLIENT_PORT`, `E2E_SERVER_PORT`, `E2E_WIREMOCK_PORT`.
+Ports busy? Set `E2E_CLIENT_PORT`, `E2E_SERVER_PORT`, `E2E_WIREMOCK_PORT`, `E2E_PREVIEW_PORT`.
 
 Useful: `npx playwright test tests/list.spec.ts --project=mobile`,
 `npx playwright test --ui`, `npm run report` after a failure (traces are kept on failure).
