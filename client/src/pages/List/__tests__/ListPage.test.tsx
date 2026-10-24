@@ -22,6 +22,7 @@ import {
   toggleOf
 } from '../../../test/renderList'
 import { savedParam, toggled, withSaved } from '../ListPage'
+import { isAbove } from '../ScrollToTop'
 
 beforeEach(() => localStorage.clear())
 
@@ -517,8 +518,10 @@ describe('Scenario: Scroll to top', () => {
 
   it('appears once the chips are scrolled past; brings them back and focuses the Ingredients heading', async () => {
     const user = userEvent.setup()
-    const scrolls: ScrollToOptions[] = []
-    window.scrollTo = (options?: ScrollToOptions | number) => {
+    const scrolls: ScrollIntoViewOptions[] = []
+    Element.prototype.scrollIntoView = function (
+      options?: boolean | ScrollIntoViewOptions
+    ) {
       if (typeof options === 'object') scrolls.push(options)
     }
     window.IntersectionObserver = FakeObserver
@@ -528,7 +531,7 @@ describe('Scenario: Scroll to top', () => {
     expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
     fire({})
     await user.click(screen.getByRole('button', { name: 'Scroll to top' }))
-    expect(scrolls).toEqual([{ top: 0, behavior: 'smooth' }])
+    expect(scrolls).toEqual([{ block: 'start', behavior: 'smooth' }])
     expect(
       screen.getByRole('heading', { level: 2, name: /^Ingredients/ })
     ).toHaveFocus()
@@ -536,6 +539,23 @@ describe('Scenario: Scroll to top', () => {
     expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
     unmount()
     expect(disconnected).toEqual(['yes'])
+  })
+
+  it('hides again when a jump to the very top leaves the chips below the screen', () => {
+    window.IntersectionObserver = FakeObserver
+    renderList()
+    fire({})
+    expect(
+      screen.getByRole('button', { name: 'Scroll to top' })
+    ).toBeInTheDocument()
+    fireEvent.scroll(window)
+    expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
+  })
+
+  it('treats only a box wholly above the screen as scrolled past', () => {
+    expect(isAbove({ bottom: -1 })).toBe(true)
+    expect(isAbove({ bottom: 0 })).toBe(false)
+    expect(isAbove({ bottom: 400 })).toBe(false)
   })
 
   it('never shows without IntersectionObserver', () => {

@@ -32,10 +32,17 @@ test.describe('layout (#181)', () => {
     await page.goto('/')
     expect(await split(page)).toBe('vertical')
     await expect(layoutToggle(page)).toHaveCount(0)
-    const ingredients = await box(ingredientsRegion(page))
-    expect(await pageTop(recipesRegion(page))).toBeGreaterThan(
-      (await pageTop(ingredientsRegion(page))) + ingredients.height - 1
-    )
+    // polled: Explore opens on load, so the sections slide down while it animates
+    await expect
+      .poll(
+        async () =>
+          (await pageTop(recipesRegion(page))) -
+          (await pageTop(ingredientsRegion(page))) -
+          (
+            await box(ingredientsRegion(page))
+          ).height
+      )
+      .toBeGreaterThan(-1)
   })
 
   test('from 576px: side by side, 50/50 by default; the toggle offers vertical and 50/50', async ({
@@ -48,12 +55,15 @@ test.describe('layout (#181)', () => {
       'Vertical',
       'Ingredients 50%, Recipes 50%'
     ])
-    expect(
-      Math.abs(
-        (await pageTop(ingredientsRegion(page))) -
-          (await pageTop(recipesRegion(page)))
+    // polled: Explore opens on load, so the sections slide down while it animates
+    await expect
+      .poll(async () =>
+        Math.abs(
+          (await pageTop(ingredientsRegion(page))) -
+            (await pageTop(recipesRegion(page)))
+        )
       )
-    ).toBeLessThan(2)
+      .toBeLessThan(2)
     expect((await box(recipesRegion(page))).x).toBeGreaterThan(
       (await box(ingredientsRegion(page))).x
     )

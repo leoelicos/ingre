@@ -21,6 +21,13 @@ export const revealById = (id: string): void => {
   element?.focus({ preventScroll: true })
 }
 
+/** Scrolls the element with this id to the top of the screen; nothing when it isn't there. */
+export const scrollToStartOf = (id: string): void => {
+  document
+    .getElementById(id)
+    ?.scrollIntoView({ block: 'start', behavior: scrollBehaviour() })
+}
+
 /** Focuses the checked radio inside the element with this id. */
 export const focusCheckedIn = (id: string): void => {
   document

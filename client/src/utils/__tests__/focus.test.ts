@@ -3,6 +3,7 @@ import {
   focusCheckedIn,
   prefersReducedMotion,
   revealById,
+  scrollToStartOf,
   scrollBehaviour
 } from '../focus'
 
@@ -55,6 +56,20 @@ describe('focus helpers', () => {
     revealById('a')
     expect(calls).toEqual([{ block: 'nearest', behavior: 'smooth' }])
     expect(document.activeElement?.id).toBe('a')
+  })
+
+  it('scrolls an element to the top of the screen, and does nothing when missing', () => {
+    document.body.innerHTML = '<div id="a">A</div>'
+    const calls: ScrollIntoViewOptions[] = []
+    Element.prototype.scrollIntoView = function (
+      options?: boolean | ScrollIntoViewOptions
+    ) {
+      if (typeof options === 'object') calls.push(options)
+    }
+    scrollToStartOf('missing')
+    expect(calls).toEqual([])
+    scrollToStartOf('a')
+    expect(calls).toEqual([{ block: 'start', behavior: 'smooth' }])
   })
 
   it('focuses the checked radio in a group, if there is one', () => {
