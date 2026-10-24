@@ -1,4 +1,4 @@
-import type { FC, MouseEvent } from 'react'
+import type { FC, MouseEvent, ReactNode } from 'react'
 
 /** The id of the one main landmark the skip link targets (#131). */
 export const MAIN_ID = 'main'
@@ -23,4 +23,22 @@ export const SkipLink: FC = () => (
   >
     Skip to content
   </a>
+)
+
+/**
+ * The page's one main landmark and the skip link's target (#131). The list page's
+ * main column is its own main (#181: the Explore drawer sits beside it); the other
+ * pages are wrapped in this one by App.
+ */
+export const PageMain: FC<{ children: ReactNode; className?: string }> = ({
+  children,
+  className = ''
+}) => (
+  <main
+    id={MAIN_ID}
+    tabIndex={-1}
+    className={`focus:outline-none ${className}`.trim()}
+  >
+    {children}
+  </main>
 )

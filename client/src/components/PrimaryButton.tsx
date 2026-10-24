@@ -9,10 +9,8 @@ type Props = {
   isDisabled?: boolean
   /** When true, set aria-disabled but keep the button focusable. */
   ariaDisabledOnly?: boolean
-  ariaDescribedBy?: string | undefined
   ariaLabel?: string
   className?: string
-  id?: string | undefined
   /** 'submit' inside a form; defaults to 'button'. */
   type?: 'button' | 'submit'
   size?: PrimarySize
@@ -26,10 +24,8 @@ export const PrimaryButton = ({
   onPress,
   isDisabled,
   ariaDisabledOnly,
-  ariaDescribedBy,
   ariaLabel,
   className = '',
-  id,
   type = 'button',
   size = 'regular'
 }: Props) => {
@@ -40,16 +36,12 @@ export const PrimaryButton = ({
   }
   return (
     <AriaButton
-      {...(id !== undefined ? { id } : {})}
       type={type}
       onPress={handlePress}
       {...(ariaDisabledOnly
         ? {}
         : isDisabled !== undefined
         ? { isDisabled }
-        : {})}
-      {...(ariaDescribedBy !== undefined
-        ? { 'aria-describedby': ariaDescribedBy }
         : {})}
       {...(ariaLabel !== undefined ? { 'aria-label': ariaLabel } : {})}
       {...(showAriaDisabled ? { 'aria-disabled': DISABLED_ARIA } : {})}

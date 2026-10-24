@@ -51,7 +51,9 @@ module.exports = {
         pill: 'var(--radius-pill)'
       },
       boxShadow: {
-        card: 'var(--shadow-card)'
+        card: 'var(--shadow-card)',
+        raised: 'var(--shadow-raised)',
+        pressed: 'var(--shadow-pressed)'
       },
       maxWidth: {
         layout: 'var(--layout-max-width)'
@@ -65,6 +67,7 @@ module.exports = {
     }
   },
   plugins: [
+    require('@tailwindcss/container-queries'),
     function ({ addUtilities }) {
       addUtilities({
         '.focus-ring': {

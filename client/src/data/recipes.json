@@ -1,11 +1,10 @@
 {
-  "_note": "Generic, brand-free everyday dishes cookable in under an hour. All quantities are PER SERVE (portions: 1); the app multiplies by the number of people. Ingredients reference ingredients.json by id; `keyIngredients` (confirmed by the product lead, 2026-10-20) lists up to three defining ingredient ids, drawn as badges on cards and the recipe page; tags are many-to-many (cuisines, diets, meals).",
+  "_note": "Generic, brand-free everyday dishes cookable in under an hour. All quantities are PER SERVE (portions: 1); the app multiplies by the number of people. Ingredients reference ingredients.json by id; `keyIngredients` (confirmed by the product lead, 2026-10-20) lists up to three defining ingredient ids, drawn as badges on cards and recipe rows. Recipes carry no tags (#181); allergens come from their ingredients.",
   "recipes": [
     {
       "id": "spaghetti-bolognese",
       "name": "Spaghetti bolognese",
       "portions": 1,
-      "tags": ["Italian", "Australian", "dinner"],
       "keyIngredients": ["spaghetti", "beef-mince", "crushed-tomatoes"],
       "ingredients": [
         {
@@ -69,7 +68,6 @@
       "id": "egg-fried-rice",
       "name": "Egg fried rice",
       "portions": 1,
-      "tags": ["Chinese", "vegetarian", "lunch", "dinner"],
       "keyIngredients": ["jasmine-rice", "egg", "soy-sauce"],
       "ingredients": [
         {
@@ -128,7 +126,6 @@
       "id": "butter-chicken",
       "name": "Butter chicken",
       "portions": 1,
-      "tags": ["Indian", "dinner", "gluten-free"],
       "keyIngredients": ["chicken-thigh", "butter", "cream"],
       "ingredients": [
         {
@@ -203,7 +200,6 @@
       "id": "greek-salad-haloumi",
       "name": "Greek salad with haloumi",
       "portions": 1,
-      "tags": ["Greek", "Mediterranean", "vegetarian", "gluten-free", "lunch"],
       "keyIngredients": ["haloumi", "tomato", "kalamata-olives"],
       "ingredients": [
         {
@@ -267,7 +263,6 @@
       "id": "san-choy-bau",
       "name": "San choy bau",
       "portions": 1,
-      "tags": ["Chinese", "Cantonese", "dinner", "lunch"],
       "keyIngredients": ["pork-mince", "iceberg-lettuce", "water-chestnuts"],
       "ingredients": [
         {
@@ -331,7 +326,6 @@
       "id": "chicken-korma",
       "name": "Chicken korma",
       "portions": 1,
-      "tags": ["Indian", "dinner"],
       "keyIngredients": ["chicken-thigh", "natural-yoghurt", "ground-almonds"],
       "ingredients": [
         {
@@ -412,7 +406,6 @@
       "id": "dahl",
       "name": "Red lentil dahl",
       "portions": 1,
-      "tags": ["Indian", "dinner", "vegetarian"],
       "keyIngredients": ["red-lentils", "ground-turmeric", "cumin-seeds"],
       "ingredients": [
         {
@@ -488,7 +481,6 @@
       "id": "beef-keema",
       "name": "Beef keema with peas",
       "portions": 1,
-      "tags": ["Indian", "dinner"],
       "keyIngredients": ["beef-mince", "tinned-peas", "garam-masala"],
       "ingredients": [
         {
@@ -575,7 +567,6 @@
       "id": "vegetable-curry",
       "name": "Potato, cauliflower and chickpea curry",
       "portions": 1,
-      "tags": ["Indian", "dinner", "vegetarian", "vegan"],
       "keyIngredients": ["potato", "cauliflower", "chickpeas"],
       "ingredients": [
         {
@@ -671,7 +662,6 @@
       "id": "shaking-beef",
       "name": "Shaking beef (bò lúc lắc)",
       "portions": 1,
-      "tags": ["Vietnamese", "dinner"],
       "keyIngredients": ["beef-rump", "red-onion", "lime"],
       "ingredients": [
         {
@@ -763,7 +753,6 @@
       "id": "lemongrass-chilli-chicken",
       "name": "Lemongrass chilli chicken (gà xào sả ớt)",
       "portions": 1,
-      "tags": ["Vietnamese", "dinner"],
       "keyIngredients": ["chicken-thigh", "lemongrass", "red-chilli"],
       "ingredients": [
         {
@@ -835,7 +824,6 @@
       "id": "lemongrass-beef-noodle-salad",
       "name": "Lemongrass beef noodle salad (bún bò xào)",
       "portions": 1,
-      "tags": ["Vietnamese", "dinner"],
       "keyIngredients": ["beef-rump", "lemongrass", "rice-vermicelli"],
       "ingredients": [
         {
@@ -937,7 +925,6 @@
       "id": "rice-paper-rolls",
       "name": "Prawn and pork rice paper rolls (gỏi cuốn)",
       "portions": 1,
-      "tags": ["Vietnamese", "dinner", "lunch"],
       "keyIngredients": ["cooked-prawns", "pork-belly", "rice-paper"],
       "ingredients": [
         {
@@ -1009,7 +996,6 @@
       "id": "pork-chops-apple-onion",
       "name": "Pork chops with apples and onion",
       "portions": 1,
-      "tags": ["Australian", "dinner"],
       "keyIngredients": ["pork-loin-chop", "apple", "onion"],
       "ingredients": [
         {

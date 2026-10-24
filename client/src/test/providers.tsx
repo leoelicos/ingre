@@ -1,9 +1,8 @@
 import type { FC, ReactNode } from 'react'
-import { useEffect } from 'react'
 import { render } from '@testing-library/react'
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { AuthProvider, useAuthContext } from '../utils/auth/AuthContext'
+import { AuthProvider } from '../utils/auth/AuthContext'
 import { StoreProvider } from '../utils/state/GlobalState'
 
 /** An hour from now, in JWT seconds. */
@@ -23,15 +22,6 @@ export const testToken = (pro: boolean, exp: number = inAnHour()): string => {
 /** Stores a token as a logged-in visitor would have it. */
 export const logIn = (pro: boolean): void => {
   localStorage.setItem('id_token', testToken(pro))
-}
-
-/** Loads the decoded profile from the stored token, as the real 'UPDATE' action does. */
-export const ProfileFromToken: FC = () => {
-  const [, dispatch] = useAuthContext()
-  useEffect(() => {
-    dispatch({ type: 'UPDATE', data: '' })
-  }, [dispatch])
-  return null
 }
 
 /** Shows the current path, so a test can assert where the app navigated. */

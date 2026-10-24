@@ -41,12 +41,10 @@
   /* lines */
   --color-border: var(--palette-stone);
 
-  /* meal tints (photo-free card headers) */
+  /* card header tint (photo-free) */
   --color-tint-dinner: #e6f2ea;
-  --color-tint-lunch: #fde8e3;
-  /* darker shades of the tints for card illustrations */
+  /* darker shade of the tint for card illustrations */
   --color-tint-dinner-ink: #8fbf9f;
-  --color-tint-lunch-ink: #e9a597;
   --color-chip-active: var(--color-tint-dinner);
 
   /* ingredient badges: background + ink per shop section (#154); ink on bg >= 6.7:1 */
@@ -76,6 +74,11 @@
 
   /* elevation */
   --shadow-card: 0 2px 8px rgba(43, 43, 43, 0.08);
+  /* soft neumorphism for recipe rows (#179): raised, and pressed in once selected */
+  --shadow-raised: 5px 5px 12px rgba(43, 43, 43, 0.16),
+    -5px -5px 12px rgba(255, 255, 255, 0.9);
+  --shadow-pressed: inset 4px 4px 9px rgba(43, 43, 43, 0.18),
+    inset -4px -4px 9px rgba(255, 255, 255, 0.85);
 
   /* shape */
   --radius-card: 12px;
@@ -131,9 +134,7 @@
 
     /* meal tints */
     --color-tint-dinner: #1f3a2a;
-    --color-tint-lunch: #3d2420;
     --color-tint-dinner-ink: #4f8f66;
-    --color-tint-lunch-ink: #b5675a;
     --color-chip-active: var(--color-tint-dinner);
 
     /* ingredient badges: dark background + light ink per shop section; ink on bg >= 8:1 */
@@ -158,6 +159,10 @@
 
     /* elevation */
     --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.5);
+    --shadow-raised: 5px 5px 12px rgba(0, 0, 0, 0.6),
+      -4px -4px 10px rgba(255, 255, 255, 0.06);
+    --shadow-pressed: inset 4px 4px 9px rgba(0, 0, 0, 0.65),
+      inset -3px -3px 8px rgba(255, 255, 255, 0.06);
 
     color-scheme: dark;
   }

@@ -15,20 +15,18 @@ import {
 } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import { Header } from './components/Header'
-import { MAIN_ID, SkipLink } from './components/SkipLink'
+import { PageMain, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
-import RecipePage from './pages/Recipe/RecipePage'
 import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
-import { ShoppingFlow } from './pages/ShoppingList/ShoppingFlow'
+import { ListPage } from './pages/List/ListPage'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
-import Search from './pages/Search/Search'
-import TapOff from './pages/TapOff/TapOff'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
+import { ExploreProvider } from './utils/explore/ExploreContext'
 import { changeTitle } from './utils/changeTitle'
 import { StoreProvider } from './utils/state/GlobalState'
 
@@ -64,7 +62,7 @@ const link = authLink.concat(httpLink)
 const cache = new InMemoryCache()
 const client = new ApolloClient({ link, cache })
 
-/** Old Saved links land on Pick with the Saved filter on (#160). */
+/** Old Saved links land on the page with the Saved filter on (#160). */
 export const SavedRedirect: FC = () => (
   <Navigate
     to={SAVED_PATH}
@@ -72,7 +70,7 @@ export const SavedRedirect: FC = () => (
   />
 )
 
-/** The shopping list is the workspace at "/" (#164); router state (Back to my list) comes along. */
+/** Old list and step URLs (/ingredients, /tapoff) land on the one page at "/" (#164, #179). */
 export const WorkspaceRedirect: FC = () => {
   const { search, state } = useLocation()
   return (
@@ -89,27 +87,19 @@ export const SiteAnalytics: FC<{ mode: string }> = ({ mode }) =>
   mode === 'production' ? <Analytics /> : null
 
 export const Ingre: FC = () => {
-  changeTitle('Pick')
+  changeTitle('Shopping list')
   return (
     <ApolloProvider client={client}>
       <Router>
         <AuthProvider>
           <StoreProvider>
-            <SkipLink />
-            <Header />
-            <main
-              id={MAIN_ID}
-              tabIndex={-1}
-              className="focus:outline-none"
-            >
+            <ExploreProvider>
+              <SkipLink />
+              <Header />
               <Routes>
                 <Route
                   path="/"
-                  element={<ShoppingFlow />}
-                />
-                <Route
-                  path="/search"
-                  element={<Search />}
+                  element={<ListPage />}
                 />
                 <Route
                   path="/saved"
@@ -120,37 +110,53 @@ export const Ingre: FC = () => {
                   element={<WorkspaceRedirect />}
                 />
                 <Route
-                  path="/recipe/:id"
-                  element={<RecipePage />}
-                />
-                <Route
                   path="/tapoff"
-                  element={<TapOff />}
+                  element={<WorkspaceRedirect />}
                 />
                 {/* admin */}
                 <Route
                   path="/login"
-                  element={<Login />}
+                  element={
+                    <PageMain>
+                      <Login />
+                    </PageMain>
+                  }
                 />
                 <Route
                   path="/signup"
-                  element={<Signup />}
+                  element={
+                    <PageMain>
+                      <Signup />
+                    </PageMain>
+                  }
                 />
                 <Route
                   path="/upgrade"
-                  element={<Upgrade />}
+                  element={
+                    <PageMain>
+                      <Upgrade />
+                    </PageMain>
+                  }
                 />
                 <Route
                   path="/success"
-                  element={<Success />}
+                  element={
+                    <PageMain>
+                      <Success />
+                    </PageMain>
+                  }
                 />
                 <Route
                   path="*"
-                  element={<NoMatch />}
+                  element={
+                    <PageMain>
+                      <NoMatch />
+                    </PageMain>
+                  }
                 />
               </Routes>
-            </main>
-            <SiteAnalytics mode={APP_MODE} />
+              <SiteAnalytics mode={APP_MODE} />
+            </ExploreProvider>
           </StoreProvider>
         </AuthProvider>
       </Router>

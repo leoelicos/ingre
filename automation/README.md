@@ -1,4 +1,4 @@
-# automation: end-to-end tests (#175)
+# automation: end-to-end tests (#175, #179)
 
 Playwright drives the **real client** against the **real GraphQL server**. Only the
 two upstreams are replaced:
@@ -36,20 +36,25 @@ Playwright's `webServer` starts three processes and stops them afterwards:
 
 Ports busy? Set `E2E_CLIENT_PORT`, `E2E_SERVER_PORT`, `E2E_WIREMOCK_PORT`.
 
-Useful: `npx playwright test tests/upgrade.spec.ts --project=mobile`,
+Useful: `npx playwright test tests/list.spec.ts --project=mobile`,
 `npx playwright test --ui`, `npm run report` after a failure (traces are kept on failure).
 
 ## Suites
 
-| Spec               | Journey                                                                                                                                                                                                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `upgrade.spec.ts`  | **Critical, never skip.** Sign up, Upgrade, stand-in Stripe checkout: success (user becomes pro), Stripe error (clear message, not upgraded) and cancel (clear message, not upgraded). Asserts the Stripe calls through WireMock's `/__admin/requests`. |
-| `auth.spec.ts`     | Sign up, log out and log in from the account menu; a wrong password                                                                                                                                                                                     |
-| `pick.spec.ts`     | Choosing recipes on Pick                                                                                                                                                                                                                                |
-| `list.spec.ts`     | Chips, ticking with Undo at home, quick ticks at the shop, Shopping done                                                                                                                                                                                |
-| `saved.spec.ts`    | Saving from the recipe page and the Saved filter                                                                                                                                                                                                        |
-| `search.spec.ts`   | Header search, Tab accepts the suggestion                                                                                                                                                                                                               |
-| `darkmode.spec.ts` | Dark mode follows the device                                                                                                                                                                                                                            |
+| Spec                                    | Journey                                                                                                                                                                                                                                                                                        |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `upgrade.spec.ts`                       | **Critical, never skip.** Sign up, Upgrade, stand-in Stripe checkout: success (user becomes pro), Stripe error (clear message, not upgraded) and cancel (back on `/upgrade?checkout=cancelled`, clear message, not upgraded). Asserts the Stripe calls through WireMock's `/__admin/requests`. |
+| `list.spec.ts`                          | The ingredients-first page (#179), one test per acceptance scenario                                                                                                                                                                                                                            |
+| `chips.spec.ts`                         | Ingredient chips (#181)                                                                                                                                                                                                                                                                        |
+| `explore.spec.ts`                       | The Explore area (#181)                                                                                                                                                                                                                                                                        |
+| `layout.spec.ts`                        | Responsive layout (#181)                                                                                                                                                                                                                                                                       |
+| `recipes.spec.ts`                       | Recipe rows (#181)                                                                                                                                                                                                                                                                             |
+| `headers.spec.ts`                       | Section headers (#181)                                                                                                                                                                                                                                                                         |
+| `stage2.spec.ts`, `stage2-more.spec.ts` | Balance-sheet ingredients, recipe copies, filters and saving (#182)                                                                                                                                                                                                                            |
+| `wrapup.spec.ts`                        | Self-hosted fonts (#176), no Bootstrap classes (#170), Skip to content (#131), no analytics outside production (#177)                                                                                                                                                                          |
+| `auth.spec.ts`                          | Sign up, log out and log in from the account menu; a wrong password                                                                                                                                                                                                                            |
+| `saved.spec.ts`                         | Saving from Explore and the Saved filter                                                                                                                                                                                                                                                       |
+| `darkmode.spec.ts`                      | Dark mode follows the device; selected rows keep their border and check mark                                                                                                                                                                                                                   |
 
 Every test also fails if the page makes any request that leaves localhost
 (fixture in `tests/fixtures.ts`). Stripe.js (`https://js.stripe.com/v3`) is

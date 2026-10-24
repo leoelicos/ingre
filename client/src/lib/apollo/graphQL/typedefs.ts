@@ -31,6 +31,12 @@ export type Recipe = {
   instructions: string | null
 }
 
+/** A saved recipe as GET_SAVED_RECIPES and SAVE_RECIPE select it (#182). */
+export type SavedRecipe = Omit<Recipe, 'ingredients'> & {
+  ingredients: SavedIngredient[]
+  customisations: Customisation[]
+}
+
 export type Ingredient = {
   _id: string
   name: string
@@ -38,6 +44,21 @@ export type Ingredient = {
   measure: string
   category: Category
 }
+
+/** null for ingredients saved before catalogue ids (#182). */
+export type SavedIngredient = Ingredient & { ingredientId: string | null }
+
+/** One customisation of a saved recipe (#182); PortionsChange is aliased in the selection. */
+export type Customisation =
+  | { __typename: 'AddedIngredient'; ingredientId: string; to: number }
+  | { __typename: 'RemovedIngredient'; ingredientId: string; from: number }
+  | {
+      __typename: 'ChangedIngredient'
+      ingredientId: string
+      from: number
+      to: number
+    }
+  | { __typename: 'PortionsChange'; fromPortions: number; toPortions: number }
 
 export type Category = {
   _id: string

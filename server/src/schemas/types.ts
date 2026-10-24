@@ -26,6 +26,29 @@ export type Recipe = {
   picture_url: string
   libraryId?: string
   instructions?: string
+  customisations: Array<CustomisationDoc>
+}
+
+/** #182: the union member each stored change resolves to. */
+export type CustomisationKind =
+  | 'AddedIngredient'
+  | 'RemovedIngredient'
+  | 'ChangedIngredient'
+  | 'PortionsChange'
+
+/** One stored change; which amounts it has depends on its kind. */
+export type CustomisationDoc = {
+  kind: CustomisationKind
+  ingredientId?: string
+  from?: number
+  to?: number
+}
+
+export type CustomisationsInput = {
+  added: Array<{ ingredientId: string; to: number }>
+  removed: Array<{ ingredientId: string; from: number }>
+  changed: Array<{ ingredientId: string; from: number; to: number }>
+  portions?: { from: number; to: number } | null
 }
 
 export interface RecipePopulated extends Omit<Recipe, 'ingredients'> {
@@ -35,6 +58,7 @@ export interface RecipePopulated extends Omit<Recipe, 'ingredients'> {
     quantity: number
     measure: string
     category: Category
+    ingredientId?: string | null
   }>
 }
 
@@ -45,6 +69,7 @@ export type RecipeInput = {
   picture_url: string
   libraryId?: string | null
   instructions?: string | null
+  customisations: CustomisationsInput
 }
 
 export type Ingredient = {
@@ -53,6 +78,7 @@ export type Ingredient = {
   quantity: number
   measure: string
   category: Category
+  ingredientId?: string | null
 }
 
 export type IngredientInput = {
@@ -60,6 +86,7 @@ export type IngredientInput = {
   quantity: number
   measure: string
   category: string
+  ingredientId: string
 }
 
 export type Category = {

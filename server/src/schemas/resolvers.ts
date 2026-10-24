@@ -1,3 +1,4 @@
+import type { CustomisationKind } from './types'
 // recipe
 import { getRecipe } from './resolvers/recipe/getRecipe'
 
@@ -14,7 +15,15 @@ import { saveRecipe } from './resolvers/recipe/saveRecipe'
 import { removeRecipe } from './resolvers/recipe/removeRecipe'
 import { login } from './resolvers/session/login'
 
+/** #182: each stored change names the union member it resolves to. */
+export const resolveCustomisationType = ({
+  kind
+}: {
+  kind: CustomisationKind
+}): CustomisationKind => kind
+
 export const resolvers = {
+  Customisation: { __resolveType: resolveCustomisationType },
   Query: {
     checkEmailAlreadyExists,
     getUser,

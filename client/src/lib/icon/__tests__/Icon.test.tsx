@@ -6,11 +6,8 @@ import {
   IngreIconClearSearch,
   IngreIconHelp,
   IngreIconIngredients,
-  IngreIconBasket,
-  IngreIconHouse,
   IngreIconLocation,
   IngreIconLogoEgg,
-  IngreIconPrint,
   IngreIconServes,
   IngreIconLogoMenuCollapsed,
   IngreIconPortion,
@@ -34,11 +31,8 @@ describe('Icon', () => {
         icon={['fas', 'egg']}
         key="plain"
       />,
-      <IngreIconHouse key="house" />,
-      <IngreIconBasket key="basket" />,
       <IngreIconLocation key="location" />,
       <IngreIconLogoEgg key="egg" />,
-      <IngreIconPrint key="print" />,
       <IngreIconServes key="serves" />,
       <IngreIconLogoMenuCollapsed key="menu" />,
       <IngreIconChevronDown key="chevron" />,

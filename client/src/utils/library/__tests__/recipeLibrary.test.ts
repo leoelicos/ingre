@@ -2,7 +2,6 @@ import searchLibrary, {
   PLACEHOLDER_PICTURE,
   catalogue,
   library,
-  getLibraryTags,
   matchesSearch,
   toClientRecipe
 } from '../recipeLibrary'
@@ -21,7 +20,6 @@ const chickenRice: LibraryRecipe = {
   id: 'hainan-chicken-rice',
   name: 'Hainan chicken rice',
   portions: 4,
-  tags: ['Chinese', 'Malaysian', 'Singaporean', 'dinner'],
   ingredients: [
     { ingredientId: 'rice', quantity: 2, measure: 'cup' },
     { ingredientId: 'chicken', quantity: 800, measure: 'g' }
@@ -33,7 +31,6 @@ const salad: LibraryRecipe = {
   id: 'salad',
   name: 'Garden salad',
   portions: 2,
-  tags: ['vegetarian'],
   ingredients: [{ ingredientId: 'missing', quantity: 1, measure: 'whole' }],
   method: []
 }
@@ -51,7 +48,6 @@ describe('recipe library data', () => {
     for (const r of library) {
       for (const ri of r.ingredients)
         expect(ids.has(ri.ingredientId)).toBe(true)
-      expect(r.tags.length).toBeGreaterThan(0)
       expect(r.portions).toBe(1)
     }
   })
@@ -161,7 +157,6 @@ describe('toClientRecipe', () => {
       picture_url: 'http://pic.example/chicken-rice.jpg',
       instructions: undefined,
       libraryId: 'hainan-chicken-rice',
-      tags: ['Chinese', 'Malaysian', 'Singaporean', 'dinner'],
       ingredients: [
         {
           _id: undefined,
@@ -202,29 +197,15 @@ describe('matchesSearch / searchLibrary', () => {
 
   it('returns everything for an empty search', () => {
     expect(names({})).toEqual(['Hainan chicken rice', 'Garden salad'])
-    expect(names({ q: '   ', tags: [] })).toHaveLength(2)
+    expect(names({ q: '   ' })).toHaveLength(2)
   })
 
-  it('matches one recipe under several cuisine tags (many-to-many)', () => {
-    for (const tag of ['Chinese', 'malaysian', 'SINGAPOREAN'])
-      expect(names({ tags: [tag] })).toEqual(['Hainan chicken rice'])
-  })
-
-  it('requires every selected tag', () => {
-    expect(names({ tags: ['Chinese', 'dinner'] })).toEqual([
-      'Hainan chicken rice'
-    ])
-    expect(names({ tags: ['Chinese', 'vegetarian'] })).toEqual([])
-  })
-
-  it('matches query words against name, tags and ingredient names', () => {
+  it('matches every query word against the name and ingredient names, not tags (#181)', () => {
     expect(names({ q: 'hainan' })).toEqual(['Hainan chicken rice'])
     expect(names({ q: 'jasmine' })).toEqual(['Hainan chicken rice'])
-    expect(names({ q: 'vegetarian' })).toEqual(['Garden salad'])
+    expect(names({ q: 'garden' })).toEqual(['Garden salad'])
+    expect(names({ q: 'vegetarian' })).toEqual([])
     expect(names({ q: 'chicken salad' })).toEqual([])
-    expect(names({ q: 'garden', tags: ['vegetarian'] })).toEqual([
-      'Garden salad'
-    ])
   })
 
   it('uses the bundled data by default', () => {
@@ -235,14 +216,10 @@ describe('matchesSearch / searchLibrary', () => {
     expect(matchesSearch(firstBundledRecipe(), { q: 'beef' })).toBe(true)
   })
 
-  it('lists unique sorted tags', () => {
-    expect(getLibraryTags(fixtures)).toEqual([
-      'Chinese',
-      'Malaysian',
-      'Singaporean',
-      'dinner',
-      'vegetarian'
-    ])
-    expect(getLibraryTags()).toContain('Indian')
+  it('has no recipe tags in the data or the client shape (#181)', () => {
+    for (const r of library) expect(Object.keys(r)).not.toContain('tags')
+    expect(Object.keys(toClientRecipe(chickenRice, ingredients))).not.toContain(
+      'tags'
+    )
   })
 })

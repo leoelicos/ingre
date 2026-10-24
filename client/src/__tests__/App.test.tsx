@@ -8,7 +8,6 @@ import {
   SiteAnalytics,
   withAuthHeaders
 } from '../App'
-import { STEP_KEY } from '../utils/storage/shoppingState'
 
 /** Renders the whole app at a path, as a browser would open it. */
 const openAt = (path: string) => {
@@ -21,40 +20,49 @@ describe('App', () => {
     localStorage.clear()
   })
 
-  it('opens on the workspace: the header and Pick (#164)', () => {
+  it('opens on the one page: the header, Explore, Ingredients and Recipes (#164, #179, #181)', () => {
     openAt('/')
     expect(screen.getByRole('link', { name: 'ingré' })).toHaveAttribute(
       'href',
       '/'
     )
     expect(
-      screen.getByRole('combobox', { name: 'Search recipes or ingredients' })
+      screen.getByRole('searchbox', { name: 'Search ingredients and recipes' })
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Account' })).toBeInTheDocument()
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Pick' })
+      screen.getByRole('heading', { level: 1, name: 'Shopping list' })
     ).toBeInTheDocument()
+    expect(screen.getByRole('region', { name: 'Explore' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Ingredients' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Recipes' })
+    ).toBeInTheDocument()
+    expect(screen.queryByText('At home')).not.toBeInTheDocument()
+    expect(screen.queryByText('At the shop')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Home' })).toBeNull()
   })
 
-  it('old Saved links open Pick with the Saved filter on (#160)', () => {
-    localStorage.setItem(STEP_KEY, '"shop"')
+  it('old Saved links open the page with the Saved filter on (#160)', () => {
     openAt('/saved')
     expect(window.location.pathname).toBe('/')
     expect(window.location.search).toBe('?saved=1')
     expect(screen.getByRole('switch', { name: 'Saved' })).toBeChecked()
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Pick' })
-    ).toBeInTheDocument()
   })
 
-  it('the old shopping list address opens the workspace', () => {
-    localStorage.setItem(STEP_KEY, '"home"')
-    openAt('/ingredients')
-    expect(window.location.pathname).toBe('/')
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'At home' })
-    ).toBeInTheDocument()
-  })
+  it.each(['/ingredients', '/tapoff'])(
+    'the old step address %s redirects to the one page (#179)',
+    (path) => {
+      openAt(`${path}?q=dahl`)
+      expect(window.location.pathname).toBe('/')
+      expect(window.location.search).toBe('?q=dahl')
+      expect(
+        screen.getByRole('heading', { level: 1, name: 'Shopping list' })
+      ).toBeInTheDocument()
+    }
+  )
 
   it('builds the graphql endpoint for each environment', () => {
     expect(graphqlEndpoint('production', '')).toBe(
@@ -64,7 +72,9 @@ describe('App', () => {
     expect(graphqlEndpoint('development', '')).toBe(
       'http://localhost:3001/graphql'
     )
-    // VITE_GRAPHQL_URL wins in any mode (#175)
+  })
+
+  it('uses the override when one is set (the e2e server)', () => {
     expect(
       graphqlEndpoint('development', 'http://localhost:4311/graphql')
     ).toBe('http://localhost:4311/graphql')
@@ -99,6 +109,19 @@ describe('App skip link (#131)', () => {
     await user.click(link)
     expect(screen.getByRole('main')).toHaveFocus()
     expect(screen.getByRole('main')).toHaveAttribute('id', 'main')
+  })
+
+  it('on the list page, Skip to content lands on the list column, beside the Explore drawer (#131, #181)', async () => {
+    const user = userEvent.setup()
+    openAt('/')
+    await user.tab()
+    await user.keyboard('{Enter}')
+    const main = screen.getByRole('main')
+    expect(main).toHaveFocus()
+    expect(screen.getAllByRole('main')).toHaveLength(1)
+    expect(main).toContainElement(
+      screen.getByRole('heading', { level: 2, name: 'Ingredients' })
+    )
   })
 })
 

@@ -31,7 +31,6 @@ export function toClientRecipe(
     portions: recipe.portions,
     picture_url: recipe.picture_url || PLACEHOLDER_PICTURE,
     libraryId: recipe.id,
-    tags: recipe.tags,
     ingredients: recipe.ingredients.map((ri) => {
       const item = byId.get(ri.ingredientId)
       return {
@@ -44,23 +43,16 @@ export function toClientRecipe(
   }
 }
 
-const norm = (s: string) => s.trim().toLowerCase()
-
 export function matchesSearch(
   recipe: LibraryRecipe,
-  { q, tags }: LibrarySearch,
-  ingredients: LibraryIngredient[] = catalogue
+  { q }: LibrarySearch,
+  ingredients: readonly LibraryIngredient[] = catalogue
 ): boolean {
-  const recipeTags = recipe.tags.map(norm)
-  if (tags && tags.length > 0) {
-    if (!tags.every((t) => recipeTags.includes(norm(t)))) return false
-  }
   const query = normaliseTerm(q ?? '')
   if (!query) return true
   const byId = new Map(ingredients.map((i) => [i.id, i.name]))
   const haystack = [
     recipe.name,
-    ...recipe.tags,
     ...recipe.ingredients.map((ri) => byId.get(ri.ingredientId) ?? '')
   ].map(normaliseTerm)
   return query
@@ -76,10 +68,6 @@ export function searchLibrary(
   return recipes
     .filter((r) => matchesSearch(r, search, ingredients))
     .map((r) => toClientRecipe(r, ingredients))
-}
-
-export function getLibraryTags(recipes: LibraryRecipe[] = library): string[] {
-  return Array.from(new Set(recipes.flatMap((r) => r.tags))).sort()
 }
 
 export default searchLibrary

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuthContext } from '../../../utils/auth/AuthContext'
+import { ExploreProvider } from '../../../utils/explore/ExploreContext'
 import { Header } from '../../Header'
 import { logIn } from '../../../test/providers'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
@@ -145,14 +146,16 @@ describe('AccountMenu (#164)', () => {
       <MockedProvider mocks={[]}>
         <MemoryRouter initialEntries={['/']}>
           <AuthProvider>
-            <Header />
-            <LogIn />
-            <Routes>
-              <Route
-                path="*"
-                element={<Where />}
-              />
-            </Routes>
+            <ExploreProvider>
+              <Header />
+              <LogIn />
+              <Routes>
+                <Route
+                  path="*"
+                  element={<Where />}
+                />
+              </Routes>
+            </ExploreProvider>
           </AuthProvider>
         </MemoryRouter>
       </MockedProvider>

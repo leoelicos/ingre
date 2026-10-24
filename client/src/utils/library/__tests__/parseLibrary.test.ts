@@ -27,7 +27,6 @@ const validRecipe = {
   id: 'r',
   name: 'R',
   portions: 1,
-  tags: ['dinner'],
   ingredients: [{ ingredientId: 'garlic', quantity: 1, measure: 'clove' }],
   method: ['Cook'],
   picture_url: '/p.png'
@@ -145,7 +144,6 @@ describe('parseRecipe', () => {
   })
   it.each([
     ['bad portions', { ...validRecipe, portions: 0 }, 'recipe.portions'],
-    ['bad tag', { ...validRecipe, tags: [1] }, 'recipe.tags[0]'],
     [
       'bad ingredient',
       { ...validRecipe, ingredients: [{ ingredientId: 'x', quantity: 1 }] },
@@ -248,6 +246,44 @@ describe('parseIngredient badgeCode', () => {
       parseCatalogue(ingredientData).filter((i) => i.badgeCode !== undefined)
         .length
     ).toBe(32)
+  })
+})
+
+describe('parseIngredient countUnit and partMeasure (#182)', () => {
+  const base = {
+    id: 'garlic',
+    name: 'garlic',
+    category: 'fruit & veg',
+    sold: [{ type: 'each', size: { amount: 1, unit: 'count' } }],
+    pantry: 'Bench',
+    allergens: []
+  }
+
+  it('keeps a count unit and a part, and leaves them out when absent', () => {
+    const garlic = parseIngredient({
+      ...base,
+      countUnit: { one: 'head', other: 'heads' },
+      partMeasure: 'clove'
+    })
+    expect(garlic.countUnit).toEqual({ one: 'head', other: 'heads' })
+    expect(garlic.partMeasure).toBe('clove')
+    expect(parseIngredient(base)).not.toHaveProperty('countUnit')
+    expect(parseIngredient(base)).not.toHaveProperty('partMeasure')
+  })
+
+  it('fails loudly on a bad count unit or part', () => {
+    expect(() => parseIngredient({ ...base, countUnit: 'heads' }, 'x')).toThrow(
+      'x.countUnit: expected an object'
+    )
+    expect(() =>
+      parseIngredient({ ...base, countUnit: { one: 'head' } }, 'x')
+    ).toThrow('x.countUnit.other: expected a non-empty string')
+    expect(() =>
+      parseIngredient({ ...base, countUnit: { one: '', other: 'heads' } }, 'x')
+    ).toThrow('x.countUnit.one: expected a non-empty string')
+    expect(() => parseIngredient({ ...base, partMeasure: 3 }, 'x')).toThrow(
+      'x.partMeasure: expected a non-empty string'
+    )
   })
 })
 

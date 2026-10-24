@@ -23,19 +23,8 @@ export function recipe(overrides: Partial<ClientRecipe> = {}): ClientRecipe {
     instructions: 'Boil',
     libraryId: 'ed1',
     ingredients: [ingredient()],
-    tags: [],
     ...overrides
   }
-}
-
-/** Returns a shallow copy without the given (optional) keys. */
-export function omit<T extends object, K extends keyof T>(
-  value: T,
-  ...keys: K[]
-): Omit<T, K> {
-  const copy = { ...value }
-  for (const key of keys) delete copy[key]
-  return copy
 }
 
 /** A valid catalogue item for library/shopping tests. */
@@ -59,7 +48,6 @@ export function libRecipe(overrides: Partial<LibraryRecipe>): LibraryRecipe {
     id: 'r',
     name: 'Recipe',
     portions: 1,
-    tags: [],
     ingredients: [],
     method: [],
     ...overrides

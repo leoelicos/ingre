@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe, toHaveNoViolations } from 'jest-axe'
-import { focusMain, MAIN_ID, SkipLink } from '../SkipLink'
+import { focusMain, MAIN_ID, PageMain, SkipLink } from '../SkipLink'
 
 expect.extend(toHaveNoViolations)
 
@@ -12,12 +12,9 @@ const Page = () => (
     <header>
       <button type="button">Header control</button>
     </header>
-    <main
-      id={MAIN_ID}
-      tabIndex={-1}
-    >
+    <PageMain>
       <button type="button">First in main</button>
-    </main>
+    </PageMain>
   </>
 )
 
@@ -50,6 +47,14 @@ describe('SkipLink (#131)', () => {
     expect(await axe(container)).toHaveNoViolations()
     await user.tab()
     expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('PageMain is the one main landmark, focusable by script only, with the given classes', () => {
+    render(<PageMain className="flex">content</PageMain>)
+    const main = screen.getByRole('main')
+    expect(main).toHaveAttribute('id', MAIN_ID)
+    expect(main).toHaveAttribute('tabindex', '-1')
+    expect(main).toHaveClass('focus:outline-none', 'flex')
   })
 
   it('does nothing when the page has no main landmark', () => {

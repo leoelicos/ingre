@@ -26,6 +26,63 @@ export const typeDefs = gql`
     picture_url: String!
     libraryId: String
     instructions: String
+    customisations: [Customisation!]!
+  }
+
+  # #182: one type per kind of change, so no field is ever empty
+  type AddedIngredient {
+    ingredientId: String!
+    to: Float!
+  }
+
+  type RemovedIngredient {
+    ingredientId: String!
+    from: Float!
+  }
+
+  type ChangedIngredient {
+    ingredientId: String!
+    from: Float!
+    to: Float!
+  }
+
+  type PortionsChange {
+    from: Int!
+    to: Int!
+  }
+
+  union Customisation =
+    | AddedIngredient
+    | RemovedIngredient
+    | ChangedIngredient
+    | PortionsChange
+
+  input AddedIngredientInput {
+    ingredientId: String!
+    to: Float!
+  }
+
+  input RemovedIngredientInput {
+    ingredientId: String!
+    from: Float!
+  }
+
+  input ChangedIngredientInput {
+    ingredientId: String!
+    from: Float!
+    to: Float!
+  }
+
+  input PortionsChangeInput {
+    from: Int!
+    to: Int!
+  }
+
+  input CustomisationsInput {
+    added: [AddedIngredientInput!]!
+    removed: [RemovedIngredientInput!]!
+    changed: [ChangedIngredientInput!]!
+    portions: PortionsChangeInput
   }
 
   input RecipeInput {
@@ -35,6 +92,7 @@ export const typeDefs = gql`
     picture_url: String!
     libraryId: String
     instructions: String
+    customisations: CustomisationsInput!
   }
   type Ingredient {
     _id: ID!
@@ -42,6 +100,8 @@ export const typeDefs = gql`
     quantity: Float!
     measure: String!
     category: Category!
+    "catalogue id (#182); missing on recipes saved before it"
+    ingredientId: String
   }
 
   input IngredientInput {
@@ -49,6 +109,7 @@ export const typeDefs = gql`
     quantity: Float!
     measure: String!
     category: String!
+    ingredientId: String!
   }
 
   type Category {

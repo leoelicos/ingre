@@ -3,7 +3,6 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 
 import {
   faStar,
-  faArrowLeft,
   faBars,
   faEgg,
   faCircleInfo,
@@ -19,7 +18,6 @@ import {
   faRightFromBracket,
   faUserPlus,
   faTruckLoading,
-  faRotateRight,
   faEraser,
   faCropSimple,
   faDownLeftAndUpRightToCenter,
@@ -27,8 +25,6 @@ import {
   faUserGroup,
   faSpinner,
   faBookOpen,
-  faHouse,
-  faBasketShopping,
   faChevronDown,
   faLocationDot,
   faDrumstickBite,
@@ -41,14 +37,12 @@ import {
   faUtensils,
   faPlus,
   faCheck,
-  faPrint,
   faMinus,
   faCircleUser
 } from '@fortawesome/free-solid-svg-icons'
 
 export const addFontAwesome = () =>
   library.add(
-    faArrowLeft,
     faStar,
     faBars,
     faEgg,
@@ -66,7 +60,6 @@ export const addFontAwesome = () =>
     faRightFromBracket,
     faUserPlus,
     faTruckLoading,
-    faRotateRight,
     faEraser,
     faCropSimple,
     faDownLeftAndUpRightToCenter,
@@ -74,8 +67,6 @@ export const addFontAwesome = () =>
     faUserGroup,
     faSpinner,
     faBookOpen,
-    faHouse,
-    faBasketShopping,
     faChevronDown,
     faLocationDot,
     faDrumstickBite,
@@ -88,7 +79,6 @@ export const addFontAwesome = () =>
     faUtensils,
     faPlus,
     faCheck,
-    faPrint,
     faMinus,
     faCircleUser
   )

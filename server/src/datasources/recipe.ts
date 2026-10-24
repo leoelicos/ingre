@@ -1,7 +1,10 @@
 import { NotFoundError } from '../errors'
 import mongoose, { Types, Document } from 'mongoose'
 import { Recipe, RecipeSchema } from '../models/Recipe'
-import { Ingredient as IngredientType } from '../schemas/types'
+import {
+  CustomisationDoc,
+  Ingredient as IngredientType
+} from '../schemas/types'
 import { Ingredient } from '../models/Ingredient'
 import { Category } from '../models/Category'
 
@@ -32,7 +35,8 @@ export class RecipeApi {
     instructions,
     ingredients,
     picture_url,
-    libraryId
+    libraryId,
+    customisations = []
   }: {
     name: string
     portions: number
@@ -40,6 +44,7 @@ export class RecipeApi {
     ingredients: unknown[]
     picture_url: string
     libraryId?: string | null | undefined
+    customisations?: CustomisationDoc[]
   }) => {
     const recipe = await Recipe.create({
       name,
@@ -47,7 +52,8 @@ export class RecipeApi {
       instructions,
       ingredients,
       picture_url,
-      libraryId
+      libraryId,
+      customisations
     })
     return await Recipe.findById(recipe._id)
       .select('-__v')
