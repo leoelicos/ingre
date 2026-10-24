@@ -105,7 +105,7 @@ export const sourceActions = (
  * Explore result). It goes into Extra at 1; one already on the list is scrolled to and opened.
  */
 export const useIngredients = (list: ChipsState) => {
-  const { panel, show, close } = usePanel()
+  const { panel, show } = usePanel()
   const [open, setOpen] = useState(true)
   const [message, setMessage] = useState('')
   const [filter, setFilter] = useState<ChipFilter>(NO_CHIP_FILTER)
@@ -126,7 +126,6 @@ export const useIngredients = (list: ChipsState) => {
   return {
     list,
     panel,
-    close,
     open,
     toggle: () => setOpen(!open),
     message,

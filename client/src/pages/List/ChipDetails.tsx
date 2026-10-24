@@ -30,11 +30,15 @@ import {
 export const sourceKey = (source: Source): string =>
   source.kind === 'extra' ? 'extra' : source.recipeId
 
+/** A source's measure: the recipe's own, or the chip's unit for Extra (#182, answers 1 and 3). */
+export const sourceMeasure = (
+  source: Source,
+  chip: Pick<Chip, 'unit'>
+): string => (source.kind === 'extra' ? unitMeasure(chip.unit) : source.measure)
+
 /** The unit after a box: "g", "tbsp", "cloves"; empty for whole items. */
 export const sourceUnit = (source: Source, chip: Pick<Chip, 'unit'>) =>
-  source.kind === 'extra'
-    ? measureWord(source.quantity, unitMeasure(chip.unit))
-    : measureWord(source.quantity, source.measure)
+  measureWord(source.quantity, sourceMeasure(source, chip))
 
 /** The box's visible label: the recipe's name, or "Extra". */
 export const sourceLabel = (source: Source): string =>
@@ -83,7 +87,13 @@ export const AmountField: FC<{
     }}
     className="flex flex-wrap items-center gap-2"
   >
-    <Label className="min-w-[8rem] flex-1 text-sm">{label}</Label>
+    {/* the box's name is its aria-label, which says the unit too */}
+    <span
+      aria-hidden="true"
+      className="min-w-[8rem] flex-1 text-sm"
+    >
+      {label}
+    </span>
     <Group className="flex items-center gap-2">
       <Input
         id={id}

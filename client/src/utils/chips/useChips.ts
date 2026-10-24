@@ -29,7 +29,7 @@ import {
   recipeSources,
   sortLayout,
   sourceAmount,
-  sourceLabels,
+  sourceLabel,
   withPlacements
 } from './chips'
 
@@ -43,11 +43,11 @@ export const copyEntries = (
     const recipe = recipes.find((r) => r.id === copy.recipeId)
     return recipe === undefined ? [] : [{ copy, recipe }]
   })
-  const labels = sourceLabels(known.map(({ recipe }) => recipe.name))
+  const names = known.map(({ recipe }) => recipe.name)
   return known.map(({ copy, recipe }, i) => ({
     copy,
     recipe,
-    label: labels[i] ?? recipe.name,
+    label: sourceLabel(names.slice(0, i), recipe.name),
     lines: copyLines(recipe, copy, items)
   }))
 }

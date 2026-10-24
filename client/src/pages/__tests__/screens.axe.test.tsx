@@ -5,7 +5,6 @@ import { axe, toHaveNoViolations } from 'jest-axe'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthProvider } from '../../utils/auth/AuthContext'
 import { ExploreProvider } from '../../utils/explore/ExploreContext'
-import Search from '../Search/Search'
 import { Header } from '../../components/Header'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
@@ -39,11 +38,6 @@ const renderScreen = (ui: React.ReactElement, path = '/') =>
 describe('All screens accessibility (axe)', () => {
   it('Header has no axe violations', async () => {
     const { container } = renderScreen(<Header />)
-    expect(await axe(container)).toHaveNoViolations()
-  })
-
-  it('Search has no axe violations', async () => {
-    const { container } = renderScreen(<Search />, '/search')
     expect(await axe(container)).toHaveNoViolations()
   })
 

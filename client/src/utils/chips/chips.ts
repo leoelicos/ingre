@@ -81,12 +81,14 @@ export const CATEGORY_LABELS: Readonly<Record<ShopSection, string>> = {
 export const categoryLabel = (section: ShopSection): string =>
   CATEGORY_LABELS[section]
 
-/** Recipe labels with "(2)", "(3)" on repeated names (#182). */
-export const sourceLabels = (names: readonly string[]): string[] =>
-  names.map((name, i) => {
-    const seen = names.slice(0, i).filter((n) => n === name).length
-    return seen === 0 ? name : `${name} (${seen + 1})`
-  })
+/** A recipe's label, with "(2)", "(3)" when earlier recipes have the same name (#182). */
+export const sourceLabel = (
+  earlier: readonly string[],
+  name: string
+): string => {
+  const seen = earlier.filter((n) => n === name).length
+  return seen === 0 ? name : `${name} (${seen + 1})`
+}
 
 /** The id of the chip an extra belongs to: its catalogue id, or its own for free text. */
 export const extraChipId = (extra: Pick<Extra, 'id' | 'ingredientId'>) =>

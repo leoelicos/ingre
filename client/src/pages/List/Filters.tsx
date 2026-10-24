@@ -184,10 +184,11 @@ const IngredientPicker: FC<{
     <div className="flex flex-col gap-1">
       <ComboBox
         selectedKey={null}
-        onSelectionChange={(key) => {
-          const id = String(key ?? '')
-          if (id !== '' && !value.includes(id)) onChange([...value, id])
-        }}
+        onSelectionChange={(key) =>
+          options
+            .filter((option) => option.id === key)
+            .forEach((option) => onChange([...value, option.id]))
+        }
         menuTrigger="focus"
         className="flex flex-col gap-1"
       >

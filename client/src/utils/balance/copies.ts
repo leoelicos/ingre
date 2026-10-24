@@ -196,14 +196,19 @@ export const customisationsOf = (
       }
 }
 
-const nameOf = (lines: readonly CopyLine[], id: string): CopyLine | null =>
-  lines.find((line) => line.ingredientId === id) ?? null
+const bulletOf = (line: CopyLine): string => {
+  const name = displayName(line)
+  if (line.original === null)
+    return `Added ${line.name} ${amountText(line.quantity, line.measure)}`
+  if (line.quantity === 0) return `${name} removed`
+  return `${name} ${amountText(line.original, line.measure)} → ${amountText(
+    line.quantity,
+    line.measure
+  )}`
+}
 
-const measureOf = (lines: readonly CopyLine[], id: string): string =>
-  nameOf(lines, id)?.measure ?? ''
-
-const labelOf = (lines: readonly CopyLine[], id: string): string =>
-  nameOf(lines, id)?.name ?? id
+const RANK = (line: CopyLine): number =>
+  line.original === null ? 0 : line.quantity === 0 ? 1 : 2
 
 /**
  * The bullets under Customisations (#182), in recipe units: "Added red chilli 1",
@@ -212,31 +217,15 @@ const labelOf = (lines: readonly CopyLine[], id: string): string =>
 export const customisationBullets = (
   lines: readonly CopyLine[],
   copy: RecipeCopy
-): string[] => {
-  const { added, removed, changed, portions } = customisationsOf(lines, copy)
-  return [
-    ...added.map(
-      ({ ingredientId, to }) =>
-        `Added ${labelOf(lines, ingredientId)} ${amountText(
-          to,
-          measureOf(lines, ingredientId)
-        )}`
-    ),
-    ...removed.map(
-      ({ ingredientId }) =>
-        `${displayName({ name: labelOf(lines, ingredientId) })} removed`
-    ),
-    ...changed.map(({ ingredientId, from, to }) => {
-      const measure = measureOf(lines, ingredientId)
-      return `${displayName({
-        name: labelOf(lines, ingredientId)
-      })} ${amountText(from, measure)} → ${amountText(to, measure)}`
-    }),
-    ...(portions === undefined
-      ? []
-      : [`Portions ${portions.from} → ${portions.to}`])
-  ]
-}
+): string[] => [
+  ...lines
+    .filter((line) => isCustomisedIn(copy, line.ingredientId))
+    .sort((a, b) => RANK(a) - RANK(b))
+    .map(bulletOf),
+  ...(copy.portions === DEFAULT_PORTIONS
+    ? []
+    : [`Portions ${DEFAULT_PORTIONS} → ${copy.portions}`])
+]
 
 /** The saveRecipe input for a copy (#182): its ingredients with catalogue ids, and its differences. */
 export const saveInput = (

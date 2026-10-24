@@ -1,6 +1,6 @@
 /* Hearts on the server (#182, F4): saveRecipe and removeRecipe, read back with getSavedRecipes. */
 import type { ApolloCache } from '@apollo/client'
-import { useMutation, useQuery } from '@apollo/client'
+import { useApolloClient, useMutation, useQuery } from '@apollo/client'
 import { useState } from 'react'
 import { REMOVE_RECIPE, SAVE_RECIPE } from '../../lib/apollo/graphQL/mutations'
 import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries'
@@ -30,7 +30,11 @@ export const useSaved = (loggedIn: boolean) => {
   const { data } = useQuery(GET_SAVED_RECIPES, { skip: !loggedIn })
   const recipes = data?.getSavedRecipes ?? []
   const [error, setError] = useState('')
-  const [save] = useMutation(SAVE_RECIPE)
+  const { cache } = useApolloClient()
+  const [save] = useMutation(SAVE_RECIPE, {
+    onCompleted: ({ saveRecipe }) =>
+      updateSaved(cache, (all) => [...all, saveRecipe])
+  })
   const [remove] = useMutation(REMOVE_RECIPE)
   const ids = savedLibraryIds(recipes)
   const fail = () => setError(SAVE_FAILED)
@@ -53,13 +57,7 @@ export const useSaved = (loggedIn: boolean) => {
         unsave(libraryId)
         return
       }
-      save({
-        variables: { input },
-        update: (cache, result) => {
-          const saved = result.data?.saveRecipe
-          if (saved) updateSaved(cache, (all) => [...all, saved])
-        }
-      }).catch(fail)
+      save({ variables: { input } }).catch(fail)
     }
   }
 }

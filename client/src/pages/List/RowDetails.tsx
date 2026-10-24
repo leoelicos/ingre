@@ -27,7 +27,7 @@ import {
 import { amountText, displayName } from '../../utils/shopping/shoppingList'
 import type { ChipView } from './Chips'
 import { ChipList } from './Chips'
-import { ChipAllergens, SourceFields } from './ChipDetails'
+import { ChipAllergens, SourceFields, sourceMeasure } from './ChipDetails'
 import { chipChevronId, rowScope, sourceFieldId } from './chipText'
 import { PlusArea, PlusButton } from './PlusArea'
 import { Method, Notes, ROW_HEADING } from './RecipeRows'
@@ -171,12 +171,13 @@ const CopyChips: FC<{ entry: CopyEntry; list: ChipsState; chips: Chip[] }> = ({
   const has = (id: string) => chips.some((chip) => chip.id === id)
   const view: ChipView = {
     scope,
+    /* a row chip has one source, this recipe's, in its own unit */
     amountOf: (chip) =>
-      chip.sources.flatMap((source) =>
-        source.kind === 'recipe'
-          ? [amountText(source.quantity, source.measure)]
-          : []
-      )[0] ?? '',
+      chip.sources
+        .map((source) =>
+          amountText(source.quantity, sourceMeasure(source, chip))
+        )
+        .join(', '),
     onToggle: list.toggleCrossed,
     panel,
     details: (chip) => (

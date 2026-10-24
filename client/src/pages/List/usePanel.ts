@@ -38,5 +38,5 @@ export const usePanel = () => {
     onChevron: (chipId) =>
       open && id === chipId ? setOpen(false) : show(chipId)
   }
-  return { panel, show, close: () => setOpen(false) }
+  return { panel, show }
 }

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, screen, within } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { FAVOURITES_KEY } from '../../../utils/storage/favourites'
+import { savedQuery, savedRecipe } from '../../../test/savedMocks'
 import {
   chip,
   explore,
@@ -49,6 +49,15 @@ const ingredientResults = () =>
     .getAllByRole('button')
     .map((button) => button.getAttribute('aria-label'))
 const browseNames = () => groupNames('Browse recipes')
+const signIn = () =>
+  fireEvent.click(screen.getByRole('button', { name: 'Pretend login' }))
+const openFilter = () =>
+  fireEvent.click(
+    within(screen.getByRole('toolbar', { name: 'Explore actions' })).getByRole(
+      'button',
+      { name: /^Filter/ }
+    )
+  )
 
 describe('Scenario: Explore opens (#181)', () => {
   it('opens on load when nothing is selected: an inline, labelled region that pushes content down', () => {
@@ -95,7 +104,9 @@ describe('Scenario: Explore closes only with its X (#181)', () => {
     await user.click(screen.getByRole('heading', { level: 1, hidden: true }))
     fireEvent.pointerDown(document.body)
     expect(region('Explore')).toBeInTheDocument()
-    explore().getByRole('switch', { name: 'Saved' }).focus()
+    explore()
+      .getByRole('button', { name: /^Filter/ })
+      .focus()
     await user.keyboard('{Escape}')
     expect(region('Explore')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: CLOSE_EXPLORE }))
@@ -249,7 +260,8 @@ describe('Scenario: Explore results act in place (#181)', () => {
     await search(user, 'banana')
     await user.click(explore().getByRole('button', { name: 'Add banana' }))
     expect(hasChipEl('banana')).toBe(1)
-    expect(screen.getByText('Banana added')).toBeInTheDocument()
+    expect(hasChipEl('banana', 'extra')).toBe(1)
+    expect(screen.getByText('Banana added to Extra')).toBeInTheDocument()
     const onList = explore().getByRole('button', {
       name: 'Banana, on your list'
     })
@@ -277,13 +289,14 @@ describe('Scenario: Explore results act in place (#181)', () => {
 })
 
 describe('Scenario: Saved filters Explore (#181)', () => {
-  it('Saved is a switch in Explore, not in Recipes, and filters recipe results', () => {
-    localStorage.setItem(FAVOURITES_KEY, JSON.stringify(['dahl']))
-    renderList()
+  it("Saved is a switch in Explore's filter, not in Recipes, and filters by the server's hearts (F4)", async () => {
+    renderList('/', [savedQuery([savedRecipe('dahl')])])
+    signIn()
     expect(recipes().queryByRole('switch')).toBeNull()
+    openFilter()
     fireEvent.click(explore().getByRole('switch', { name: 'Saved' }))
     expect(where()).toHaveTextContent('/?saved=1')
-    expect(browseNames()).toEqual(['Red lentil dahl'])
+    await waitFor(() => expect(browseNames()).toEqual(['Red lentil dahl']))
     fireEvent.click(explore().getByRole('switch', { name: 'Saved' }))
     expect(where()).toHaveTextContent(/^\/$/)
   })
@@ -293,9 +306,8 @@ describe('Scenario: Saved filters Explore (#181)', () => {
     expect(explore().getByText(/^No saved recipes yet/)).toBeInTheDocument()
   })
 
-  it('the Saved link opens Explore even when something is picked', () => {
+  it('the Saved link opens Explore and its filter even when something is picked', () => {
     pick('dahl')
-    localStorage.setItem(FAVOURITES_KEY, JSON.stringify(['dahl']))
     renderList('/?saved=1')
     expect(explore().getByRole('switch', { name: 'Saved' })).toBeChecked()
   })

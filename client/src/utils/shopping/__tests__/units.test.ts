@@ -1,4 +1,4 @@
-import { convert, formatAmount, toBase } from '../units'
+import { convert, formatAmount, itemUnit, toBase, unitMeasure } from '../units'
 
 describe('toBase', () => {
   it.each([
@@ -47,5 +47,17 @@ describe('formatAmount', () => {
     expect(formatAmount({ amount: 250, unit: 'g' })).toBe('250 g')
     expect(formatAmount({ amount: 1000, unit: 'g' })).toBe('1 kg')
     expect(formatAmount({ amount: 1500, unit: 'ml' })).toBe('1.5 L')
+  })
+})
+
+describe('item units (#182)', () => {
+  it('totals in the first sized sold unit, grams when only weighed, count for free text', () => {
+    expect(
+      itemUnit({ sold: [{ type: 'carton', size: { amount: 1, unit: 'ml' } }] })
+    ).toBe('ml')
+    expect(itemUnit({ sold: [{ type: 'weighed', size: null }] })).toBe('g')
+    expect(itemUnit(null)).toBe('count')
+    expect(unitMeasure('count')).toBe('whole')
+    expect(unitMeasure('g')).toBe('g')
   })
 })

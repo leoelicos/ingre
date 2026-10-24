@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { MockedProvider } from '@apollo/client/testing'
@@ -111,6 +111,11 @@ describe('VoiceOver (ARIA name, role, state)', () => {
   it('the list Saved filter exposes on/off state as a switch', async () => {
     const user = userEvent.setup()
     renderAt(<ListPage />, '/')
+    await user.click(
+      within(
+        screen.getByRole('toolbar', { name: 'Explore actions' })
+      ).getByRole('button', { name: 'Filter' })
+    )
     const saved = screen.getByRole('switch', { name: 'Saved' })
     expect(saved).not.toBeChecked()
     await user.click(saved)

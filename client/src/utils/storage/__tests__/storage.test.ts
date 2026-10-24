@@ -1,6 +1,5 @@
-import { act, renderHook } from '@testing-library/react'
 import { readStored, writeStored } from '../storage'
-import { DEFAULT_PEOPLE, PEOPLE_KEY, parsePeople, usePeople } from '../people'
+import { parsePeople } from '../people'
 
 const isNumber = (value: unknown): number | null =>
   typeof value === 'number' ? value : null
@@ -22,21 +21,9 @@ describe('readStored / writeStored', () => {
 })
 
 describe('people', () => {
-  beforeEach(() => localStorage.clear())
-
-  it('parses only 1, 2 or 3', () => {
+  it('parses only 1, 2 or 3 (old Serves values, migrated to portions in #182)', () => {
     expect(parsePeople(3)).toBe(3)
     expect(parsePeople(4)).toBeNull()
     expect(parsePeople('2')).toBeNull()
-  })
-
-  it('defaults to 2, persists changes and restores them', () => {
-    const first = renderHook(() => usePeople())
-    expect(first.result.current[0]).toBe(DEFAULT_PEOPLE)
-    act(() => first.result.current[1](3))
-    expect(first.result.current[0]).toBe(3)
-    expect(localStorage.getItem(PEOPLE_KEY)).toBe('3')
-    const second = renderHook(() => usePeople())
-    expect(second.result.current[0]).toBe(3)
   })
 })

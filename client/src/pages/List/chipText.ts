@@ -44,7 +44,7 @@ export const extraAmount = (chip: Pick<Chip, 'extra' | 'unit'>): string =>
  * What VoiceOver reads for a chip (#179, #182): name, amount, category, where it is used, and
  * crossed off when it is. The pressed state is announced as well.
  */
-export const chipLabel = (chip: Chip, amount: string = chipAmount(chip)) =>
+export const chipLabel = (chip: Chip, amount: string) =>
   [
     displayName(chip),
     amount,

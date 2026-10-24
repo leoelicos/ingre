@@ -94,13 +94,14 @@ const DECIMAL_MEASURES: readonly string[] = ['g', 'ml', 'g tin', 'ml tin']
 const COUNTED_MEASURES: readonly string[] = ['cup', 'clove', 'stalk', 'bunch']
 
 /**
- * The unit word after a recipe amount (#182): "g", "tbsp", "cloves", "clove"; empty for
- * whole items, which are just a number.
+ * The unit word after a recipe amount (#182): "g", "tbsp", "cloves", "½ clove"; empty for
+ * whole items, which are just a number. Up to 1 is singular.
  */
 export const measureWord = (quantity: number, measure: string): string => {
   if (measure === 'whole') return ''
   if (!COUNTED_MEASURES.includes(measure)) return measure
-  return quantity === 1 ? measure : pluralise(measure)
+  const value = rounded(quantity)
+  return value > 0 && value <= 1 ? measure : pluralise(measure)
 }
 
 /** A recipe amount in its own unit (#182): "37.5 g", "½ tbsp", "1½ cloves", "2". */
