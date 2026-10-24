@@ -1,11 +1,11 @@
 import { libRecipe } from '../../../test/fixtures'
-import { findRecipe } from '../../Recipe/RecipePage'
+import { library } from '../../../utils/library/recipeLibrary'
 import { recipeNotes } from '../RecipeRows'
 
 describe('recipeNotes', () => {
   it('lists allergens and the staples assumed at home', () => {
-    const dahl = findRecipe('dahl')
-    expect(dahl === null ? [] : recipeNotes(dahl, 2)).toEqual([
+    const dahl = library.find((recipe) => recipe.id === 'dahl')
+    expect(dahl === undefined ? [] : recipeNotes(dahl, 2)).toEqual([
       'Contains: milk',
       "You'll also need: salt"
     ])

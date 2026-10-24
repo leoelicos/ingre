@@ -5,33 +5,27 @@ import { useAuthContext } from '../../utils/auth/AuthContext'
 import { changeTitle } from '../../utils/changeTitle'
 import type { ChipsState } from '../../utils/chips/useChips'
 import { useChips } from '../../utils/chips/useChips'
-import { focusById } from '../../utils/focus'
+import { useExplore } from '../../utils/explore/ExploreContext'
+import { SPLIT_COLUMNS } from '../../utils/layout/split'
+import { useSplit } from '../../utils/layout/useSplit'
 import { readFavourites } from '../../utils/storage/favourites'
-import { EmptySearch } from './EmptySearch'
+import type { ExploreProps } from './Explore'
+import { Explore, ExploreDrawer } from './Explore'
 import {
   INGREDIENTS_HEADING_ID,
   INGREDIENTS_ID,
-  Ingredients
+  Ingredients,
+  useIngredients
 } from './Ingredients'
-import type { RecipeFilter } from './recipeFilter'
-import {
-  NO_SAVED_HINT,
-  filterRecipes,
-  recipeCount,
-  recipesEmpty
-} from './recipeFilter'
+import { LayoutToggle } from './LayoutToggle'
+import { recipeCount } from './recipeFilter'
 import { RecipeRows } from './RecipeRows'
-import { SavedFilter } from './SavedFilter'
 import { ScrollToTop } from './ScrollToTop'
 import { Section } from './Section'
 
-/** "?q=" from the header search and "?saved=1" from the Saved filter or old Saved links. */
-export const listParams = (
-  params: URLSearchParams
-): { query: string; savedOnly: boolean } => ({
-  query: params.get('q') ?? '',
-  savedOnly: params.get('saved') === '1'
-})
+/** "?saved=1" from the Saved account link or old Saved links: Explore's Saved filter (#181). */
+export const savedParam = (params: URLSearchParams): boolean =>
+  params.get('saved') === '1'
 
 /** The params with the Saved filter switched on or off; everything else is kept. */
 export const withSaved = (
@@ -51,103 +45,112 @@ export const toggled = (
 ): ReadonlySet<string> =>
   new Set(ids.has(id) ? [...ids].filter((x) => x !== id) : [...ids, id])
 
-const STATUS = 'm-0 text-text-secondary'
+export const NO_PICKS_HINT =
+  'No recipes picked yet. Tick recipes in Explore and they show here.'
 
-/** The rows, or the empty state that fits the search and the Saved filter. */
-const RecipeResults: FC<{ list: ChipsState; filter: RecipeFilter }> = ({
-  list,
-  filter
-}) => {
+/** The Recipes section (#181): only the picked recipes, as rows. */
+const PickedRecipes: FC<{
+  list: ChipsState
+  canSave: boolean
+  collapsible: boolean
+}> = ({ list, canSave, collapsible }) => {
+  const [open, setOpen] = useState(true)
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set())
-  const loggedIn = useAuthContext()[0].loggedIn
-  const recipes = filterRecipes(filter)
-  const empty = recipesEmpty(filter, recipes)
-  if (empty === 'no-saved')
-    return (
-      <p
-        className={STATUS}
-        role="status"
-      >
-        {NO_SAVED_HINT}
-      </p>
-    )
-  if (empty === 'search')
-    return (
-      <EmptySearch
-        query={filter.query}
-        list={{
-          hasChip: list.hasChip,
-          onAdd: list.addExtra,
-          onViewList: () => focusById(INGREDIENTS_HEADING_ID)
-        }}
-      />
-    )
-  if (empty === 'no-match')
-    return (
-      <p
-        className={STATUS}
-        role="status"
-      >
-        No recipes
-      </p>
-    )
   return (
-    <RecipeRows
-      recipes={recipes}
-      controls={{
-        pickedIds: list.pickedIds,
-        onTogglePicked: list.togglePicked,
-        openIds,
-        onToggleOpen: (id) => setOpenIds((ids) => toggled(ids, id)),
-        people: list.people,
-        onPeople: list.setPeople,
-        canSave: loggedIn
-      }}
-    />
+    <Section
+      id="recipes"
+      title="Recipes"
+      collapsible={collapsible}
+      open={open}
+      onToggle={() => setOpen(!open)}
+      summary={`${recipeCount(list.recipes.length)} picked`}
+    >
+      {list.recipes.length === 0 ? (
+        <p className="m-0 text-text-secondary">{NO_PICKS_HINT}</p>
+      ) : (
+        <RecipeRows
+          recipes={list.recipes}
+          controls={{
+            pickedIds: list.pickedIds,
+            onTogglePicked: list.togglePicked,
+            openIds,
+            onToggleOpen: (id) => setOpenIds((ids) => toggled(ids, id)),
+            people: list.people,
+            onPeople: list.setPeople,
+            canSave,
+            seeRecipe: false
+          }}
+        />
+      )}
+    </Section>
   )
 }
 
 /**
- * The one page (#179): Ingredients (chips by category) above Recipes (rows). Picks, crossed
- * off chips, edits, extras and chip order are kept on this device, so a refresh keeps them.
+ * The one page (#179, #181): Explore, then Ingredients (chips by category) and Recipes (the
+ * picked rows), stacked or side by side. From 992px Explore is a drawer column on the right.
  */
 export const ListPage: FC = () => {
   useEffect(() => changeTitle('Shopping list'), [])
+  const explore = useExplore()
   const list = useChips()
+  const ingredients = useIngredients(list)
+  const { split, options, wide, choose } = useSplit()
   const [params, setParams] = useSearchParams()
-  const { query, savedOnly } = listParams(params)
-  const [ingredientsOpen, setIngredientsOpen] = useState(true)
-  const [recipesOpen, setRecipesOpen] = useState(true)
+  const savedOnly = savedParam(params)
+  const canSave = useAuthContext()[0].loggedIn
+  /* on load, Explore opens when nothing is selected (or Saved was asked for) */
+  const [openOnLoad] = useState(() => list.pickedIds.size === 0 || savedOnly)
+  const exploreOpen = explore.open ?? openOnLoad
+  const vertical = split === 'vertical'
+  const exploreProps: ExploreProps = {
+    ingredients,
+    rows: {
+      pickedIds: list.pickedIds,
+      onTogglePicked: list.togglePicked,
+      people: list.people,
+      onPeople: list.setPeople,
+      canSave
+    },
+    savedOnly,
+    savedIds: readFavourites(),
+    onSaved: (on) => setParams(withSaved(params, on))
+  }
   return (
-    <main className="mx-auto flex w-full max-w-layout flex-col gap-8 px-gutter pb-24 pt-4">
-      <h1 className="sr-only">Shopping list</h1>
-      <Ingredients
-        list={list}
-        open={ingredientsOpen}
-        onToggle={() => setIngredientsOpen(!ingredientsOpen)}
-      />
-      <Section
-        id="recipes"
-        title="Recipes"
-        open={recipesOpen}
-        onToggle={() => setRecipesOpen(!recipesOpen)}
-        summary={`${recipeCount(list.recipes.length)} picked`}
-      >
-        <div className="flex flex-col gap-4">
-          <SavedFilter
-            on={savedOnly}
-            onChange={(on) => setParams(withSaved(params, on))}
+    <div className="mx-auto flex w-full max-w-layout gap-6 px-gutter">
+      <main className="flex min-w-0 flex-1 flex-col gap-6 pb-24 pt-4">
+        <h1 className="sr-only">Shopping list</h1>
+        {!wide && exploreOpen && <Explore {...exploreProps} />}
+        <LayoutToggle
+          split={split}
+          options={options}
+          onChange={choose}
+        />
+        <div
+          data-split={split}
+          className={`grid items-start gap-6 ${SPLIT_COLUMNS[split]}`}
+        >
+          <Ingredients
+            state={ingredients}
+            collapsible={vertical}
           />
-          <RecipeResults
+          <PickedRecipes
             list={list}
-            filter={{ query, savedOnly, savedIds: readFavourites() }}
+            canSave={canSave}
+            collapsible={vertical}
           />
         </div>
-      </Section>
-      <ScrollToTop
-        watchId={INGREDIENTS_ID}
-        headingId={INGREDIENTS_HEADING_ID}
-      />
-    </main>
+        <ScrollToTop
+          watchId={INGREDIENTS_ID}
+          headingId={INGREDIENTS_HEADING_ID}
+        />
+      </main>
+      {wide && (
+        <ExploreDrawer
+          open={exploreOpen}
+          {...exploreProps}
+        />
+      )}
+    </div>
   )
 }

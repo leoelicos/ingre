@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react'
-import { buildFilterState, useSearch } from '../useSearch'
+import { useSearch } from '../useSearch'
 
 const mockDispatch = jest.fn()
 const mockSearchLibrary = jest.fn()
@@ -13,64 +13,6 @@ jest.mock('../../../utils/library/recipeLibrary', () => ({
   __esModule: true,
   default: (...args: unknown[]) => mockSearchLibrary(...args)
 }))
-
-describe('buildFilterState', () => {
-  it('keeps known filter values and ignores everything else', () => {
-    expect(buildFilterState(null)).toEqual({
-      diet: [],
-      health: [],
-      cuisineType: [],
-      mealType: [],
-      dishType: []
-    })
-    expect(buildFilterState(['diet'])).toEqual({
-      diet: [],
-      health: [],
-      cuisineType: [],
-      mealType: [],
-      dishType: []
-    })
-    expect(buildFilterState('diet')).toEqual({
-      diet: [],
-      health: [],
-      cuisineType: [],
-      mealType: [],
-      dishType: []
-    })
-    expect(
-      buildFilterState({
-        diet: 'balanced',
-        health: 'vegan',
-        'cuisine-type': 'Italian',
-        'meal-type': 'Dinner',
-        'dish-type': 'Soup',
-        other: 'ignored',
-        dietExtra: 1
-      })
-    ).toEqual({
-      diet: ['balanced'],
-      health: ['vegan'],
-      cuisineType: ['Italian'],
-      mealType: ['Dinner'],
-      dishType: ['Soup']
-    })
-    expect(
-      buildFilterState({
-        diet: 'not-a-diet',
-        health: 'not-health',
-        'cuisine-type': 'Atlantis',
-        'meal-type': 'Brunch',
-        'dish-type': 'Cake'
-      })
-    ).toEqual({
-      diet: [],
-      health: [],
-      cuisineType: [],
-      mealType: [],
-      dishType: []
-    })
-  })
-})
 
 describe('useSearch coverage', () => {
   beforeEach(() => {
@@ -88,19 +30,13 @@ describe('useSearch coverage', () => {
 
     act(() => {
       result.current.onSearchChange({ target: { value: 'pasta' } })
-      result.current.handleFilterChange({
-        target: { value: { diet: 'low-sodium' } }
-      })
     })
     await act(async () => {
       await result.current.handleFormSubmit('pasta', {
         target: { value: 'pasta' }
       })
     })
-    expect(mockSearchLibrary).toHaveBeenCalledWith({
-      q: 'pasta',
-      tags: ['low-sodium']
-    })
+    expect(mockSearchLibrary).toHaveBeenCalledWith({ q: 'pasta' })
     expect(result.current.searchText).toBe('pasta')
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'UPDATE_SEARCH_RECIPES',

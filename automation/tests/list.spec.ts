@@ -1,28 +1,24 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect, signUp, newAccount, test } from './fixtures'
+import {
+  CURRY,
+  DAHL,
+  chip,
+  chipOrder,
+  chipToggle,
+  explore,
+  exploreRow,
+  groupOf,
+  pageTop,
+  pickRows,
+  recipesRegion,
+  row,
+  section,
+  useVertical
+} from './page'
 
-/* #179: the ingredients-first single page. One test per user-facing acceptance scenario. */
+/* #179: the ingredients-first single page, updated for #181 (Explore picks, no Done). */
 
-const DAHL = 'Red lentil dahl'
-const CURRY = 'Potato, cauliflower and chickpea curry'
-
-const chip = (page: Page, id: string): Locator =>
-  page.locator(`[data-chip="${id}"]`)
-const chipToggle = (page: Page, id: string): Locator =>
-  chip(page, id).getByRole('button').first()
-const chipOrder = (page: Page) =>
-  page
-    .locator('[data-chip]')
-    .evaluateAll((els) => els.map((el) => el.getAttribute('data-chip')))
-/** The category heading a chip sits under. */
-const groupOf = (page: Page, id: string) =>
-  chip(page, id).evaluate(
-    (el) => el.closest('[role="group"]')?.querySelector('h3')?.textContent
-  )
-const row = (page: Page, title: string) =>
-  page.getByRole('button', { name: title, exact: true })
-const section = (page: Page, name: 'Ingredients' | 'Recipes') =>
-  page.getByRole('heading', { level: 2, name }).getByRole('button')
 /** Picks a category in a chip panel by its visible label (the radio itself is visually hidden). */
 const chooseCategory = (panel: Locator, name: string) =>
   panel
@@ -35,14 +31,6 @@ const plus = (page: Page) =>
 const plusArea = (page: Page) =>
   page.getByRole('group', { name: 'Add an ingredient' })
 
-/** Picks recipes by tapping their rows. */
-const pickRows = async (page: Page, ...titles: string[]) => {
-  for (const title of titles) {
-    await row(page, title).click()
-    await expect(row(page, title)).toHaveAttribute('aria-pressed', 'true')
-  }
-}
-
 test.beforeEach(async ({ page }) => {
   await page.goto('/')
 })
@@ -51,6 +39,7 @@ test.describe('ingredients-first page (#179)', () => {
   test('One page: Ingredients above Recipes; no steps, Home control, recipe chips, modals or overlays', async ({
     page
   }) => {
+    await useVertical(page)
     await expect(page).toHaveTitle(/Shopping list/)
     const ingredients = page.getByRole('heading', {
       level: 2,
@@ -90,11 +79,9 @@ test.describe('ingredients-first page (#179)', () => {
     expect(await groupOf(page, 'potato')).toBe('Fruit & Veg')
     expect(await groupOf(page, 'butter')).toBe('Dairy')
     expect(await groupOf(page, 'red-lentils')).toBe('Pantry')
-    await expect(chip(page, 'onion').getByTestId('chip-count')).toHaveText('2')
-    await row(page, CURRY).click()
+    await exploreRow(page, CURRY).click()
     await expect(chip(page, 'potato')).toHaveCount(0)
     await expect(chip(page, 'onion')).toHaveCount(1)
-    await expect(chip(page, 'onion').getByTestId('chip-count')).toHaveCount(0)
   })
 
   test('Cross off stays in place, and there is no Undo', async ({ page }) => {
@@ -123,24 +110,23 @@ test.describe('ingredients-first page (#179)', () => {
     await expect(page.getByText(/undo/i)).toHaveCount(0)
   })
 
-  test('Chip panel opens inline, pushes content down, and lists every recipe using it', async ({
+  test('Chip panel opens inline, pushes content down, lists every recipe using it; the chevron closes it', async ({
     page
   }) => {
+    await useVertical(page)
     await pickRows(page, DAHL, CURRY)
     const recipes = page.getByRole('heading', { level: 2, name: 'Recipes' })
-    const before = (await recipes.boundingBox())?.y ?? 0
+    const before = await pageTop(recipes)
     const chevron = page.getByRole('button', { name: 'Brown onion details' })
     await chevron.click()
     await expect(chevron).toHaveAttribute('aria-expanded', 'true')
     const panel = page.getByRole('group', { name: 'Brown onion details' })
     await expect(panel).toBeVisible()
     await expect(panel.getByRole('listitem')).toHaveText([DAHL, CURRY])
-    await expect
-      .poll(async () => (await recipes.boundingBox())?.y ?? 0)
-      .toBeGreaterThan(before)
-    await panel.getByRole('button', { name: 'Done' }).click()
+    await expect.poll(() => pageTop(recipes)).toBeGreaterThan(before)
+    await chevron.click()
     await expect(panel).toBeHidden()
-    await expect(chevron).toBeFocused()
+    await expect(chevron).toHaveAttribute('aria-expanded', 'false')
   })
 
   test('Edit quantity: Tomatoes to 2', async ({ page }) => {
@@ -246,11 +232,8 @@ test.describe('ingredients-first page (#179)', () => {
     await expect(plusArea(page)).toBeVisible()
     await plusArea(page).getByRole('tab', { name: 'Bakery' }).click()
     await expect(plusArea(page)).toBeVisible()
-    await page
-      .getByRole('heading', { level: 2, name: 'Recipes' })
-      .locator('..')
-      .locator('span')
-      .last()
+    await recipesRegion(page)
+      .getByText(/No recipes picked yet/)
       .click()
     await expect(plusArea(page)).toBeHidden()
     await expect(plus(page)).toHaveAttribute('aria-expanded', 'false')
@@ -263,8 +246,10 @@ test.describe('ingredients-first page (#179)', () => {
   test('Recipe rows: one tap selects; pressed, bordered, ticked, announced; no Add button', async ({
     page
   }) => {
-    const dahl = row(page, DAHL)
-    const item = page.getByRole('listitem').filter({ has: dahl })
+    const dahl = exploreRow(page, DAHL)
+    const item = explore(page)
+      .getByRole('listitem')
+      .filter({ has: page.getByRole('button', { name: DAHL, exact: true }) })
     const shadow = () => item.evaluate((el) => getComputedStyle(el).boxShadow)
     const raised = await shadow()
     await expect(dahl).toHaveAttribute('aria-pressed', 'false')
@@ -276,17 +261,21 @@ test.describe('ingredients-first page (#179)', () => {
     await expect(dahl.getByTestId('row-check')).toHaveText('✓')
     await expect(item.getByRole('button')).toHaveCount(2)
     await expect(
-      page
-        .getByRole('region', { name: 'Recipes' })
-        .getByRole('button', { name: /\bAdd\b/ })
+      explore(page).getByRole('button', { name: /\bAdd\b.*dahl/i })
     ).toHaveCount(0)
+    await expect(row(page, DAHL)).toBeVisible()
     await dahl.click()
     await expect(dahl).toHaveAttribute('aria-pressed', 'false')
+    await expect(row(page, DAHL)).toHaveCount(0)
   })
 
   test('Multiple rows stay open together', async ({ page }) => {
-    const dahl = page.getByRole('button', { name: `${DAHL} details` })
-    const curry = page.getByRole('button', { name: `${CURRY} details` })
+    const dahl = explore(page).getByRole('button', {
+      name: `See recipe: ${DAHL}`
+    })
+    const curry = explore(page).getByRole('button', {
+      name: `See recipe: ${CURRY}`
+    })
     await dahl.click()
     await curry.click()
     await expect(dahl).toHaveAttribute('aria-expanded', 'true')
@@ -298,19 +287,24 @@ test.describe('ingredients-first page (#179)', () => {
         await expect(details.getByRole('heading', { name })).toBeVisible()
       await expect(details.getByRole('radiogroup')).toBeVisible()
     }
-    await expect(row(page, DAHL)).toHaveAttribute('aria-pressed', 'false')
+    await expect(exploreRow(page, DAHL)).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    )
   })
 
   test('Save visibility: hidden signed out, shown signed in', async ({
     page
   }) => {
-    await page.getByRole('button', { name: `${DAHL} details` }).click()
+    const see = () =>
+      explore(page).getByRole('button', { name: `See recipe: ${DAHL}` })
+    await see().click()
     await expect(page.getByText('Method').first()).toBeVisible()
     await expect(
       page.getByRole('button', { name: `Save ${DAHL}` })
     ).toHaveCount(0)
     await signUp(page, newAccount())
-    await page.getByRole('button', { name: `${DAHL} details` }).click()
+    await see().click()
     await page.getByRole('button', { name: `Save ${DAHL}` }).click()
     await expect(
       page.getByRole('button', { name: `Unsave ${DAHL}` })
@@ -320,6 +314,7 @@ test.describe('ingredients-first page (#179)', () => {
   test('Collapsible sections announce collapsed and hide their content', async ({
     page
   }) => {
+    await useVertical(page)
     await pickRows(page, DAHL)
     await section(page, 'Ingredients').click()
     await expect(section(page, 'Ingredients')).toHaveAttribute(
@@ -355,7 +350,13 @@ test.describe('ingredients-first page (#179)', () => {
   test('Scroll to top brings the chips back and focuses the Ingredients heading', async ({
     page
   }) => {
-    await pickRows(page, DAHL)
+    await useVertical(page)
+    await pickRows(page, DAHL, CURRY)
+    // open both picked rows so the page is long enough to scroll the chips away
+    for (const title of [DAHL, CURRY])
+      await recipesRegion(page)
+        .getByRole('button', { name: `${title} details` })
+        .click()
     const toTop = page.getByRole('button', { name: 'Scroll to top' })
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
     await expect(toTop).toHaveCount(0)
@@ -406,6 +407,7 @@ test.describe('ingredients-first page (#179)', () => {
   test('Accessibility: keyboard, visible focus, aria-expanded and what VoiceOver reads', async ({
     page
   }) => {
+    await useVertical(page)
     await pickRows(page, DAHL, CURRY)
     const onion = chipToggle(page, 'onion')
     await onion.focus()
@@ -454,7 +456,7 @@ test.describe('ingredients-first page (#179)', () => {
     await page.keyboard.press('Escape')
     await expect(plus(page)).toBeFocused()
 
-    const beef = row(page, 'Shaking beef')
+    const beef = exploreRow(page, 'Shaking beef')
     await beef.focus()
     await page.keyboard.press('Enter')
     await expect(beef).toHaveAttribute('aria-pressed', 'true')

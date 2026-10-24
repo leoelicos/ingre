@@ -16,7 +16,6 @@ import {
 import { Header } from './components/Header'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
-import RecipePage from './pages/Recipe/RecipePage'
 import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
@@ -26,6 +25,7 @@ import Search from './pages/Search/Search'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
+import { ExploreProvider } from './utils/explore/ExploreContext'
 import { changeTitle } from './utils/changeTitle'
 import { StoreProvider } from './utils/state/GlobalState'
 
@@ -88,54 +88,52 @@ export const Ingre: FC = () => {
       <Router>
         <AuthProvider>
           <StoreProvider>
-            <Header />
-            <Routes>
-              <Route
-                path="/"
-                element={<ListPage />}
-              />
-              <Route
-                path="/search"
-                element={<Search />}
-              />
-              <Route
-                path="/saved"
-                element={<SavedRedirect />}
-              />
-              <Route
-                path="/ingredients"
-                element={<WorkspaceRedirect />}
-              />
-              <Route
-                path="/recipe/:id"
-                element={<RecipePage />}
-              />
-              <Route
-                path="/tapoff"
-                element={<WorkspaceRedirect />}
-              />
-              {/* admin */}
-              <Route
-                path="/login"
-                element={<Login />}
-              />
-              <Route
-                path="/signup"
-                element={<Signup />}
-              />
-              <Route
-                path="/upgrade"
-                element={<Upgrade />}
-              />
-              <Route
-                path="/success"
-                element={<Success />}
-              />
-              <Route
-                path="*"
-                element={<NoMatch />}
-              />
-            </Routes>
+            <ExploreProvider>
+              <Header />
+              <Routes>
+                <Route
+                  path="/"
+                  element={<ListPage />}
+                />
+                <Route
+                  path="/search"
+                  element={<Search />}
+                />
+                <Route
+                  path="/saved"
+                  element={<SavedRedirect />}
+                />
+                <Route
+                  path="/ingredients"
+                  element={<WorkspaceRedirect />}
+                />
+                <Route
+                  path="/tapoff"
+                  element={<WorkspaceRedirect />}
+                />
+                {/* admin */}
+                <Route
+                  path="/login"
+                  element={<Login />}
+                />
+                <Route
+                  path="/signup"
+                  element={<Signup />}
+                />
+                <Route
+                  path="/upgrade"
+                  element={<Upgrade />}
+                />
+                <Route
+                  path="/success"
+                  element={<Success />}
+                />
+                <Route
+                  path="*"
+                  element={<NoMatch />}
+                />
+              </Routes>
+            </ExploreProvider>
           </StoreProvider>
         </AuthProvider>
       </Router>

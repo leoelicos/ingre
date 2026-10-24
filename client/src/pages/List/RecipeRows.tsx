@@ -14,6 +14,11 @@ import { containsLine, recipeAllergens } from '../../utils/library/allergens'
 import { keyIngredientsOf } from '../../utils/library/keyIngredients'
 import { catalogue } from '../../utils/library/recipeLibrary'
 import {
+  TONE_CLASSES,
+  sectionTone
+} from '../../components/IngredientBadge/badgeTone'
+import type { ShopLine } from '../../utils/shopping/shoppingList'
+import {
   assumedNames,
   buildShoppingList,
   buyAmount,
@@ -31,6 +36,8 @@ export interface RowControls {
   readonly onPeople: (people: People) => void
   /** Save (the heart) shows only when signed in (#179) */
   readonly canSave: boolean
+  /** Explore's rows open with a "See recipe" button; list rows with a chevron (#181) */
+  readonly seeRecipe: boolean
 }
 
 /** The notes under the method: allergens and the staples assumed at home; empty when none. */
@@ -49,15 +56,26 @@ export const recipeNotes = (
 
 const HEADING = 'm-0 text-sm font-semibold uppercase tracking-wide'
 
+/** An ingredient chip in an open row: read-only for now (#181), coloured by its category. */
+const IngredientChip: FC<{ line: ShopLine }> = ({ line }) => (
+  <li
+    data-ingredient={line.ingredientId}
+    className={`flex flex-col rounded-pill border bg-gradient-to-b from-white/50 to-white/0 px-3 py-1 leading-tight shadow-raised ${
+      TONE_CLASSES[sectionTone(line.section)]
+    }`}
+  >
+    <span className="font-semibold">{displayName(line)}</span>
+    <span className="text-xs">{buyAmount(line)}</span>
+  </li>
+)
+
 /** The expanded row: ingredients, servings, method, notes, and Save when signed in. */
 const RecipeDetails: FC<{
   recipe: LibraryRecipe
   title: string
   controls: RowControls
 }> = ({ recipe, title, controls }) => {
-  const toBuy = buildShoppingList([recipe], controls.people, catalogue).filter(
-    (line) => !line.staple
-  )
+  const lines = buildShoppingList([recipe], controls.people, catalogue)
   const notes = recipeNotes(recipe, controls.people)
   return (
     <div className="flex flex-col gap-4 border-t border-border px-4 pb-4 pt-3 text-text">
@@ -76,12 +94,12 @@ const RecipeDetails: FC<{
       />
       <div>
         <h3 className={HEADING}>Ingredients</h3>
-        <ul className="m-0 list-disc pl-5">
-          {toBuy.map((line) => (
-            <li key={line.ingredientId}>
-              {displayName(line)}{' '}
-              <span className="text-text-secondary">{buyAmount(line)}</span>
-            </li>
+        <ul className="m-0 mt-2 flex list-none flex-wrap gap-2 p-0">
+          {lines.map((line) => (
+            <IngredientChip
+              key={line.ingredientId}
+              line={line}
+            />
           ))}
         </ul>
       </div>
@@ -182,12 +200,15 @@ export const RecipeRow: FC<{
         </span>
       </ToggleButton>
       <Button
-        aria-label={`${title} details`}
+        aria-label={
+          controls.seeRecipe ? `See recipe: ${title}` : `${title} details`
+        }
         aria-expanded={open}
         aria-controls={detailsId}
         onPress={() => controls.onToggleOpen(recipe.id)}
-        className="flex min-h-[44px] min-w-[44px] items-start justify-center rounded-r-card p-4 text-text data-[focus-visible]:focus-ring"
+        className="flex min-h-[44px] min-w-[44px] items-start justify-center gap-1 whitespace-nowrap rounded-r-card p-4 text-sm font-semibold text-text data-[focus-visible]:focus-ring"
       >
+        {controls.seeRecipe && <span>See recipe</span>}
         <Chevron open={open} />
       </Button>
       <Collapse

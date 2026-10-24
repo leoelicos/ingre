@@ -1,4 +1,4 @@
-import { containsLine, recipeAllergens } from '../allergens'
+import { allergensOf, containsLine, recipeAllergens } from '../allergens'
 import { catalogue, library } from '../recipeLibrary'
 import { libIngredient, libRecipe } from '../../../test/fixtures'
 
@@ -66,5 +66,13 @@ describe('containsLine', () => {
       'Contains: milk, tree nut (almond)'
     )
     expect(containsLine([])).toBe('')
+  })
+})
+
+describe('allergensOf (#181)', () => {
+  it('reads an ingredient’s allergen tags, and none when it is unknown', () => {
+    const items = [libIngredient({ id: 'butter', allergens: ['milk'] })]
+    expect(allergensOf('butter', items)).toEqual(['milk'])
+    expect(allergensOf('banana', items)).toEqual([])
   })
 })

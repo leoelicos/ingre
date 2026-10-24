@@ -20,8 +20,6 @@ export function isClientRecipe(value: unknown): value is ClientRecipe {
     typeof value['name'] === 'string' &&
     typeof value['portions'] === 'number' &&
     typeof value['picture_url'] === 'string' &&
-    Array.isArray(value['tags']) &&
-    value['tags'].every((tag) => typeof tag === 'string') &&
     Array.isArray(value['ingredients']) &&
     value['ingredients'].every(isIngredient)
   )

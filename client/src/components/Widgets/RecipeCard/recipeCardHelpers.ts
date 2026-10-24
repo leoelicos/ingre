@@ -22,16 +22,6 @@ export const recipeKey = ({
   name: string
 }): string => _id ?? libraryId ?? name
 
-export type Tint = 'dinner' | 'lunch'
-
-const LUNCH_TAGS = ['lunch', 'sweet']
-
-/** Card header tint: lunch/sweet recipes are coral, everything else herb. */
-export const tintFor = (tags: readonly string[]): Tint =>
-  tags.some((tag) => LUNCH_TAGS.includes(tag.toLowerCase()))
-    ? 'lunch'
-    : 'dinner'
-
 /** Ingredient id -> card illustration; the first mapped ingredient of a recipe wins. */
 /** A Font Awesome icon, or our own steak (FA's free set has no beef cut, and its cow has an udder). */
 export type Hero = IconName | 'steak'

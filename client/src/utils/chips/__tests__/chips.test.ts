@@ -13,7 +13,6 @@ import {
   placementsOf,
   recipeCountText,
   rescaleBuy,
-  showsCount,
   sortLayout,
   startQuantity,
   withPlacements
@@ -59,11 +58,6 @@ describe('chip ids and labels', () => {
     expect(recipeCountText({ line: line({ recipes: ['A', 'B'] }) })).toBe(
       'in 2 recipes'
     )
-  })
-
-  it('shows the count badge only when two or more recipes need it', () => {
-    expect(showsCount({ line: line() })).toBe(false)
-    expect(showsCount({ line: line({ recipes: ['A', 'B'] }) })).toBe(true)
   })
 })
 

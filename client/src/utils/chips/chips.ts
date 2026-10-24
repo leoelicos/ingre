@@ -181,7 +181,3 @@ export const recipeCountText = (chip: Pick<Chip, 'line'>): string => {
   if (n === 0) return 'added by you'
   return `in ${n} ${n === 1 ? 'recipe' : 'recipes'}`
 }
-
-/** The count badge shows when two or more picked recipes need the item. */
-export const showsCount = (chip: Pick<Chip, 'line'>): boolean =>
-  chip.line.recipes.length >= 2

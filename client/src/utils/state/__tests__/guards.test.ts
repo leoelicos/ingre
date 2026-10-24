@@ -1,5 +1,5 @@
 import { isClientRecipe, isClientRecipeList } from '../guards'
-import { recipe, ingredient, omit } from '../../../test/fixtures'
+import { recipe, ingredient } from '../../../test/fixtures'
 
 describe('recipe guards', () => {
   it('accepts a recipe and a list of recipes', () => {
@@ -43,13 +43,5 @@ describe('recipe guards', () => {
     ).toBe(false)
     expect(isClientRecipeList('nope')).toBe(false)
     expect(isClientRecipeList([recipe(), { name: 'bad' }])).toBe(false)
-  })
-})
-
-describe('isClientRecipe tags', () => {
-  it('requires a string array of tags', () => {
-    expect(isClientRecipe(recipe({ tags: ['dinner'] }))).toBe(true)
-    expect(isClientRecipe({ ...recipe(), tags: [1] })).toBe(false)
-    expect(isClientRecipe(omit(recipe(), 'tags'))).toBe(false)
   })
 })

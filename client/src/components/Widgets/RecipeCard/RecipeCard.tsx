@@ -1,6 +1,5 @@
 import type { FC } from 'react'
 import { useId } from 'react'
-import { Link } from 'react-router-dom'
 import type { ClientRecipe } from '../../../types/client'
 import { IngreIconPro } from '../../../lib/icon/Icon'
 import { HeroIcon } from './HeroIcon'
@@ -13,7 +12,7 @@ import {
   keyNameIds
 } from '../../IngredientBadge/KeyIngredients'
 import { keyIngredientsFor } from '../../../utils/library/keyIngredients'
-import { heroIcon, splitTitle, tintFor } from './recipeCardHelpers'
+import { heroIcon, splitTitle } from './recipeCardHelpers'
 
 const heroFor = (libraryId: string | undefined) =>
   heroIcon(
@@ -57,11 +56,7 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, pro, pick }) => {
   const { title, localName } = splitTitle(recipe.name)
   return (
     <article className="recipe-card">
-      <div
-        className={`recipe-card__tint recipe-card__tint--${tintFor(
-          recipe.tags
-        )}`}
-      >
+      <div className="recipe-card__tint recipe-card__tint--dinner">
         <span
           className="recipe-card__hero"
           aria-hidden="true"
@@ -74,20 +69,11 @@ const RecipeCard: FC<RecipeCardProps> = ({ recipe, pro, pick }) => {
         />
       </div>
       <div className="recipe-card__body">
-        <h3 className="recipe-card__title">
-          {recipe.libraryId === undefined ? (
-            title
-          ) : (
-            <Link
-              to={`/recipe/${recipe.libraryId}`}
-              className="recipe-card__link focus-visible:focus-ring"
-              {...(describedBy === ''
-                ? {}
-                : { 'aria-describedby': describedBy })}
-            >
-              {title}
-            </Link>
-          )}
+        <h3
+          className="recipe-card__title"
+          {...(describedBy === '' ? {} : { 'aria-describedby': describedBy })}
+        >
+          {title}
         </h3>
         {localName !== null && (
           <p

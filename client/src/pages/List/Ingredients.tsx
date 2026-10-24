@@ -16,7 +16,7 @@ export const INGREDIENTS_HEADING_ID = `${INGREDIENTS_ID}-heading`
 
 /** Shown when there are no chips yet. */
 export const NO_CHIPS_HINT =
-  'Nothing on your list yet. Pick recipes below, or add an ingredient with the plus.'
+  'Nothing on your list yet. Tick recipes in Explore, or add an ingredient with the plus.'
 
 /** "5 items, 2 crossed off" */
 export const ingredientsSummary = (
@@ -60,11 +60,7 @@ const usePanel = () => {
     id,
     open,
     onChevron: (chipId) =>
-      open && id === chipId ? setOpen(false) : show(chipId),
-    onDone: (chipId) => {
-      setOpen(false)
-      focusById(chipChevronId(chipId))
-    }
+      open && id === chipId ? setOpen(false) : show(chipId)
   }
   return { panel, show, close: () => setOpen(false) }
 }
@@ -72,16 +68,49 @@ const usePanel = () => {
 const SORT_BUTTON =
   'inline-flex min-h-[44px] items-center rounded-pill border-2 border-primary px-4 text-sm font-semibold text-primary data-[focus-visible]:focus-ring data-[pressed]:opacity-80'
 
-/** The Ingredients section (#179): Sort, the chips by category, and the plus. */
-export const Ingredients: FC<{
-  list: ChipsState
-  open: boolean
-  onToggle: () => void
-}> = ({ list, open, onToggle }) => {
+/**
+ * Everything the Ingredients section shares with Explore (#181): the open chip panel, the
+ * section's open state, and picking a catalogue item (from the plus or an Explore result):
+ * a new one is added as an extra; one already on the list is scrolled to with its panel open.
+ */
+export const useIngredients = (list: ChipsState) => {
   const { panel, show, close } = usePanel()
-  const [plusOpen, setPlusOpen] = useState(false)
+  const [open, setOpen] = useState(true)
   const [message, setMessage] = useState('')
   const focusAfterRender = useFocusAfterRender()
+  const pick = (item: LibraryIngredient): boolean => {
+    if (list.hasChip(item.id)) {
+      setOpen(true)
+      show(item.id)
+      focusAfterRender({ kind: 'reveal', id: chipChevronId(item.id) })
+      return true
+    }
+    list.addExtra(item)
+    setMessage(`${capitaliseFirst(item.name)} added`)
+    return false
+  }
+  return {
+    list,
+    panel,
+    close,
+    open,
+    toggle: () => setOpen(!open),
+    message,
+    setMessage,
+    focusAfterRender,
+    pick
+  }
+}
+
+export type IngredientsState = ReturnType<typeof useIngredients>
+
+/** The Ingredients section (#179): Sort, the chips by category, and the plus. */
+export const Ingredients: FC<{
+  state: IngredientsState
+  collapsible: boolean
+}> = ({ state, collapsible }) => {
+  const { list, panel, close, setMessage, focusAfterRender } = state
+  const [plusOpen, setPlusOpen] = useState(false)
   const closePlus = useCallback((refocus: boolean) => {
     setPlusOpen(false)
     if (refocus) focusById(PLUS_ID)
@@ -102,21 +131,15 @@ export const Ingredients: FC<{
     }
   }
   const onPick = (item: LibraryIngredient) => {
-    if (list.hasChip(item.id)) {
-      setPlusOpen(false)
-      show(item.id)
-      focusAfterRender({ kind: 'reveal', id: chipChevronId(item.id) })
-      return
-    }
-    list.addExtra(item)
-    setMessage(`${capitaliseFirst(item.name)} added`)
+    if (state.pick(item)) setPlusOpen(false)
   }
   return (
     <Section
       id={INGREDIENTS_ID}
       title="Ingredients"
-      open={open}
-      onToggle={onToggle}
+      collapsible={collapsible}
+      open={state.open}
+      onToggle={state.toggle}
       summary={ingredientsSummary(list.chips)}
     >
       <div className="flex flex-col gap-4">
@@ -153,7 +176,7 @@ export const Ingredients: FC<{
           role="status"
           className="sr-only"
         >
-          {message}
+          {state.message}
         </p>
       </div>
     </Section>

@@ -43,7 +43,6 @@ const recipe = (
   id: name,
   name,
   portions,
-  tags: [],
   ingredients,
   method: []
 })
@@ -283,7 +282,9 @@ describe('labels', () => {
     expect(packs(sized('bunch', 1, 'count'), 1)).toBe('1 bunch')
     expect(packs(sized('bunch', 1, 'count'), 2)).toBe('2 bunches')
     expect(packs(sized('tin', 400, 'g'), 3)).toBe('3 × 400 g')
-    expect(packs(sized('pack', 400, 'g', 'block'), 1)).toBe('1 × 400 g block')
+    expect(packs(sized('pack', 400, 'g', 'block'), 1)).toBe('400 g block')
+    expect(packs(sized('bottle', 500, 'ml'), 1)).toBe('500 ml')
+    expect(packs(sized('pack', 500, 'g'), 2)).toBe('2 × 500 g')
     expect(packs(sized('carton', 6, 'count'), 1)).toBe('1 × carton of 6')
     expect(packs(sized('pack', 3, 'count', '3-pack'), 1)).toBe('1 × 3-pack')
     expect(
@@ -315,7 +316,7 @@ describe('real library', () => {
     const garlic = lines.find((l) => l.ingredientId === 'garlic')
     expect(garlic && buyAmount(garlic)).toMatch(/^\d/)
     const paper = lines.find((l) => l.ingredientId === 'rice-paper')
-    expect(paper && buyAmount(paper)).toBe('1 × 250 g')
+    expect(paper && buyAmount(paper)).toBe('250 g')
   })
   it('maps every aisle into a section, Pantry aisles as subsections', () => {
     expect(placeInShop('meat')).toEqual({

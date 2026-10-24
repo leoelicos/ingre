@@ -1,9 +1,10 @@
 import type { FC } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuthContext } from '../utils/auth/AuthContext'
 import { IngreIconLogoEgg } from '../lib/icon/Icon'
 import { AccountMenu } from './AccountMenu/AccountMenu'
-import { HeaderSearch } from './HeaderSearch/HeaderSearch'
+import { SearchBox } from './SearchBox/SearchBox'
+import { WIDE_MIN_WIDTH, useMinWidth } from '../utils/media/useMinWidth'
 
 export const LOGO_TEXT = 'ingré'
 
@@ -20,14 +21,19 @@ const Logo: FC = () => (
   </Link>
 )
 
-/** One header everywhere (#164): only the logo, search and the account menu. */
+/**
+ * One header everywhere (#164): the logo, search and the account menu. On the list page from
+ * 992px the search bar lives in the Explore drawer instead (#181).
+ */
 export const Header: FC = () => {
   const [auth] = useAuthContext()
+  const onList = useLocation().pathname === '/'
+  const inDrawer = useMinWidth(WIDE_MIN_WIDTH) && onList
   return (
     <header className="ingre-navbar">
       <div className="ingre-page flex items-center gap-2 py-2 sm:gap-4 sm:py-3">
         <Logo />
-        <HeaderSearch />
+        <div className="flex min-w-0 flex-1">{!inDrawer && <SearchBox />}</div>
         <AccountMenu loggedIn={auth.loggedIn} />
       </div>
     </header>

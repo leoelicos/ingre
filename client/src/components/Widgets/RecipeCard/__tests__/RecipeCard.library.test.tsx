@@ -11,7 +11,7 @@ import RecipeCard from '../RecipeCard'
 addFontAwesome()
 
 describe('RecipeCard with a library recipe', () => {
-  it('draws the hero from the recipe ingredients and shows a local name', () => {
+  it('draws the hero from the recipe ingredients and shows a local name, with no recipe page link (#181)', () => {
     const dahl = library
       .filter((r) => r.id === 'dahl' || r.id === 'shaking-beef')
       .map((r) => toClientRecipe(r))
@@ -27,7 +27,8 @@ describe('RecipeCard with a library recipe', () => {
       )
     )
     expect(
-      screen.getByRole('link', { name: 'Red lentil dahl' })
-    ).toHaveAttribute('href', '/recipe/dahl')
+      screen.getByRole('heading', { name: 'Red lentil dahl' })
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('link')).toBeNull()
   })
 })

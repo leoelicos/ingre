@@ -2,8 +2,7 @@ import {
   DEFAULT_HERO_ICON,
   heroIcon,
   recipeKey,
-  splitTitle,
-  tintFor
+  splitTitle
 } from '../recipeCardHelpers'
 
 describe('splitTitle', () => {
@@ -34,17 +33,6 @@ describe('recipeKey', () => {
     expect(recipeKey({ _id: 'a', libraryId: 'b', name: 'c' })).toBe('a')
     expect(recipeKey({ libraryId: 'b', name: 'c' })).toBe('b')
     expect(recipeKey({ name: 'c' })).toBe('c')
-  })
-})
-
-describe('tintFor', () => {
-  it('uses the lunch tint for lunch or sweet tags, case-insensitively', () => {
-    expect(tintFor(['Lunch'])).toBe('lunch')
-    expect(tintFor(['sweet', 'dinner'])).toBe('lunch')
-  })
-  it('defaults to the dinner tint', () => {
-    expect(tintFor(['dinner', 'Indian'])).toBe('dinner')
-    expect(tintFor([])).toBe('dinner')
   })
 })
 
