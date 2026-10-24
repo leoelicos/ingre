@@ -1,9 +1,13 @@
 import { defineConfig, devices } from '@playwright/test'
 import { ports, urls } from './tests/env'
 
+/** where the production build for the preview server goes (git-ignored) */
+const PREVIEW_DIR = '../automation/.preview-dist'
+
 /*
  * One run = WireMock (Stripe stand-in) + the real server on an in-memory MongoDB
- * + the real client dev server pointed at that server. See README.md.
+ * + the real client dev server pointed at that server + the production build on
+ * vite preview (for #177). See README.md.
  */
 export default defineConfig({
   testDir: './tests',
@@ -68,6 +72,15 @@ export default defineConfig({
       url: urls.client,
       reuseExistingServer: false,
       timeout: 60_000,
+      env: { VITE_GRAPHQL_URL: urls.graphql }
+    },
+    {
+      /* the production build, so the analytics test (#177) can see production behaviour */
+      name: 'preview',
+      command: `npm --prefix ../client run -s build -- --outDir ${PREVIEW_DIR} --emptyOutDir && npm --prefix ../client run -s preview -- --outDir ${PREVIEW_DIR} --port ${ports.preview} --strictPort`,
+      url: urls.preview,
+      reuseExistingServer: false,
+      timeout: 120_000,
       env: { VITE_GRAPHQL_URL: urls.graphql }
     }
   ]
