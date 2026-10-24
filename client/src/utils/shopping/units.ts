@@ -53,3 +53,18 @@ export const formatAmount = ({ amount, unit }: Amount): string => {
     ? `${round(amount / 1000)} ${BIG_UNIT[unit]}`
     : `${round(amount)} ${unit}`
 }
+
+/**
+ * The unit an item is totalled in (#182): its first sized sold option's unit, else grams.
+ * Free text (no item) is counted.
+ */
+export const itemUnit = (
+  item: Pick<LibraryIngredient, 'sold'> | null
+): BaseUnit =>
+  item === null
+    ? 'count'
+    : item.sold.find((option) => option.size !== null)?.size?.unit ?? 'g'
+
+/** The recipe measure for an item's unit (#182): counted items are "whole". */
+export const unitMeasure = (unit: BaseUnit): string =>
+  unit === 'count' ? 'whole' : unit

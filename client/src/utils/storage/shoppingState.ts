@@ -1,12 +1,20 @@
+import { useState } from 'react'
+import type { RecipeCopy } from '../balance/copies'
+import { DEFAULT_PORTIONS, clampPortions, newCopy } from '../balance/copies'
 import type { ShopSection } from '../shopping/sections'
 import { SHOP_SECTIONS } from '../shopping/sections'
-import { useStored, useStoredSet } from './useStored'
+import { PEOPLE_KEY, parsePeople } from './people'
+import { readStored } from './storage'
+import { parseStringSet, useStored, useStoredSet } from './useStored'
 
+/** Recipes picked before #182; read once to migrate them into copies. */
 export const PICKED_KEY = 'ingre.list.picked'
+/** One copy per picked recipe, with its portions and customisations (#182). */
+export const COPIES_KEY = 'ingre.list.copies'
 export const EXTRAS_KEY = 'ingre.list.extras'
 /** Chips crossed off on the single page (#179). */
 export const CROSSED_KEY = 'ingre.chips.crossed'
-/** Quantity and category edits per chip (#179). */
+/** Category edits per chip (#179); quantity overrides were dropped in #182. */
 export const EDITS_KEY = 'ingre.chips.edits'
 /** Chip order and the group each chip sits in until the next sort (#179). */
 export const LAYOUT_KEY = 'ingre.chips.layout'
@@ -20,9 +28,8 @@ export interface Extra {
   quantity: number
 }
 
-/** A chip's edits; null keeps what the recipes and catalogue say. */
+/** A chip's category edit; null keeps the catalogue's. */
 export interface ChipEdit {
-  quantity: number | null
   section: ShopSection | null
 }
 
@@ -36,9 +43,6 @@ export interface ChipLayout {
 }
 
 export const EMPTY_LAYOUT: ChipLayout = { order: [], placed: {} }
-
-/** Recipes picked for this shop (library ids). */
-export const usePickedIds = () => useStoredSet(PICKED_KEY, new Set())
 
 /** Chips crossed off. */
 export const useCrossedIds = () => useStoredSet(CROSSED_KEY, new Set())
@@ -74,13 +78,8 @@ export const parseSection = (value: unknown): ShopSection | null =>
   SHOP_SECTIONS.find((section) => section === value) ?? null
 
 const parseEdit = (value: unknown): ChipEdit | null => {
-  const record = asRecord(value)
-  if (record === null) return null
-  const quantity = isPositiveWhole(record['quantity'])
-    ? record['quantity']
-    : null
-  const section = parseSection(record['section'])
-  return quantity === null && section === null ? null : { quantity, section }
+  const section = parseSection(asRecord(value)?.['section'])
+  return section === null ? null : { section }
 }
 
 const entriesOf = (value: unknown): [string, unknown][] =>
@@ -120,3 +119,52 @@ export const parseLayout = (value: unknown): ChipLayout | null => {
 
 export const useChipLayout = () =>
   useStored<ChipLayout>(LAYOUT_KEY, parseLayout, EMPTY_LAYOUT)
+
+const isAmount = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value) && value >= 0
+
+const parseAmounts = (value: unknown): Record<string, number> =>
+  Object.fromEntries(
+    entriesOf(value).filter((entry): entry is [string, number] =>
+      isAmount(entry[1])
+    )
+  )
+
+const parseCopy = (value: unknown): RecipeCopy[] => {
+  const record = asRecord(value)
+  if (record === null) return []
+  const { recipeId, portions } = record
+  return typeof recipeId === 'string' && typeof portions === 'number'
+    ? [
+        {
+          recipeId,
+          portions: clampPortions(portions),
+          amounts: parseAmounts(record['amounts'])
+        }
+      ]
+    : []
+}
+
+/** Stored copies, one per recipe (#182); malformed entries and repeats are dropped. */
+export const parseCopies = (value: unknown): RecipeCopy[] | null =>
+  Array.isArray(value)
+    ? value
+        .flatMap(parseCopy)
+        .filter(
+          (copy, i, all) =>
+            all.findIndex((c) => c.recipeId === copy.recipeId) === i
+        )
+    : null
+
+/** Picks from before #182 as copies, with the old people setting as their portions. */
+export const legacyCopies = (): RecipeCopy[] => {
+  const picked = readStored(PICKED_KEY, parseStringSet, new Set<string>())
+  const people = readStored(PEOPLE_KEY, parsePeople, null)
+  return [...picked].map((id) => newCopy(id, people ?? DEFAULT_PORTIONS))
+}
+
+/** The picked recipes' copies, migrated from the old picks the first time. */
+export const useCopies = () => {
+  const [migrated] = useState(legacyCopies)
+  return useStored<readonly RecipeCopy[]>(COPIES_KEY, parseCopies, migrated)
+}

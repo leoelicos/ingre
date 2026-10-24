@@ -1,91 +1,117 @@
 import { useEffect } from 'react'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
+import type { RecipeCopy } from '../balance/copies'
+import {
+  copyLines,
+  newCopy,
+  resetCopy,
+  withAmount,
+  withPortions
+} from '../balance/copies'
 import { catalogue, library } from '../library/recipeLibrary'
-import { usePeople } from '../storage/people'
-import type { ChipEdit, Extra } from '../storage/shoppingState'
+import type { Extra } from '../storage/shoppingState'
 import {
   useChipEdits,
   useChipLayout,
+  useCopies,
   useCrossedIds,
-  useExtras,
-  usePickedIds
+  useExtras
 } from '../storage/shoppingState'
 import type { ShopSection } from '../shopping/sections'
-import type { ShopLine } from '../shopping/shoppingList'
+import { itemUnit } from '../shopping/units'
+import type { Chip, ChipState, CopyEntry } from './chips'
 import {
-  buildShoppingList,
-  extraLines,
-  withoutDuplicateExtras
-} from '../shopping/shoppingList'
-import type { Chip } from './chips'
-import {
+  buildBalances,
   buildChips,
-  editFor,
+  extraChipId,
   groupChips,
   placementsOf,
+  recipeSources,
   sortLayout,
+  sourceAmount,
+  sourceLabels,
   withPlacements
 } from './chips'
 
-/**
- * The chips' lines: picked recipes' ingredients (staples are assumed at home) plus extras a
- * recipe doesn't already need, so each item is one chip.
- */
-export const chipLines = (
-  recipes: readonly LibraryRecipe[],
-  people: number,
-  extras: readonly Extra[],
+/** The picked copies with their recipes, labels and lines; unknown recipes are skipped. */
+export const copyEntries = (
+  copies: readonly RecipeCopy[],
+  recipes: readonly LibraryRecipe[] = library,
   items: readonly LibraryIngredient[] = catalogue
-): ShopLine[] => {
-  const recipeLines = buildShoppingList(recipes, people, items).filter(
-    (line) => !line.staple
-  )
-  return [
-    ...recipeLines,
-    ...withoutDuplicateExtras(recipeLines, extraLines(extras, items))
-  ]
+): CopyEntry[] => {
+  const known = copies.flatMap((copy) => {
+    const recipe = recipes.find((r) => r.id === copy.recipeId)
+    return recipe === undefined ? [] : [{ copy, recipe }]
+  })
+  const labels = sourceLabels(known.map(({ recipe }) => recipe.name))
+  return known.map(({ copy, recipe }, i) => ({
+    copy,
+    recipe,
+    label: labels[i] ?? recipe.name,
+    lines: copyLines(recipe, copy, items)
+  }))
 }
 
 /** A catalogue item as a new extra. */
-export const catalogueExtra = (item: LibraryIngredient): Extra => ({
+export const catalogueExtra = (
+  item: LibraryIngredient,
+  quantity = 1
+): Extra => ({
   id: item.id,
   name: item.name,
   ingredientId: item.id,
-  quantity: 1
+  quantity
 })
 
-/** The extras with this one added, unless it is already there. */
+/** The extras with this one added, unless the item is already there. */
 export const addOnce = (extras: readonly Extra[], extra: Extra): Extra[] =>
-  extras.some((e) => e.id === extra.id) ? [...extras] : [...extras, extra]
+  extras.some((e) => extraChipId(e) === extraChipId(extra))
+    ? [...extras]
+    : [...extras, extra]
 
-/** The edits with one chip's edit changed. */
-export const withEdit = (
-  edits: Readonly<Record<string, ChipEdit>>,
-  id: string,
-  change: Partial<ChipEdit>
-): Record<string, ChipEdit> => ({
-  ...edits,
-  [id]: { ...editFor(edits, id), ...change }
-})
+/**
+ * A picked recipe's staples as extras (#182, F1): staples count as Extra only, starting at what
+ * the recipe needs, rounded up to a whole number in the item's unit.
+ */
+export const stapleExtras = (
+  recipe: LibraryRecipe,
+  copy: RecipeCopy,
+  items: readonly LibraryIngredient[] = catalogue
+): Extra[] =>
+  copyLines(recipe, copy, items).flatMap((line) => {
+    if (!line.staple || line.item === null) return []
+    const need = sourceAmount(
+      { ...line, removed: false },
+      line.item,
+      itemUnit(line.item)
+    )
+    return [catalogueExtra(line.item, Math.max(1, Math.ceil(need)))]
+  })
 
-/** The edits without one chip's. */
-export const withoutEdit = (
-  edits: Readonly<Record<string, ChipEdit>>,
-  id: string
-): Record<string, ChipEdit> =>
-  Object.fromEntries(Object.entries(edits).filter(([key]) => key !== id))
+const updateCopy = (
+  copies: readonly RecipeCopy[],
+  recipeId: string,
+  change: (copy: RecipeCopy) => RecipeCopy
+): RecipeCopy[] =>
+  copies.map((copy) => (copy.recipeId === recipeId ? change(copy) : copy))
 
-/** All state for the single page (#179): picks, chips, edits, extras and order, kept on device. */
+const recipeById = (id: string): LibraryRecipe | null =>
+  library.find((recipe) => recipe.id === id) ?? null
+
+/** True while a recipe still needs the chip, so taking it out of Extra keeps it. */
+const neededByRecipes = (chip: Chip | undefined): boolean =>
+  chip !== undefined && recipeSources(chip).some((source) => !source.removed)
+
+/** All state for the single page (#179, #182): copies, chips, extras and order, kept on device. */
 export const useChips = () => {
-  const [people, setPeople] = usePeople()
-  const [pickedIds, togglePicked] = usePickedIds()
+  const [copies, updateCopies] = useCopies()
   const [extras, updateExtras] = useExtras()
   const [crossedIds, toggleCrossed, uncross] = useCrossedIds()
   const [edits, updateEdits] = useChipEdits()
   const [storedLayout, updateLayout] = useChipLayout()
-  const recipes = library.filter((recipe) => pickedIds.has(recipe.id))
-  const lines = chipLines(recipes, people, extras)
-  const placements = placementsOf(lines, edits)
+  const entries = copyEntries(copies)
+  const balances = buildBalances(entries, extras, catalogue)
+  const placements = placementsOf(balances, edits)
   const layout = withPlacements(storedLayout, placements)
   /* new chips are placed once and remembered, so later category edits never move them */
   const unplaced = layout.order.length - storedLayout.order.length
@@ -93,35 +119,70 @@ export const useChips = () => {
     if (unplaced === 0) return
     updateLayout((previous) => withPlacements(previous, placements))
   })
-  const chips: Chip[] = buildChips({ lines, edits, layout, crossedIds })
-  const chipIds = new Set(chips.map((chip) => chip.id))
+  const chipState: ChipState = { edits, layout, crossedIds }
+  const chips = buildChips(balances, chipState)
+  const extraChips = chips.filter((chip) => chip.extra !== null)
+  const pickedIds = new Set(copies.map((copy) => copy.recipeId))
+  const setAmount = (recipeId: string, id: string, quantity: number) => {
+    const recipe = recipeById(recipeId)
+    if (recipe === null) return
+    updateCopies((previous) =>
+      updateCopy(previous, recipeId, (copy) =>
+        withAmount(copy, recipe, id, quantity)
+      )
+    )
+  }
   return {
-    people,
-    setPeople,
-    recipes,
+    entries,
+    chipState,
     pickedIds,
-    togglePicked,
+    togglePicked: (recipe: LibraryRecipe): void => {
+      if (pickedIds.has(recipe.id)) {
+        updateCopies((previous) =>
+          previous.filter((copy) => copy.recipeId !== recipe.id)
+        )
+        return
+      }
+      const copy = newCopy(recipe.id)
+      updateCopies((previous) => [...previous, copy])
+      updateExtras((previous) =>
+        stapleExtras(recipe, copy).reduce(addOnce, previous)
+      )
+    },
+    setAmount,
+    setPortions: (recipeId: string, portions: number): void =>
+      updateCopies((previous) =>
+        updateCopy(previous, recipeId, (copy) => withPortions(copy, portions))
+      ),
+    refresh: (): void => updateCopies((previous) => previous.map(resetCopy)),
     chips,
     groups: groupChips(chips),
-    hasChip: (id: string): boolean => chipIds.has(id),
+    extraChips,
+    extraGroups: groupChips(extraChips),
+    hasChip: (id: string): boolean => chips.some((chip) => chip.id === id),
     toggleCrossed,
-    setQuantity: (id: string, quantity: number): void =>
-      updateEdits((previous) => withEdit(previous, id, { quantity })),
     setCategory: (id: string, section: ShopSection): void => {
       updateLayout((previous) => withPlacements(previous, placements))
-      updateEdits((previous) => withEdit(previous, id, { section }))
+      updateEdits((previous) => ({ ...previous, [id]: { section } }))
     },
     sort: (): void =>
       updateLayout((previous) => sortLayout(previous, placements)),
     addExtra: (item: LibraryIngredient): void => {
+      if (extraChips.some((chip) => chip.id === item.id)) return
       uncross(item.id)
-      updateEdits((previous) => withoutEdit(previous, item.id))
       updateExtras((previous) => addOnce(previous, catalogueExtra(item)))
     },
+    setExtra: (id: string, quantity: number): void =>
+      updateExtras((previous) =>
+        previous.map((extra) =>
+          extraChipId(extra) === id ? { ...extra, quantity } : extra
+        )
+      ),
     removeExtra: (id: string): void => {
-      uncross(id)
-      updateEdits((previous) => withoutEdit(previous, id))
-      updateExtras((previous) => previous.filter((extra) => extra.id !== id))
+      if (!neededByRecipes(chips.find((chip) => chip.id === id))) uncross(id)
+      updateExtras((previous) =>
+        previous.filter((extra) => extraChipId(extra) !== id)
+      )
     }
   }
 }

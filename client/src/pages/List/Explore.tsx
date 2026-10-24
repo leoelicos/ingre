@@ -15,33 +15,63 @@ import type {
 } from '../../utils/explore/exploreSearch'
 import {
   DEFAULT_SOURCE,
-  exploreResults
+  exploreResults,
+  shownRecipes
 } from '../../utils/explore/exploreSearch'
 import { placeInShop } from '../../utils/shopping/sections'
+import type { RecipeFilter } from '../../utils/filters/filters'
+import {
+  NO_RECIPE_FILTER,
+  recipeFilterOn,
+  recipeMatches
+} from '../../utils/filters/filters'
+import { library } from '../../utils/library/recipeLibrary'
+import type { SavedState } from '../../utils/saved/useSaved'
+import {
+  ActionsRow,
+  FilterButton,
+  HiddenNote,
+  RecipeFilterPanel
+} from './Filters'
 import type { IngredientsState } from './Ingredients'
 import { NO_SAVED_HINT } from './recipeFilter'
+import { filterOptions, recipeFilterCount } from './Recipes'
 import type { RowControls } from './RecipeRows'
 import { RecipeRows } from './RecipeRows'
+import { OriginalDetails } from './RowDetails'
 import { HeaderRow } from './Section'
-import { SavedFilter } from './SavedFilter'
+import { copyLines, newCopy } from '../../utils/balance/copies'
 
 export const EXPLORE_ID = 'explore'
 export const CLOSE_EXPLORE = 'Close Explore'
 
-/** What Explore's rows share with the Recipes rows: picks, servings and Save. */
-export type ExploreRowControls = Omit<
+/** What Explore's rows share with the Recipes rows: picks. */
+export type ExploreRowControls = Pick<
   RowControls,
-  'openIds' | 'onToggleOpen' | 'seeRecipe'
+  'pickedIds' | 'onTogglePicked'
 >
 
 /** What Explore needs from the page. */
 export interface ExploreProps {
   readonly ingredients: IngredientsState
   readonly rows: ExploreRowControls
+  /** null when signed out: no hearts */
+  readonly saved: SavedState | null
   readonly savedOnly: boolean
-  readonly savedIds: ReadonlySet<string>
   readonly onSaved: (on: boolean) => void
 }
+
+/** The ingredient ids of a library original, for Explore's filter (#182, answer 37). */
+export const originalIds = (recipe: LibraryRecipe): ReadonlySet<string> =>
+  new Set(recipe.ingredients.map((ri) => ri.ingredientId))
+
+/** Every ingredient Explore's recipes use, for the filter's pickers. */
+export const exploreOptions = (recipes: readonly LibraryRecipe[] = library) =>
+  filterOptions(
+    recipes.flatMap((recipe) =>
+      copyLines(recipe, newCopy(recipe.id), DEFAULT_SOURCE.ingredients)
+    )
+  )
 
 const GROUP_HEADING =
   'm-0 mb-2 text-sm font-semibold uppercase tracking-wide text-text-secondary'
@@ -99,11 +129,21 @@ const RecipeGroup: FC<{
   title: string
   recipes: readonly LibraryRecipe[]
   controls: RowControls
-}> = ({ title, recipes, controls }) => (
+  saved: SavedState | null
+}> = ({ title, recipes, controls, saved }) => (
   <div>
     <h3 className={GROUP_HEADING}>{title}</h3>
     <RecipeRows
-      recipes={recipes}
+      rows={recipes.map((recipe) => ({
+        recipe,
+        details: (name) => (
+          <OriginalDetails
+            recipe={recipe}
+            title={name}
+            saved={saved}
+          />
+        )
+      }))}
       controls={controls}
     />
   </div>
@@ -130,6 +170,7 @@ const Groups: FC<{
           title="Recipes"
           recipes={recipes}
           controls={controls}
+          saved={props.saved}
         />
       )}
     </div>
@@ -157,6 +198,7 @@ const Results: FC<{
       title="Browse recipes"
       recipes={results.kind === 'browse' ? results.recipes : results.browse}
       controls={controls}
+      saved={props.saved}
     />
   )
   if (results.kind === 'browse') return browse
@@ -185,15 +227,33 @@ const Results: FC<{
   )
 }
 
-/** The Saved hint when Saved is on but nothing is hearted; otherwise the results. */
+const FILTER_ID = `${EXPLORE_ID}-filter`
+
+/** The savedIds Explore filters by: the server's, or none signed out. */
+export const savedIdsOf = (saved: SavedState | null): ReadonlySet<string> =>
+  saved === null ? new Set() : saved.ids
+
+/**
+ * The filter (#182: Saved, contains, excludes on the originals), then the Saved hint when
+ * Saved is on but nothing is hearted, or the results.
+ */
 const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   const { query } = useExplore()
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set())
+  const [filterOpen, setFilterOpen] = useState(props.savedOnly)
+  const [picked, setPicked] =
+    useState<Pick<RecipeFilter, 'contains' | 'excludes'>>(NO_RECIPE_FILTER)
+  const filter: RecipeFilter = { ...picked, savedOnly: props.savedOnly }
+  const savedIds = savedIdsOf(props.saved)
   const source: ExploreSource = {
     ...DEFAULT_SOURCE,
+    recipes: DEFAULT_SOURCE.recipes.filter((recipe) =>
+      recipeMatches(originalIds(recipe), filter)
+    ),
     savedOnly: props.savedOnly,
-    savedIds: props.savedIds
+    savedIds
   }
+  const hidden = DEFAULT_SOURCE.recipes.length - shownRecipes(source).length
   const controls: RowControls = {
     ...props.rows,
     openIds,
@@ -206,11 +266,36 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   }
   return (
     <div className="flex flex-col gap-4">
-      <SavedFilter
-        on={props.savedOnly}
-        onChange={props.onSaved}
+      <ActionsRow label="Explore actions">
+        <FilterButton
+          panelId={FILTER_ID}
+          open={filterOpen}
+          active={recipeFilterCount(filter)}
+          onPress={() => setFilterOpen(!filterOpen)}
+        />
+      </ActionsRow>
+      <RecipeFilterPanel
+        id={FILTER_ID}
+        open={filterOpen}
+        label="Filter Explore"
+        options={exploreOptions()}
+        saved={true}
+        filter={filter}
+        onChange={(next) => {
+          setPicked({ contains: next.contains, excludes: next.excludes })
+          if (next.savedOnly !== props.savedOnly) props.onSaved(next.savedOnly)
+        }}
       />
-      {props.savedOnly && props.savedIds.size === 0 ? (
+      {recipeFilterOn(filter) && (
+        <HiddenNote
+          hidden={hidden}
+          onClear={() => {
+            setPicked(NO_RECIPE_FILTER)
+            props.onSaved(false)
+          }}
+        />
+      )}
+      {props.savedOnly && savedIds.size === 0 ? (
         <p
           className="m-0 text-text-secondary"
           role="status"

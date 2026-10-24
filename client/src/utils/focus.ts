@@ -35,3 +35,11 @@ export const focusCheckedIn = (id: string): void => {
     ?.querySelector<HTMLElement>('input:checked')
     ?.focus()
 }
+
+/** Focuses the first of these ids that is on the page (#182: after a chip's box goes away). */
+export const focusFirstOf = (ids: readonly string[]): void => {
+  ids
+    .map((id) => document.getElementById(id))
+    .find((element) => element !== null)
+    ?.focus({ preventScroll: true })
+}
