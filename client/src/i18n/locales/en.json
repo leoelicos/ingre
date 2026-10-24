@@ -1,0 +1,224 @@
+{
+  "quantity": "{{number}} {{unit}}",
+  "countUnit_one": "{{one}}",
+  "countUnit_other": "{{other}}",
+  "item_one": "item",
+  "item_other": "items",
+  "recipe_one": "recipe",
+  "recipe_other": "recipes",
+  "measure": {
+    "g": "g",
+    "kg": "kg",
+    "ml": "ml",
+    "L": "L",
+    "g tin": "g tin",
+    "ml tin": "ml tin",
+    "tsp": "tsp",
+    "tbsp": "tbsp",
+    "cup_one": "cup",
+    "cup_other": "cups",
+    "clove_one": "clove",
+    "clove_other": "cloves",
+    "stalk_one": "stalk",
+    "stalk_other": "stalks",
+    "bunch_one": "bunch",
+    "bunch_other": "bunches"
+  },
+  "section": {
+    "fruitVeg": "Fruit & Veg",
+    "meatSeafood": "Meat & Seafood",
+    "dairy": "Dairy",
+    "deli": "Deli",
+    "bakery": "Bakery",
+    "pantry": "Pantry",
+    "frozen": "Frozen",
+    "other": "Other"
+  },
+  "status": {
+    "crossed": "Crossed off",
+    "customised": "Customised",
+    "extra": "Extra",
+    "removed": "Removed"
+  },
+  "filter": {
+    "hidden": "{{count}} hidden by filter",
+    "button": "Filter",
+    "buttonActive": "Filter ({{count}})",
+    "category": "Category",
+    "status": "Status",
+    "contains": "Contains",
+    "excludes": "Excludes",
+    "chosen": "{{label}}: chosen",
+    "remove": "Remove {{name}}",
+    "clear": "Clear"
+  },
+  "usedIn": {
+    "nowhere": "removed from every recipe",
+    "extraOnly": "in Extra",
+    "recipes": "in {{recipes}}",
+    "recipesAndExtra": "in {{recipes}} and Extra"
+  },
+  "sourceLabel": "{{name}} ({{n}})",
+  "customisation": {
+    "added": "Added {{name}} {{amount}}",
+    "removed": "{{name}} removed",
+    "changed": "{{name}} {{from}} → {{to}}",
+    "portions": "Portions {{from}} → {{to}}"
+  },
+  "allergens": {
+    "contains": "Contains: {{list}}",
+    "separator": ", ",
+    "label": "Allergens"
+  },
+  "list": {
+    "title": "Shopping list"
+  },
+  "explore": {
+    "title": "Explore",
+    "close": "Close Explore",
+    "drawer": "Explore drawer",
+    "actions": "Explore actions",
+    "filter": "Filter Explore",
+    "browse": "Browse recipes",
+    "closeMatches": "Close matches",
+    "noMatches": "No matches for ‘{{query}}’",
+    "add": "Add {{name}}",
+    "onListLabel": "{{name}}, on your list",
+    "onListName": "✓ {{name}}",
+    "addName": "+ {{name}}",
+    "categoryOnList": "{{category}} · on your list"
+  },
+  "saved": {
+    "filter": "Saved",
+    "empty": "No saved recipes yet. Sign in, open a recipe with its arrow, then tap its heart to save it. It will show here.",
+    "failed": "Couldn't update your saved recipes. Try again.",
+    "save": "Save",
+    "saveRecipe": "Save {{name}}",
+    "unsaveRecipe": "Unsave {{name}}"
+  },
+  "ingredients": {
+    "title": "Ingredients",
+    "actions": "Ingredients actions",
+    "sort": "Sort",
+    "refresh": "Refresh",
+    "filter": "Filter ingredients",
+    "empty": "Nothing on your list yet. Tick recipes in Explore, or add an ingredient with the plus in Extra.",
+    "refreshQuestion": "Reset every recipe to its original ingredients and 2 portions?",
+    "summaryCrossed": "{{items}}, {{count}} crossed off",
+    "usedIn": "Used in",
+    "added": "{{name}} added to Extra"
+  },
+  "recipes": {
+    "title": "Recipes",
+    "actions": "Recipes actions",
+    "filter": "Filter recipes",
+    "empty": "No recipes picked yet. Tick recipes in Explore and they show here.",
+    "picked": "{{recipes}} picked"
+  },
+  "extra": {
+    "title": "Extra",
+    "actions": "Extra actions",
+    "filter": "Filter extra",
+    "empty": "Nothing extra yet. Add staples and anything else with the plus."
+  },
+  "chip": {
+    "details": "{{name}} details",
+    "crossedOff": "crossed off",
+    "labelSeparator": ", ",
+    "total": "Total: {{amount}}",
+    "category": "Category",
+    "sortNow": "Sort now",
+    "yes": "Yes",
+    "no": "No",
+    "extraSource": "Extra",
+    "sourceLabel": "{{source}}, {{name}} ({{unit}})",
+    "removeQuestion": "Remove {{name}} from {{source}}?",
+    "amountSeparator": ", "
+  },
+  "plus": {
+    "add": "Add an ingredient",
+    "addTo": "Add an ingredient to {{recipe}}",
+    "inRecipe": "In this recipe",
+    "onList": "On your list",
+    "categories": "Categories",
+    "marked": "{{name}}, {{mark}}"
+  },
+  "row": {
+    "seeRecipe": "See recipe",
+    "seeRecipeLabel": "See recipe: {{title}}",
+    "details": "{{title}} details",
+    "method": "Method",
+    "notes": "Notes",
+    "customisations": "Customisations",
+    "portions": "Portions"
+  },
+  "layout": {
+    "label": "Layout",
+    "vertical": "Vertical",
+    "split": "Ingredients {{ingredients}}%, Recipes {{recipes}}%"
+  },
+  "scrollToTop": "Scroll to top",
+  "notLoggedIn": {
+    "message": "You need to be logged in to see this page.",
+    "logIn": "Log in"
+  },
+  "skipLink": "Skip to content",
+  "account": {
+    "label": "Account",
+    "logIn": "Log in",
+    "signUp": "Sign up",
+    "saved": "Saved",
+    "logOut": "Log out"
+  },
+  "search": {
+    "label": "Search ingredients and recipes"
+  },
+  "auth": {
+    "logIn": "Log in",
+    "signUp": "Sign up",
+    "loading": "Loading",
+    "loginFailed": "Couldn't log you in.",
+    "email": "Email",
+    "password": "Password",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "show": "Show",
+    "hide": "Hide",
+    "noAccount": "No account?",
+    "haveAccount": "Have an account?",
+    "logInQuestion": "Log in?",
+    "enterEmail": "Please enter an email address.",
+    "enterPassword": "Please enter a password.",
+    "enterFirstName": "Please enter your first name.",
+    "passwordTooShort": "Password must be at least {{count}} characters.",
+    "passwordHint": "At least {{count}} characters.",
+    "checkingEmail": "Checking email… the server may take a few seconds to wake up.",
+    "emailExists": "A user with this email already exists.",
+    "checkFailed": "Couldn't check that email.",
+    "signupFailed": "Couldn't sign you up.",
+    "creatingAccount": "Creating your account…"
+  },
+  "upgrade": {
+    "pro": "You are pro",
+    "title": "Upgrade",
+    "why": "Why upgrade?",
+    "instructions": "Get an extra button that opens cooking instructions for each recipe",
+    "price": "Only 5 USD",
+    "secure": "Secure payment with Stripe",
+    "cancelled": "Checkout cancelled. You have not been charged and your account is unchanged.",
+    "failed": "We couldn't start the Stripe checkout. You have not been charged. Please try again.",
+    "checkout": "Checkout with Stripe"
+  },
+  "success": {
+    "paymentError": "Payment error",
+    "tryAgain": "Try again?",
+    "title": "Success!",
+    "thanks": "Thank you for your purchase!",
+    "reference": "Your purchase reference is",
+    "redirect": "You will now be redirected to the home page."
+  },
+  "notFound": {
+    "message": "Page Not Found",
+    "goHome": "Go home"
+  }
+}

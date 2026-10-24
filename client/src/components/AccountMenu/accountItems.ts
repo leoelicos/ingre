@@ -1,4 +1,6 @@
 /** What each account menu item does. */
+import { translate } from '../../i18n'
+
 export type AccountAction = 'login' | 'signup' | 'saved' | 'logout'
 
 export interface AccountItem {
@@ -7,13 +9,13 @@ export interface AccountItem {
 }
 
 const SIGNED_OUT: readonly AccountItem[] = [
-  { id: 'login', label: 'Log in' },
-  { id: 'signup', label: 'Sign up' }
+  { id: 'login', label: translate('account.logIn') },
+  { id: 'signup', label: translate('account.signUp') }
 ]
 
 const SIGNED_IN: readonly AccountItem[] = [
-  { id: 'saved', label: 'Saved' },
-  { id: 'logout', label: 'Log out' }
+  { id: 'saved', label: translate('account.saved') },
+  { id: 'logout', label: translate('account.logOut') }
 ]
 
 /** Signed out: Log in and Sign up. Signed in: Saved (and Log out). */

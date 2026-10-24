@@ -1,3 +1,4 @@
+import { translate } from '../../i18n'
 import type { FC } from 'react'
 import { Label, Radio, RadioGroup } from 'react-aria-components'
 import type { Split } from '../../utils/layout/split'
@@ -8,7 +9,7 @@ const CHOICE =
 
 /** The short text on each choice; the full split is its accessible name. */
 const SHORT: Readonly<Record<Split, string>> = {
-  vertical: 'Vertical',
+  vertical: translate('layout.vertical'),
   '50/50': '50/50',
   '25/75': '25/75',
   '75/25': '75/25'
@@ -35,7 +36,7 @@ export const LayoutToggle: FC<{
       className="flex flex-wrap items-center justify-end gap-2"
     >
       <Label className="text-sm font-semibold text-text-secondary">
-        Layout
+        {translate('layout.label')}
       </Label>
       {options.map((option) => (
         <Radio

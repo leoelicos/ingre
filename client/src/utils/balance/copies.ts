@@ -2,6 +2,7 @@
  * Recipe copies (#182): one per picked recipe, with its own portions and the amounts that
  * differ from the library original. Amounts are stored per serve so edits scale with portions.
  */
+import { translate } from '../../i18n'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
 import type { CustomisationsInput, RecipeInput } from '../../types/payloads'
 import { PLACEHOLDER_PICTURE } from '../library/recipeLibrary'
@@ -197,17 +198,16 @@ export const customisationsOf = (
 const bulletOf = (line: CopyLine): string => {
   const name = displayName(line)
   if (line.original === null)
-    return `Added ${line.name} ${amountText(
-      line.quantity,
-      line.measure,
-      line.item
-    )}`
-  if (line.quantity === 0) return `${name} removed`
-  return `${name} ${amountText(
-    line.original,
-    line.measure,
-    line.item
-  )} → ${amountText(line.quantity, line.measure, line.item)}`
+    return translate('customisation.added', {
+      name: line.name,
+      amount: amountText(line.quantity, line.measure, line.item)
+    })
+  if (line.quantity === 0) return translate('customisation.removed', { name })
+  return translate('customisation.changed', {
+    name,
+    from: amountText(line.original, line.measure, line.item),
+    to: amountText(line.quantity, line.measure, line.item)
+  })
 }
 
 const RANK = (line: CopyLine): number =>
@@ -227,7 +227,12 @@ export const customisationBullets = (
     .map(bulletOf),
   ...(copy.portions === DEFAULT_PORTIONS
     ? []
-    : [`Portions ${DEFAULT_PORTIONS} → ${copy.portions}`])
+    : [
+        translate('customisation.portions', {
+          from: DEFAULT_PORTIONS,
+          to: copy.portions
+        })
+      ])
 ]
 
 /** The saveRecipe input for a copy (#182): its ingredients with catalogue ids, and its differences. */

@@ -1,5 +1,6 @@
 import type { Amount, BaseUnit, LibraryIngredient } from '../../types/library'
-import { amountText, countWord, fraction } from './shoppingList'
+import { formatCount, formatMass } from '../../i18n'
+import { amountText, countUnitOf } from './shoppingList'
 
 /** Recipe measures that map directly onto a base unit (Australian spoons/cups). */
 const MEASURE_TO_BASE: Readonly<Record<string, Amount>> = {
@@ -45,8 +46,6 @@ export const convert = (
 
 const round = (n: number) => Math.round(n * 100) / 100
 
-const BIG_UNIT: Readonly<Record<'g' | 'ml', string>> = { g: 'kg', ml: 'L' }
-
 /** What a counted total needs: its unit word, and a part for totals that are not whole. */
 export type CountedItem = Pick<
   LibraryIngredient,
@@ -80,7 +79,7 @@ export const partsOf = (
 export const countText = (amount: number, item: CountedItem | null): string => {
   const parts = partsOf(amount, item)
   return parts === null || Number.isInteger(round(amount))
-    ? `${fraction(amount)} ${countWord(amount, item)}`
+    ? formatCount(amount, countUnitOf(item))
     : amountText(parts.quantity, parts.measure)
 }
 
@@ -89,10 +88,7 @@ export const formatAmount = (
   { amount, unit }: Amount,
   item: CountedItem | null = null
 ): string => {
-  if (unit === 'count') return countText(amount, item)
-  return amount >= 1000
-    ? `${round(amount / 1000)} ${BIG_UNIT[unit]}`
-    : `${round(amount)} ${unit}`
+  return unit === 'count' ? countText(amount, item) : formatMass(amount, unit)
 }
 
 /**

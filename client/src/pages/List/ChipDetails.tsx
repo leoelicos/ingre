@@ -1,3 +1,4 @@
+import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import {
@@ -42,18 +43,22 @@ export const sourceUnit = (source: Source, chip: Pick<Chip, 'unit' | 'item'>) =>
 
 /** The box's visible label: the recipe's name, or "Extra". */
 export const sourceLabel = (source: Source): string =>
-  source.kind === 'extra' ? 'Extra' : source.label
+  source.kind === 'extra' ? translate('chip.extraSource') : source.label
 
 /** "Butter chicken, butter (g)"; counted items read their unit: "(onions)". */
 export const sourceAriaLabel = (
   source: Source,
   chip: Pick<Chip, 'name' | 'unit' | 'item'>
 ): string =>
-  `${sourceLabel(source)}, ${chip.name} (${sourceUnit(source, chip)})`
+  translate('chip.sourceLabel', {
+    source: sourceLabel(source),
+    name: chip.name,
+    unit: sourceUnit(source, chip)
+  })
 
 /** "Remove butter from Butter chicken?" or "Remove butter from Extra?" */
 export const removeQuestion = (source: Source, name: string): string =>
-  `Remove ${name} from ${sourceLabel(source)}?`
+  translate('chip.removeQuestion', { name, source: sourceLabel(source) })
 
 const BOX =
   'h-11 w-20 rounded-control border border-border bg-surface px-2 text-center text-text focus-visible:focus-ring'
@@ -109,6 +114,7 @@ export const RemoveQuestion: FC<{
   onYes: () => void
   onNo: () => void
 }> = ({ yesId, question, onYes, onNo }) => {
+  const t = useT()
   /* after the key that typed 0 is done, so its Enter can't press Yes too */
   useEffect(() => {
     const timer = setTimeout(() => focusById(yesId))
@@ -126,13 +132,13 @@ export const RemoveQuestion: FC<{
         onPress={onYes}
         className={SMALL_BUTTON}
       >
-        Yes
+        {t('chip.yes')}
       </Button>
       <Button
         onPress={onNo}
         className={SMALL_BUTTON}
       >
-        No
+        {t('chip.no')}
       </Button>
     </div>
   )
@@ -157,13 +163,15 @@ export const CategoryField: FC<{
     className="flex flex-col gap-1"
   >
     <div className="flex flex-wrap items-center gap-2">
-      <Label className="text-sm font-semibold">Category</Label>
+      <Label className="text-sm font-semibold">
+        {translate('chip.category')}
+      </Label>
       {needsSort(chip) && (
         <Button
           onPress={() => onSortNow(chip.id)}
           className={SMALL_BUTTON}
         >
-          Sort now
+          {translate('chip.sortNow')}
         </Button>
       )}
     </div>
@@ -248,7 +256,9 @@ export const SourceFields: FC<{
 
 /** The chip's total under its boxes: "Total: 440 g" (#182, F3). */
 export const TotalLine: FC<{ chip: Chip }> = ({ chip }) => (
-  <p className="m-0 text-sm font-semibold">Total: {chipAmount(chip)}</p>
+  <p className="m-0 text-sm font-semibold">
+    {translate('chip.total', { amount: chipAmount(chip) })}
+  </p>
 )
 
 /** Allergens of a chip's item; nothing for free text. */

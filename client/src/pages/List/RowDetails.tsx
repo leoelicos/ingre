@@ -1,3 +1,4 @@
+import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
 import { Group, Input, Label, NumberField } from 'react-aria-components'
@@ -59,7 +60,7 @@ const Heart: FC<{
         saved={saved.ids.has(recipe.id)}
         onToggle={() => saved.toggle(recipe.id, input())}
       />
-      <span className="text-sm">Save</span>
+      <span className="text-sm">{translate('saved.save')}</span>
     </div>
   )
 
@@ -100,7 +101,7 @@ export const OriginalDetails: FC<{
         input={() => saveInput(recipe, listCopy ?? copy, items)}
       />
       <div>
-        <h3 className={ROW_HEADING}>Ingredients</h3>
+        <h3 className={ROW_HEADING}>{translate('ingredients.title')}</h3>
         <ul className="m-0 mt-2 flex list-none flex-wrap gap-2 p-0">
           {lines.map((line) => (
             <OriginalChip
@@ -132,7 +133,7 @@ const PortionsField: FC<{
     }}
     className="flex items-center gap-2"
   >
-    <Label className="text-sm font-semibold">Portions</Label>
+    <Label className="text-sm font-semibold">{translate('row.portions')}</Label>
     <Group>
       <Input className="h-11 w-16 rounded-control border border-border bg-surface px-2 text-center text-text focus-visible:focus-ring" />
     </Group>
@@ -147,7 +148,7 @@ export const rowAddId = (recipeId: string): string =>
 const Customisations: FC<{ bullets: readonly string[] }> = ({ bullets }) =>
   bullets.length === 0 ? null : (
     <div>
-      <h3 className={ROW_HEADING}>Customisations</h3>
+      <h3 className={ROW_HEADING}>{translate('row.customisations')}</h3>
       <ul className="m-0 pl-5 text-sm">
         {bullets.map((bullet) => (
           <li key={bullet}>{bullet}</li>
@@ -162,6 +163,7 @@ const CopyChips: FC<{ entry: CopyEntry; list: ChipsState; chips: Chip[] }> = ({
   list,
   chips
 }) => {
+  const t = useT()
   const { panel, show } = usePanel()
   const focusAfterRender = useFocusAfterRender()
   const scope = rowScope(entry.recipe.id)
@@ -183,7 +185,7 @@ const CopyChips: FC<{ entry: CopyEntry; list: ChipsState; chips: Chip[] }> = ({
         .map((source) =>
           amountText(source.quantity, sourceMeasure(source, chip), chip.item)
         )
-        .join(', '),
+        .join(translate('chip.amountSeparator')),
     onToggle: list.toggleCrossed,
     panel,
     details: (chip) => (
@@ -209,7 +211,7 @@ const CopyChips: FC<{ entry: CopyEntry; list: ChipsState; chips: Chip[] }> = ({
   }
   return (
     <div className="flex flex-col gap-2">
-      <h3 className={ROW_HEADING}>Ingredients</h3>
+      <h3 className={ROW_HEADING}>{translate('ingredients.title')}</h3>
       <ChipList
         chips={chips}
         view={view}
@@ -218,14 +220,14 @@ const CopyChips: FC<{ entry: CopyEntry; list: ChipsState; chips: Chip[] }> = ({
         <PlusButton
           id={addId}
           areaId={`${addId}-area`}
-          label={`Add an ingredient to ${entry.label}`}
+          label={t('plus.addTo', { recipe: entry.label })}
           open={adding}
           onPress={() => setAdding(!adding)}
         />
         <PlusArea
           id={`${addId}-area`}
-          label={`Add an ingredient to ${entry.label}`}
-          mark="In this recipe"
+          label={t('plus.addTo', { recipe: entry.label })}
+          mark={t('plus.inRecipe')}
           open={adding}
           onClose={closeAdd}
           hasChip={has}

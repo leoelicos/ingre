@@ -1,3 +1,4 @@
+import { useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
 import { useLayoutEffect, useRef } from 'react'
 import { Button, ToggleButton } from 'react-aria-components'
@@ -109,6 +110,7 @@ const chevronClass = (expanded: boolean): string =>
 
 /** A chip and its chevron, coloured by its current category. */
 const ChipItem: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
+  const t = useT()
   const expanded = view.panel.open && view.panel.id === chip.id
   return (
     <li
@@ -124,7 +126,7 @@ const ChipItem: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
       />
       <Button
         id={chipChevronId(chip.id, view.scope)}
-        aria-label={`${displayName(chip)} details`}
+        aria-label={t('chip.details', { name: displayName(chip) })}
         aria-expanded={expanded}
         aria-controls={chipPanelId(chip.id, view.scope)}
         onPress={() => view.panel.onChevron(chip.id)}
@@ -203,6 +205,7 @@ const useFan = (chipId: string, open: boolean) => {
 
 /** The chip's inline panel: pushes the chips below it down. Changes apply as they are made. */
 const ChipPanel: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
+  const t = useT()
   const open = view.panel.open && view.panel.id === chip.id
   const ref = useFan(chip.id, open)
   return (
@@ -219,7 +222,7 @@ const ChipPanel: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
         <div className="p-1.5">
           <div
             role="group"
-            aria-label={`${displayName(chip)} details`}
+            aria-label={t('chip.details', { name: displayName(chip) })}
             className={`rounded-card border-2 p-1 ${toneOf(chip.section)}`}
           >
             <div className="flex flex-col gap-4 rounded-[10px] bg-surface p-3 text-text">

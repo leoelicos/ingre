@@ -1,53 +1,42 @@
+import { useT } from '../../i18n'
 import type { FC } from 'react'
 import NotLoggedIn from '../../components/NotLoggedIn'
 import { useUpgrade } from './useUpgrade'
 
 export const Upgrade: FC = () => {
+  const t = useT()
   const { pro, loggedIn, getCheckout, cancelled, checkoutFailed } = useUpgrade()
-  if (pro) return <p>You are pro</p>
+  if (pro) return <p>{t('upgrade.pro')}</p>
   if (!loggedIn)
     return (
       <>
-        <p>Upgrade</p>
+        <p>{t('upgrade.title')}</p>
         <NotLoggedIn />
       </>
     )
   return (
     <div>
       <div>
-        <p>Upgrade</p>
+        <p>{t('upgrade.title')}</p>
       </div>
       <div>
-        <p>Why upgrade?</p>
+        <p>{t('upgrade.why')}</p>
         <ul>
           <li>
-            <p>
-              Get an extra button that opens cooking instructions for each
-              recipe
-            </p>
+            <p>{t('upgrade.instructions')}</p>
           </li>
-          <li>Only 5 USD</li>
-          <li>Secure payment with Stripe</li>
+          <li>{t('upgrade.price')}</li>
+          <li>{t('upgrade.secure')}</li>
         </ul>
       </div>
-      {cancelled && (
-        <p role="status">
-          Checkout cancelled. You have not been charged and your account is
-          unchanged.
-        </p>
-      )}
-      {checkoutFailed && (
-        <p role="alert">
-          We couldn&apos;t start the Stripe checkout. You have not been charged.
-          Please try again.
-        </p>
-      )}
+      {cancelled && <p role="status">{t('upgrade.cancelled')}</p>}
+      {checkoutFailed && <p role="alert">{t('upgrade.failed')}</p>}
       <button
         onClick={() => {
           getCheckout()
         }}
       >
-        Checkout with Stripe
+        {t('upgrade.checkout')}
       </button>
     </div>
   )

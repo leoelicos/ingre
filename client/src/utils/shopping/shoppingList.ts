@@ -1,4 +1,12 @@
 /* Shared wording for amounts and names on the list (#182: no packs, real amounts only). */
+import {
+  formatCountUnit,
+  formatFraction,
+  formatItemUnit,
+  formatMeasure,
+  formatQuantity,
+  rounded as roundedNumber
+} from '../../i18n'
 import { capitaliseFirst } from '../capitaliseFirst'
 import type { CountUnit, LibraryIngredient } from '../../types/library'
 import type { ShopSection } from './sections'
@@ -23,29 +31,16 @@ export const groupBy = <T, K extends string>(
 export const displayName = ({ name }: { readonly name: string }) =>
   capitaliseFirst(name)
 
-const FRACTIONS: readonly (readonly [number, string])[] = [
-  [0.25, '¼'],
-  [0.5, '½'],
-  [0.75, '¾']
-]
-
 /** Two decimals at most: 37.5 -> 37.5, 1/3 -> 0.33. */
-export const rounded = (n: number): number => Math.round(n * 100) / 100
+export const rounded = roundedNumber
 
 /** 0.5 -> "½", 1.25 -> "1¼", 0.3 -> "0.3" (two decimals at most). */
-export const fraction = (n: number): string => {
-  const value = rounded(n)
-  const whole = Math.floor(value)
-  const part = rounded(value - whole)
-  const glyph = FRACTIONS.find(([v]) => v === part)?.[1]
-  return glyph === undefined
-    ? String(value)
-    : whole === 0
-    ? glyph
-    : `${whole}${glyph}`
-}
+export const fraction = (n: number): string => formatFraction(n)
 
-/** Irregular or -o/-i nouns used in the catalogue: singular -> plural. */
+/**
+ * Irregular or -o/-i nouns used in the catalogue: singular -> plural. English search only
+ * (searchTerms): words shown to the user come from the locale (src/i18n).
+ */
 export const IRREGULAR_PLURALS: Readonly<Record<string, string>> = {
   leaf: 'leaves',
   chilli: 'chillies',
@@ -88,33 +83,22 @@ export const singularise = (phrase: string): string =>
     (word) => SINGULARS[word] ?? (looksPlural(word) ? word.slice(0, -1) : word)
   )
 
-/** Measures written as plain decimals: weights and volumes. */
-const DECIMAL_MEASURES: readonly string[] = ['g', 'ml', 'g tin', 'ml tin']
-
-/** Measures that take a plural (spoons never do). */
-const COUNTED_MEASURES: readonly string[] = ['cup', 'clove', 'stalk', 'bunch']
-
 /** What a counted item needs for its unit word. */
 export type CountItem = Pick<LibraryIngredient, 'countUnit'>
 
 /** The unit word of free text (#182): counted things are never a bare number. */
-export const GENERIC_COUNT_UNIT: CountUnit = { one: 'item', other: 'items' }
+export const GENERIC_COUNT_UNIT: CountUnit = {
+  one: formatItemUnit(1),
+  other: formatItemUnit(2)
+}
 
 /** A counted item's unit: its own ("head", "eggs"), else the generic one. */
 export const countUnitOf = (item: CountItem | null): CountUnit =>
   item?.countUnit ?? GENERIC_COUNT_UNIT
 
-/** Up to 1 reads singular: "½ clove", "1 head", "2 heads". */
-const isSingular = (quantity: number): boolean => {
-  const value = rounded(quantity)
-  return value > 0 && value <= 1
-}
-
 /** A counted item's unit word for an amount (#182): "1 head", "2 heads", "3 eggs". */
-export const countWord = (quantity: number, item: CountItem | null): string => {
-  const unit = countUnitOf(item)
-  return isSingular(quantity) ? unit.one : unit.other
-}
+export const countWord = (quantity: number, item: CountItem | null): string =>
+  formatCountUnit(quantity, countUnitOf(item))
 
 /**
  * The unit word after a recipe amount (#182): "g", "tbsp", "cloves", "½ clove"; whole items
@@ -124,23 +108,17 @@ export const measureWord = (
   quantity: number,
   measure: string,
   item: CountItem | null = null
-): string => {
-  if (measure === 'whole') return countWord(quantity, item)
-  if (!COUNTED_MEASURES.includes(measure)) return measure
-  return isSingular(quantity) ? measure : pluralise(measure)
-}
+): string =>
+  measure === 'whole'
+    ? countWord(quantity, item)
+    : formatMeasure(quantity, measure)
 
 /** A recipe amount in its own unit (#182): "37.5 g", "½ tbsp", "1½ cloves", "2 onions". */
 export const amountText = (
   quantity: number,
   measure: string,
   item: CountItem | null = null
-): string => {
-  const number = DECIMAL_MEASURES.includes(measure)
-    ? String(rounded(quantity))
-    : fraction(quantity)
-  return `${number} ${measureWord(quantity, measure, item)}`
-}
+): string => formatQuantity(quantity, measure, countUnitOf(item))
 
 /** Shop section for free-text extras (they have no catalogue category). */
 export const FREE_TEXT_SECTION: ShopSection = 'Other'

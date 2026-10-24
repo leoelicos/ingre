@@ -1,3 +1,14 @@
+/** i18next and react-i18next are imported in src/i18n only; everything else uses its helpers. */
+const I18N_MESSAGE =
+  'Use the helpers in src/i18n (translate, useT, formatQuantity, ...) instead.'
+const I18N_ONLY = {
+  paths: [
+    { name: 'i18next', message: I18N_MESSAGE },
+    { name: 'react-i18next', message: I18N_MESSAGE }
+  ],
+  patterns: [{ group: ['i18next/*', 'react-i18next/*'], message: I18N_MESSAGE }]
+}
+
 module.exports = {
   root: true,
   env: { browser: true, es2022: true, node: true, jest: true },
@@ -25,6 +36,8 @@ module.exports = {
     'import/no-anonymous-default-export': 'warn',
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
+    // i18n: only src/i18n talks to the library, so it can be swapped
+    'no-restricted-imports': ['error', I18N_ONLY],
     'import/extensions': [
       'error',
       'ignorePackages',
@@ -38,6 +51,10 @@ module.exports = {
     ]
   },
   overrides: [
+    {
+      files: ['src/i18n/**'],
+      rules: { 'no-restricted-imports': 'off' }
+    },
     {
       files: ['**/*.{ts,tsx}'],
       rules: {

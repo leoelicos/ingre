@@ -1,11 +1,13 @@
+import { useT } from '../../i18n'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useSignup } from './useSignup'
+import { MIN_PASSWORD_LENGTH, useSignup } from './useSignup'
 import { PrimaryButton } from '../../components/PrimaryButton'
 import './auth.css'
 
 export const Signup: FC = () => {
+  const t = useT()
   const navigate = useNavigate()
   const {
     loggedIn,
@@ -33,7 +35,7 @@ export const Signup: FC = () => {
 
   return (
     <div className="auth-page">
-      <h1 className="auth-page__title">Sign up</h1>
+      <h1 className="auth-page__title">{t('auth.signUp')}</h1>
       <form
         className="auth-form"
         onSubmit={handleFormSubmit}
@@ -42,7 +44,7 @@ export const Signup: FC = () => {
           className="auth-form__label"
           htmlFor="firstName"
         >
-          First name
+          {t('auth.firstName')}
         </label>
         <input
           id="firstName"
@@ -58,7 +60,7 @@ export const Signup: FC = () => {
           className="auth-form__label"
           htmlFor="lastName"
         >
-          Last name
+          {t('auth.lastName')}
         </label>
         <input
           id="lastName"
@@ -74,7 +76,7 @@ export const Signup: FC = () => {
           className="auth-form__label"
           htmlFor="email"
         >
-          Email
+          {t('auth.email')}
         </label>
         <input
           id="email"
@@ -85,22 +87,18 @@ export const Signup: FC = () => {
           onChange={onEmailChange}
           autoComplete="email"
         />
-        {checkEmailLoading && (
-          <p role="status">
-            Checking email… the server may take a few seconds to wake up.
-          </p>
-        )}
+        {checkEmailLoading && <p role="status">{t('auth.checkingEmail')}</p>}
         {emailExists && (
           <p
             className="auth-page__error"
             role="alert"
           >
-            A user with this email already exists.{' '}
+            {t('auth.emailExists')}{' '}
             <Link
               to="/login"
               state={{ from }}
             >
-              Log in?
+              {t('auth.logInQuestion')}
             </Link>
           </p>
         )}
@@ -117,13 +115,13 @@ export const Signup: FC = () => {
           className="auth-form__label"
           htmlFor="password"
         >
-          Password
+          {t('auth.password')}
         </label>
         <p
           id="password-hint"
           className="auth-form__hint"
         >
-          At least 5 characters.
+          {t('auth.passwordHint', { count: MIN_PASSWORD_LENGTH })}
         </p>
         <div className="auth-form__password">
           <input
@@ -134,7 +132,7 @@ export const Signup: FC = () => {
             value={fields.password}
             onChange={onPasswordChange}
             autoComplete="new-password"
-            minLength={5}
+            minLength={MIN_PASSWORD_LENGTH}
             aria-describedby="password-hint"
           />
           <button
@@ -144,11 +142,11 @@ export const Signup: FC = () => {
             aria-controls="password"
             onClick={() => setShowPassword((prev) => !prev)}
           >
-            {showPassword ? 'Hide' : 'Show'}
+            {t(showPassword ? 'auth.hide' : 'auth.show')}
           </button>
         </div>
 
-        {addUserLoading && <p role="status">Creating your account…</p>}
+        {addUserLoading && <p role="status">{t('auth.creatingAccount')}</p>}
 
         <PrimaryButton
           type="submit"
@@ -156,17 +154,17 @@ export const Signup: FC = () => {
           className="auth-form__submit"
           isDisabled={checkEmailLoading || emailExists || addUserLoading}
         >
-          Sign up
+          {t('auth.signUp')}
         </PrimaryButton>
       </form>
       <p className="auth-page__alt">
-        Have an account?{' '}
+        {t('auth.haveAccount')}{' '}
         <Link
           to="/login"
           state={{ from }}
           className="focus-visible:focus-ring"
         >
-          Log in
+          {t('auth.logIn')}
         </Link>
       </p>
     </div>

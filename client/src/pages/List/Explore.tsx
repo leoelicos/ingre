@@ -1,3 +1,4 @@
+import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
 import { useState } from 'react'
 import { Button } from 'react-aria-components'
@@ -45,7 +46,7 @@ import { HeaderRow } from './Section'
 import { copyLines, newCopy } from '../../utils/balance/copies'
 
 export const EXPLORE_ID = 'explore'
-export const CLOSE_EXPLORE = 'Close Explore'
+export const CLOSE_EXPLORE = translate('explore.close')
 
 /** What Explore's rows share with the Recipes rows: picks. */
 export type ExploreRowControls = Pick<
@@ -86,21 +87,26 @@ const IngredientResult: FC<{
   item: LibraryIngredient
   ingredients: IngredientsState
 }> = ({ item, ingredients }) => {
+  const t = useT()
   const onList = ingredients.list.hasChip(item.id)
   const name = capitaliseFirst(item.name)
+  const category = categoryLabel(placeInShop(item.category).section)
   return (
     <li className="flex flex-col gap-1">
       <Button
         onPress={() => ingredients.pick(item)}
-        aria-label={onList ? `${name}, on your list` : `Add ${item.name}`}
+        aria-label={
+          onList
+            ? t('explore.onListLabel', { name })
+            : t('explore.add', { name: item.name })
+        }
         className={RESULT}
       >
         <span className="font-semibold">
-          {onList ? `✓ ${name}` : `+ ${name}`}
+          {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
         </span>
         <span className="text-xs text-text-secondary">
-          {categoryLabel(placeInShop(item.category).section)}
-          {onList ? ' · on your list' : ''}
+          {onList ? t('explore.categoryOnList', { category }) : category}
         </span>
       </Button>
       <AllergenTags allergens={item.allergens} />
@@ -167,28 +173,31 @@ const Groups: FC<{
   recipes: readonly LibraryRecipe[]
   props: ExploreProps
   controls: RowControls
-}> = ({ ingredients, recipes, props, controls }) => (
-  <div className="@container">
-    <div className="grid grid-cols-1 gap-4 @[768px]:grid-cols-2">
-      {ingredients.length > 0 && (
-        <IngredientGroup
-          title="Ingredients"
-          items={ingredients}
-          ingredients={props.ingredients}
-        />
-      )}
-      {recipes.length > 0 && (
-        <RecipeGroup
-          title="Recipes"
-          recipes={recipes}
-          controls={controls}
-          saved={props.saved}
-          entries={props.ingredients.list.entries}
-        />
-      )}
+}> = ({ ingredients, recipes, props, controls }) => {
+  const t = useT()
+  return (
+    <div className="@container">
+      <div className="grid grid-cols-1 gap-4 @[768px]:grid-cols-2">
+        {ingredients.length > 0 && (
+          <IngredientGroup
+            title={t('ingredients.title')}
+            items={ingredients}
+            ingredients={props.ingredients}
+          />
+        )}
+        {recipes.length > 0 && (
+          <RecipeGroup
+            title={t('recipes.title')}
+            recipes={recipes}
+            controls={controls}
+            saved={props.saved}
+            entries={props.ingredients.list.entries}
+          />
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 /** Browse, ranked matches, or "No matches" with close matches and then browse. */
 const Results: FC<{
@@ -197,6 +206,7 @@ const Results: FC<{
   props: ExploreProps
   controls: RowControls
 }> = ({ query, results, props, controls }) => {
+  const t = useT()
   if (results.kind === 'matches')
     return (
       <Groups
@@ -208,7 +218,7 @@ const Results: FC<{
     )
   const browse = (
     <RecipeGroup
-      title="Browse recipes"
+      title={t('explore.browse')}
       recipes={results.kind === 'browse' ? results.recipes : results.browse}
       controls={controls}
       saved={props.saved}
@@ -223,11 +233,11 @@ const Results: FC<{
         role="status"
         className="m-0 font-semibold text-text"
       >
-        No matches for &lsquo;{query.trim()}&rsquo;
+        {t('explore.noMatches', { query: query.trim() })}
       </p>
       {close && (
         <div>
-          <h3 className={GROUP_HEADING}>Close matches</h3>
+          <h3 className={GROUP_HEADING}>{t('explore.closeMatches')}</h3>
           <Groups
             ingredients={results.ingredients}
             recipes={results.recipes}
@@ -252,6 +262,7 @@ export const savedIdsOf = (saved: SavedState | null): ReadonlySet<string> =>
  * Saved is on but nothing is hearted, or the results.
  */
 const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
+  const t = useT()
   const { query } = useExplore()
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set())
   const [filterOpen, setFilterOpen] = useState(props.savedOnly)
@@ -280,7 +291,7 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   }
   return (
     <div className="flex flex-col gap-4">
-      <ActionsRow label="Explore actions">
+      <ActionsRow label={t('explore.actions')}>
         <FilterButton
           panelId={FILTER_ID}
           open={filterOpen}
@@ -291,7 +302,7 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
       <RecipeFilterPanel
         id={FILTER_ID}
         open={filterOpen}
-        label="Filter Explore"
+        label={t('explore.filter')}
         options={exploreOptions()}
         saved={true}
         filter={filter}
@@ -337,6 +348,7 @@ const CLOSE_BUTTON =
  * The header row collapses it.
  */
 export const Explore: FC<ExploreProps> = (props) => {
+  const t = useT()
   const explore = useExplore()
   return (
     <section
@@ -347,7 +359,7 @@ export const Explore: FC<ExploreProps> = (props) => {
       <div className="flex items-center gap-2">
         <HeaderRow
           headingId={`${EXPLORE_ID}-heading`}
-          title="Explore"
+          title={t('explore.title')}
           summary=""
           toggle={{
             open: !explore.collapsed,
@@ -385,10 +397,11 @@ export const ExploreDrawer: FC<ExploreProps & { open: boolean }> = ({
   open,
   ...props
 }) => {
+  const t = useT()
   const explore = useExplore()
   return (
     <aside
-      aria-label="Explore drawer"
+      aria-label={t('explore.drawer')}
       data-open={open}
       className={`sticky top-0 flex max-h-screen shrink-0 flex-col gap-3 self-start overflow-y-auto pb-6 pt-4 transition-[width] duration-200 ease-out motion-reduce:duration-0 motion-reduce:transition-none ${
         open ? 'w-[360px]' : 'w-14'

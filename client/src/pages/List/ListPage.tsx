@@ -1,3 +1,4 @@
+import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -43,7 +44,8 @@ export const withSaved = (
  * Explore is a drawer column on the right.
  */
 export const ListPage: FC = () => {
-  useEffect(() => changeTitle('Shopping list'), [])
+  const t = useT()
+  useEffect(() => changeTitle(translate('list.title')), [])
   const explore = useExplore()
   const list = useChips()
   const ingredients = useIngredients(list)
@@ -70,7 +72,7 @@ export const ListPage: FC = () => {
   return (
     <div className="mx-auto flex w-full max-w-layout gap-6 px-gutter">
       <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-24 pt-4">
-        <h1 className="sr-only">Shopping list</h1>
+        <h1 className="sr-only">{t('list.title')}</h1>
         {!wide && exploreOpen && <Explore {...exploreProps} />}
         <LayoutToggle
           split={split}

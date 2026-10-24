@@ -1,3 +1,4 @@
+import { translate } from '../../i18n'
 import type { FC } from 'react'
 import { useEffect } from 'react'
 import { Input, SearchField } from 'react-aria-components'
@@ -6,7 +7,7 @@ import { IngreIconSearch } from '../../lib/icon/Icon'
 import { useExplore } from '../../utils/explore/ExploreContext'
 import { focusById } from '../../utils/focus'
 
-export const SEARCH_LABEL = 'Search ingredients and recipes'
+export const SEARCH_LABEL = translate('search.label')
 export const SEARCH_INPUT_ID = 'explore-search'
 
 /**

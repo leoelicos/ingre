@@ -1,3 +1,4 @@
+import { translate } from './i18n'
 import type { FC } from 'react'
 import {
   ApolloClient,
@@ -87,7 +88,7 @@ export const SiteAnalytics: FC<{ mode: string }> = ({ mode }) =>
   mode === 'production' ? <Analytics /> : null
 
 export const Ingre: FC = () => {
-  changeTitle('Shopping list')
+  changeTitle(translate('list.title'))
   return (
     <ApolloProvider client={client}>
       <Router>

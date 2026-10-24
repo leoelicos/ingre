@@ -1,3 +1,4 @@
+import { translate } from '../../i18n'
 import React from 'react'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -15,14 +16,14 @@ type SignupResult =
       message: string
     }
 
-const MIN_PASSWORD_LENGTH = 5
+export const MIN_PASSWORD_LENGTH = 5
 
-const EMAIL_EXISTS = 'A user with this email already exists.'
-const CHECK_FAILED = "Couldn't check that email."
-const SIGNUP_FAILED = "Couldn't sign you up."
+const EMAIL_EXISTS = translate('auth.emailExists')
+const CHECK_FAILED = translate('auth.checkFailed')
+const SIGNUP_FAILED = translate('auth.signupFailed')
 
 export const useSignup = () => {
-  changeTitle('Sign up')
+  changeTitle(translate('auth.signUp'))
 
   const [fields, setFields] = React.useState<{
     firstName: string
@@ -67,22 +68,24 @@ export const useSignup = () => {
 
     const { firstName, lastName, email, password } = fields
     if (!firstName.trim()) {
-      const message = 'Please enter your first name.'
+      const message = translate('auth.enterFirstName')
       setValidationMessage(message)
       return { ok: false, reason: 'validation', message }
     }
     if (!email.trim()) {
-      const message = 'Please enter an email address.'
+      const message = translate('auth.enterEmail')
       setValidationMessage(message)
       return { ok: false, reason: 'validation', message }
     }
     if (!password) {
-      const message = 'Please enter a password.'
+      const message = translate('auth.enterPassword')
       setValidationMessage(message)
       return { ok: false, reason: 'validation', message }
     }
     if (password.length < MIN_PASSWORD_LENGTH) {
-      const message = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
+      const message = translate('auth.passwordTooShort', {
+        count: MIN_PASSWORD_LENGTH
+      })
       setValidationMessage(message)
       return { ok: false, reason: 'validation', message }
     }

@@ -1,3 +1,4 @@
+import { useT } from '../../i18n'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import { Button } from 'react-aria-components'
@@ -48,10 +49,11 @@ export const ScrollToTop: FC<{ watchId: string; headingId: string }> = ({
   watchId,
   headingId
 }) => {
+  const t = useT()
   const past = useScrolledPast(watchId)
   return past ? (
     <Button
-      aria-label="Scroll to top"
+      aria-label={t('scrollToTop')}
       onPress={() => {
         scrollToStartOf(watchId)
         focusById(headingId)

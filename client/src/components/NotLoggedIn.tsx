@@ -1,11 +1,12 @@
+import { translate } from '../i18n'
 import type { FC } from 'react'
 import { Link } from 'react-router-dom'
 
 const NotLoggedIn: FC = () => {
   return (
     <div>
-      <div>You need to be logged in to see this page.</div>
-      <Link to="/login">Log&nbsp;in</Link>
+      <div>{translate('notLoggedIn.message')}</div>
+      <Link to="/login">{translate('notLoggedIn.logIn')}</Link>
     </div>
   )
 }
