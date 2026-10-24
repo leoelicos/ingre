@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import { MockedProvider } from '@apollo/client/testing'
@@ -52,26 +52,30 @@ describe('All screens accessibility (axe)', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('Explore with matches, an open See recipe row and no matches has no axe violations (#181)', async () => {
+  it('Explore browsing, with an open See recipe row, has no axe violations (#181)', async () => {
     localStorage.clear()
     const { container } = renderScreen(<ListPage />, '/')
     fireEvent.click(
       screen.getByRole('button', { name: 'See recipe: Red lentil dahl' })
     )
     expect(await axe(container)).toHaveNoViolations()
-    cleanup()
-    const matches = renderScreen(
-      <>
-        <SearchBox />
-        <ListPage />
-      </>,
-      '/'
-    )
-    fireEvent.change(searchBox(), { target: { value: 'chick' } })
-    expect(await axe(matches.container)).toHaveNoViolations()
-    fireEvent.change(searchBox(), { target: { value: 'zzqx' } })
-    expect(await axe(matches.container)).toHaveNoViolations()
   })
+
+  it.each(['chick', 'zzqx'])(
+    'Explore searching %s (matches, then no matches) has no axe violations (#181)',
+    async (query) => {
+      localStorage.clear()
+      const { container } = renderScreen(
+        <>
+          <SearchBox />
+          <ListPage />
+        </>,
+        '/'
+      )
+      fireEvent.change(searchBox(), { target: { value: query } })
+      expect(await axe(container)).toHaveNoViolations()
+    }
+  )
 
   it('Login has no axe violations', async () => {
     const { container } = renderScreen(<Login />, '/login')

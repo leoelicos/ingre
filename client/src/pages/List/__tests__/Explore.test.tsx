@@ -18,6 +18,13 @@ import { CLOSE_EXPLORE } from '../Explore'
 
 beforeEach(() => localStorage.clear())
 
+type User = ReturnType<typeof userEvent.setup>
+/** Puts the whole query in at once: typing key by key re-renders every result per key, slow on CI. */
+const search = async (user: User, text: string): Promise<void> => {
+  await user.click(searchBox())
+  await user.paste(text)
+}
+
 const exploreRegion = () => screen.queryByRole('region', { name: 'Explore' })
 const where = () => screen.getByLabelText('where')
 /** The group under an Explore heading. */
@@ -124,7 +131,7 @@ describe('Scenario: Browse and search (#181)', () => {
     expect(browse).toEqual(
       [...browse].sort((a, b) => (a ?? '').localeCompare(b ?? ''))
     )
-    await user.type(searchBox(), 'dahl')
+    await search(user, 'dahl')
     expect(
       explore().queryByRole('heading', { name: 'Browse recipes' })
     ).toBeNull()
@@ -152,7 +159,7 @@ describe('Scenario: Browse and search (#181)', () => {
   it('ranks starts-with, then word starts, then contains, in separate groups that sit side by side from 768px', async () => {
     const user = userEvent.setup()
     renderList()
-    await user.type(searchBox(), 'chick')
+    await search(user, 'chick')
     const recipeNames = groupNames('Recipes')
     expect(recipeNames[0]).toMatch(/^Chick/)
     const ingredients = ingredientResults()
@@ -170,21 +177,21 @@ describe('Scenario: Browse and search (#181)', () => {
   it('every word must match, in the name or an ingredient; a group with no results is left out', async () => {
     const user = userEvent.setup()
     renderList()
-    await user.type(searchBox(), 'lentil dahl')
+    await search(user, 'lentil dahl')
     expect(groupNames('Recipes')).toEqual(['Red lentil dahl'])
     expect(explore().queryByRole('heading', { name: 'Ingredients' })).toBeNull()
     await user.clear(searchBox())
-    await user.type(searchBox(), 'turmeric dahl')
+    await search(user, 'turmeric dahl')
     expect(groupNames('Recipes')).toEqual(['Red lentil dahl'])
     await user.clear(searchBox())
-    await user.type(searchBox(), 'red lentils')
+    await search(user, 'red lentils')
     expect(ingredientResults()).toContain('Add red lentils')
   })
 
   it('says No matches, then close matches, then the browse list', async () => {
     const user = userEvent.setup()
     renderList()
-    await user.type(searchBox(), 'chikpea')
+    await search(user, 'chikpea')
     expect(explore().getByRole('status')).toHaveTextContent(
       'No matches for ‘chikpea’'
     )
@@ -195,7 +202,7 @@ describe('Scenario: Browse and search (#181)', () => {
       explore().getByRole('heading', { name: 'Browse recipes' })
     ).toBeVisible()
     await user.clear(searchBox())
-    await user.type(searchBox(), 'zzqxw')
+    await search(user, 'zzqxw')
     expect(explore().getByRole('status')).toHaveTextContent(
       'No matches for ‘zzqxw’'
     )
@@ -239,7 +246,7 @@ describe('Scenario: Explore results act in place (#181)', () => {
       scrolled.push(this)
     }
     renderList()
-    await user.type(searchBox(), 'banana')
+    await search(user, 'banana')
     await user.click(explore().getByRole('button', { name: 'Add banana' }))
     expect(hasChipEl('banana')).toBe(1)
     expect(screen.getByText('Banana added')).toBeInTheDocument()
@@ -259,7 +266,7 @@ describe('Scenario: Explore results act in place (#181)', () => {
   it('shows allergen tags on ingredient results', async () => {
     const user = userEvent.setup()
     renderList()
-    await user.type(searchBox(), 'butter')
+    await search(user, 'butter')
     const item = explore()
       .getByRole('button', { name: 'Add butter' })
       .closest('li')
@@ -308,7 +315,7 @@ describe('Scenario: Search bar (#181)', () => {
     const user = userEvent.setup()
     renderList('/elsewhere')
     expect(screen.getByText('Elsewhere')).toBeInTheDocument()
-    await user.type(searchBox(), 'd')
+    await search(user, 'd')
     expect(where()).toHaveTextContent(/^\/$/)
     expect(searchBox()).toHaveValue('d')
     expect(searchBox()).toHaveFocus()
