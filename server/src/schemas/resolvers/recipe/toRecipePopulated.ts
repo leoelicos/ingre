@@ -1,5 +1,5 @@
 import { Types } from 'mongoose'
-import { Category, RecipePopulated } from '../../types'
+import { Category, CustomisationDoc, RecipePopulated } from '../../types'
 
 type RecipeLike = {
   _id: Types.ObjectId
@@ -14,8 +14,23 @@ type RecipeLike = {
     quantity: number
     measure: string
     category: Category
+    ingredientId?: string | null | undefined
   }>
+  customisations: ReadonlyArray<CustomisationDoc>
 }
+
+/** Copies only the amounts a change of its kind carries (#182). */
+export const toCustomisation = ({
+  kind,
+  ingredientId,
+  from,
+  to
+}: CustomisationDoc): CustomisationDoc => ({
+  kind,
+  ...(ingredientId === undefined ? {} : { ingredientId }),
+  ...(from === undefined ? {} : { from }),
+  ...(to === undefined ? {} : { to })
+})
 
 /** Maps a populated recipe document to the GraphQL shape, omitting empty optional fields. */
 export const toRecipePopulated = (recipe: RecipeLike): RecipePopulated => ({
@@ -28,8 +43,10 @@ export const toRecipePopulated = (recipe: RecipeLike): RecipePopulated => ({
     category: i.category,
     measure: i.measure,
     name: i.name,
-    quantity: i.quantity
+    quantity: i.quantity,
+    ingredientId: i.ingredientId ?? null
   })),
+  customisations: recipe.customisations.map(toCustomisation),
   ...(recipe.instructions ? { instructions: recipe.instructions } : {}),
   ...(recipe.libraryId ? { libraryId: recipe.libraryId } : {})
 })

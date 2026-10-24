@@ -24,6 +24,9 @@ export const GET_RECIPE = gql`
       picture_url
       libraryId
       instructions
+      customisations {
+        __typename
+      }
     }
   }
 `
@@ -81,7 +84,8 @@ describe('getRecipe', () => {
     ingredients: [],
     picture_url: 'http://example.com/image.jpg',
     libraryId: 'some-library-id',
-    instructions: 'Test instructions'
+    instructions: 'Test instructions',
+    customisations: []
   }
   // GraphQL responses return _id fields as strings
   const populatedRecipe = {

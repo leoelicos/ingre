@@ -6,6 +6,8 @@ import {
 } from '../../../utils/ingredientDefaults'
 import { requireUser } from '../../../utils/requireUser'
 import {
+  CustomisationDoc,
+  CustomisationsInput,
   IngredientInput,
   MyContext,
   RecipeInput,
@@ -26,24 +28,68 @@ export const toSavedIngredient = <
     quantity: number
     measure: string
     category: unknown
+    ingredientId?: string | null | undefined
   }
 >({
   _id,
   name,
   quantity,
   measure,
-  category
-}: T): Pick<T, '_id' | 'name' | 'quantity' | 'measure' | 'category'> => ({
+  category,
+  ingredientId
+}: T): Pick<T, '_id' | 'name' | 'quantity' | 'measure' | 'category'> & {
+  ingredientId: string | null
+} => ({
   _id,
   name,
   quantity,
   measure,
-  category
+  category,
+  ingredientId: ingredientId ?? null
 })
+
+/** Flattens the per-kind change lists into stored changes (#182). */
+export const toCustomisationDocs = ({
+  added,
+  removed,
+  changed,
+  portions
+}: CustomisationsInput): CustomisationDoc[] => [
+  ...added.map(
+    ({ ingredientId, to }): CustomisationDoc => ({
+      kind: 'AddedIngredient',
+      ingredientId,
+      to
+    })
+  ),
+  ...removed.map(
+    ({ ingredientId, from }): CustomisationDoc => ({
+      kind: 'RemovedIngredient',
+      ingredientId,
+      from
+    })
+  ),
+  ...changed.map(
+    ({ ingredientId, from, to }): CustomisationDoc => ({
+      kind: 'ChangedIngredient',
+      ingredientId,
+      from,
+      to
+    })
+  ),
+  ...(portions ? [{ kind: 'PortionsChange' as const, ...portions }] : [])
+]
 
 /** Builds the recipe document fields, applying the default picture. */
 export const buildRecipeFields = <I>(
-  { name, portions, picture_url, libraryId, instructions }: RecipeInput,
+  {
+    name,
+    portions,
+    picture_url,
+    libraryId,
+    instructions,
+    customisations
+  }: RecipeInput,
   ingredients: I[]
 ) => ({
   name,
@@ -51,7 +97,8 @@ export const buildRecipeFields = <I>(
   instructions,
   ingredients,
   picture_url: picture_url || DEFAULT_PICTURE_URL,
-  libraryId
+  libraryId,
+  customisations: toCustomisationDocs(customisations)
 })
 
 export const createSaveIngredient = async ({

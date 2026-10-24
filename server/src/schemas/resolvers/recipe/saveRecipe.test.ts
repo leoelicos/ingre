@@ -18,7 +18,8 @@ const mockIngredient = {
   category: 'Meat',
   measure: 'unit',
   name: 'Chicken',
-  quantity: 2.5
+  quantity: 2.5,
+  ingredientId: 'chicken-thigh'
 }
 
 const mockRecipe = {
@@ -27,7 +28,13 @@ const mockRecipe = {
   ingredients: [mockIngredient],
   instructions: 'Make it',
   picture_url: 'www.google.com',
-  portions: 2
+  portions: 2,
+  customisations: {
+    added: [{ ingredientId: 'red-chilli', to: 1 }],
+    removed: [],
+    changed: [],
+    portions: { from: 2, to: 4 }
+  }
 }
 
 // mock created data
@@ -40,6 +47,7 @@ const mockCreatedIngredient = {
   quantity: 2.5,
   measure: 'unit',
   category: mockCreatedCategory,
+  ingredientId: 'chicken-thigh',
   _id: '67544a5ab3028edaf0bcc01f'
 }
 const mockCreatedRecipe = {
@@ -49,6 +57,10 @@ const mockCreatedRecipe = {
   picture_url: 'www.google.com',
   libraryId: '4bd3f94346ff2cb493285199f5f06f71',
   instructions: 'Make it',
+  customisations: [
+    { kind: 'AddedIngredient', ingredientId: 'red-chilli', to: 1 },
+    { kind: 'PortionsChange', from: 2, to: 4 }
+  ],
   _id: '67544a5ab3028edaf0bcc023'
 }
 const mockUserWithAddedRecipe = {
@@ -80,6 +92,7 @@ export const SAVE_RECIPE = gql`
         name
         quantity
         measure
+        ingredientId
         category {
           _id
           name
@@ -88,6 +101,26 @@ export const SAVE_RECIPE = gql`
       picture_url
       libraryId
       instructions
+      customisations {
+        __typename
+        ... on AddedIngredient {
+          ingredientId
+          to
+        }
+        ... on RemovedIngredient {
+          ingredientId
+          from
+        }
+        ... on ChangedIngredient {
+          ingredientId
+          from
+          to
+        }
+        ... on PortionsChange {
+          fromPortions: from
+          toPortions: to
+        }
+      }
     }
   }
 `
@@ -152,6 +185,7 @@ describe('saveRecipe', () => {
           name: mockCreatedIngredient.name,
           quantity: mockCreatedIngredient.quantity,
           measure: mockCreatedIngredient.measure,
+          ingredientId: 'chicken-thigh',
           _id: mockCreatedIngredient._id,
           category: {
             _id: mockCreatedCategory._id,
@@ -162,6 +196,14 @@ describe('saveRecipe', () => {
       picture_url: 'www.google.com',
       libraryId: '4bd3f94346ff2cb493285199f5f06f71',
       instructions: 'Make it',
+      customisations: [
+        {
+          __typename: 'AddedIngredient',
+          ingredientId: 'red-chilli',
+          to: 1
+        },
+        { __typename: 'PortionsChange', fromPortions: 2, toPortions: 4 }
+      ],
       _id: '67544a5ab3028edaf0bcc023'
     })
   })
@@ -228,7 +270,8 @@ describe('createIngredient', () => {
     category: 'Meat',
     measure: 'unit',
     name: 'Chicken',
-    quantity: 2.5
+    quantity: 2.5,
+    ingredientId: 'chicken-thigh'
   }
 
   const mockCategoryApi = {
@@ -270,7 +313,8 @@ describe('createIngredient', () => {
         name: '',
         quantity: 0,
         measure: '',
-        category: ''
+        category: '',
+        ingredientId: ''
       },
       categoryApi: mockCategoryApi,
       ingredientApi: mockIngredientApi
@@ -282,7 +326,8 @@ describe('createIngredient', () => {
       name: 'Generic',
       quantity: 1,
       measure: 'unit',
-      category: mockCreatedCategory._id
+      category: mockCreatedCategory._id,
+      ingredientId: ''
     })
   })
 

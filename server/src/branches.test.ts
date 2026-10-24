@@ -53,7 +53,13 @@ describe('branch coverage with real data sources', () => {
 
   it('createSaveIngredient falls back to defaults for empty fields', async () => {
     const saved = await createSaveIngredient({
-      ingredientInput: { name: '', quantity: 0, measure: '', category: '' },
+      ingredientInput: {
+        name: '',
+        quantity: 0,
+        measure: '',
+        category: '',
+        ingredientId: ''
+      },
       categoryApi,
       ingredientApi
     })
@@ -75,11 +81,18 @@ describe('branch coverage with real data sources', () => {
           name: 'Toast',
           portions: 1,
           ingredients: [
-            { name: 'bread', quantity: 2, measure: 'slice', category: 'bakery' }
+            {
+              name: 'bread',
+              quantity: 2,
+              measure: 'slice',
+              category: 'bakery',
+              ingredientId: 'bread'
+            }
           ],
           picture_url: '',
           libraryId: 'toast',
-          instructions: ''
+          instructions: '',
+          customisations: { added: [], removed: [], changed: [] }
         }
       },
       {
