@@ -131,7 +131,7 @@ const recipeSourcesFor = (
 ): RecipeSource[] =>
   entries.flatMap((entry) =>
     entry.lines
-      .filter((line) => line.ingredientId === id && !line.staple)
+      .filter((line) => line.ingredientId === id)
       .map(
         (line): RecipeSource => ({
           kind: 'recipe',
@@ -165,7 +165,7 @@ const itemFor = (
 ): LibraryIngredient | null => items.find((item) => item.id === id) ?? null
 
 /**
- * Every item on the list (#182): recipe ingredients (not staples) in first-seen order, then
+ * Every item on the list (#182): recipe ingredients, staples included, in first-seen order, then
  * extras no recipe uses. Each lists its recipe sources and its Extra.
  */
 export const buildBalances = (
@@ -174,7 +174,7 @@ export const buildBalances = (
   items: readonly LibraryIngredient[]
 ): Balance[] => {
   const recipeIds = entries.flatMap((entry) =>
-    entry.lines.filter((line) => !line.staple).map((line) => line.ingredientId)
+    entry.lines.map((line) => line.ingredientId)
   )
   const ids = [...new Set([...recipeIds, ...extras.map(extraChipId)])]
   return ids.map((id) => {

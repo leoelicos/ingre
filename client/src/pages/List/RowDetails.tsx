@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 import { Group, Input, Label, NumberField } from 'react-aria-components'
 import { SaveButton } from '../../components/SaveButton'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
-import type { CopyLine } from '../../utils/balance/copies'
+import type { CopyLine, RecipeCopy } from '../../utils/balance/copies'
 import {
   MAX_PORTIONS,
   MIN_PORTIONS,
@@ -76,13 +76,17 @@ const OriginalChip: FC<{ line: CopyLine }> = ({ line }) => (
   </li>
 )
 
-/** Explore's open row (#182, answer 32): the original at 2 portions, with no picker. */
+/**
+ * Explore's open row (#182, answer 32): the original at 2 portions, with no picker. Save
+ * stores the list's copy, customisations included, when the recipe is on the list.
+ */
 export const OriginalDetails: FC<{
   recipe: LibraryRecipe
   title: string
   saved: SavedState | null
   items?: readonly LibraryIngredient[]
-}> = ({ recipe, title, saved, items = catalogue }) => {
+  listCopy?: RecipeCopy | null
+}> = ({ recipe, title, saved, items = catalogue, listCopy = null }) => {
   const copy = newCopy(recipe.id)
   const lines = copyLines(recipe, copy, items)
   return (
@@ -91,7 +95,7 @@ export const OriginalDetails: FC<{
         saved={saved}
         recipe={recipe}
         title={title}
-        input={() => saveInput(recipe, copy, items)}
+        input={() => saveInput(recipe, listCopy ?? copy, items)}
       />
       <div>
         <h3 className={ROW_HEADING}>Ingredients</h3>

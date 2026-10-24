@@ -41,7 +41,6 @@ export interface CopyLine {
   readonly measure: string
   /** the original amount at these portions, or null when the user added it */
   readonly original: number | null
-  readonly staple: boolean
 }
 
 const itemFor = (
@@ -59,7 +58,6 @@ const lineOf = (
     ingredientId,
     name: item?.name ?? ingredientId,
     item,
-    staple: item?.staple === true,
     ...amounts
   }
 }

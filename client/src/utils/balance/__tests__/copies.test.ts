@@ -70,8 +70,7 @@ describe('copy lines', () => {
       name: 'butter',
       quantity: 25,
       measure: 'g',
-      original: 25,
-      staple: false
+      original: 25
     })
     expect(lineOf(lines, 'cheddar')).toMatchObject({
       quantity: 100,
@@ -83,15 +82,12 @@ describe('copy lines', () => {
     expect(addedMeasure(null)).toBe('whole')
   })
 
-  it('names an unknown item by its id; staples are marked', () => {
+  it('names an unknown item by its id', () => {
     const lines = copyLines(dahl, newCopy('dahl'), [])
     expect(lineOf(lines, 'butter')).toMatchObject({
       name: 'butter',
       item: null
     })
-    expect(
-      lineOf(copyLines(dahl, newCopy('dahl'), catalogue), 'salt').staple
-    ).toBe(true)
   })
 
   it('keeps removed items at 0, and usedLines leaves them out', () => {

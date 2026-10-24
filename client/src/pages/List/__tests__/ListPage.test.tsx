@@ -79,9 +79,9 @@ describe('Scenario: Chips from recipes, grouped by category', () => {
     expect(groupOf('potato')).toBe('Fruit & Veg')
     expect(groupOf('butter')).toBe('Dairy')
     expect(groupOf('red-lentils')).toBe('Pantry')
-    // staples show in Ingredients and in Extra (#182, answer 7)
+    // staples belong to their recipe and show in Ingredients, not Extra (#182)
     expect(hasChipEl('salt')).toBe(1)
-    expect(hasChipEl('salt', 'extra')).toBe(1)
+    expect(hasChipEl('salt', 'extra')).toBe(0)
     // no count badge (#181): the count stays in the spoken label and in Used in
     expect(within(chip('onion')).queryByTestId('chip-count')).toBeNull()
     expect(toggleOf('onion')).toHaveAccessibleName(/in 2 recipes/)

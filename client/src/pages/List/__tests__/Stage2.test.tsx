@@ -219,17 +219,57 @@ describe('Feature: Extra (#182)', () => {
     expect(chevronOf('butter')).toHaveFocus()
   })
 
-  it('Scenario: Staples go in Extra on pick and stay after unpicking', () => {
+  it('Scenario: Staples belong to their recipe, and only the plus puts one in Extra', async () => {
+    const user = userEvent.setup()
     renderList()
     fireEvent.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
+    expect(hasChipEl('salt')).toBe(1)
+    expect(hasChipEl('salt', 'extra')).toBe(0)
+    await user.click(chevronOf('salt'))
+    expect(
+      scopedPanel('salt', 'chip').getByRole('textbox', {
+        name: /^Red lentil dahl, salt \(tsp\)$/
+      })
+    ).toHaveValue('0.5')
+    const plus = within(region('Extra')).getByRole('button', {
+      name: 'Add an ingredient'
+    })
+    await user.click(plus)
+    await user.click(screen.getByRole('tab', { name: 'Pantry' }))
+    await user.click(screen.getByRole('button', { name: 'Salt, on your list' }))
     expect(hasChipEl('salt', 'extra')).toBe(1)
     fireEvent.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
     expect(hasChipEl('salt', 'extra')).toBe(1)
     expect(hasChipEl('butter')).toBe(0)
   })
 
+  it('Scenario: Unpicking the last recipe that uses a staple removes it', () => {
+    renderList()
+    fireEvent.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
+    fireEvent.click(
+      explore().getByRole('button', {
+        name: 'Pork chops with apples and onion'
+      })
+    )
+    expect(toggleOf('salt')).toHaveAccessibleName(/in 2 recipes/)
+    fireEvent.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
+    expect(toggleOf('salt')).toHaveAccessibleName(/in 1 recipe/)
+    fireEvent.click(
+      explore().getByRole('button', {
+        name: 'Pork chops with apples and onion'
+      })
+    )
+    expect(hasChipEl('salt')).toBe(0)
+  })
+
   it('Scenario: Crossed off is one state across Ingredients, Extra and rows', async () => {
     const user = userEvent.setup()
+    localStorage.setItem(
+      EXTRAS_KEY,
+      JSON.stringify([
+        { id: 'salt', name: 'salt', ingredientId: 'salt', quantity: 1 }
+      ])
+    )
     renderList()
     await user.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
     await user.click(toggleOf('salt', 'extra'))
@@ -242,6 +282,14 @@ describe('Feature: Extra (#182)', () => {
 
   it('Scenario: The Extra filter offers category and crossed off, with Clear', async () => {
     const user = userEvent.setup()
+    localStorage.setItem(
+      EXTRAS_KEY,
+      JSON.stringify([
+        { id: 'salt', name: 'salt', ingredientId: 'salt', quantity: 1 },
+        { id: 'feta', name: 'feta', ingredientId: 'feta', quantity: 1 },
+        { id: 'eggs', name: 'eggs', ingredientId: 'egg', quantity: 1 }
+      ])
+    )
     renderList()
     await user.click(
       explore().getByRole('button', {
@@ -492,6 +540,44 @@ describe('Feature: Recipe copies (#182)', () => {
       added: [],
       removed: [],
       changed: [{ ingredientId: 'butter', from: 15, to: 30 }]
+    })
+  })
+  it('Scenario: Saving from Explore saves the list copy with its customisations; off the list it saves the original', async () => {
+    const user = userEvent.setup()
+    const seen: RecipeInput[] = []
+    pick('dahl')
+    renderList('/', [
+      savedQuery(),
+      saveMock('dahl', seen),
+      saveMock('butter-chicken', seen)
+    ])
+    fireEvent.click(screen.getByRole('button', { name: 'Pretend login' }))
+    await user.click(chevronOf('butter'))
+    await setBox(user, box('Butter details', /^Red lentil dahl, /), '30')
+    act(() => searchBox().focus())
+    await user.click(
+      explore().getByRole('button', { name: 'See recipe: Red lentil dahl' })
+    )
+    await user.click(
+      await explore().findByRole('button', { name: 'Save Red lentil dahl' })
+    )
+    await waitFor(() => expect(seen).toHaveLength(1))
+    expect(seen[0]?.customisations).toEqual({
+      added: [],
+      removed: [],
+      changed: [{ ingredientId: 'butter', from: 15, to: 30 }]
+    })
+    await user.click(
+      explore().getByRole('button', { name: 'See recipe: Butter chicken' })
+    )
+    await user.click(
+      explore().getByRole('button', { name: 'Save Butter chicken' })
+    )
+    await waitFor(() => expect(seen).toHaveLength(2))
+    expect(seen[1]?.customisations).toEqual({
+      added: [],
+      removed: [],
+      changed: []
     })
   })
 })

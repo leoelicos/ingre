@@ -56,10 +56,13 @@ describe('Feature: Balance sheet (#182)', () => {
   const dahl = recipeById('dahl')
   const both = copyEntries([newCopy(chicken.id), newCopy(dahl.id)])
 
-  it('Scenario: Both sides balance: one chip per recipe ingredient (not staples) and extra', () => {
+  it('Scenario: Both sides balance: one chip per recipe ingredient (staples too) and extra', () => {
     const balances = buildBalances(both, [butterExtra, candles], catalogue)
     const ids = balances.map((b) => b.id)
-    expect(ids).not.toContain('salt')
+    expect(ids).toContain('salt')
+    expect(balances.find((b) => b.id === 'salt')?.sources).toEqual([
+      expect.objectContaining({ kind: 'recipe', recipeId: 'dahl' })
+    ])
     expect(ids).toContain('chicken-thigh')
     expect(ids).toContain('red-lentils')
     expect(ids.slice(-1)).toEqual(['free-candles'])

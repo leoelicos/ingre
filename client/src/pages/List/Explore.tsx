@@ -7,7 +7,9 @@ import { SEARCH_LABEL, SearchBox } from '../../components/SearchBox/SearchBox'
 import { IngreIconSearch } from '../../lib/icon/Icon'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
 import { capitaliseFirst } from '../../utils/capitaliseFirst'
+import type { CopyEntry } from '../../utils/chips/chips'
 import { categoryLabel } from '../../utils/chips/chips'
+import type { RecipeCopy } from '../../utils/balance/copies'
 import { useExplore } from '../../utils/explore/ExploreContext'
 import type {
   ExploreResults,
@@ -125,12 +127,21 @@ const IngredientGroup: FC<{
   </div>
 )
 
+/** The list's copy of a recipe, or null when it is not on the list. */
+export const listCopyOf = (
+  entries: readonly CopyEntry[],
+  recipeId: string
+): RecipeCopy | null =>
+  entries.find((entry) => entry.recipe.id === recipeId)?.copy ?? null
+
 const RecipeGroup: FC<{
   title: string
   recipes: readonly LibraryRecipe[]
   controls: RowControls
   saved: SavedState | null
-}> = ({ title, recipes, controls, saved }) => (
+  /** the copies on the list: saving a listed recipe saves its customisations (#182) */
+  entries: readonly CopyEntry[]
+}> = ({ title, recipes, controls, saved, entries }) => (
   <div>
     <h3 className={GROUP_HEADING}>{title}</h3>
     <RecipeRows
@@ -141,6 +152,7 @@ const RecipeGroup: FC<{
             recipe={recipe}
             title={name}
             saved={saved}
+            listCopy={listCopyOf(entries, recipe.id)}
           />
         )
       }))}
@@ -171,6 +183,7 @@ const Groups: FC<{
           recipes={recipes}
           controls={controls}
           saved={props.saved}
+          entries={props.ingredients.list.entries}
         />
       )}
     </div>
@@ -199,6 +212,7 @@ const Results: FC<{
       recipes={results.kind === 'browse' ? results.recipes : results.browse}
       controls={controls}
       saved={props.saved}
+      entries={props.ingredients.list.entries}
     />
   )
   if (results.kind === 'browse') return browse

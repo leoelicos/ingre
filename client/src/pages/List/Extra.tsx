@@ -37,7 +37,7 @@ export const extraSummary = (n: number): string =>
 const FILTER_ID = `${EXTRA_ID}-filter`
 
 /**
- * Extra (#182): staples and everything added by hand, with the plus. The same chips as in
+ * Extra (#182): everything added by hand with the plus, staples included. The same chips as in
  * Ingredients, showing their Extra amount. Collapses only in the vertical layout.
  */
 export const Extra: FC<{ state: IngredientsState; collapsible: boolean }> = ({

@@ -18,7 +18,6 @@ import {
   useExtras
 } from '../storage/shoppingState'
 import type { ShopSection } from '../shopping/sections'
-import { itemUnit } from '../shopping/units'
 import type { Chip, ChipState, CopyEntry } from './chips'
 import {
   buildBalances,
@@ -28,7 +27,6 @@ import {
   placementsOf,
   recipeSources,
   sortLayout,
-  sourceAmount,
   sourceLabel,
   withPlacements
 } from './chips'
@@ -68,25 +66,6 @@ export const addOnce = (extras: readonly Extra[], extra: Extra): Extra[] =>
   extras.some((e) => extraChipId(e) === extraChipId(extra))
     ? [...extras]
     : [...extras, extra]
-
-/**
- * A picked recipe's staples as extras (#182, F1): staples count as Extra only, starting at what
- * the recipe needs, rounded up to a whole number in the item's unit.
- */
-export const stapleExtras = (
-  recipe: LibraryRecipe,
-  copy: RecipeCopy,
-  items: readonly LibraryIngredient[] = catalogue
-): Extra[] =>
-  copyLines(recipe, copy, items).flatMap((line) => {
-    if (!line.staple || line.item === null) return []
-    const need = sourceAmount(
-      { ...line, removed: false },
-      line.item,
-      itemUnit(line.item)
-    )
-    return [catalogueExtra(line.item, Math.max(1, Math.ceil(need)))]
-  })
 
 const updateCopy = (
   copies: readonly RecipeCopy[],
@@ -143,11 +122,7 @@ export const useChips = () => {
         )
         return
       }
-      const copy = newCopy(recipe.id)
-      updateCopies((previous) => [...previous, copy])
-      updateExtras((previous) =>
-        stapleExtras(recipe, copy).reduce(addOnce, previous)
-      )
+      updateCopies((previous) => [...previous, newCopy(recipe.id)])
     },
     setAmount,
     setPortions: (recipeId: string, portions: number): void =>

@@ -8,13 +8,7 @@ import {
   LAYOUT_KEY
 } from '../../storage/shoppingState'
 import type { Chip } from '../chips'
-import {
-  addOnce,
-  catalogueExtra,
-  copyEntries,
-  stapleExtras,
-  useChips
-} from '../useChips'
+import { addOnce, catalogueExtra, copyEntries, useChips } from '../useChips'
 
 const stored = (key: string): unknown =>
   JSON.parse(localStorage.getItem(key) ?? 'null')
@@ -43,16 +37,6 @@ describe('helpers', () => {
     })
     expect(addOnce([butter], { ...butter, quantity: 3 })).toEqual([butter])
   })
-
-  it('Scenario: Staples go in Extra, rounded up to whole units (F1)', () => {
-    const staples = stapleExtras(pork, newCopy(pork.id))
-    expect(staples.map((e) => [e.id, e.quantity])).toEqual([
-      ['olive-oil', 20],
-      ['salt', 3],
-      ['black-pepper', 3]
-    ])
-    expect(stapleExtras(pork, newCopy(pork.id), [])).toEqual([])
-  })
 })
 
 describe('useChips', () => {
@@ -62,28 +46,23 @@ describe('useChips', () => {
     return found
   }
 
-  it('picks a copy at 2 portions with its staples in Extra; unpicking removes the copy only', () => {
+  it('Scenario: Staples belong to their recipe: picked at 2 portions, nothing goes in Extra, and unpicking removes them', () => {
     const { result } = renderHook(() => useChips())
     act(() => result.current.togglePicked(pork))
     expect(stored(COPIES_KEY)).toEqual([newCopy(pork.id)])
     expect([...result.current.pickedIds]).toEqual([pork.id])
-    expect(ids(result.current.extraChips)).toEqual([
-      'olive-oil',
-      'salt',
-      'black-pepper'
-    ])
+    expect(ids(result.current.extraChips)).toEqual([])
     expect(result.current.hasChip('salt')).toBe(true)
+    expect(chipOf(result.current.chips, 'salt').sources).toEqual([
+      expect.objectContaining({ kind: 'recipe', recipeId: pork.id })
+    ])
     expect(result.current.hasChip('feta')).toBe(false)
     expect(stored(LAYOUT_KEY)).toMatchObject({
       placed: { butter: 'Dairy, Eggs & Fridge' }
     })
     act(() => result.current.togglePicked(pork))
     expect(stored(COPIES_KEY)).toEqual([])
-    expect(ids(result.current.chips)).toEqual([
-      'olive-oil',
-      'salt',
-      'black-pepper'
-    ])
+    expect(ids(result.current.chips)).toEqual([])
   })
 
   it('sets amounts and portions per copy, and refresh resets them', () => {
