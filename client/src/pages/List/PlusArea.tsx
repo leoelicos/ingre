@@ -1,7 +1,7 @@
 import type { FC } from 'react'
 import { useEffect } from 'react'
 import { Button, Tab, TabList, TabPanel, Tabs } from 'react-aria-components'
-import { collapseClass } from '../../components/Collapse'
+import { COLLAPSE_INNER, collapseClass } from '../../components/Collapse'
 import { resolveBadgeCode } from '../../components/IngredientBadge/badgeCode'
 import { IngredientBadge } from '../../components/IngredientBadge/IngredientBadge'
 import {
@@ -146,7 +146,7 @@ export const PlusArea: FC<{
       hidden={!open}
       className={collapseClass(open)}
     >
-      <div className="min-h-0 overflow-hidden">
+      <div className={COLLAPSE_INNER}>
         <div className="p-1.5">
           <div
             data-plus-zone=""

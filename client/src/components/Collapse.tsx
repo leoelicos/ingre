@@ -21,8 +21,13 @@ export const collapseClass = (open: boolean): string =>
       : 'grid-rows-[0fr]'
   ].join(' ')
 
-/** The inner wrapper the grid row squeezes; it must have no padding of its own. */
-export const COLLAPSE_INNER = 'min-h-0 overflow-hidden'
+/**
+ * The inner wrapper the grid row squeezes; it must have no padding of its own. It clips
+ * rather than hides: an `overflow: hidden` box can still be scrolled, so focusing a field
+ * while the row is still opening scrolled it, and React Aria closes a combo box's list on
+ * any scroll around it, dropping what was typed (#182).
+ */
+export const COLLAPSE_INNER = 'min-h-0 overflow-clip'
 
 /** Room inside the clipped wrapper so focus rings (3px + 2px offset) are never cut off. */
 export const COLLAPSE_ROOM = 'p-1.5'

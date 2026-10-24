@@ -1,7 +1,12 @@
 import type { FC, ReactNode } from 'react'
 import { useLayoutEffect, useRef } from 'react'
 import { Button, ToggleButton } from 'react-aria-components'
-import { Chevron, MOTION, collapseClass } from '../../components/Collapse'
+import {
+  COLLAPSE_INNER,
+  Chevron,
+  MOTION,
+  collapseClass
+} from '../../components/Collapse'
 import {
   TONE_CLASSES,
   sectionTone
@@ -210,7 +215,7 @@ const ChipPanel: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
         FAN_TONES[sectionTone(chip.section)]
       } ${collapseClass(open)}`}
     >
-      <div className="min-h-0 overflow-hidden">
+      <div className={COLLAPSE_INNER}>
         <div className="p-1.5">
           <div
             role="group"

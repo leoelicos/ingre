@@ -39,7 +39,7 @@ const openFilter = (page: Page, section: string) =>
 /** Ticks a filter checkbox by its visible text (the input itself is visually hidden). */
 const tick = (filter: Locator, name: string) =>
   filter.locator('label').filter({ hasText: name }).click()
-/** Picks an ingredient in a filter's combo box. */
+/** Picks an ingredient in a filter's combo box, typing as soon as the panel opens. */
 const choose = async (
   page: Page,
   filter: Locator,
@@ -47,16 +47,10 @@ const choose = async (
   option: string
 ) => {
   const input = filter.getByRole('combobox', { name: picker })
-  // retried: the panel is still opening when the first keys arrive, and on a phone
-  // the list can still be moving when it is first tapped
-  await expect(async () => {
-    await input.click()
-    await input.fill('')
-    await input.pressSequentially(option)
-    const shown = page.getByRole('option', { name: option, exact: true })
-    if (!(await shown.isVisible())) await input.press('ArrowDown')
-    await shown.click({ timeout: 2000 })
-  }).toPass()
+  await input.click()
+  await input.pressSequentially(option)
+  await expect(input).toHaveValue(option)
+  await page.getByRole('option', { name: option, exact: true }).click()
   await page.keyboard.press('Escape')
 }
 /** Closes Explore however this width shows it, so it can't take focus from the filter. */
@@ -405,6 +399,33 @@ test.describe('filters (#182)', () => {
     ).toBeVisible()
     await ingredientsRegion(page).getByRole('button', { name: 'Clear' }).click()
     await expect(chip(page, 'tomato')).toBeVisible()
+  })
+
+  test('typing straight after opening a filter keeps every key and the list stays open', async ({
+    page
+  }) => {
+    await pickRows(page, DAHL, CURRY)
+    await closeExplore(page)
+    const button = toolbar(page, 'Recipes actions').getByRole('button', {
+      name: /^Filter/
+    })
+    const filter = page.getByRole('group', { name: 'Filter recipes' })
+    const input = filter.getByRole('combobox', { name: 'Contains' })
+    for (const _ of [1, 2, 3]) {
+      await button.click()
+      // no waiting for the panel to finish opening
+      await input.click()
+      await input.pressSequentially('Butter')
+      await expect(input).toHaveValue('Butter')
+      await expect(input).toHaveAttribute('aria-expanded', 'true')
+      await expect(
+        page.getByRole('option', { name: 'Butter', exact: true })
+      ).toBeVisible()
+      await input.fill('')
+      await page.keyboard.press('Escape')
+      await button.click()
+      await expect(filter).toBeHidden()
+    }
   })
 
   test('Recipes filter: contains and excludes take several ingredients; filters reset on reload (answers 37, 39, 42)', async ({
