@@ -21,13 +21,9 @@ import { containsLine, itemsAllergens } from '../../utils/library/allergens'
 import { catalogue } from '../../utils/library/recipeLibrary'
 import type { SavedState } from '../../utils/saved/useSaved'
 import { focusById } from '../../utils/focus'
-import {
-  TONE_CLASSES,
-  sectionTone
-} from '../../components/IngredientBadge/badgeTone'
 import { amountText, displayName } from '../../utils/shopping/shoppingList'
 import type { ChipView } from './Chips'
-import { ChipList } from './Chips'
+import { ChipList, edgeToneOf } from './Chips'
 import { ChipAllergens, SourceFields, sourceMeasure } from './ChipDetails'
 import { chipChevronId, rowScope, sourceFieldId } from './chipText'
 import { PlusArea, PlusButton } from './PlusArea'
@@ -64,13 +60,13 @@ const Heart: FC<{
     </div>
   )
 
-/** A read-only ingredient chip in Explore, in the recipe's own units. */
+/** A read-only ingredient chip in Explore, in the recipe's own units: the same raised chip. */
 const OriginalChip: FC<{ line: CopyLine }> = ({ line }) => (
   <li
     data-ingredient={line.ingredientId}
-    className={`flex flex-col rounded-pill border bg-gradient-to-b from-white/50 to-white/0 px-3 py-1 leading-tight shadow-raised ${
-      TONE_CLASSES[sectionTone(startSection(line.item))]
-    }`}
+    className={`flex flex-col rounded-pill border bg-transparent px-3 py-1 leading-tight shadow-chip ${edgeToneOf(
+      startSection(line.item)
+    )}`}
   >
     <span className="font-semibold">{displayName(line)}</span>
     <span className="text-xs">

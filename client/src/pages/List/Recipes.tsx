@@ -69,6 +69,7 @@ export const Recipes: FC<{
       id="recipes"
       title={t('recipes.title')}
       collapsible={collapsible}
+      raised
       open={open}
       onToggle={() => setOpen(!open)}
       summary={t('recipes.picked', {
@@ -120,7 +121,8 @@ export const Recipes: FC<{
             onTogglePicked: list.togglePicked,
             openIds,
             onToggleOpen: (id) => setOpenIds((ids) => toggled(ids, id)),
-            seeRecipe: false
+            seeRecipe: false,
+            recessed: true
           }}
         />
       </div>

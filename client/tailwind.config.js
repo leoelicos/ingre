@@ -53,7 +53,12 @@ module.exports = {
       boxShadow: {
         card: 'var(--shadow-card)',
         raised: 'var(--shadow-raised)',
-        pressed: 'var(--shadow-pressed)'
+        pressed: 'var(--shadow-pressed)',
+        /* neumorphic hierarchy: raised Recipes section, recessed rows, raised chips */
+        section: 'var(--shadow-section)',
+        recessed: 'var(--shadow-recessed)',
+        chip: 'var(--shadow-chip)',
+        'chip-pressed': 'var(--shadow-chip-pressed)'
       },
       maxWidth: {
         layout: 'var(--layout-max-width)'

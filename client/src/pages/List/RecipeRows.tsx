@@ -19,6 +19,8 @@ export interface RowControls {
   readonly onToggleOpen: (id: string) => void
   /** Explore's rows open with a "See recipe" button; list rows with a chevron (#181) */
   readonly seeRecipe: boolean
+  /** Recipes' rows are recessed into the raised section; Explore's stay raised until picked */
+  readonly recessed: boolean
 }
 
 /** A row: its recipe and what it shows open, the original in Explore or the copy in Recipes (#182). */
@@ -29,13 +31,23 @@ export interface Row {
 
 export const ROW_HEADING = 'm-0 text-sm font-semibold uppercase tracking-wide'
 
-/** Raised when not picked; pressed in, with a border and a check mark, once picked. */
-const rowClass = (picked: boolean): string =>
-  `grid grid-cols-[1fr_auto] rounded-card border-2 bg-bg transition-shadow ${MOTION} ${
+/** A picked row has a primary border (at least 3:1 on the page) as well as its check mark. */
+export const rowBorder = (picked: boolean): string =>
+  picked ? 'border-primary' : 'border-transparent'
+
+/**
+ * A row's depth. In Recipes it is recessed into the raised section, with no fill and a
+ * tighter shadow than the section's. In Explore it is raised, and pressed in once picked.
+ */
+export const rowDepth = (picked: boolean, recessed: boolean): string => {
+  if (recessed) return 'bg-transparent shadow-recessed'
+  return picked ? 'bg-bg shadow-pressed' : 'bg-bg shadow-raised'
+}
+
+const rowClass = (picked: boolean, recessed: boolean): string =>
+  `grid grid-cols-[1fr_auto] rounded-card border-2 transition-shadow ${MOTION} ${rowBorder(
     picked
-      ? 'border-primary shadow-pressed'
-      : 'border-transparent shadow-raised'
-  }`
+  )} ${rowDepth(picked, recessed)}`
 
 /** The tick in a circle: filled once picked, an empty ring (3:1 against the row) before. */
 const CheckMark: FC<{ picked: boolean }> = ({ picked }) => (
@@ -82,7 +94,7 @@ export const RecipeRow: FC<{
   return (
     <li
       data-recipe={recipe.id}
-      className={rowClass(picked)}
+      className={rowClass(picked, controls.recessed)}
     >
       <ToggleButton
         isSelected={picked}

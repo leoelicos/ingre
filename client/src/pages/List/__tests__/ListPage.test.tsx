@@ -698,3 +698,63 @@ describe('Scenario: Accessibility', () => {
     expect(recipesHeader()).toHaveAttribute('aria-expanded', 'false')
   })
 })
+
+describe('Scenario: Neumorphic hierarchy', () => {
+  const noFill = (el: HTMLElement) =>
+    el.className.split(' ').filter((c) => /^(bg-|from-|to-)/.test(c))
+
+  it('raises the Recipes section, recesses its rows and raises their chips', () => {
+    pick('dahl')
+    renderList()
+    const section = region('Recipes')
+    expect(section).toHaveClass('border', 'border-border', 'shadow-section')
+    expect(noFill(section)).toEqual(['bg-transparent'])
+    // the header lies flat on the raised section: one raised level at a time
+    expect(recipesHeader()).not.toHaveClass('shadow-raised')
+    expect(recipesHeader()).toHaveClass('data-[focus-visible]:focus-ring')
+    const row = recipes().getByRole('button', { name: 'Red lentil dahl' })
+    const item = row.closest('li') ?? document.body
+    expect(item).toHaveClass('shadow-recessed', 'border-primary')
+    expect(item).not.toHaveClass('shadow-pressed')
+    expect(noFill(item)).toEqual(['bg-transparent'])
+    expect(row).toHaveClass('data-[focus-visible]:focus-ring')
+    fireEvent.click(
+      recipes().getByRole('button', { name: 'Red lentil dahl details' })
+    )
+    const rowChip = chip('tomato', 'row-dahl')
+    expect(rowChip).toHaveClass('shadow-chip', 'border')
+    expect(noFill(rowChip)).toEqual(['bg-transparent'])
+  })
+
+  it('leaves the Ingredients section outline as it was', () => {
+    pick('dahl')
+    renderList()
+    expect(region('Ingredients')).not.toHaveClass('shadow-section')
+    expect(ingredientsHeader()).toHaveClass('shadow-raised', 'bg-bg')
+  })
+
+  it('chips are raised platforms with an ink edge, no fill or gradient, and flat parts', () => {
+    pick('dahl')
+    renderList()
+    const tomato = chip('tomato')
+    expect(tomato).toHaveClass(
+      'shadow-chip',
+      'border',
+      'border-badge-produce-ink',
+      'text-badge-produce-ink'
+    )
+    expect(noFill(tomato)).toEqual(['bg-transparent'])
+    const check = within(tomato).getByTestId('chip-check')
+    const chevron = chevronOf('tomato')
+    ;[check, chevron].forEach((part) => {
+      expect(part.className).not.toMatch(/shadow|bg-|gradient/)
+    })
+    expect(toggleOf('tomato')).toHaveClass('data-[focus-visible]:focus-ring')
+    expect(chevron).toHaveClass('data-[focus-visible]:focus-ring')
+    fireEvent.click(toggleOf('tomato'))
+    expect(tomato).toHaveClass('shadow-chip-pressed')
+    expect(check.className).not.toMatch(/shadow|bg-/)
+    fireEvent.click(chevron)
+    expect(chevron.className).not.toMatch(/shadow|bg-/)
+  })
+})
