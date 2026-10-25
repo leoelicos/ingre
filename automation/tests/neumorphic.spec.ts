@@ -46,6 +46,13 @@ const css = (l: Locator, property: string) =>
     property
   )
 
+/** The raised section's outline and shadow are drawn on its ::before. */
+const outlineCss = (l: Locator, property: string) =>
+  l.evaluate(
+    (el, name) => getComputedStyle(el, '::before').getPropertyValue(name),
+    property
+  )
+
 const pageBackground = (page: Page) =>
   page.evaluate(() => getComputedStyle(document.body).backgroundColor)
 
@@ -76,13 +83,17 @@ test.describe('neumorphic hierarchy', () => {
       const bg = await pageBackground(page)
 
       const section = recipesRegion(page)
-      expect(await css(section, 'box-shadow')).not.toBe('none')
-      expect(await css(section, 'box-shadow')).not.toContain('inset')
+      expect(await outlineCss(section, 'box-shadow')).not.toBe('none')
+      expect(await outlineCss(section, 'box-shadow')).not.toContain('inset')
+      expect(await outlineCss(section, 'background-color')).toBe(
+        'rgba(0, 0, 0, 0)'
+      )
+      expect(await outlineCss(section, 'background-image')).toBe('none')
       await expect(section).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
-      await expect(section).toHaveCSS('background-image', 'none')
       expect(
-        contrast(await css(section, 'border-top-color'), bg)
+        contrast(await outlineCss(section, 'border-top-color'), bg)
       ).toBeGreaterThanOrEqual(3)
+      expect(await outlineCss(section, 'border-top-width')).toBe('1px')
 
       const item = recipeItem(page)
       expect(await css(item, 'box-shadow')).toContain('inset')
@@ -112,6 +123,7 @@ test.describe('neumorphic hierarchy', () => {
     await pickRows(page, DAHL)
     const ingredients = ingredientsRegion(page)
     expect(await css(ingredients, 'box-shadow')).toBe('none')
+    expect(await outlineCss(ingredients, 'content')).toBe('none')
   })
 
   test('chips, their chevrons and recipe rows show a clear focus ring', async ({

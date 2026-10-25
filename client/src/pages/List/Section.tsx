@@ -13,14 +13,18 @@ export const HEADER_ROW = `${HEADER_BASE} bg-bg shadow-raised`
 export const headerRowClass = (flat: boolean): string =>
   flat ? HEADER_BASE : HEADER_ROW
 
+const SECTION = 'flex min-w-0 flex-col gap-3'
+
 /**
  * A raised section (Recipes): a large soft shadow and a border (at least 3:1 on the page), no
- * fill. Otherwise the section is plain and only its header row is outlined.
+ * fill. Both are drawn on a pseudo-element 8px outside the section, so the section's own box,
+ * and everything in it, stays exactly where it was. Otherwise the section is plain and only
+ * its header row is outlined.
  */
+export const RAISED_SECTION = `${SECTION} relative before:pointer-events-none before:absolute before:-inset-2 before:rounded-[calc(var(--radius-card)+8px)] before:border before:border-border before:bg-transparent before:shadow-section before:content-['']`
+
 export const sectionClass = (raised: boolean): string =>
-  raised
-    ? 'flex min-w-0 flex-col gap-3 rounded-card border border-border bg-transparent p-3 shadow-section'
-    : 'flex min-w-0 flex-col gap-3'
+  raised ? RAISED_SECTION : SECTION
 
 /** Title on the left with its short summary under it; the chevron sits on the right. */
 const HeaderText: FC<{ id: string; title: string; summary: string }> = ({

@@ -707,8 +707,13 @@ describe('Scenario: Neumorphic hierarchy', () => {
     pick('dahl')
     renderList()
     const section = region('Recipes')
-    expect(section).toHaveClass('border', 'border-border', 'shadow-section')
-    expect(noFill(section)).toEqual(['bg-transparent'])
+    expect(section).toHaveClass(
+      'before:border',
+      'before:border-border',
+      'before:shadow-section',
+      'before:bg-transparent'
+    )
+    expect(noFill(section)).toEqual([])
     // the header lies flat on the raised section: one raised level at a time
     expect(recipesHeader()).not.toHaveClass('shadow-raised')
     expect(recipesHeader()).toHaveClass('data-[focus-visible]:focus-ring')
@@ -729,7 +734,7 @@ describe('Scenario: Neumorphic hierarchy', () => {
   it('leaves the Ingredients section outline as it was', () => {
     pick('dahl')
     renderList()
-    expect(region('Ingredients')).not.toHaveClass('shadow-section')
+    expect(region('Ingredients')).not.toHaveClass('before:shadow-section')
     expect(ingredientsHeader()).toHaveClass('shadow-raised', 'bg-bg')
   })
 
