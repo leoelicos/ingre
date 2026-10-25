@@ -147,6 +147,7 @@
     "seeRecipe": "See recipe",
     "seeRecipeLabel": "See recipe: {{title}}",
     "details": "{{title}} details",
+    "ingredientsIn": "Ingredients in {{title}}",
     "method": "Method",
     "notes": "Notes",
     "customisations": "Customisations",

@@ -5,6 +5,8 @@ import { Button, ToggleButton } from 'react-aria-components'
 import { Chevron, Collapse, MOTION } from '../../components/Collapse'
 import { splitTitle } from '../../components/recipeTitle'
 import type { LibraryRecipe } from '../../types/library'
+import type { CopyLine } from '../../utils/balance/copies'
+import { IngredientNames } from './IngredientNames'
 
 /** What every row shares: picks, open rows, and what an open row shows. */
 export interface RowControls {
@@ -21,6 +23,8 @@ export interface RowControls {
 /** A row: its recipe and what it shows open, the original in Explore or the copy in Recipes (#182). */
 export interface Row {
   readonly recipe: LibraryRecipe
+  /** the ingredients it uses, named under the title while the row is closed (#191) */
+  readonly lines: readonly CopyLine[]
   readonly details: (title: string) => ReactNode
 }
 
@@ -72,7 +76,8 @@ export const useShownOnce = (open: boolean): boolean => {
 /**
  * One recipe row (#179): one tap anywhere selects or unselects it (a toggle button, so
  * VoiceOver reads "selected"); the chevron opens its details inline. No Add button.
- * Closed, a row shows only the recipe's name: no key-ingredient preview or badges.
+ * Closed, a row shows its name and every ingredient as a read-only chip (#191); open, the
+ * editable chips replace them. Never a key-ingredient preview or badges.
  */
 export const RecipeRow: FC<{
   row: Row
@@ -119,6 +124,12 @@ export const RecipeRow: FC<{
         {controls.seeRecipe && <span>{t('row.seeRecipe')}</span>}
         <Chevron open={open} />
       </Button>
+      {!open && (
+        <IngredientNames
+          lines={row.lines}
+          title={title}
+        />
+      )}
       <Collapse
         id={detailsId}
         open={open}
