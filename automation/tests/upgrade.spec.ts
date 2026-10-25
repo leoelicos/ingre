@@ -1,6 +1,8 @@
 import { accountMenu, expect, newAccount, signUp, test } from './fixtures'
+import type { Locator, Page } from '@playwright/test'
 import {
   clearStripeCalls,
+  delayStripeJs,
   failRedirectToCheckout,
   failStripe,
   failStripeJs,
@@ -18,6 +20,43 @@ const FAILED = /couldn.t start the Stripe checkout\. You have not been charged/
 
 /** The three Stripe API calls checkout.ts makes for one session. */
 const ONE_SESSION = ['/v1/products', '/v1/prices', '/v1/checkout/sessions']
+
+/** How long the slow Stripe.js stand-in takes, so checkout stays "starting". */
+const SLOW_STRIPE_JS_MS = 2_500
+
+const STARTING = 'Starting the Stripe checkout…'
+
+const upgradeButton = (page: Page): Locator =>
+  page.getByRole('button', { name: 'Checkout with Stripe' })
+
+/** Counts the page's CHECKOUT queries (one per checkout attempt). */
+const countCheckoutQueries = (page: Page): { count: () => number } => {
+  const queries: string[] = []
+  page.on('request', (r) => {
+    if (
+      r.method() === 'POST' &&
+      /"operationName":"Checkout"/.test(r.postData() ?? '')
+    )
+      queries.push(r.url())
+  })
+  return { count: () => queries.length }
+}
+
+/**
+ * Upgrade while checkout is starting: dimmed and announced as disabled (aria-disabled),
+ * still focused, with a status message; another press (forced past Playwright's own
+ * disabled check, as a fast double press would be) starts nothing.
+ */
+const expectStarting = async (page: Page) => {
+  const button = upgradeButton(page)
+  await expect(button).toBeDisabled()
+  await expect(button).toHaveAttribute('aria-disabled', 'true')
+  await expect(button).toBeFocused()
+  await expect(
+    page.getByRole('status').filter({ hasText: STARTING })
+  ).toBeVisible()
+  await button.click({ force: true })
+}
 
 /*
  * CRITICAL (#175): the Upgrade journey against the real server, with WireMock as Stripe.
@@ -162,6 +201,69 @@ test.describe('upgrade', () => {
     ])
     expect(navigations).toEqual([`${urls.wiremock}/c/pay/cs_test_e2e`])
     // one session per press
+    expect((await stripeCalls(request)).map((c) => c.path)).toEqual([
+      ...ONE_SESSION,
+      ...ONE_SESSION
+    ])
+  })
+
+  test('double press while checkout starts: one checkout, Upgrade disabled meanwhile', async ({
+    page,
+    request
+  }) => {
+    const checkoutQueries = countCheckoutQueries(page)
+    const restore = await delayStripeJs(request, SLOW_STRIPE_JS_MS)
+    try {
+      await upgradeButton(page).dblclick()
+      await expectStarting(page)
+      await expect(page).toHaveURL(`${urls.wiremock}/c/pay/cs_test_e2e`, {
+        timeout: 15_000
+      })
+      await expect(page.getByText('Session cs_test_e2e')).toBeVisible()
+    } finally {
+      await restore()
+    }
+    // one attempt: one CHECKOUT query, one session, one Stripe.js load
+    expect(checkoutQueries.count()).toBe(1)
+    expect((await stripeCalls(request)).map((c) => c.path)).toEqual(ONE_SESSION)
+    expect(stripeJsRequests).toEqual(['https://js.stripe.com/v3'])
+  })
+
+  test('slow Stripe.js 500 after a double press: one attempt, then Upgrade is enabled again and the retry opens checkout', async ({
+    page,
+    request
+  }) => {
+    const checkoutQueries = countCheckoutQueries(page)
+    const restore = await failStripeJsOnce(request, 500, SLOW_STRIPE_JS_MS)
+    try {
+      const failed = page.waitForResponse(STRIPE_JS)
+      await upgradeButton(page).dblclick()
+      await expectStarting(page)
+      expect((await failed).status()).toBe(500)
+      await expect(page.getByRole('alert')).toHaveText(FAILED)
+      // enabled again, focus kept, and only the first press started anything
+      await expect(upgradeButton(page)).toBeEnabled()
+      await expect(upgradeButton(page)).not.toHaveAttribute('aria-disabled')
+      await expect(upgradeButton(page)).toBeFocused()
+      await expect(page.getByText(STARTING)).toHaveCount(0)
+      expect(checkoutQueries.count()).toBe(1)
+      expect((await stripeCalls(request)).map((c) => c.path)).toEqual(
+        ONE_SESSION
+      )
+
+      // the retry works
+      const retried = page.waitForResponse(STRIPE_JS)
+      await upgradeButton(page).click()
+      expect((await retried).status()).toBe(200)
+      await expect(page).toHaveURL(`${urls.wiremock}/c/pay/cs_test_e2e`)
+    } finally {
+      await restore()
+    }
+    expect(checkoutQueries.count()).toBe(2)
+    expect(stripeJsRequests).toEqual([
+      'https://js.stripe.com/v3',
+      'https://js.stripe.com/v3'
+    ])
     expect((await stripeCalls(request)).map((c) => c.path)).toEqual([
       ...ONE_SESSION,
       ...ONE_SESSION

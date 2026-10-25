@@ -208,6 +208,7 @@
     "secure": "Secure payment with Stripe",
     "cancelled": "Checkout cancelled. You have not been charged and your account is unchanged.",
     "failed": "We couldn't start the Stripe checkout. You have not been charged. Please try again.",
+    "starting": "Starting the Stripe checkout…",
     "checkout": "Checkout with Stripe"
   },
   "success": {

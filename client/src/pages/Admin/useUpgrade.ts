@@ -3,7 +3,7 @@ import { useLazyQuery, useQuery } from '@apollo/client'
 import { useSearchParams } from 'react-router-dom'
 import { CHECKOUT, GET_USER } from '../../lib/apollo/graphQL/queries'
 import { useAuthContext } from '../../utils/auth/AuthContext'
-import { loadCheckout, runCheckout, sessionFrom } from './checkout'
+import { loadCheckout, oneAtATime, runCheckout, sessionFrom } from './checkout'
 import type { CheckoutFailure, LoadCheckout } from './checkout'
 
 export const useUpgrade = (load: LoadCheckout = loadCheckout) => {
@@ -24,17 +24,40 @@ export const useUpgrade = (load: LoadCheckout = loadCheckout) => {
   const [pro, setPro] = useState(false)
   /** Checkout did not open: no session, Stripe.js did not load, or Stripe reported an error. */
   const [checkoutFailed, setCheckoutFailed] = useState(false)
+  /** A checkout attempt is in flight: Upgrade is disabled until it fails (or Stripe opens). */
+  const [checkoutStarting, setCheckoutStarting] = useState(false)
+  /** One attempt at a time, kept for the life of the page. */
+  const [oneCheckout] = useState(oneAtATime)
 
   const failed = (step: CheckoutFailure): CheckoutFailure => {
     setCheckoutFailed(true)
+    setCheckoutStarting(false)
     return step
   }
 
-  /** Each press starts over with a new session and, after a failed load, a new Stripe.js. */
-  const startCheckout = (): Promise<CheckoutFailure> => {
+  /** A new attempt: a new session and, after a failed load, a new Stripe.js. */
+  const attempt = (): Promise<CheckoutFailure> => {
     setCheckoutFailed(false)
+    setCheckoutStarting(true)
     return runCheckout(() => getCheckout().then(sessionFrom), load).then(failed)
   }
+
+  /** Each press starts an attempt, unless one is already in flight (then it is a no-op). */
+  const startCheckout = (): Promise<CheckoutFailure> => oneCheckout.run(attempt)
+
+  /**
+   * Back from Stripe's checkout, the browser may restore this page as it was (back/forward
+   * cache), mid-redirect: enable Upgrade again so the user can start over.
+   */
+  useEffect(() => {
+    const restored = (event: PageTransitionEvent): null => {
+      if (!event.persisted) return null
+      setCheckoutStarting(false)
+      return oneCheckout.forget()
+    }
+    window.addEventListener('pageshow', restored)
+    return () => window.removeEventListener('pageshow', restored)
+  }, [oneCheckout])
 
   useEffect(() => {
     if (!userLoading && !userError && userData) {
@@ -42,5 +65,12 @@ export const useUpgrade = (load: LoadCheckout = loadCheckout) => {
     }
   }, [userLoading, userError, userData])
 
-  return { pro, loggedIn, startCheckout, cancelled, checkoutFailed }
+  return {
+    pro,
+    loggedIn,
+    startCheckout,
+    cancelled,
+    checkoutFailed,
+    checkoutStarting
+  }
 }

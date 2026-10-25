@@ -38,7 +38,8 @@ const settle = <T>(promise: Promise<T>): Promise<T | null> =>
 /**
  * Creates a session, loads Stripe.js and opens Stripe's hosted checkout. Stripe navigates
  * away when checkout opens, so this only settles when it did not, with the step that failed.
- * redirectToCheckout resolves only with an error, so reaching the end means it failed.
+ * redirectToCheckout resolves only with an error, so reaching the end means it failed; a
+ * rejection is a failed redirect too, so this never rejects.
  */
 export const runCheckout = async (
   fetchSession: FetchSession,
@@ -48,6 +49,39 @@ export const runCheckout = async (
   if (sessionId === null) return 'session'
   const stripe = await settle(load())
   if (stripe === null) return 'stripe-js'
-  await stripe.redirectToCheckout({ sessionId })
+  await settle(stripe.redirectToCheckout({ sessionId }))
   return 'redirect'
+}
+
+/** Starts a checkout attempt, or joins the one already in flight. */
+export type StartOnce = (
+  start: () => Promise<CheckoutFailure>
+) => Promise<CheckoutFailure>
+
+/** One checkout attempt at a time, and a way to stop waiting for the one in flight. */
+export interface OneAtATime {
+  run: StartOnce
+  /** Forgets the attempt in flight (it never settles once Stripe has navigated away). */
+  forget: () => null
+}
+
+/**
+ * Runs one checkout attempt at a time: a press while one is in flight (a double press, or
+ * a press during a retry) gets that attempt's promise and starts nothing new. Once the
+ * attempt settles, or is forgotten, the next press starts over.
+ */
+export const oneAtATime = (): OneAtATime => {
+  let pending: Promise<CheckoutFailure> | null = null
+  const forget = (): null => (pending = null)
+  /** Forgets this attempt when it settles, unless a newer one has replaced it. */
+  const settled =
+    (attempt: () => Promise<CheckoutFailure> | null) => (): null =>
+      attempt() === pending ? forget() : null
+  const run: StartOnce = (start) => {
+    if (pending !== null) return pending
+    const attempt = start().finally(settled(() => attempt))
+    pending = attempt
+    return attempt
+  }
+  return { run, forget }
 }
