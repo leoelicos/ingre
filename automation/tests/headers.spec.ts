@@ -9,6 +9,19 @@ const header = (scope: Locator, name: string) =>
     .getByRole('heading', { level: 2, name, exact: true })
     .getByRole('button')
 
+/**
+ * The header row's raised outline. Recipes is raised as a whole section, so its header lies
+ * flat on it and the outline is the section's: only one raised level at a time.
+ */
+const outlineShadow = (row: Locator) =>
+  row.evaluate((el) => {
+    const own = getComputedStyle(el).boxShadow
+    const section = el.closest('section')
+    return own === 'none' && section !== null
+      ? getComputedStyle(section, '::before').boxShadow
+      : own
+  })
+
 test.describe('section headers (#181)', () => {
   test('Ingredients, Recipes and Explore: the whole row is the button, with an outline, chevron right and text left', async ({
     page
@@ -27,9 +40,7 @@ test.describe('section headers (#181)', () => {
       const row = await box(button)
       // the button fills the heading row
       expect(row.width).toBeGreaterThan(heading.width - 2)
-      expect(
-        await button.evaluate((el) => getComputedStyle(el).boxShadow)
-      ).not.toBe('none')
+      expect(await outlineShadow(button)).not.toBe('none')
       expect(
         await button.evaluate((el) => getComputedStyle(el).textAlign)
       ).toBe('left')
@@ -53,12 +64,9 @@ test.describe('section headers (#181)', () => {
       })
       await expect(heading).toBeVisible()
       await expect(heading.getByRole('button')).toHaveCount(0)
-      expect(
-        await heading
-          .locator('span')
-          .first()
-          .evaluate((el) => getComputedStyle(el).boxShadow)
-      ).not.toBe('none')
+      expect(await outlineShadow(heading.locator('span').first())).not.toBe(
+        'none'
+      )
     }
   })
 })

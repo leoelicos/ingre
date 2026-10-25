@@ -287,7 +287,8 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
         (ids) =>
           new Set(ids.has(id) ? [...ids].filter((x) => x !== id) : [...ids, id])
       ),
-    seeRecipe: true
+    seeRecipe: true,
+    recessed: false
   }
   return (
     <div className="flex flex-col gap-4">

@@ -2,9 +2,29 @@ import type { FC, ReactNode } from 'react'
 import { Button } from 'react-aria-components'
 import { Chevron, Collapse } from '../../components/Collapse'
 
+/** What every section header row shares: its shape and text. */
+const HEADER_BASE =
+  'flex min-h-[48px] w-full items-center justify-between gap-3 rounded-card px-4 py-2 text-left text-text'
+
 /** The soft neumorphic outline every section header row shares (#181). */
-export const HEADER_ROW =
-  'flex min-h-[48px] w-full items-center justify-between gap-3 rounded-card bg-bg px-4 py-2 text-left text-text shadow-raised'
+export const HEADER_ROW = `${HEADER_BASE} bg-bg shadow-raised`
+
+/** A header inside a raised section lies flat on it: only one raised level at a time. */
+export const headerRowClass = (flat: boolean): string =>
+  flat ? HEADER_BASE : HEADER_ROW
+
+const SECTION = 'flex min-w-0 flex-col gap-3'
+
+/**
+ * A raised section (Recipes): a large soft shadow and a border (at least 3:1 on the page), no
+ * fill. Both are drawn on a pseudo-element 8px outside the section, so the section's own box,
+ * and everything in it, stays exactly where it was. Otherwise the section is plain and only
+ * its header row is outlined.
+ */
+export const RAISED_SECTION = `${SECTION} relative before:pointer-events-none before:absolute before:-inset-2 before:rounded-[calc(var(--radius-card)+8px)] before:border before:border-border before:bg-transparent before:shadow-section before:content-['']`
+
+export const sectionClass = (raised: boolean): string =>
+  raised ? RAISED_SECTION : SECTION
 
 /** Title on the left with its short summary under it; the chevron sits on the right. */
 const HeaderText: FC<{ id: string; title: string; summary: string }> = ({
@@ -45,7 +65,9 @@ export const HeaderRow: FC<{
   title: string
   summary: string
   toggle: HeaderToggle | null
-}> = ({ headingId, title, summary, toggle }) => (
+  /** true inside a raised section */
+  flat?: boolean
+}> = ({ headingId, title, summary, toggle, flat = false }) => (
   <h2
     id={headingId}
     aria-labelledby={titleId(headingId)}
@@ -53,7 +75,7 @@ export const HeaderRow: FC<{
     className="m-0 min-w-0 flex-1 rounded-card focus-visible:focus-ring"
   >
     {toggle === null ? (
-      <span className={HEADER_ROW}>
+      <span className={headerRowClass(flat)}>
         <HeaderText
           id={titleId(headingId)}
           title={title}
@@ -65,7 +87,7 @@ export const HeaderRow: FC<{
         aria-expanded={toggle.open}
         aria-controls={toggle.controls}
         onPress={toggle.onToggle}
-        className={`${HEADER_ROW} data-[focus-visible]:focus-ring`}
+        className={`${headerRowClass(flat)} data-[focus-visible]:focus-ring`}
       >
         <HeaderText
           id={titleId(headingId)}
@@ -90,17 +112,29 @@ export const Section: FC<{
   onToggle: () => void
   /** short text in the header row, e.g. "3 recipes"; stays visible while collapsed */
   summary: string
+  /** the whole section is a raised outline (Recipes); its header then lies flat */
+  raised?: boolean
   children: ReactNode
-}> = ({ id, title, collapsible, open, onToggle, summary, children }) => (
+}> = ({
+  id,
+  title,
+  collapsible,
+  open,
+  onToggle,
+  summary,
+  raised = false,
+  children
+}) => (
   <section
     id={id}
     aria-labelledby={titleId(`${id}-heading`)}
-    className="flex min-w-0 flex-col gap-3"
+    className={sectionClass(raised)}
   >
     <HeaderRow
       headingId={`${id}-heading`}
       title={title}
       summary={summary}
+      flat={raised}
       toggle={
         collapsible ? { open, onToggle, controls: `${id}-content` } : null
       }

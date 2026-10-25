@@ -81,6 +81,14 @@ const UI_PAIRS: readonly (readonly [string, string])[] = [
   ['color-brand', 'color-bg']
 ]
 
+/** Section raised, rows recessed, chips raised (and pressed once crossed off). */
+const SHADOWS: readonly string[] = [
+  'section',
+  'recessed',
+  'chip',
+  'chip-pressed'
+]
+
 const cases = (pairs: readonly (readonly [string, string])[]) =>
   THEMES.flatMap((mode) =>
     pairs.map(([fg, bg]): [Theme, string, string] => [mode, fg, bg])
@@ -142,6 +150,30 @@ describe('badge colours', () => {
       expect(
         contrast(ring, resolve(mode, 'color-surface'))
       ).toBeGreaterThanOrEqual(3)
+    }
+  )
+
+  it.each(
+    THEMES.flatMap((mode) =>
+      BADGE_TONES.map((tone): [Theme, string] => [mode, tone])
+    )
+  )(
+    '%s: %s chip (no fill) ink text and edge read at least 4.5:1 on the page',
+    (mode, tone) => {
+      const ink = resolve(mode, `color-badge-${tone}-ink`)
+      expect(contrast(ink, resolve(mode, 'color-bg'))).toBeGreaterThanOrEqual(
+        4.5
+      )
+    }
+  )
+
+  it.each(THEMES)(
+    '%s: the neumorphic shadows are tokens backed by Tailwind',
+    (mode) => {
+      SHADOWS.forEach((name) => {
+        expect(declared(BLOCKS[mode][0] ?? '', `shadow-${name}`)).not.toBe('')
+        expect(tailwind).toContain(`'var(--shadow-${name})'`)
+      })
     }
   )
 

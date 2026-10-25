@@ -9,6 +9,7 @@ import {
   collapseClass
 } from '../../components/Collapse'
 import {
+  EDGE_TONE_CLASSES,
   TONE_CLASSES,
   sectionTone
 } from '../../components/IngredientBadge/badgeTone'
@@ -45,17 +46,22 @@ export const groupHeadingId = (section: ShopSection, scope = 'chip'): string =>
 export const toneOf = (section: ShopSection): string =>
   TONE_CLASSES[sectionTone(section)]
 
+/** A chip's edge colour: ink text and outline for its section, no fill. */
+export const edgeToneOf = (section: ShopSection): string =>
+  EDGE_TONE_CLASSES[sectionTone(section)]
+
 export const SMALL_BUTTON =
   'inline-flex min-h-[44px] items-center justify-center rounded-pill border-2 border-current px-4 text-sm font-semibold data-[focus-visible]:focus-ring data-[pressed]:opacity-80'
 
-/** The checkbox in the chip: ticked once crossed off. The chip itself is the control. */
+/**
+ * The checkbox in the chip: ticked once crossed off. The chip itself is the control. Flat (no
+ * fill or shadow) so only the chip reads as raised; its outline is the chip's ink.
+ */
 const ChipCheck: FC<{ crossed: boolean }> = ({ crossed }) => (
   <span
     aria-hidden="true"
     data-testid="chip-check"
-    className={`inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border-2 border-current text-xs font-bold shadow-pressed ${
-      crossed ? 'bg-surface' : ''
-    }`}
+    className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border-2 border-current text-xs font-bold"
   >
     {crossed ? '✓' : ''}
   </span>
@@ -79,7 +85,7 @@ const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
       <ChipCheck crossed={chip.crossed} />
       <span
         className={`flex flex-col leading-tight ${
-          chip.crossed ? 'line-through opacity-70' : ''
+          chip.crossed ? 'line-through' : ''
         }`}
       >
         <span className="font-semibold">{displayName(chip)}</span>
@@ -89,24 +95,30 @@ const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
   )
 }
 
+/** What every chip shares: a pill with no fill, so it sits on whatever is behind it. */
+const CHIP_BASE = 'flex items-center gap-1 rounded-pill bg-transparent'
+
+/** A chip's depth: a small raised platform that sinks in once crossed off. */
+export const chipDepth = (crossed: boolean): string =>
+  crossed ? 'shadow-chip-pressed' : 'shadow-chip'
+
 /**
- * Skeuomorphic chip (#181): a lit, raised pill that sinks in once crossed off. Its own soft
- * shadow and the gap keep it apart from its neighbours. Greyed, it is flat and dashed (#182).
+ * Neumorphic chip: a raised platform with no fill and no gradient. A 1px ink edge (at least
+ * 3:1 on the page) outlines it, so it never relies on the shadow alone; the shadow and the gap
+ * keep it apart from its neighbours. Greyed, it is flat and dashed (#182).
  */
 export const chipClass = (
   chip: Pick<Chip, 'crossed' | 'section' | 'greyed'>
 ): string =>
   chip.greyed
-    ? 'flex items-center gap-1 rounded-pill border-2 border-dashed border-text-secondary bg-surface text-text-secondary'
-    : `flex items-center gap-1 rounded-pill border bg-gradient-to-b from-white/50 to-white/0 transition-shadow ${MOTION} ${
-        chip.crossed ? 'shadow-pressed' : 'shadow-raised'
-      } ${toneOf(chip.section)}`
+    ? `${CHIP_BASE} border-2 border-dashed border-text-secondary text-text-secondary`
+    : `${CHIP_BASE} border transition-shadow ${MOTION} ${chipDepth(
+        chip.crossed
+      )} ${edgeToneOf(chip.section)}`
 
-/** The chevron: a neumorphic button of its own, pressed in while its panel is open. */
-const chevronClass = (expanded: boolean): string =>
-  `m-1 flex min-h-[36px] min-w-[36px] items-center justify-center rounded-pill bg-surface/60 transition-shadow ${MOTION} data-[focus-visible]:focus-ring ${
-    expanded ? 'shadow-pressed' : 'shadow-raised'
-  }`
+/** The chevron: flat inside the raised chip; it turns while its panel is open. */
+const CHEVRON =
+  'm-1 flex min-h-[36px] min-w-[36px] items-center justify-center rounded-pill data-[focus-visible]:focus-ring'
 
 /** A chip and its chevron, coloured by its current category. */
 const ChipItem: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
@@ -130,7 +142,7 @@ const ChipItem: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
         aria-expanded={expanded}
         aria-controls={chipPanelId(chip.id, view.scope)}
         onPress={() => view.panel.onChevron(chip.id)}
-        className={chevronClass(expanded)}
+        className={CHEVRON}
       >
         <Chevron open={expanded} />
       </Button>

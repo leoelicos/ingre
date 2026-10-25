@@ -1,5 +1,10 @@
 import { AISLES, SHOP_SECTIONS } from '../../../utils/shopping/sections'
-import { TONE_CLASSES, categoryTone, sectionTone } from '../badgeTone'
+import {
+  EDGE_TONE_CLASSES,
+  TONE_CLASSES,
+  categoryTone,
+  sectionTone
+} from '../badgeTone'
 import { BADGE_TONES, FALLBACK_TONE } from '../tones'
 
 describe('badge tones', () => {
@@ -28,6 +33,14 @@ describe('badge tones', () => {
     BADGE_TONES.forEach((tone) =>
       expect(TONE_CLASSES[tone]).toBe(
         `bg-badge-${tone} text-badge-${tone}-ink border-badge-${tone}-ink`
+      )
+    )
+  })
+
+  it('gives every tone a chip edge: ink text and outline, and no fill', () => {
+    BADGE_TONES.forEach((tone) =>
+      expect(EDGE_TONE_CLASSES[tone]).toBe(
+        `text-badge-${tone}-ink border-badge-${tone}-ink`
       )
     )
   })

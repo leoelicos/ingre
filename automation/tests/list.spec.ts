@@ -158,9 +158,7 @@ test.describe('ingredients-first page (#179)', () => {
     await pickRows(page, DAHL)
     const before = await chipOrder(page)
     const colour = () =>
-      chip(page, 'tomato').evaluate(
-        (el) => getComputedStyle(el).backgroundColor
-      )
+      chip(page, 'tomato').evaluate((el) => getComputedStyle(el).borderTopColor)
     const fruit = await colour()
     await page.getByRole('button', { name: 'Tomatoes details' }).click()
     const panel = page.getByRole('group', { name: 'Tomatoes details' })
@@ -169,7 +167,7 @@ test.describe('ingredients-first page (#179)', () => {
     expect(await colour()).not.toBe(fruit)
     expect(await colour()).toBe(
       await chip(page, 'butter').evaluate(
-        (el) => getComputedStyle(el).backgroundColor
+        (el) => getComputedStyle(el).borderTopColor
       )
     )
     expect(await chipOrder(page)).toEqual(before)

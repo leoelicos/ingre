@@ -71,15 +71,15 @@ test.describe('ingredient chips (#181)', () => {
     await expect(details.getByText('Total: 520 g')).toBeVisible()
   })
 
-  test('the chevron is a neumorphic button of its own, pressed in while open; it opens and closes the panel', async ({
+  test('the chevron lies flat in the raised chip (no fill or shadow); it opens and closes the panel', async ({
     page
   }) => {
     await pickRows(page, DAHL)
     const chevron = page.getByRole('button', { name: 'Tomatoes details' })
     const shadow = () =>
       chevron.evaluate((el) => getComputedStyle(el).boxShadow)
-    expect(await shadow()).not.toBe('none')
-    expect(await shadow()).not.toContain('inset')
+    expect(await shadow()).toBe('none')
+    await expect(chevron).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
     await expect(
       chip(page, 'tomato').locator('[role="separator"]')
     ).toHaveCount(0)
@@ -87,7 +87,8 @@ test.describe('ingredient chips (#181)', () => {
     await expect(
       page.getByRole('group', { name: 'Tomatoes details' })
     ).toBeVisible()
-    await expect.poll(shadow).toContain('inset')
+    await expect(chevron).toHaveAttribute('aria-expanded', 'true')
+    expect(await shadow()).toBe('none')
     await chevron.click()
     await expect(
       page.getByRole('group', { name: 'Tomatoes details' })
@@ -162,21 +163,25 @@ test.describe('ingredient chips (#181)', () => {
     shadows.forEach((s) => expect(s).not.toBe('none'))
   })
 
-  test('skeuomorphic chip: raised, then pressed in once crossed off', async ({
+  test('neumorphic chip: a raised platform with no fill or gradient, pressed in once crossed off', async ({
     page
   }) => {
     await pickRows(page, DAHL)
-    const shadow = () =>
-      chip(page, 'tomato').evaluate((el) => getComputedStyle(el).boxShadow)
+    const tomato = chip(page, 'tomato')
+    const shadow = () => tomato.evaluate((el) => getComputedStyle(el).boxShadow)
     const raised = await shadow()
+    expect(raised).not.toBe('none')
     expect(raised).not.toContain('inset')
-    expect(
-      await chip(page, 'tomato').evaluate(
-        (el) => getComputedStyle(el).backgroundImage
-      )
-    ).toContain('gradient')
+    await expect(tomato).toHaveCSS('background-image', 'none')
+    await expect(tomato).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+    await expect(tomato).toHaveCSS('border-top-style', 'solid')
+    const check = tomato.getByTestId('chip-check')
+    await expect(check).toHaveCSS('box-shadow', 'none')
+    await expect(check).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
     await chipToggle(page, 'tomato').click()
     await expect.poll(shadow).toContain('inset')
+    await expect(check).toHaveCSS('box-shadow', 'none')
+    await expect(check).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
   })
 
   test('no Done button: changes apply at once', async ({ page }) => {
