@@ -31,7 +31,7 @@ client/
   vite.config.mts, tailwind.config.js, postcss.config.js, jest.config.js, tsconfig.json
   .eslintrc.js (ESLint 8, legacy config), .prettierrc.json
   src/index.tsx, src/App.tsx    entry + routes + Apollo client setup
-  src/components/   Header, AccountMenu, HeaderSearch, IngredientBadge, Widgets, ...
+  src/components/   Header, AccountMenu, HeaderSearch, SectionTone, Widgets, ...
   src/pages/        Home, Recipe, Search, ShoppingList, TapOff, Admin (login/signup/upgrade/success/404)
   src/lib/apollo/graphQL   queries/mutations
   src/utils/        auth, idb, storage, shopping, state, library
@@ -94,10 +94,10 @@ Accessibility
 - Menus announce open/closed state, close on Escape, and support arrow keys.
 UI text
 - Plain, literal language. Say what happens ("Add to list", not "Let's go!").
-Ingredient icons
-- Code-drawn badges only, no image files: a circle with a short code (e.g. TOM = tomato),
-  background colour by supermarket section (produce = green). Screen readers read the full name.
-  See `client/src/components/IngredientBadge/` (badgeCode.ts, badgeTone.ts, tones.ts).
+Ingredient colours
+- No ingredient icons or three-letter code badges (removed #191: recipe rows show just their name).
+  Chips and category tabs are coloured by supermarket section (produce = green), never colour alone.
+  See `client/src/components/SectionTone/` (badgeTone.ts, tones.ts).
 Accounts and header
 - No account needed this phase. Saved stays on the device.
 - Header shows only: logo, search, account icon. Log in / Sign up live in the account icon menu.

@@ -155,55 +155,14 @@ describe('parseRecipe', () => {
   })
 })
 
-describe('parseRecipe keyIngredients', () => {
-  const withKeys = (keyIngredients: unknown) => ({
-    ...validRecipe,
-    ingredients: [
-      { ingredientId: 'garlic', quantity: 1, measure: 'clove' },
-      { ingredientId: 'onion', quantity: 1, measure: 'whole' },
-      { ingredientId: 'salt', quantity: 1, measure: 'pinch' },
-      { ingredientId: 'egg', quantity: 1, measure: 'whole' }
-    ],
-    keyIngredients
-  })
-
-  it('keeps 1 to 3 of the recipe’s own ingredient ids, in order, and leaves them out when absent', () => {
-    expect(parseRecipe(withKeys(['onion', 'garlic'])).keyIngredients).toEqual([
-      'onion',
-      'garlic'
-    ])
-    expect(parseRecipe(validRecipe)).not.toHaveProperty('keyIngredients')
-  })
-
-  it.each<[string, unknown, string]>([
-    ['not an array', 'onion', 'r.keyIngredients: expected an array'],
-    [
-      'an id the recipe does not use',
-      ['onion', 'tomato'],
-      'r.keyIngredients[1]: expected an ingredientId of this recipe'
-    ],
-    ['a blank id', [''], 'r.keyIngredients[0]: expected a non-empty string'],
-    ['none', [], 'r.keyIngredients: expected 1 to 3 different ingredient ids'],
-    [
-      'more than three',
-      ['garlic', 'onion', 'salt', 'egg'],
-      'r.keyIngredients: expected 1 to 3 different ingredient ids'
-    ],
-    [
-      'a repeat',
-      ['onion', 'onion'],
-      'r.keyIngredients: expected 1 to 3 different ingredient ids'
-    ]
-  ])('fails loudly on %s', (_label, keys, message) => {
-    expect(() => parseRecipe(withKeys(keys), 'r')).toThrow(
-      new LibraryDataError(message)
-    )
-  })
-
-  it('loads key ingredients for every shipped recipe', () => {
+describe('no key ingredients (#191)', () => {
+  it('drops a stray keyIngredients field and ships none', () => {
     expect(
-      parseRecipes(recipeData).every((r) => r.keyIngredients !== undefined)
-    ).toBe(true)
+      parseRecipe({ ...validRecipe, keyIngredients: ['onion'] })
+    ).not.toHaveProperty('keyIngredients')
+    expect(
+      recipeData.recipes.some((r) => Object.keys(r).includes('keyIngredients'))
+    ).toBe(false)
   })
 })
 
@@ -215,37 +174,24 @@ describe('parseCatalogue / parseRecipes', () => {
   })
 })
 
-describe('parseIngredient badgeCode', () => {
-  const base = {
-    id: 'fresh-mint',
-    name: 'fresh mint',
-    category: 'fruit & veg',
-    sold: [{ type: 'bunch', size: { amount: 1, unit: 'count' } }],
-    pantry: 'Fridge',
-    allergens: []
-  }
-
-  it('keeps a valid three-letter code and leaves it out when absent', () => {
-    expect(parseIngredient({ ...base, badgeCode: 'MNT' }).badgeCode).toBe('MNT')
-    expect(parseIngredient(base)).not.toHaveProperty('badgeCode')
-  })
-
-  it.each(['mnt', 'MN', 'MINT', 'M1T', 'MÑT', '', 123, null])(
-    'fails loudly on badgeCode %p',
-    (badgeCode) => {
-      expect(() => parseIngredient({ ...base, badgeCode }, 'x')).toThrow(
-        new LibraryDataError(
-          'x.badgeCode: expected exactly 3 upper-case letters A-Z'
-        )
-      )
-    }
-  )
-
-  it('loads the overrides from the real catalogue', () => {
+describe('no badge codes (#191)', () => {
+  it('drops a stray badgeCode field and ships none', () => {
     expect(
-      parseCatalogue(ingredientData).filter((i) => i.badgeCode !== undefined)
-        .length
-    ).toBe(32)
+      parseIngredient({
+        id: 'fresh-mint',
+        name: 'fresh mint',
+        category: 'fruit & veg',
+        sold: [{ type: 'bunch', size: { amount: 1, unit: 'count' } }],
+        pantry: 'Fridge',
+        allergens: [],
+        badgeCode: 'MNT'
+      })
+    ).not.toHaveProperty('badgeCode')
+    expect(
+      ingredientData.ingredients.some((i) =>
+        Object.keys(i).includes('badgeCode')
+      )
+    ).toBe(false)
   })
 })
 

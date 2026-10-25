@@ -47,7 +47,7 @@
   --color-tint-dinner-ink: #8fbf9f;
   --color-chip-active: var(--color-tint-dinner);
 
-  /* ingredient badges: background + ink per shop section (#154); ink on bg >= 6.7:1 */
+  /* section colours (chips, category tabs): background + ink per shop section (#154); ink on bg >= 6.7:1 */
   --color-badge-produce: #dcefe2;
   --color-badge-produce-ink: #1f5a36;
   --color-badge-meat: #fbe0dc;
@@ -150,7 +150,7 @@
     --color-tint-dinner-ink: #4f8f66;
     --color-chip-active: var(--color-tint-dinner);
 
-    /* ingredient badges: dark background + light ink per shop section; ink on bg >= 8:1 */
+    /* section colours: dark background + light ink per shop section; ink on bg >= 8:1 */
     --color-badge-produce: #1e3b29;
     --color-badge-produce-ink: #a6e0bb;
     --color-badge-meat: #48201b;

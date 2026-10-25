@@ -18,7 +18,7 @@ export const PLACEHOLDER_PICTURE = '/ingre.png'
 
 export const catalogue: LibraryIngredient[] = parseCatalogue(ingredientData)
 export const library: LibraryRecipe[] = parseRecipes(recipeData)
-/** Badge colour per shop section (data/ingredients.json `sectionColours`). */
+/** Colour per shop section (data/ingredients.json `sectionColours`). */
 export const sectionColours = parseSectionColours(ingredientData)
 
 export function toClientRecipe(

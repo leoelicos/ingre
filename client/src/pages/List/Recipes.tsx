@@ -106,6 +106,7 @@ export const Recipes: FC<{
         <RecipeRows
           rows={shown.map((entry) => ({
             recipe: entry.recipe,
+            lines: usedLines(entry.lines),
             details: (title) => (
               <CopyDetails
                 entry={entry}

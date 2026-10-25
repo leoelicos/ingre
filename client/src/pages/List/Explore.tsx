@@ -44,7 +44,7 @@ import { RecipeRows } from './RecipeRows'
 import { OriginalDetails } from './RowDetails'
 import { HeaderRow, titleId, toggleId } from './Section'
 import { useFocusAfterRender } from './usePanel'
-import { copyLines, newCopy } from '../../utils/balance/copies'
+import { copyLines, newCopy, usedLines } from '../../utils/balance/copies'
 
 export const EXPLORE_ID = 'explore'
 export const HIDE_EXPLORE = translate('explore.hide')
@@ -154,6 +154,9 @@ const RecipeGroup: FC<{
     <RecipeRows
       rows={recipes.map((recipe) => ({
         recipe,
+        lines: usedLines(
+          copyLines(recipe, newCopy(recipe.id), DEFAULT_SOURCE.ingredients)
+        ),
         details: (name) => (
           <OriginalDetails
             recipe={recipe}

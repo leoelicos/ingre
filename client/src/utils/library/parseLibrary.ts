@@ -13,8 +13,8 @@ import type {
 import { AISLES, SHOP_SECTIONS } from '../shopping/sections'
 import type { ShopSection } from '../shopping/sections'
 import { FSANZ_ALLERGENS } from './fsanz'
-import { BADGE_TONES } from '../../components/IngredientBadge/tones'
-import type { BadgeTone } from '../../components/IngredientBadge/tones'
+import { BADGE_TONES } from '../../components/SectionTone/tones'
+import type { BadgeTone } from '../../components/SectionTone/tones'
 
 export const BASE_UNITS: readonly BaseUnit[] = ['g', 'ml', 'count']
 export const SOLD_TYPES: readonly SoldType[] = [
@@ -100,14 +100,6 @@ const parseSold = (v: unknown, path: string): SoldOption => {
   }
 }
 
-/** A badge code override: exactly three upper-case letters A-Z. */
-export const BADGE_CODE_PATTERN = /^[A-Z]{3}$/
-
-const parseBadgeCode = (v: unknown, path: string): string =>
-  typeof v === 'string' && BADGE_CODE_PATTERN.test(v)
-    ? v
-    : fail(path, 'exactly 3 upper-case letters A-Z')
-
 const parseMeasureGrams = (v: unknown, path: string): Record<string, number> =>
   Object.entries(rec(v, path)).reduce<Record<string, number>>(
     (acc, [measure, grams]) => ({
@@ -155,9 +147,6 @@ export const parseIngredient = (
             `${path}.measureGrams`
           )
         }),
-    ...(r['badgeCode'] === undefined
-      ? {}
-      : { badgeCode: parseBadgeCode(r['badgeCode'], `${path}.badgeCode`) }),
     ...(r['countUnit'] === undefined
       ? {}
       : { countUnit: parseCountUnit(r['countUnit'], `${path}.countUnit`) }),
@@ -179,57 +168,17 @@ const parseRecipeIngredient = (
   }
 }
 
-/** Most defining ingredients a recipe may name. */
-export const MAX_KEY_INGREDIENTS = 3
-
-/** One key ingredient: an id the recipe itself uses. */
-const parseKeyIngredient = (
-  v: unknown,
-  usedIds: readonly string[],
-  path: string
-): string => {
-  const id = str(v, path)
-  return usedIds.includes(id)
-    ? id
-    : fail(path, 'an ingredientId of this recipe')
-}
-
-/** `keyIngredients`: 1 to MAX_KEY_INGREDIENTS distinct ids from the recipe's own ingredients. */
-export const parseKeyIngredients = (
-  v: unknown,
-  usedIds: readonly string[],
-  path: string
-): string[] => {
-  const ids = arr(v, path).map((id, i) =>
-    parseKeyIngredient(id, usedIds, `${path}[${i}]`)
-  )
-  const distinct = new Set(ids).size === ids.length
-  return ids.length > 0 && ids.length <= MAX_KEY_INGREDIENTS && distinct
-    ? ids
-    : fail(path, `1 to ${MAX_KEY_INGREDIENTS} different ingredient ids`)
-}
-
 export const parseRecipe = (v: unknown, path = 'recipe'): LibraryRecipe => {
   const r = rec(v, path)
   const picture = r['picture_url']
   const ingredients = arr(r['ingredients'], `${path}.ingredients`).map((g, i) =>
     parseRecipeIngredient(g, `${path}.ingredients[${i}]`)
   )
-  const keys = r['keyIngredients']
   return {
     id: str(r['id'], `${path}.id`),
     name: str(r['name'], `${path}.name`),
     portions: num(r['portions'], `${path}.portions`),
     ingredients,
-    ...(keys === undefined
-      ? {}
-      : {
-          keyIngredients: parseKeyIngredients(
-            keys,
-            ingredients.map((g) => g.ingredientId),
-            `${path}.keyIngredients`
-          )
-        }),
     method: arr(r['method'], `${path}.method`).map((m, i) =>
       str(m, `${path}.method[${i}]`)
     ),
@@ -267,7 +216,7 @@ const sectionTone = (map: Rec, section: ShopSection, path: string): BadgeTone =>
   )
 
 /**
- * The section-to-colour map for ingredient badges. Every shop section needs a known tone,
+ * The section-to-colour map for chips and category tabs. Every shop section needs a known tone,
  * and every key must be a shop section (unknown or miscased keys fail loudly).
  */
 export const parseSectionColours = (
