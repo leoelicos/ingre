@@ -1,8 +1,10 @@
 import { accountMenu, expect, newAccount, signUp, test } from './fixtures'
 import {
   clearStripeCalls,
+  failRedirectToCheckout,
   failStripe,
   failStripeJs,
+  failStripeJsOnce,
   stripeCalls
 } from './wiremock'
 import { urls } from './env'
@@ -11,6 +13,11 @@ const STRIPE_JS = /^https:\/\/js\.stripe\.com\//
 
 /** Stripe.js script failures, each its own test (the 200 stand-in is the default mapping). */
 const SCRIPT_FAILURES: (404 | 500)[] = [404, 500]
+
+const FAILED = /couldn.t start the Stripe checkout\. You have not been charged/
+
+/** The three Stripe API calls checkout.ts makes for one session. */
+const ONE_SESSION = ['/v1/products', '/v1/prices', '/v1/checkout/sessions']
 
 /*
  * CRITICAL (#175): the Upgrade journey against the real server, with WireMock as Stripe.
@@ -122,6 +129,72 @@ test.describe('upgrade', () => {
       await expect(page.getByText('You are pro')).toHaveCount(0)
     })
   }
+
+  test('Stripe.js 500, then Upgrade again: the load is retried without a reload and checkout opens', async ({
+    page,
+    request
+  }) => {
+    /** Top-level navigations from here on (a reload would show up as /upgrade). */
+    const navigations: string[] = []
+    page.on('framenavigated', (frame) => {
+      if (frame === page.mainFrame()) navigations.push(frame.url())
+    })
+    const restore = await failStripeJsOnce(request, 500)
+    try {
+      const failed = page.waitForResponse(STRIPE_JS)
+      await page.getByRole('button', { name: 'Checkout with Stripe' }).click()
+      expect((await failed).status()).toBe(500)
+      await expect(page.getByRole('alert')).toHaveText(FAILED)
+      await expect(page).toHaveURL('/upgrade')
+
+      // try again on the same page
+      const retried = page.waitForResponse(STRIPE_JS)
+      await page.getByRole('button', { name: 'Checkout with Stripe' }).click()
+      expect((await retried).status()).toBe(200)
+      await expect(page).toHaveURL(`${urls.wiremock}/c/pay/cs_test_e2e`)
+      await expect(page.getByText('Session cs_test_e2e')).toBeVisible()
+    } finally {
+      await restore()
+    }
+    expect(stripeJsRequests).toEqual([
+      'https://js.stripe.com/v3',
+      'https://js.stripe.com/v3'
+    ])
+    expect(navigations).toEqual([`${urls.wiremock}/c/pay/cs_test_e2e`])
+    // one session per press
+    expect((await stripeCalls(request)).map((c) => c.path)).toEqual([
+      ...ONE_SESSION,
+      ...ONE_SESSION
+    ])
+  })
+
+  test('redirectToCheckout error: a clear message and the user is not upgraded', async ({
+    page,
+    request
+  }) => {
+    const restore = await failRedirectToCheckout(
+      request,
+      'No such checkout.session: cs_test_e2e'
+    )
+    try {
+      const script = page.waitForResponse(STRIPE_JS)
+      await page.getByRole('button', { name: 'Checkout with Stripe' }).click()
+      expect((await script).status()).toBe(200)
+      await expect(page.getByRole('alert')).toHaveText(FAILED)
+      await expect(page).toHaveURL('/upgrade')
+      // the session was created, but Stripe did not open it
+      expect((await stripeCalls(request)).map((c) => c.path)).toEqual(
+        ONE_SESSION
+      )
+    } finally {
+      await restore()
+    }
+    await page.reload()
+    await expect(
+      page.getByRole('button', { name: 'Checkout with Stripe' })
+    ).toBeVisible()
+    await expect(page.getByText('You are pro')).toHaveCount(0)
+  })
 
   test('Stripe error: a clear message and the user is not upgraded', async ({
     page,

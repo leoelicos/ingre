@@ -5,7 +5,8 @@ import { useUpgrade } from './useUpgrade'
 
 export const Upgrade: FC = () => {
   const t = useT()
-  const { pro, loggedIn, getCheckout, cancelled, checkoutFailed } = useUpgrade()
+  const { pro, loggedIn, startCheckout, cancelled, checkoutFailed } =
+    useUpgrade()
   if (pro) return <p>{t('upgrade.pro')}</p>
   if (!loggedIn)
     return (
@@ -33,7 +34,7 @@ export const Upgrade: FC = () => {
       {checkoutFailed && <p role="alert">{t('upgrade.failed')}</p>}
       <button
         onClick={() => {
-          getCheckout()
+          void startCheckout()
         }}
       >
         {t('upgrade.checkout')}
