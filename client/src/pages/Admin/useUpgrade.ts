@@ -1,22 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { useSearchParams } from 'react-router-dom'
-import { loadStripe } from '@stripe/stripe-js/pure'
-import type { Stripe } from '@stripe/stripe-js'
 import { CHECKOUT, GET_USER } from '../../lib/apollo/graphQL/queries'
 import { useAuthContext } from '../../utils/auth/AuthContext'
+import { loadCheckout, runCheckout, sessionFrom } from './checkout'
+import type { CheckoutFailure, LoadCheckout } from './checkout'
 
-const STRIPE_KEY = 'pk_test_TYooMQauvdEDq54NiTphI7jx'
-
-/** The part of Stripe.js the upgrade uses. */
-export type CheckoutRedirect = Pick<Stripe, 'redirectToCheckout'>
-
-/** Loads Stripe.js when checkout starts, not when the module is imported (the /pure entry
-    injects the script on the first call, where the main entry injects it on import). */
-export const loadCheckout = (): Promise<CheckoutRedirect | null> =>
-  loadStripe(STRIPE_KEY)
-
-export const useUpgrade = (load: typeof loadCheckout = loadCheckout) => {
+export const useUpgrade = (load: LoadCheckout = loadCheckout) => {
   const [auth] = useAuthContext()
   const loggedIn = auth.loggedIn
 
@@ -24,10 +14,7 @@ export const useUpgrade = (load: typeof loadCheckout = loadCheckout) => {
   /** Stripe sends a cancelled checkout back here (cancel_url). */
   const cancelled = searchParams.get('checkout') === 'cancelled'
 
-  const [getCheckout, { data, error: checkoutError }] = useLazyQuery(CHECKOUT, {
-    fetchPolicy: 'network-only'
-    // nextFetchPolicy: 'cache-first'
-  })
+  const [getCheckout] = useLazyQuery(CHECKOUT, { fetchPolicy: 'network-only' })
   const {
     data: userData,
     loading: userLoading,
@@ -35,18 +22,19 @@ export const useUpgrade = (load: typeof loadCheckout = loadCheckout) => {
   } = useQuery(GET_USER) // TODO why is this needed? We already have this information from token
 
   const [pro, setPro] = useState(false)
-  /** Stripe.js did not load (the script failed or gave no Stripe): checkout never started. */
-  const [stripeFailed, setStripeFailed] = useState(false)
+  /** Checkout did not open: no session, Stripe.js did not load, or Stripe reported an error. */
+  const [checkoutFailed, setCheckoutFailed] = useState(false)
 
-  useEffect(() => {
-    if (data) {
-      const fail = () => setStripeFailed(true)
-      load().then((stripe) => {
-        if (stripe === null) fail()
-        else stripe.redirectToCheckout({ sessionId: data.checkout.session })
-      }, fail)
-    }
-  }, [data, load])
+  const failed = (step: CheckoutFailure): CheckoutFailure => {
+    setCheckoutFailed(true)
+    return step
+  }
+
+  /** Each press starts over with a new session and, after a failed load, a new Stripe.js. */
+  const startCheckout = (): Promise<CheckoutFailure> => {
+    setCheckoutFailed(false)
+    return runCheckout(() => getCheckout().then(sessionFrom), load).then(failed)
+  }
 
   useEffect(() => {
     if (!userLoading && !userError && userData) {
@@ -54,11 +42,5 @@ export const useUpgrade = (load: typeof loadCheckout = loadCheckout) => {
     }
   }, [userLoading, userError, userData])
 
-  return {
-    pro,
-    loggedIn,
-    getCheckout,
-    cancelled,
-    checkoutFailed: checkoutError !== undefined || stripeFailed
-  }
+  return { pro, loggedIn, startCheckout, cancelled, checkoutFailed }
 }

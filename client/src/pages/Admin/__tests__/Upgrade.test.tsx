@@ -35,13 +35,16 @@ const checkout: MockedResponse = {
   }
 }
 
-const redirectToCheckout = jest.fn(() => Promise.resolve({ error: undefined }))
+/* Stripe navigates away on success, so its promise never settles */
+const redirectToCheckout = jest.fn(
+  (): Promise<never> => new Promise(() => null)
+)
 
-/* Stands in for Stripe.js on the page (what js.stripe.com defines). Set before
-   @stripe/stripe-js looks for it, so the real loadStripe resolves with it. */
+/* Stands in for Stripe.js on the page (what js.stripe.com/v3 defines, version 3). Set
+   before @stripe/stripe-js looks for it, so the real loadStripe resolves with it. */
 Object.defineProperty(window, 'Stripe', {
   configurable: true,
-  value: () => ({ redirectToCheckout })
+  value: Object.assign(() => ({ redirectToCheckout }), { version: 3 })
 })
 
 const checkoutDown: MockedResponse = {
