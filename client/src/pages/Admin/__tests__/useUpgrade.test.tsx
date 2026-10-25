@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { CHECKOUT, GET_USER } from '../../../lib/apollo/graphQL/queries'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { useUpgrade } from '../useUpgrade'
+import type { CheckoutRedirect } from '../useUpgrade'
 
 const wrapper = ({ children }: { children: ReactNode }) => (
   <MockedProvider
@@ -23,21 +24,53 @@ const wrapper = ({ children }: { children: ReactNode }) => (
   </MockedProvider>
 )
 
+/** Starts checkout with this Stripe.js loader; resolves once the loader was called. */
+const startCheckout = async (load: () => Promise<CheckoutRedirect | null>) => {
+  const loader = jest.fn(load)
+  const hook = renderHook(() => useUpgrade(loader), { wrapper })
+  expect(hook.result.current.checkoutFailed).toBe(false)
+  act(() => {
+    hook.result.current.getCheckout()
+  })
+  await waitFor(() => {
+    expect(loader).toHaveBeenCalledTimes(1)
+  })
+  return hook
+}
+
 describe('useUpgrade', () => {
-  it('stays not-pro when the user query fails, and logs when Stripe.js gives nothing', async () => {
-    const error = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => undefined)
-    const load = jest.fn(() => Promise.resolve(null))
-    const { result } = renderHook(() => useUpgrade(load), { wrapper })
+  it('stays not-pro when the user query fails, and fails checkout when Stripe.js gives nothing', async () => {
+    const { result } = await startCheckout(() => Promise.resolve(null))
     expect(result.current.loggedIn).toBe(false)
-    act(() => {
-      result.current.getCheckout()
-    })
     await waitFor(() => {
-      expect(error).toHaveBeenCalledWith('Error: No response from Stripe')
+      expect(result.current.checkoutFailed).toBe(true)
     })
     expect(result.current.pro).toBe(false)
-    error.mockRestore()
+  })
+
+  it('fails checkout when Stripe.js does not load (404 or 500 for the script)', async () => {
+    const { result } = await startCheckout(() =>
+      Promise.reject(new Error('Failed to load Stripe.js'))
+    )
+    await waitFor(() => {
+      expect(result.current.checkoutFailed).toBe(true)
+    })
+    expect(result.current.pro).toBe(false)
+  })
+
+  it('redirects to the new session once Stripe.js loads', async () => {
+    // Stripe navigates away on success, so its promise never settles
+    const redirectToCheckout = jest.fn(
+      (): Promise<never> => new Promise(() => undefined)
+    )
+    const { result } = await startCheckout(() =>
+      Promise.resolve({ redirectToCheckout })
+    )
+    await waitFor(() => {
+      expect(redirectToCheckout).toHaveBeenCalledWith({
+        sessionId: 'cs_test_2'
+      })
+    })
+    expect(result.current.checkoutFailed).toBe(false)
   })
 })

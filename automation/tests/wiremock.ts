@@ -48,27 +48,13 @@ export const clearStripeCalls = async (request: APIRequestContext) => {
   await request.delete(`${urls.wiremock}/__admin/requests`)
 }
 
-/** Makes one Stripe endpoint fail (Stripe's error shape); returns a function that removes the stub. */
-export const failStripe = async (
+/** Adds a WireMock stub ahead of the mappings; returns a function that removes it. */
+const addStub = async (
   request: APIRequestContext,
-  path: string
+  mapping: Record<string, unknown>
 ): Promise<() => Promise<void>> => {
   const response = await request.post(`${urls.wiremock}/__admin/mappings`, {
-    data: {
-      priority: 1,
-      request: { method: 'POST', urlPath: path },
-      response: {
-        status: 402,
-        headers: { 'Content-Type': 'application/json' },
-        jsonBody: {
-          error: {
-            type: 'card_error',
-            code: 'card_declined',
-            message: 'Your card was declined.'
-          }
-        }
-      }
-    }
+    data: { priority: 1, ...mapping }
   })
   const stub: unknown = await response.json()
   const id =
@@ -79,3 +65,37 @@ export const failStripe = async (
     await request.delete(`${urls.wiremock}/__admin/mappings/${id}`)
   }
 }
+
+/** Makes one Stripe endpoint fail (Stripe's error shape); returns a function that removes the stub. */
+export const failStripe = (
+  request: APIRequestContext,
+  path: string
+): Promise<() => Promise<void>> =>
+  addStub(request, {
+    request: { method: 'POST', urlPath: path },
+    response: {
+      status: 402,
+      headers: { 'Content-Type': 'application/json' },
+      jsonBody: {
+        error: {
+          type: 'card_error',
+          code: 'card_declined',
+          message: 'Your card was declined.'
+        }
+      }
+    }
+  })
+
+/** Makes the Stripe.js script itself fail with this status; returns a function that removes the stub. */
+export const failStripeJs = (
+  request: APIRequestContext,
+  status: 404 | 500
+): Promise<() => Promise<void>> =>
+  addStub(request, {
+    request: { method: 'GET', urlPath: '/stripe-js/v3' },
+    response: {
+      status,
+      headers: { 'Content-Type': 'text/plain' },
+      body: status === 404 ? 'Not Found' : 'Internal Server Error'
+    }
+  })
