@@ -53,8 +53,19 @@ const mocks: MockedResponse[] = [
 /** The Stripe.js script tags on the page. */
 const stripeScripts = () => Array.from(document.querySelectorAll(STRIPE_JS))
 
+const upgradeButton = () =>
+  screen.getByRole('button', { name: /checkout with stripe/i })
+
 const pressCheckout = () => {
-  fireEvent.click(screen.getByRole('button', { name: /checkout with stripe/i }))
+  fireEvent.click(upgradeButton())
+}
+
+const expectDisabled = () => {
+  expect(upgradeButton()).toHaveAttribute('aria-disabled', 'true')
+}
+
+const expectEnabled = () => {
+  expect(upgradeButton()).not.toHaveAttribute('aria-disabled')
 }
 
 /** Waits for the loader to add a script other than `previous`, and gives it. */
@@ -83,18 +94,27 @@ describe('Upgrade, when Stripe.js fails to load', () => {
     pressCheckout()
     const failedScript = await nextScript(null)
     expect(screen.queryByRole('alert')).toBeNull()
+    // a second press while Stripe.js loads adds no second script
+    expectDisabled()
+    pressCheckout()
+    expect(stripeScripts()).toEqual([failedScript])
 
     failedScript.dispatchEvent(new Event('error'))
     expect(await screen.findByRole('alert')).toHaveTextContent(FAILED)
     expect(screen.queryByText(/you are pro/i)).toBeNull()
+    expectEnabled()
 
     // try again: the failed script is replaced, no page reload
     pressCheckout()
+    expectDisabled()
     await waitFor(() => {
       expect(screen.queryByRole('alert')).toBeNull()
     })
     const retryScript = await nextScript(failedScript)
     expect(failedScript.isConnected).toBe(false)
+    // a press during the retry is a no-op too
+    pressCheckout()
+    expect(stripeScripts()).toEqual([retryScript])
 
     // this time Stripe.js loads; Stripe then reports an error for the session
     const redirectToCheckout = jest.fn(() =>
@@ -109,10 +129,9 @@ describe('Upgrade, when Stripe.js fails to load', () => {
         sessionId: 'cs_test_2'
       })
     })
+    expect(redirectToCheckout).toHaveBeenCalledTimes(1)
     expect(await screen.findByRole('alert')).toHaveTextContent(FAILED)
     expect(screen.queryByText(/you are pro/i)).toBeNull()
-    expect(
-      screen.getByRole('button', { name: /checkout with stripe/i })
-    ).toBeInTheDocument()
+    expectEnabled()
   })
 })

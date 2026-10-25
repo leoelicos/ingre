@@ -9,6 +9,8 @@ import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { useUpgrade } from '../useUpgrade'
 import type { CheckoutRedirect, LoadCheckout } from '../checkout'
 
+type Hook = { current: ReturnType<typeof useUpgrade> }
+
 const checkoutSession = (session: string): MockedResponse => ({
   request: { query: CHECKOUT },
   result: { data: { checkout: { session } } }
@@ -51,18 +53,42 @@ const renderUpgrade = (load: LoadCheckout, sessions = ['cs_test_2']) => {
     wrapper: wrapperFor(sessions)
   })
   expect(hook.result.current.checkoutFailed).toBe(false)
+  expect(hook.result.current.checkoutStarting).toBe(false)
   return { ...hook, loader }
 }
 
-/** Presses Upgrade once and waits until checkout reports it did not open. */
-const pressAndFail = async (result: {
-  current: ReturnType<typeof useUpgrade>
-}) => {
-  await act(async () => {
-    await result.current.startCheckout()
+/** Presses Upgrade (without waiting for the attempt) and lets React render the press. */
+const press = (result: Hook) => {
+  act(() => {
+    void result.current.startCheckout()
   })
-  expect(result.current.checkoutFailed).toBe(true)
+}
+
+/**
+ * Presses Upgrade once: Upgrade is disabled while checkout starts, then checkout reports
+ * it did not open and Upgrade is enabled again.
+ */
+const pressAndFail = async (result: Hook) => {
+  press(result)
+  expect(result.current.checkoutStarting).toBe(true)
+  await waitFor(() => {
+    expect(result.current.checkoutFailed).toBe(true)
+  })
+  expect(result.current.checkoutStarting).toBe(false)
   expect(result.current.pro).toBe(false)
+}
+
+/** A Stripe.js load still in flight, and the function that finishes it. */
+const loadInFlight = () => {
+  const finishers: ((stripe: CheckoutRedirect | null) => void)[] = []
+  const promise = new Promise<CheckoutRedirect | null>((resolve) => {
+    finishers.push(resolve)
+  })
+  const finish = (stripe: CheckoutRedirect | null): number => {
+    finishers.forEach((resolve) => resolve(stripe))
+    return finishers.length
+  }
+  return { load: () => promise, finish }
 }
 
 describe('useUpgrade', () => {
@@ -95,6 +121,82 @@ describe('useUpgrade', () => {
       })
     })
     expect(result.current.checkoutFailed).toBe(false)
+    // Stripe is navigating away: Upgrade stays disabled
+    expect(result.current.checkoutStarting).toBe(true)
+  })
+
+  it('is enabled again when the page comes back from the back/forward cache mid-redirect', async () => {
+    const stripe = navigatingStripe()
+    const { result, loader } = renderUpgrade(
+      () => Promise.resolve(stripe),
+      ['cs_test_2', 'cs_test_3']
+    )
+    press(result)
+    await waitFor(() => {
+      expect(stripe.redirectToCheckout).toHaveBeenCalledTimes(1)
+    })
+    // a normal page show (not restored) changes nothing
+    act(() => {
+      window.dispatchEvent(
+        new PageTransitionEvent('pageshow', { persisted: false })
+      )
+    })
+    expect(result.current.checkoutStarting).toBe(true)
+
+    act(() => {
+      window.dispatchEvent(
+        new PageTransitionEvent('pageshow', { persisted: true })
+      )
+    })
+    expect(result.current.checkoutStarting).toBe(false)
+    expect(result.current.checkoutFailed).toBe(false)
+
+    press(result)
+    expect(result.current.checkoutStarting).toBe(true)
+    await waitFor(() => {
+      expect(stripe.redirectToCheckout).toHaveBeenCalledWith({
+        sessionId: 'cs_test_3'
+      })
+    })
+    expect(loader).toHaveBeenCalledTimes(2)
+  })
+
+  it('is disabled while checkout starts, and a second press does not start a second attempt', async () => {
+    const pending = loadInFlight()
+    const { result, loader } = renderUpgrade(pending.load, [
+      'cs_test_2',
+      'cs_test_3'
+    ])
+    press(result)
+    expect(result.current.checkoutStarting).toBe(true)
+    press(result)
+    await waitFor(() => {
+      expect(loader).toHaveBeenCalledTimes(1)
+    })
+    // a press during the load (a retry in flight) is a no-op too
+    press(result)
+    expect(result.current.checkoutStarting).toBe(true)
+
+    act(() => {
+      pending.finish(null)
+    })
+    await waitFor(() => {
+      expect(result.current.checkoutFailed).toBe(true)
+    })
+    expect(result.current.checkoutStarting).toBe(false)
+    expect(loader).toHaveBeenCalledTimes(1)
+
+    // enabled again: the next press is a new attempt with the next session
+    const stripe = navigatingStripe()
+    loader.mockImplementation(() => Promise.resolve(stripe))
+    press(result)
+    expect(result.current.checkoutStarting).toBe(true)
+    await waitFor(() => {
+      expect(stripe.redirectToCheckout).toHaveBeenCalledWith({
+        sessionId: 'cs_test_3'
+      })
+    })
+    expect(loader).toHaveBeenCalledTimes(2)
   })
 
   it('retries the load on the next press after a failed load, and redirects when it succeeds', async () => {

@@ -95,6 +95,25 @@ const stripeJsFailure = (status: 404 | 500) => ({
   body: status === 404 ? 'Not Found' : 'Internal Server Error'
 })
 
+/**
+ * Serves the Stripe.js stand-in this many milliseconds late (WireMock fixed delay), so
+ * checkout stays "starting" for a while; returns a function that removes the stub.
+ */
+export const delayStripeJs = (
+  request: APIRequestContext,
+  delayMs: number
+): Promise<() => Promise<void>> =>
+  addStub(request, {
+    request: STRIPE_JS_REQUEST,
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/javascript' },
+      bodyFileName: 'stripe-js-v3.js',
+      transformerParameters: { redirectError: '' },
+      fixedDelayMilliseconds: delayMs
+    }
+  })
+
 /** Makes the Stripe.js script itself fail with this status; returns a function that removes the stub. */
 export const failStripeJs = (
   request: APIRequestContext,
@@ -106,20 +125,21 @@ export const failStripeJs = (
   })
 
 /**
- * Makes only the next Stripe.js request fail with this status (a WireMock scenario: the
- * stub moves its scenario on, and then no longer matches, so the default stand-in answers
- * the retry); returns a function that removes the stub.
+ * Makes only the next Stripe.js request fail with this status, after `delayMs` (a
+ * WireMock scenario: the stub moves its scenario on, and then no longer matches, so the
+ * default stand-in answers the retry); returns a function that removes the stub.
  */
 export const failStripeJsOnce = (
   request: APIRequestContext,
-  status: 404 | 500
+  status: 404 | 500,
+  delayMs = 0
 ): Promise<() => Promise<void>> =>
   addStub(request, {
     scenarioName: `stripe-js-fails-once-${Date.now()}`,
     requiredScenarioState: 'Started',
     newScenarioState: 'failed once',
     request: STRIPE_JS_REQUEST,
-    response: stripeJsFailure(status)
+    response: { ...stripeJsFailure(status), fixedDelayMilliseconds: delayMs }
   })
 
 /**
