@@ -86,16 +86,57 @@ export const failStripe = (
     }
   })
 
+const STRIPE_JS_REQUEST = { method: 'GET', urlPath: '/stripe-js/v3' }
+
+/** Stripe.js failing with this status. */
+const stripeJsFailure = (status: 404 | 500) => ({
+  status,
+  headers: { 'Content-Type': 'text/plain' },
+  body: status === 404 ? 'Not Found' : 'Internal Server Error'
+})
+
 /** Makes the Stripe.js script itself fail with this status; returns a function that removes the stub. */
 export const failStripeJs = (
   request: APIRequestContext,
   status: 404 | 500
 ): Promise<() => Promise<void>> =>
   addStub(request, {
-    request: { method: 'GET', urlPath: '/stripe-js/v3' },
+    request: STRIPE_JS_REQUEST,
+    response: stripeJsFailure(status)
+  })
+
+/**
+ * Makes only the next Stripe.js request fail with this status (a WireMock scenario: the
+ * stub moves its scenario on, and then no longer matches, so the default stand-in answers
+ * the retry); returns a function that removes the stub.
+ */
+export const failStripeJsOnce = (
+  request: APIRequestContext,
+  status: 404 | 500
+): Promise<() => Promise<void>> =>
+  addStub(request, {
+    scenarioName: `stripe-js-fails-once-${Date.now()}`,
+    requiredScenarioState: 'Started',
+    newScenarioState: 'failed once',
+    request: STRIPE_JS_REQUEST,
+    response: stripeJsFailure(status)
+  })
+
+/**
+ * Serves the Stripe.js stand-in with redirectToCheckout resolving with a Stripe error
+ * with this message (no quotes; WireMock HTML-escapes it); returns a function that
+ * removes the stub.
+ */
+export const failRedirectToCheckout = (
+  request: APIRequestContext,
+  message: string
+): Promise<() => Promise<void>> =>
+  addStub(request, {
+    request: STRIPE_JS_REQUEST,
     response: {
-      status,
-      headers: { 'Content-Type': 'text/plain' },
-      body: status === 404 ? 'Not Found' : 'Internal Server Error'
+      status: 200,
+      headers: { 'Content-Type': 'application/javascript' },
+      bodyFileName: 'stripe-js-v3.js',
+      transformerParameters: { redirectError: message }
     }
   })
