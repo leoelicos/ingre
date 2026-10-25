@@ -19,6 +19,3 @@ export const BADGE_TONES: readonly BadgeTone[] = [
   'frozen',
   'neutral'
 ]
-
-/** Unknown sections and aisles: calm grey, never a missing colour. */
-export const FALLBACK_TONE: BadgeTone = 'neutral'

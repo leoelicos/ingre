@@ -49,8 +49,6 @@ export interface LibraryIngredient {
   pantry: HomeLocation
   /** allergen tags from the FSANZ list (utils/library/fsanz), e.g. 'milk'; empty when none */
   allergens: string[]
-  /** badge code override: exactly three letters A-Z; when absent the code is derived from the name */
-  badgeCode?: string
   /** the buying unit of a counted item, spelled out (#182): { one: 'head', other: 'heads' } */
   countUnit?: CountUnit
   /** a part a recipe uses, shown when the total is not a whole count (#182): 'clove' */
@@ -73,8 +71,6 @@ export interface LibraryRecipe {
   id: string
   name: string
   portions: number
-  /** defining ingredients (ids from `ingredients`), drawn as badges on cards and the recipe page */
-  keyIngredients?: string[]
   ingredients: LibraryRecipeIngredient[]
   method: string[]
   picture_url?: string

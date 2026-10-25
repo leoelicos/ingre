@@ -3,12 +3,10 @@ import type { FC } from 'react'
 import { useEffect } from 'react'
 import { Button, Tab, TabList, TabPanel, Tabs } from 'react-aria-components'
 import { COLLAPSE_INNER, collapseClass } from '../../components/Collapse'
-import { resolveBadgeCode } from '../../components/IngredientBadge/badgeCode'
-import { IngredientBadge } from '../../components/IngredientBadge/IngredientBadge'
 import {
   TONE_CLASSES,
   sectionTone
-} from '../../components/IngredientBadge/badgeTone'
+} from '../../components/SectionTone/badgeTone'
 import type { LibraryIngredient } from '../../types/library'
 import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import { categoryLabel } from '../../utils/chips/chips'
@@ -81,11 +79,6 @@ const ItemRow: FC<{
     }
     className={ROW}
   >
-    <IngredientBadge
-      name={item.name}
-      badgeCode={resolveBadgeCode(item)}
-      category={item.category}
-    />
     <span className="flex-1">{capitaliseFirst(item.name)}</span>
     {mark !== null && (
       <span className="text-xs font-semibold text-text-secondary">{mark}</span>

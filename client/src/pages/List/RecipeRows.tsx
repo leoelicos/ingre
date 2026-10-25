@@ -3,13 +3,8 @@ import type { FC, ReactNode } from 'react'
 import { useId, useState } from 'react'
 import { Button, ToggleButton } from 'react-aria-components'
 import { Chevron, Collapse, MOTION } from '../../components/Collapse'
-import {
-  KeyIngredientLines,
-  keyNameIds
-} from '../../components/IngredientBadge/KeyIngredients'
 import { splitTitle } from '../../components/recipeTitle'
 import type { LibraryRecipe } from '../../types/library'
-import { keyIngredientsOf } from '../../utils/library/keyIngredients'
 
 /** What every row shares: picks, open rows, and what an open row shows. */
 export interface RowControls {
@@ -77,6 +72,7 @@ export const useShownOnce = (open: boolean): boolean => {
 /**
  * One recipe row (#179): one tap anywhere selects or unselects it (a toggle button, so
  * VoiceOver reads "selected"); the chevron opens its details inline. No Add button.
+ * Closed, a row shows only the recipe's name: no key-ingredient preview or badges.
  */
 export const RecipeRow: FC<{
   row: Row
@@ -86,7 +82,6 @@ export const RecipeRow: FC<{
   const { recipe } = row
   const id = useId()
   const { title } = splitTitle(recipe.name)
-  const items = keyIngredientsOf(recipe)
   const picked = controls.pickedIds.has(recipe.id)
   const open = controls.openIds.has(recipe.id)
   const detailsId = `${id}-details`
@@ -100,21 +95,14 @@ export const RecipeRow: FC<{
         isSelected={picked}
         onChange={() => controls.onTogglePicked(recipe)}
         aria-labelledby={`${id}-title`}
-        aria-describedby={keyNameIds(id, items)}
         className="flex min-h-[44px] items-start gap-3 rounded-l-card p-4 text-left data-[focus-visible]:focus-ring"
       >
         <CheckMark picked={picked} />
-        <span className="flex min-w-0 flex-col gap-2">
-          <span
-            id={`${id}-title`}
-            className="text-lg font-semibold leading-snug text-text"
-          >
-            {title}
-          </span>
-          <KeyIngredientLines
-            items={items}
-            idPrefix={id}
-          />
+        <span
+          id={`${id}-title`}
+          className="min-w-0 text-lg font-semibold leading-snug text-text"
+        >
+          {title}
         </span>
       </ToggleButton>
       <Button

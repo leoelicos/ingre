@@ -12,8 +12,8 @@ import {
   EDGE_TONE_CLASSES,
   TONE_CLASSES,
   sectionTone
-} from '../../components/IngredientBadge/badgeTone'
-import type { BadgeTone } from '../../components/IngredientBadge/tones'
+} from '../../components/SectionTone/badgeTone'
+import type { BadgeTone } from '../../components/SectionTone/tones'
 import type { Chip, ChipGroup } from '../../utils/chips/chips'
 import { categoryLabel } from '../../utils/chips/chips'
 import type { ShopSection } from '../../utils/shopping/sections'
