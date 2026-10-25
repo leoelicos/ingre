@@ -7,7 +7,9 @@ import {
   chip,
   drawer,
   explore,
+  exploreHeader,
   exploreRow,
+  hideX,
   ingredientsRegion,
   openExplore,
   pageTop,
@@ -21,12 +23,6 @@ import {
 /* #181 Search / Explore: one scenario per behaviour, on the phone and desktop projects. */
 
 const RECIPE_COUNT = 14
-const closeX = (page: Page) =>
-  explore(page).getByRole('button', { name: 'Close Explore' })
-const exploreHeader = (page: Page) =>
-  explore(page)
-    .getByRole('heading', { level: 2, name: 'Explore', exact: true })
-    .getByRole('button')
 const group = (page: Page, name: string): Locator =>
   explore(page)
     .locator('div')
@@ -101,27 +97,31 @@ test.describe('Explore (#181)', () => {
     ).not.toBe('none')
   })
 
-  test('on load with something selected it starts closed', async ({ page }) => {
+  test('on load with something selected it starts collapsed, but is still on the page', async ({
+    page
+  }) => {
     await pickRows(page, DAHL)
     await page.reload()
     await expect(row(page)).toBeVisible()
-    await expect(explore(page)).toHaveCount(0)
+    await expect(explore(page)).toBeVisible()
+    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
+    await expect(exploreRow(page, DAHL)).toBeHidden()
   })
 
-  test('opens on search focus by click or tap', async ({ page }) => {
+  test('expands on search focus by click or tap', async ({ page }) => {
     await pickRows(page, DAHL)
     await page.reload()
-    await expect(explore(page)).toHaveCount(0)
+    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
     if (await rail(page).isVisible()) await rail(page).click()
     else await searchBox(page).click()
-    await expect(explore(page)).toBeVisible()
+    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
     await expect(searchBox(page)).toBeFocused()
   })
 
-  test('opens on search focus by keyboard', async ({ page }) => {
+  test('expands on search focus by keyboard', async ({ page }) => {
     await pickRows(page, DAHL)
     await page.reload()
-    await expect(explore(page)).toHaveCount(0)
+    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
     const wide = await rail(page).isVisible()
     // the drawer strip is last on the page, the header search bar first
     const target = wide ? rail(page) : searchBox(page)
@@ -131,7 +131,7 @@ test.describe('Explore (#181)', () => {
     }
     await expect(target).toBeFocused()
     if (await rail(page).isVisible()) await page.keyboard.press('Enter')
-    await expect(explore(page)).toBeVisible()
+    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
     await expect(searchBox(page)).toBeFocused()
   })
 
@@ -214,23 +214,30 @@ test.describe('Explore (#181)', () => {
     await expect(explore(page)).toBeVisible()
   })
 
-  test('only its X closes it, and it reappears on search focus', async ({
+  test('its X collapses it to its header row, focused; the header row or search focus expands it', async ({
     page
   }) => {
-    await closeX(page).click()
-    await expect(explore(page)).toHaveCount(0)
-    if (await rail(page).isVisible()) await rail(page).click()
-    else await searchBox(page).click()
+    await hideX(page).click()
     await expect(explore(page)).toBeVisible()
+    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
+    await expect(exploreHeader(page)).toBeFocused()
+    await expect(exploreRow(page, DAHL)).toBeHidden()
+    await expect(hideX(page)).toHaveCount(0)
+    await exploreHeader(page).click()
+    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
+    await expect(exploreRow(page, DAHL)).toBeVisible()
+    await hideX(page).click()
+    await searchBox(page).click()
+    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
   })
 
-  test('it reappears on typing', async ({ page }) => {
+  test('it expands on typing', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await searchBox(page).focus()
-    await closeX(page).click()
-    await expect(explore(page)).toHaveCount(0)
+    await hideX(page).click()
+    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
     await searchBox(page).pressSequentially('dahl')
-    await expect(explore(page)).toBeVisible()
+    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
     expect(await rowNames(explore(page))).toEqual([DAHL])
   })
 
@@ -261,10 +268,10 @@ test.describe('Explore (#181)', () => {
     )
   })
 
-  test('from 992px: a push drawer column on the right holds the search bar and squeezes the layout', async ({
+  test('from 1328px: a push drawer column on the right holds the search bar and squeezes the layout', async ({
     page
   }) => {
-    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.setViewportSize({ width: 1328, height: 800 })
     await expect(page.getByRole('banner').getByRole('searchbox')).toHaveCount(0)
     await expect(drawer(page).getByRole('searchbox')).toBeVisible()
     await expect(
@@ -275,21 +282,25 @@ test.describe('Explore (#181)', () => {
     expect(open.width).toBeGreaterThan(340)
     expect(open.width).toBeLessThan(380)
     expect(open.x).toBeGreaterThanOrEqual(main.x + main.width)
-    await closeX(page).click()
+    await hideX(page).click()
     await expect
       .poll(async () => (await box(page.getByRole('main'))).width)
       .toBeGreaterThan(main.width + 250)
   })
 
-  test('from 992px: the closed drawer leaves a strip whose search button reopens it and focuses search', async ({
+  test('from 1328px: the collapsed drawer leaves a strip whose search button expands it and focuses search', async ({
     page
   }) => {
-    await page.setViewportSize({ width: 1280, height: 800 })
-    await closeX(page).click()
+    await page.setViewportSize({ width: 1328, height: 800 })
+    await hideX(page).click()
     await expect(rail(page)).toBeVisible()
+    await expect(rail(page)).toBeFocused()
+    await expect(rail(page)).toHaveAttribute('aria-expanded', 'false')
     await expect
       .poll(async () => (await box(drawer(page))).width)
       .toBeLessThan(80)
+    // collapsed, Explore is still on the page (hidden in the strip), never removed
+    await expect(page.locator('#explore')).toHaveCount(1)
     await rail(page).click()
     await expect(explore(page)).toBeVisible()
     await expect(searchBox(page)).toBeFocused()
@@ -444,7 +455,7 @@ test.describe('Explore (#181)', () => {
   test('motion: the drawer opens and closes in about 0.2 s', async ({
     page
   }) => {
-    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.setViewportSize({ width: 1328, height: 800 })
     expect(
       await drawer(page).evaluate(
         (el) => getComputedStyle(el).transitionDuration
@@ -457,7 +468,7 @@ test.describe('Explore with reduced motion (#181)', () => {
   test.use({ reducedMotion: 'reduce' })
 
   test('the drawer opens and closes instantly', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.setViewportSize({ width: 1328, height: 800 })
     await page.goto('/')
     expect(
       await drawer(page).evaluate(
