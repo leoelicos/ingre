@@ -5,14 +5,15 @@ import { createContext, useContext, useState } from 'react'
 export interface ExploreState {
   readonly query: string
   readonly setQuery: (query: string) => void
-  /** null until the page decides on load (open when nothing is selected) */
-  readonly open: boolean | null
-  readonly collapsed: boolean
-  /** search focus, typing or the drawer's search button: open and expanded */
+  /**
+   * Explore is always on the page; this says whether it is expanded or collapsed to its
+   * header row (or the drawer's strip). null until the page decides on load.
+   */
+  readonly expanded: boolean | null
+  /** search focus, typing, the drawer's search button or the header row: expanded */
   readonly show: () => void
-  /** only Explore's X closes it */
-  readonly close: () => void
-  readonly toggleCollapsed: () => void
+  /** Explore's X or the header row: collapsed, never removed */
+  readonly collapse: () => void
   /** the search box should take focus once it is on screen (after a move or reopen) */
   readonly focusPending: boolean
   readonly requestFocus: () => void
@@ -23,20 +24,14 @@ const ExploreContext = createContext<ExploreState | null>(null)
 
 export const useExploreState = (): ExploreState => {
   const [query, setQuery] = useState('')
-  const [open, setOpen] = useState<boolean | null>(null)
-  const [collapsed, setCollapsed] = useState(false)
+  const [expanded, setExpanded] = useState<boolean | null>(null)
   const [focusPending, setFocusPending] = useState(false)
   return {
     query,
     setQuery,
-    open,
-    collapsed,
-    show: () => {
-      setOpen(true)
-      setCollapsed(false)
-    },
-    close: () => setOpen(false),
-    toggleCollapsed: () => setCollapsed(!collapsed),
+    expanded,
+    show: () => setExpanded(true),
+    collapse: () => setExpanded(false),
     focusPending,
     requestFocus: () => setFocusPending(true),
     focusTaken: () => setFocusPending(false)

@@ -48,6 +48,9 @@ const HeaderText: FC<{ id: string; title: string; summary: string }> = ({
 /** The title's id: the section and its heading are named by the title alone, not the summary. */
 export const titleId = (headingId: string): string => `${headingId}-title`
 
+/** The header row button's id, so focus can be sent back to it. */
+export const toggleId = (headingId: string): string => `${headingId}-toggle`
+
 /** How a header row toggles its content; null when it cannot collapse. */
 export interface HeaderToggle {
   readonly open: boolean
@@ -84,6 +87,7 @@ export const HeaderRow: FC<{
       </span>
     ) : (
       <Button
+        id={toggleId(headingId)}
         aria-expanded={toggle.open}
         aria-controls={toggle.controls}
         onPress={toggle.onToggle}

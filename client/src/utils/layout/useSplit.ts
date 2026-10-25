@@ -1,10 +1,11 @@
 import { useStored } from '../storage/useStored'
 import {
+  DRAWER_MIN_WIDTH,
   SPLIT_MIN_WIDTH,
   WIDE_MIN_WIDTH,
   useMinWidth
 } from '../media/useMinWidth'
-import type { Split } from './split'
+import type { Split, Widths } from './split'
 import {
   DEFAULT_SPLIT,
   SPLIT_KEY,
@@ -13,22 +14,28 @@ import {
   splitOptions
 } from './split'
 
+/** The width breakpoints the viewport has reached; follows resizes. */
+export const useWidths = (): Widths => ({
+  split: useMinWidth(SPLIT_MIN_WIDTH),
+  wide: useMinWidth(WIDE_MIN_WIDTH),
+  drawer: useMinWidth(DRAWER_MIN_WIDTH)
+})
+
 /**
  * The preferred split is kept on this device, so a refresh keeps it, and so does a window that
- * shrinks below 992px (shown as 50/50) and grows again (#181).
+ * shrinks below where it is offered (shown as 50/50) and grows again (#181).
  */
 export const useSplit = () => {
-  const splitWidth = useMinWidth(SPLIT_MIN_WIDTH)
-  const wideWidth = useMinWidth(WIDE_MIN_WIDTH)
+  const widths = useWidths()
   const [preferred, update] = useStored<Split>(
     SPLIT_KEY,
     parseSplit,
     DEFAULT_SPLIT
   )
   return {
-    split: effectiveSplit(preferred, splitWidth, wideWidth),
-    options: splitOptions(splitWidth, wideWidth),
-    wide: wideWidth,
+    split: effectiveSplit(preferred, widths),
+    options: splitOptions(widths),
+    drawer: widths.drawer,
     choose: (split: Split) => update(() => split)
   }
 }

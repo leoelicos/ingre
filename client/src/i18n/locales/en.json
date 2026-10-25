@@ -75,7 +75,7 @@
   },
   "explore": {
     "title": "Explore",
-    "close": "Close Explore",
+    "hide": "Hide Explore",
     "drawer": "Explore drawer",
     "actions": "Explore actions",
     "filter": "Filter Explore",
@@ -155,7 +155,8 @@
   "layout": {
     "label": "Layout",
     "vertical": "Vertical",
-    "split": "Ingredients {{ingredients}}%, Recipes {{recipes}}%"
+    "split": "Ingredients {{ingredients}}%, Recipes {{recipes}}%",
+    "thirds": "Ingredients {{ingredients}}%, Recipes {{recipes}}%, Explore {{explore}}%"
   },
   "scrollToTop": "Scroll to top",
   "notLoggedIn": {
