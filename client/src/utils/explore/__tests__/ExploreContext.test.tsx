@@ -14,15 +14,13 @@ describe('Explore state (#181)', () => {
     )
   })
 
-  it('opens, collapses, closes and passes focus on', () => {
+  it('expands, collapses and passes focus on', () => {
     const { result } = renderHook(() => useExplore(), { wrapper })
-    expect(result.current.open).toBeNull()
-    act(() => result.current.toggleCollapsed())
-    expect(result.current.collapsed).toBe(true)
+    expect(result.current.expanded).toBeNull()
+    act(() => result.current.collapse())
+    expect(result.current.expanded).toBe(false)
     act(() => result.current.show())
-    expect(result.current).toMatchObject({ open: true, collapsed: false })
-    act(() => result.current.close())
-    expect(result.current.open).toBe(false)
+    expect(result.current.expanded).toBe(true)
     act(() => result.current.requestFocus())
     expect(result.current.focusPending).toBe(true)
     act(() => result.current.focusTaken())

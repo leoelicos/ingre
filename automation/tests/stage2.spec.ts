@@ -54,10 +54,10 @@ const choose = async (
   await pickOption(page, option)
   await page.keyboard.press('Escape')
 }
-/** Closes Explore however this width shows it, so it can't take focus from the filter. */
+/** Collapses Explore however this width shows it, so it can't take focus from the filter. */
 const closeExplore = async (page: Page) => {
-  const close = page.getByRole('button', { name: 'Close Explore' })
-  if (await close.isVisible()) await close.click()
+  const hide = page.getByRole('button', { name: 'Hide Explore' })
+  if (await hide.isVisible()) await hide.click()
 }
 /** Adds a catalogue item to Extra by hand, from the search. */
 const addExtra = async (page: Page, query: string, name: string) => {

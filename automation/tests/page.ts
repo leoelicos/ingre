@@ -78,7 +78,7 @@ export const searchBox = (page: Page): Locator =>
   page.getByRole('searchbox', { name: SEARCH })
 export const drawer = (page: Page): Locator =>
   page.getByRole('complementary', { name: 'Explore drawer' })
-/** The closed drawer's strip button (992px and up). */
+/** The collapsed drawer's strip button (1328px and up). */
 export const rail = (page: Page): Locator =>
   drawer(page).getByRole('button', { name: SEARCH })
 
@@ -105,12 +105,21 @@ export const chooseLayout = (page: Page, text: string) =>
     .filter({ hasText: new RegExp(`^${text}$`) })
     .click()
 
-/** Opens Explore however this width shows it: the drawer strip, or the search bar. */
+/** Explore's header row button, which expands and collapses it. */
+export const exploreHeader = (page: Page): Locator =>
+  explore(page)
+    .getByRole('heading', { level: 2, name: 'Explore', exact: true })
+    .getByRole('button')
+/** Explore's X, which collapses it (it never goes away). */
+export const hideX = (page: Page): Locator =>
+  explore(page).getByRole('button', { name: 'Hide Explore' })
+
+/** Expands Explore however this width shows it: the drawer strip, or the search bar. */
 export const openExplore = async (page: Page) => {
-  if (await explore(page).isVisible()) return
   if (await rail(page).isVisible()) await rail(page).click()
-  else await searchBox(page).click()
-  await expect(explore(page)).toBeVisible()
+  else if ((await exploreHeader(page).getAttribute('aria-expanded')) !== 'true')
+    await searchBox(page).click()
+  await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
 }
 
 /** Picks recipes by ticking their rows in Explore. */

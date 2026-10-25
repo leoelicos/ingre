@@ -6,11 +6,17 @@ import { useAuthContext } from '../../utils/auth/AuthContext'
 import { changeTitle } from '../../utils/changeTitle'
 import { useChips } from '../../utils/chips/useChips'
 import { useExplore } from '../../utils/explore/ExploreContext'
-import { SPLIT_COLUMNS } from '../../utils/layout/split'
+import type { Split } from '../../utils/layout/split'
+import { SPLIT_COLUMNS, explorePlacement } from '../../utils/layout/split'
 import { useSplit } from '../../utils/layout/useSplit'
 import { useSaved } from '../../utils/saved/useSaved'
 import type { ExploreProps } from './Explore'
-import { Explore, ExploreDrawer } from './Explore'
+import {
+  EXPLORE_TOGGLE_ID,
+  Explore,
+  ExploreColumn,
+  ExploreDrawer
+} from './Explore'
 import { Extra } from './Extra'
 import {
   INGREDIENTS_HEADING_ID,
@@ -38,10 +44,14 @@ export const withSaved = (
   return next
 }
 
+/** Choosing 33/33/33 shows Explore, expanded, as the third column. */
+export const showsExplore = (split: Split): boolean => split === '33/33/33'
+
 /**
  * The one page (#179, #181, #182): Explore, then Ingredients, Recipes and Extra, stacked or
- * side by side (Ingredients on the left; Recipes with Extra under it on the right). From 992px
- * Explore is a drawer column on the right.
+ * side by side (Ingredients on the left; Recipes with Extra under it on the right). From 1328px
+ * Explore is a drawer column on the right, or with 33/33/33 the third equal column. Explore is
+ * always on the page: on load it is expanded when nothing is selected, collapsed otherwise.
  */
 export const ListPage: FC = () => {
   const t = useT()
@@ -49,15 +59,18 @@ export const ListPage: FC = () => {
   const explore = useExplore()
   const list = useChips()
   const ingredients = useIngredients(list)
-  const { split, options, wide, choose } = useSplit()
+  const { split, options, drawer, choose } = useSplit()
   const [params, setParams] = useSearchParams()
   const savedOnly = savedParam(params)
   const loggedIn = useAuthContext()[0].loggedIn
   const savedState = useSaved(loggedIn)
   const saved = loggedIn ? savedState : null
-  /* on load, Explore opens when nothing is selected (or Saved was asked for) */
-  const [openOnLoad] = useState(() => list.entries.length === 0 || savedOnly)
-  const exploreOpen = explore.open ?? openOnLoad
+  /* on load, Explore is expanded when nothing is selected (or Saved was asked for) */
+  const [expandedOnLoad] = useState(
+    () => list.entries.length === 0 || savedOnly
+  )
+  const expanded = explore.expanded ?? expandedOnLoad
+  const placement = explorePlacement(drawer, split)
   const vertical = split === 'vertical'
   const exploreProps: ExploreProps = {
     ingredients,
@@ -73,11 +86,20 @@ export const ListPage: FC = () => {
     <div className="mx-auto flex w-full max-w-layout gap-6 px-gutter">
       <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-24 pt-4">
         <h1 className="sr-only">{t('list.title')}</h1>
-        {!wide && exploreOpen && <Explore {...exploreProps} />}
+        {placement === 'inline' && (
+          <Explore
+            {...exploreProps}
+            expanded={expanded}
+            collapseFocusId={EXPLORE_TOGGLE_ID}
+          />
+        )}
         <LayoutToggle
           split={split}
           options={options}
-          onChange={choose}
+          onChange={(next) => {
+            if (showsExplore(next)) explore.show()
+            choose(next)
+          }}
         />
         <div
           data-split={split}
@@ -98,6 +120,12 @@ export const ListPage: FC = () => {
               collapsible={vertical}
             />
           </div>
+          {placement === 'column' && (
+            <ExploreColumn
+              {...exploreProps}
+              expanded={expanded}
+            />
+          )}
         </div>
         <p
           role="status"
@@ -110,10 +138,10 @@ export const ListPage: FC = () => {
           headingId={INGREDIENTS_HEADING_ID}
         />
       </PageMain>
-      {wide && (
+      {placement === 'drawer' && (
         <ExploreDrawer
-          open={exploreOpen}
           {...exploreProps}
+          expanded={expanded}
         />
       )}
     </div>

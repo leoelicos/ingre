@@ -14,7 +14,7 @@ import {
   renderList,
   searchBox
 } from '../../../test/renderList'
-import { CLOSE_EXPLORE } from '../Explore'
+import { HIDE_EXPLORE } from '../Explore'
 
 beforeEach(() => localStorage.clear())
 
@@ -25,7 +25,6 @@ const search = async (user: User, text: string): Promise<void> => {
   await user.paste(text)
 }
 
-const exploreRegion = () => screen.queryByRole('region', { name: 'Explore' })
 const where = () => screen.getByLabelText('where')
 /** The group under an Explore heading. */
 const groupUnder = (title: string): HTMLElement => {
@@ -59,8 +58,8 @@ const openFilter = () =>
     )
   )
 
-describe('Scenario: Explore opens (#181)', () => {
-  it('opens on load when nothing is selected: an inline, labelled region that pushes content down', () => {
+describe('Scenario: Explore is always on the page (#181)', () => {
+  it('is expanded on load when nothing is selected: an inline, labelled region that pushes content down', () => {
     renderList()
     const area = region('Explore')
     expect(area.tagName).toBe('SECTION')
@@ -73,23 +72,28 @@ describe('Scenario: Explore opens (#181)', () => {
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
     expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
+    expect(exploreHeader()).toHaveAttribute('aria-controls', 'explore-content')
+    expect(document.getElementById('explore-content')).toBeVisible()
   })
 
-  it('starts closed when something is selected, and opens on search focus', () => {
+  it('is collapsed on load when something is selected, but still there; search focus expands it', () => {
     pick('dahl')
     renderList()
-    expect(exploreRegion()).toBeNull()
+    expect(region('Explore')).toBeVisible()
+    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
+    expect(document.getElementById('explore-content')).not.toBeVisible()
+    expect(screen.queryByRole('button', { name: HIDE_EXPLORE })).toBeNull()
     act(() => searchBox().focus())
-    expect(region('Explore')).toBeInTheDocument()
+    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
   })
 
-  it('opens when typing', async () => {
+  it('expands when typing', async () => {
     const user = userEvent.setup()
     pick('dahl')
     renderList()
     act(() => searchBox().blur())
     fireEvent.change(searchBox(), { target: { value: 'dahl' } })
-    expect(region('Explore')).toBeInTheDocument()
+    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
     await user.clear(searchBox())
     expect(
       explore().getByRole('heading', { name: 'Browse recipes' })
@@ -97,23 +101,38 @@ describe('Scenario: Explore opens (#181)', () => {
   })
 })
 
-describe('Scenario: Explore closes only with its X (#181)', () => {
-  it('stays open on an outside click and Escape; X removes the whole region', async () => {
+describe('Scenario: Explore collapses, never goes away (#181)', () => {
+  it('stays expanded on an outside click and Escape; X collapses it to its header row and focuses that', async () => {
     const user = userEvent.setup()
     renderList()
     await user.click(screen.getByRole('heading', { level: 1, hidden: true }))
     fireEvent.pointerDown(document.body)
-    expect(region('Explore')).toBeInTheDocument()
+    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
     explore()
       .getByRole('button', { name: /^Filter/ })
       .focus()
     await user.keyboard('{Escape}')
-    expect(region('Explore')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: CLOSE_EXPLORE }))
-    expect(exploreRegion()).toBeNull()
-    expect(screen.queryByRole('heading', { name: 'Explore' })).toBeNull()
-    act(() => searchBox().focus())
-    expect(region('Explore')).toBeInTheDocument()
+    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
+    const hide = screen.getByRole('button', { name: HIDE_EXPLORE })
+    expect(hide).toHaveAttribute('aria-controls', 'explore-content')
+    await user.click(hide)
+    expect(region('Explore')).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'Explore' })).toBeVisible()
+    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
+    expect(exploreHeader()).toHaveFocus()
+    expect(screen.queryByRole('button', { name: HIDE_EXPLORE })).toBeNull()
+    await user.click(exploreHeader())
+    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
+    expect(exploreHeader()).toHaveFocus()
+  })
+
+  it('keeps what is inside while collapsed: an open filter is still open when it expands', async () => {
+    const user = userEvent.setup()
+    renderList()
+    openFilter()
+    await user.click(screen.getByRole('button', { name: HIDE_EXPLORE }))
+    await user.click(exploreHeader())
+    expect(explore().getByRole('switch', { name: 'Saved' })).toBeVisible()
   })
 
   it('the header row collapses the results but keeps the header; search focus or typing expands it', async () => {
@@ -123,9 +142,9 @@ describe('Scenario: Explore closes only with its X (#181)', () => {
     expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
     expect(exploreHeader()).toHaveClass('shadow-raised')
     expect(explore().queryByRole('switch', { name: 'Saved' })).toBeNull()
-    expect(screen.getByRole('button', { name: CLOSE_EXPLORE })).toBeVisible()
     act(() => searchBox().focus())
     expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('button', { name: HIDE_EXPLORE })).toBeVisible()
     await user.click(exploreHeader())
     act(() => searchBox().blur())
     fireEvent.change(searchBox(), { target: { value: 'b' } })

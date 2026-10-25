@@ -4,7 +4,7 @@ import { useAuthContext } from '../utils/auth/AuthContext'
 import { IngreIconLogoEgg } from '../lib/icon/Icon'
 import { AccountMenu } from './AccountMenu/AccountMenu'
 import { SearchBox } from './SearchBox/SearchBox'
-import { WIDE_MIN_WIDTH, useMinWidth } from '../utils/media/useMinWidth'
+import { DRAWER_MIN_WIDTH, useMinWidth } from '../utils/media/useMinWidth'
 
 export const LOGO_TEXT = 'ingré'
 
@@ -23,12 +23,13 @@ const Logo: FC = () => (
 
 /**
  * One header everywhere (#164): the logo, search and the account menu. On the list page from
- * 992px the search bar lives in the Explore drawer instead (#181).
+ * 1328px the search bar lives in the Explore drawer (or the 33/33/33 Explore column) instead
+ * (#181); below that it stays here.
  */
 export const Header: FC = () => {
   const [auth] = useAuthContext()
   const onList = useLocation().pathname === '/'
-  const inDrawer = useMinWidth(WIDE_MIN_WIDTH) && onList
+  const inDrawer = useMinWidth(DRAWER_MIN_WIDTH) && onList
   return (
     <header className="ingre-navbar">
       <div className="ingre-page flex items-center gap-2 py-2 sm:gap-4 sm:py-3">
