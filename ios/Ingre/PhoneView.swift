@@ -1,15 +1,39 @@
 import SwiftUI
 import IngreCore
 
+private let sampleIngredients = [
+    CatalogIngredient(id: "garlic", name: "garlic", category: "fruit & veg", approxGrams: 60, measureGrams: ["clove": 6]),
+    CatalogIngredient(id: "onion", name: "onion", category: "fruit & veg"),
+    CatalogIngredient(id: "spaghetti", name: "spaghetti", category: "pantry")
+]
+
+private let sampleRecipes = [
+    CatalogRecipe(id: "spaghetti-bolognese", name: "Spaghetti bolognese", portions: 1, lines: [
+        CatalogLine(ingredientId: "spaghetti", quantity: 100, measure: "g"),
+        CatalogLine(ingredientId: "onion", quantity: 0.25, measure: "whole"),
+        CatalogLine(ingredientId: "garlic", quantity: 0.5, measure: "clove")
+    ]),
+    CatalogRecipe(id: "dahl", name: "Red lentil dahl", portions: 1, lines: [
+        CatalogLine(ingredientId: "onion", quantity: 0.5, measure: "whole"),
+        CatalogLine(ingredientId: "garlic", quantity: 1, measure: "clove")
+    ])
+]
+
+private let sampleNames = Dictionary(uniqueKeysWithValues: sampleIngredients.map { ($0.id, $0.name) })
+private let sampleCategories = Dictionary(uniqueKeysWithValues: sampleIngredients.map { ($0.id, $0.category) })
+
 /// The phone page. Explore, Ingredients, Recipes, then Extra. No sheets.
 struct PhoneView: View {
-    @State private var picked = 0
-    @State private var savedRequested = false
+    @State private var query = ""
+    @State private var memory = ListMemory()
     @State private var open = true
+    @State private var opened: Set<String> = []
+    @State private var extra = ""
+    @State private var extras: [String] = []
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Text("Explore").font(.title2).accessibilityAddTraits(.isHeader)
                     Spacer()
@@ -17,24 +41,70 @@ struct PhoneView: View {
                         .frame(minHeight: 44)
                 }
                 if open {
-                    Text("Search ingredients and recipes")
-                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    TextField("Search ingredients and recipes", text: $query)
                         .accessibilityLabel("Search ingredients and recipes")
+                        .frame(minHeight: 44)
+                    exploreBody
                 }
                 Text("Ingredients").font(.title2).accessibilityAddTraits(.isHeader)
+                ForEach(shopLines(recipeCopies(memory), sampleNames, sampleCategories), id: \.ingredientId) { line in
+                    Text("\(capitaliseFirst(line.name)) \(formatQuantity(line.quantity, line.measure))")
+                        .frame(minHeight: 44, alignment: .leading)
+                }
                 Text("Recipes").font(.title2).accessibilityAddTraits(.isHeader)
-                Text("Red lentil dahl").font(.headline)
-                HStack {
-                    ForEach(closedChips(["onion", "garlic"]), id: \.name) { chip in
-                        Text(chip.name)
-                            .frame(minHeight: 44)
+                ForEach(recipeCopies(memory), id: \.id) { recipe in
+                    Button(recipe.name) {
+                        if opened.contains(recipe.id) { opened.remove(recipe.id) } else { opened.insert(recipe.id) }
+                    }
+                    .frame(minHeight: 44)
+                    if opened.contains(recipe.id) {
+                        ForEach(recipe.lines.filter { $0.quantity > 0 }, id: \.ingredientId) { line in
+                            Text("\(capitaliseFirst(line.name)) \(formatQuantity(line.quantity, line.measure))")
+                        }
+                    } else {
+                        HStack {
+                            ForEach(closedChips(recipe.lines.filter { $0.quantity > 0 }.map(\.name)), id: \.name) { chip in
+                                Text(chip.name).frame(minHeight: 44)
+                            }
+                        }
                     }
                 }
                 Text("Extra").font(.title2).accessibilityAddTraits(.isHeader)
+                TextField("Add an extra", text: $extra).frame(minHeight: 44)
+                Button("Add") {
+                    let name = extra.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !name.isEmpty {
+                        extras.append(name)
+                        extra = ""
+                    }
+                }
+                .frame(minHeight: 44)
+                ForEach(extras, id: \.self) { Text($0).frame(minHeight: 44) }
             }
             .padding(16)
         }
-        .onAppear { open = exploreStartsOpen(pickedCount: picked, savedRequested: savedRequested) }
+        .onAppear { open = exploreStartsOpen(pickedCount: memory.copies.count, savedRequested: false) }
+    }
+
+    @ViewBuilder private var exploreBody: some View {
+        switch explore(query: query, ingredients: sampleIngredients, recipes: sampleRecipes) {
+        case .browse(let recipes):
+            recipeButtons(recipes)
+        case .matches(let ingredients, let recipes):
+            ForEach(ingredients, id: \.id) { Text(capitaliseFirst($0.name)).frame(minHeight: 44) }
+            recipeButtons(recipes)
+        case .none(let ingredients, let recipes, _):
+            Text("No matches")
+            ForEach(ingredients, id: \.id) { Text(capitaliseFirst($0.name)).frame(minHeight: 44) }
+            recipeButtons(recipes)
+        }
+    }
+
+    private func recipeButtons(_ recipes: [CatalogRecipe]) -> some View {
+        ForEach(recipes, id: \.id) { recipe in
+            Button(recipe.name) { memory = pickRecipe(memory, toStored(recipe, sampleNames)) }
+                .frame(minHeight: 44)
+        }
     }
 }
 

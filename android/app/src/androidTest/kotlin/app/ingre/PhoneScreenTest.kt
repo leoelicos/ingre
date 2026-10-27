@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
 
@@ -19,9 +20,11 @@ class PhoneScreenTest {
         rule.onNodeWithText("Recipes").assertIsDisplayed()
         rule.onNodeWithText("Extra").assertIsDisplayed()
         rule.onNodeWithText("Search ingredients and recipes").assertIsDisplayed()
-        rule.onNodeWithText("Red lentil dahl").assertIsDisplayed()
+        rule.onNodeWithText("Spaghetti bolognese").assertIsDisplayed()
+        rule.onNodeWithText("Red lentil dahl").performClick()
         rule.onNodeWithText("onion").assertIsDisplayed()
         rule.onNodeWithText("garlic").assertIsDisplayed()
+        rule.onNodeWithText("1 clove").assertIsDisplayed()
         rule.onNodeWithTag("badge").assertDoesNotExist()
         rule.onNodeWithTag("key-preview").assertDoesNotExist()
         assert(!SHOWS_BADGES)
