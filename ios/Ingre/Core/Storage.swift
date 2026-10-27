@@ -108,7 +108,7 @@ struct ListStorage: Sendable {
         state.crossed = Set(decode([String].self, .crossed) ?? [])
         let edits = decode([String: [String: String?]].self, .edits) ?? [:]
         for (id, edit) in edits {
-            if let raw = edit["section"] ?? nil, let section = ShopSection(rawValue: raw) {
+            if let raw = edit["section"].flatMap({ $0 }), let section = ShopSection(rawValue: raw) {
                 state.edits[id] = ChipEdit(section: section)
             }
         }

@@ -191,7 +191,7 @@ import Testing
         let fragment = try #require(url.fragment)
         let decoded = try #require(Data(base64Encoded: fragment.removingPercentEncoding ?? fragment))
         #expect(
-            String(decoding: decoded.map { $0 ^ 5 }, as: UTF8.self) == #"{"apiKey":"pk_test_TYooMQauvdEDq54NiTphI7jx"}"#
+            String(bytes: decoded.map { $0 ^ 5 }, encoding: .utf8) == #"{"apiKey":"pk_test_TYooMQauvdEDq54NiTphI7jx"}"#
         )
     }
 

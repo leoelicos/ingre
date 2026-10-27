@@ -92,10 +92,9 @@ struct ExploreSection: View {
                     picked: list.isPicked(recipe.id), open: explore.rows.isOpen(recipe.id), seeRecipe: true,
                     recessed: false, tone: { list.library.tone(Chips.startSection($0)) },
                     onPick: { MotionAware(reduceMotion: reduceMotion).run { list.togglePicked(recipe.id) } },
-                    onOpen: { MotionAware(reduceMotion: reduceMotion).run { explore.rows.toggle(recipe.id) } }
-                ) {
-                    OriginalDetails(recipe: recipe, explore: explore, account: account)
-                }
+                    onOpen: { MotionAware(reduceMotion: reduceMotion).run { explore.rows.toggle(recipe.id) } },
+                    details: { OriginalDetails(recipe: recipe, explore: explore, account: account) }
+                )
             }
         }
         .padding(4)

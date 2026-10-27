@@ -99,5 +99,5 @@ import Testing
 }
 
 extension Data {
-    var utf8String: String { String(decoding: self, as: UTF8.self) }
+    var utf8String: String { String(bytes: self, encoding: .utf8) ?? "" }
 }

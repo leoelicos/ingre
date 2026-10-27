@@ -30,10 +30,9 @@ struct RecipesSection: View {
                             },
                             onOpen: {
                                 MotionAware(reduceMotion: reduceMotion).run { recipes.rows.toggle(entry.recipe.id) }
-                            }
-                        ) {
-                            RecipeDetails(entry: entry, recipes: recipes, account: account)
-                        }
+                            },
+                            details: { RecipeDetails(entry: entry, recipes: recipes, account: account) }
+                        )
                     }
                 }
             }

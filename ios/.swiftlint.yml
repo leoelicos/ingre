@@ -20,7 +20,6 @@ opt_in_rules:
   - first_where
   - contains_over_first_not_nil
   - redundant_nil_coalescing
-  - unused_import
   - closure_spacing
 large_tuple:
   warning: 4

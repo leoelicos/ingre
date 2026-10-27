@@ -77,8 +77,8 @@ final class MockURLProtocol: URLProtocol, @unchecked Sendable {
             .queryItems?.first { $0.name == "operationName" }?.value ?? ""
     }
 
-    override class func canInit(with request: URLRequest) -> Bool { true }
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override static func canInit(with request: URLRequest) -> Bool { true }
+    override static func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
     override func startLoading() {
         let mode = Self.mode
@@ -90,7 +90,7 @@ final class MockURLProtocol: URLProtocol, @unchecked Sendable {
             url: request.url!, statusCode: mode.status, httpVersion: "HTTP/1.1",
             headerFields: ["Content-Type": "application/json"]
         )!
-        let send = { [self] in
+        let send: @Sendable () -> Void = { [self] in
             client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             client?.urlProtocol(self, didLoad: Data(body.utf8))
             client?.urlProtocolDidFinishLoading(self)
