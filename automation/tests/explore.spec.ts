@@ -5,17 +5,14 @@ import {
   box,
   chevron,
   chip,
-  drawer,
   explore,
-  exploreHeader,
   exploreRow,
   hideX,
-  ingredientsRegion,
   openExplore,
+  openPantry,
   pageTop,
   panel,
   pickRows,
-  rail,
   recipesRegion,
   searchBox
 } from './page'
@@ -88,56 +85,51 @@ test.describe('Explore (#181)', () => {
     ).toBe('576px')
   })
 
-  test('opens on load when nothing is selected, as a labelled region with a neumorphic outline', async ({
+  test('stays off the page until Find recipes, then search is focused', async ({
     page
   }) => {
+    await expect(explore(page)).toHaveCount(0)
+    await expect(page.getByRole('searchbox')).toHaveCount(0)
+    await openExplore(page)
+    await expect(
+      page.getByRole('dialog', { name: 'Find recipes' })
+    ).toBeVisible()
+    await expect(searchBox(page)).toBeFocused()
     await expect(explore(page)).toBeVisible()
-    expect(
-      await explore(page).evaluate((el) => getComputedStyle(el).boxShadow)
-    ).not.toBe('none')
   })
 
-  test('on load with something selected it starts collapsed, but is still on the page', async ({
+  test('Escape clears a search first, then closes and returns focus', async ({
     page
   }) => {
-    await pickRows(page, DAHL)
-    await page.reload()
-    await expect(row(page)).toBeVisible()
+    const find = page.getByRole('button', { name: 'Find recipes' })
+    await find.click()
+    await searchBox(page).fill('dahl')
+    await page.keyboard.press('Escape')
+    await expect(searchBox(page)).toHaveValue('')
     await expect(explore(page)).toBeVisible()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    await expect(exploreRow(page, DAHL)).toBeHidden()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+    await expect(find).toBeFocused()
   })
 
-  test('expands on search focus by click or tap', async ({ page }) => {
-    await pickRows(page, DAHL)
-    await page.reload()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    if (await rail(page).isVisible()) await rail(page).click()
-    else await searchBox(page).click()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
-    await expect(searchBox(page)).toBeFocused()
-  })
-
-  test('expands on search focus by keyboard', async ({ page }) => {
-    await pickRows(page, DAHL)
-    await page.reload()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    const wide = await rail(page).isVisible()
-    // the drawer strip is last on the page, the header search bar first
-    const target = wide ? rail(page) : searchBox(page)
-    for (let i = 0; i < 20; i++) {
-      await page.keyboard.press(wide ? 'Shift+Tab' : 'Tab')
-      if (await target.evaluate((el) => el === document.activeElement)) break
-    }
-    await expect(target).toBeFocused()
-    if (await rail(page).isVisible()) await page.keyboard.press('Enter')
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
-    await expect(searchBox(page)).toBeFocused()
+  test('Close and the backdrop dismiss it; there is no drawer at desktop width', async ({
+    page
+  }) => {
+    await page.setViewportSize({ width: 1328, height: 800 })
+    await expect(page.getByRole('complementary')).toHaveCount(0)
+    await expect(page.getByRole('banner').getByRole('searchbox')).toHaveCount(0)
+    await openExplore(page)
+    await hideX(page).click()
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+    await openExplore(page)
+    await page.mouse.click(8, 8)
+    await expect(page.getByRole('dialog')).toHaveCount(0)
   })
 
   test('always populated: browse every recipe; typing shows matches; clearing restores browse', async ({
     page
   }) => {
+    await openExplore(page)
     const browse = group(page, 'Browse recipes')
     await expect(
       browse.getByRole('button', { name: /^See recipe: / })
@@ -177,133 +169,13 @@ test.describe('Explore (#181)', () => {
     expect(Math.abs((await pageTop(see)) - top)).toBeLessThan(2)
   })
 
-  test('pushes content down; never an overlay', async ({ page }) => {
+  test('discovery is a dialog on a phone too, not a push-down region', async ({
+    page
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await openExplore(page)
-    const region = await explore(page).evaluate((el) => {
-      const r = el.getBoundingClientRect()
-      return {
-        bottom: r.bottom + window.scrollY,
-        position: getComputedStyle(el).position
-      }
-    })
-    expect(['static', 'relative']).toContain(region.position)
-    expect(await pageTop(ingredientsRegion(page))).toBeGreaterThanOrEqual(
-      region.bottom
-    )
-    await expect(
-      page.locator('[aria-modal="true"], [role="dialog"]')
-    ).toHaveCount(0)
-  })
-
-  test('clicking outside and Escape do not close it; Escape clears the text and restores browse', async ({
-    page
-  }) => {
-    await typeQuery(page, 'dahl')
-    await page.keyboard.press('Escape')
-    await expect(explore(page)).toBeVisible()
-    await expect(searchBox(page)).toHaveValue('')
-    await expect(
-      explore(page).getByRole('heading', { name: 'Browse recipes' })
-    ).toBeVisible()
-    await page.mouse.click(2, 300)
-    await recipesRegion(page)
-      .getByText(/No recipes picked yet/)
-      .click()
-    await page.keyboard.press('Escape')
-    await expect(explore(page)).toBeVisible()
-  })
-
-  test('its X collapses it to its header row, focused; the header row or search focus expands it', async ({
-    page
-  }) => {
-    await hideX(page).click()
-    await expect(explore(page)).toBeVisible()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    await expect(exploreHeader(page)).toBeFocused()
-    await expect(exploreRow(page, DAHL)).toBeHidden()
-    await expect(hideX(page)).toHaveCount(0)
-    await exploreHeader(page).click()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
-    await expect(exploreRow(page, DAHL)).toBeVisible()
-    await hideX(page).click()
-    await searchBox(page).click()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
-  })
-
-  test('it expands on typing', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 })
-    await searchBox(page).focus()
-    await hideX(page).click()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    await searchBox(page).pressSequentially('dahl')
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
-    expect(await rowNames(explore(page))).toEqual([DAHL])
-  })
-
-  test('collapsible: its header row hides and shows the results', async ({
-    page
-  }) => {
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
-    await exploreHeader(page).click()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    await expect(exploreRow(page, DAHL)).toBeHidden()
-    await expect(explore(page)).toBeVisible()
-    await exploreHeader(page).click()
-    await expect(exploreRow(page, DAHL)).toBeVisible()
-  })
-
-  test('smaller screens: search bar at the top, Explore inline below it', async ({
-    page
-  }) => {
-    await page.setViewportSize({ width: 800, height: 900 })
-    const banner = page.getByRole('banner')
-    await expect(banner.getByRole('searchbox')).toBeVisible()
-    await expect(drawer(page)).toHaveCount(0)
-    expect(await pageTop(explore(page))).toBeGreaterThan(
-      (await box(banner)).height - 1
-    )
-    expect(await pageTop(explore(page))).toBeLessThan(
-      await pageTop(ingredientsRegion(page))
-    )
-  })
-
-  test('from 1328px: a push drawer column on the right holds the search bar and squeezes the layout', async ({
-    page
-  }) => {
-    await page.setViewportSize({ width: 1328, height: 800 })
+    await expect(page.getByRole('dialog')).toBeVisible()
     await expect(page.getByRole('banner').getByRole('searchbox')).toHaveCount(0)
-    await expect(drawer(page).getByRole('searchbox')).toBeVisible()
-    await expect(
-      drawer(page).getByRole('region', { name: 'Explore' })
-    ).toBeVisible()
-    const open = await box(drawer(page))
-    const main = await box(page.getByRole('main'))
-    expect(open.width).toBeGreaterThan(340)
-    expect(open.width).toBeLessThan(380)
-    expect(open.x).toBeGreaterThanOrEqual(main.x + main.width)
-    await hideX(page).click()
-    await expect
-      .poll(async () => (await box(page.getByRole('main'))).width)
-      .toBeGreaterThan(main.width + 250)
-  })
-
-  test('from 1328px: the collapsed drawer leaves a strip whose search button expands it and focuses search', async ({
-    page
-  }) => {
-    await page.setViewportSize({ width: 1328, height: 800 })
-    await hideX(page).click()
-    await expect(rail(page)).toBeVisible()
-    await expect(rail(page)).toBeFocused()
-    await expect(rail(page)).toHaveAttribute('aria-expanded', 'false')
-    await expect
-      .poll(async () => (await box(drawer(page))).width)
-      .toBeLessThan(80)
-    // collapsed, Explore is still on the page (hidden in the strip), never removed
-    await expect(page.locator('#explore')).toHaveCount(1)
-    await rail(page).click()
-    await expect(explore(page)).toBeVisible()
-    await expect(searchBox(page)).toBeFocused()
   })
 
   test('ranking: starts with, then a word starts with, then contains; alphabetical in each tier', async ({
@@ -416,7 +288,9 @@ test.describe('Explore (#181)', () => {
     await typeQuery(page, 'banana')
     await explore(page).getByRole('button', { name: 'Add banana' }).click()
     await expect(chip(page, 'banana')).toHaveCount(1)
+    await openPantry(page)
     await expect(chip(page, 'banana', 'extra')).toHaveCount(1)
+    await openExplore(page)
     await expect(
       explore(page).getByRole('button', { name: 'Banana, on your list' })
     ).toBeVisible()
@@ -431,7 +305,6 @@ test.describe('Explore (#181)', () => {
       .getByRole('button', { name: 'Butter, on your list' })
       .click()
     await expect(chip(page, 'butter')).toHaveCount(1)
-    await expect(chip(page, 'butter', 'extra')).toContainText('1 g')
     await expect(chevron(page, 'butter')).toHaveAttribute(
       'aria-expanded',
       'true'
@@ -440,6 +313,8 @@ test.describe('Explore (#181)', () => {
     const details = panel(page, 'Butter')
     await expect(details).toBeVisible()
     await expect(details.getByText('Total: 16 g')).toBeVisible()
+    await openPantry(page)
+    await expect(chip(page, 'butter', 'extra')).toContainText('1 g')
   })
 
   test('ingredient results show their allergen tags', async ({ page }) => {
@@ -452,31 +327,23 @@ test.describe('Explore (#181)', () => {
     ).toHaveText(['milk'])
   })
 
-  test('motion: the drawer opens and closes in about 0.2 s', async ({
-    page
-  }) => {
+  test('there is no Explore drawer', async ({ page }) => {
     await page.setViewportSize({ width: 1328, height: 800 })
-    expect(
-      await drawer(page).evaluate(
-        (el) => getComputedStyle(el).transitionDuration
-      )
-    ).toBe('0.2s')
+    await expect(page.getByRole('complementary')).toHaveCount(0)
+    await openExplore(page)
+    await expect(
+      page.getByRole('dialog', { name: 'Find recipes' })
+    ).toBeVisible()
   })
 })
 
 test.describe('Explore with reduced motion (#181)', () => {
   test.use({ reducedMotion: 'reduce' })
 
-  test('the drawer opens and closes instantly', async ({ page }) => {
+  test('discovery still opens', async ({ page }) => {
     await page.setViewportSize({ width: 1328, height: 800 })
     await page.goto('/')
-    expect(
-      await drawer(page).evaluate(
-        (el) => getComputedStyle(el).transitionDuration
-      )
-    ).toBe('0s')
+    await openExplore(page)
+    await expect(page.getByRole('dialog')).toBeVisible()
   })
 })
-
-const row = (page: Page) =>
-  recipesRegion(page).getByRole('button', { name: DAHL, exact: true })

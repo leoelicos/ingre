@@ -74,6 +74,21 @@ const updateCopy = (
 ): RecipeCopy[] =>
   copies.map((copy) => (copy.recipeId === recipeId ? change(copy) : copy))
 
+/** The copies without this recipe (#192). */
+export const withoutRecipe = (
+  copies: readonly RecipeCopy[],
+  recipeId: string
+): RecipeCopy[] => copies.filter((copy) => copy.recipeId !== recipeId)
+
+/** Puts a removed copy back, unless that recipe is already picked. */
+export const restoring = (
+  copies: readonly RecipeCopy[],
+  copy: RecipeCopy
+): RecipeCopy[] =>
+  copies.some((existing) => existing.recipeId === copy.recipeId)
+    ? [...copies]
+    : [...copies, copy]
+
 const recipeById = (id: string): LibraryRecipe | null =>
   library.find((recipe) => recipe.id === id) ?? null
 
@@ -117,12 +132,20 @@ export const useChips = () => {
     pickedIds,
     togglePicked: (recipe: LibraryRecipe): void => {
       if (pickedIds.has(recipe.id)) {
-        updateCopies((previous) =>
-          previous.filter((copy) => copy.recipeId !== recipe.id)
-        )
+        updateCopies((previous) => withoutRecipe(previous, recipe.id))
         return
       }
       updateCopies((previous) => [...previous, newCopy(recipe.id)])
+    },
+    /** Removes a picked recipe and returns its copy, for Undo (#192). */
+    dismissPicked: (recipeId: string): RecipeCopy | null => {
+      const found = copies.find((copy) => copy.recipeId === recipeId) ?? null
+      if (found === null) return null
+      updateCopies((previous) => withoutRecipe(previous, recipeId))
+      return found
+    },
+    restoreCopy: (copy: RecipeCopy): void => {
+      updateCopies((previous) => restoring(previous, copy))
     },
     setAmount,
     setPortions: (recipeId: string, portions: number): void =>

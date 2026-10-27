@@ -37,16 +37,12 @@ const FILTER_ID = `${EXTRA_ID}-filter`
 
 /**
  * Extra (#182): everything added by hand with the plus, staples included. The same chips as in
- * Ingredients, showing their Extra amount. Collapses only in the vertical layout.
+ * Ingredients, showing their Extra amount. It lives in discovery, not on the workspace (#192).
  */
-export const Extra: FC<{ state: IngredientsState; collapsible: boolean }> = ({
-  state,
-  collapsible
-}) => {
+export const Extra: FC<{ state: IngredientsState }> = ({ state }) => {
   const t = useT()
   const { list } = state
   const { panel } = usePanel()
-  const [open, setOpen] = useState(true)
   const [filterOpen, setFilterOpen] = useState(false)
   const [filter, setFilter] = useState<ChipFilter>(NO_CHIP_FILTER)
   const [plusOpen, setPlusOpen] = useState(false)
@@ -62,9 +58,6 @@ export const Extra: FC<{ state: IngredientsState; collapsible: boolean }> = ({
     <Section
       id={EXTRA_ID}
       title={t('extra.title')}
-      collapsible={collapsible}
-      open={open}
-      onToggle={() => setOpen(!open)}
       summary={extraSummary(list.extraChips.length)}
     >
       <div className="flex flex-col gap-4">

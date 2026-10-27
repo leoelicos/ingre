@@ -1,4 +1,5 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
+import { flushSync } from 'react-dom'
 import { MockedProvider } from '@apollo/client/testing'
 import type { MockedResponse } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
@@ -37,6 +38,13 @@ const Where = () => {
   return <output aria-label="where">{`${pathname}${search}`}</output>
 }
 
+/** A click whose state is visible before the helper returns, even inside `act`. */
+const clickNow = (element: HTMLElement) => {
+  flushSync(() => {
+    fireEvent.click(element)
+  })
+}
+
 /** The header and the list page at `path`, with a way to sign in and see the URL. */
 export const renderList = (path = '/', mocks: readonly MockedResponse[] = []) =>
   render(
@@ -69,8 +77,16 @@ export const renderList = (path = '/', mocks: readonly MockedResponse[] = []) =>
 export const pick = (...ids: string[]) =>
   localStorage.setItem(COPIES_KEY, JSON.stringify(ids.map((id) => newCopy(id))))
 
+/** Extra lives in pantry discovery, not on the workspace (#192). */
+export const ensureExtra = (): void => {
+  if (screen.queryByRole('region', { name: 'Extra' }) !== null) return
+  const opener = screen.queryByRole('button', { name: 'Add pantry item' })
+  if (opener !== null) clickNow(opener)
+}
+
 /** The chip's list item, found by catalogue id. */
 export const chip = (id: string, scope = 'chip'): HTMLElement => {
+  if (scope === 'extra') ensureExtra()
   const found = document.querySelector<HTMLElement>(
     `[data-chip="${id}"][data-scope="${scope}"]`
   )
@@ -78,11 +94,14 @@ export const chip = (id: string, scope = 'chip'): HTMLElement => {
   return found
 }
 /** How many chips for `id` show in a scope: "chip" (Ingredients), "extra" or "row-<id>". */
-export const hasChipEl = (id: string, scope = 'chip') =>
-  document.querySelectorAll(`[data-chip="${id}"][data-scope="${scope}"]`).length
-/** The chip's cross-off button: its spoken label is a comma list; the chevron's is not. */
+export const hasChipEl = (id: string, scope = 'chip') => {
+  if (scope === 'extra') ensureExtra()
+  return document.querySelectorAll(`[data-chip="${id}"][data-scope="${scope}"]`)
+    .length
+}
+/** The chip's cross-off checkbox: its spoken label is a comma list; the chevron's is not. */
 export const toggleOf = (id: string, scope = 'chip'): HTMLElement =>
-  within(chip(id, scope)).getByRole('button', { name: /, / })
+  within(chip(id, scope)).getByRole('checkbox')
 /** The chip's chevron. */
 export const chevronOf = (id: string, scope = 'chip'): HTMLElement =>
   within(chip(id, scope)).getByRole('button', { name: / details$/ })
@@ -94,17 +113,44 @@ export const chipOrder = (scope = 'chip') =>
 export const groupOf = (id: string, scope = 'chip') =>
   chip(id, scope).closest('[role="group"]')?.querySelector('h3')?.textContent
 export const panel = (name: string) => screen.getByRole('group', { name })
-export const region = (name: string) => screen.getByRole('region', { name })
+export const region = (name: string) => {
+  if (
+    screen.queryByRole('region', { name }) === null &&
+    (name === 'Explore' || name === 'Extra')
+  ) {
+    clickNow(
+      screen.getByRole('button', {
+        name: name === 'Explore' ? 'Find recipes' : 'Add pantry item'
+      })
+    )
+  }
+  return screen.getByRole('region', { name })
+}
 export const explore = () => within(region('Explore'))
 export const recipes = () => within(region('Recipes'))
 export const ingredientsHeader = () =>
-  screen.getByRole('button', { name: /^Ingredients/ })
+  screen.getByRole('heading', { level: 2, name: 'Ingredients' })
 export const recipesHeader = () =>
-  screen.getByRole('button', { name: /^Recipes/ })
+  screen.getByRole('heading', { level: 2, name: 'Recipes' })
 export const exploreHeader = () =>
-  screen.getByRole('button', { name: /^Explore/ })
-export const searchBox = () =>
-  screen.getByRole('searchbox', { name: 'Search ingredients and recipes' })
+  explore().getByRole('heading', { level: 2, name: 'Explore' })
+export const searchBox = () => {
+  if (
+    screen.queryByRole('searchbox', {
+      name: 'Search ingredients and recipes'
+    }) === null
+  ) {
+    clickNow(screen.getByRole('button', { name: 'Find recipes' }))
+  }
+  return screen.getByRole('searchbox', {
+    name: 'Search ingredients and recipes'
+  })
+}
+/** The plus, inside pantry discovery (#192). */
+export const plusButton = (): HTMLElement => {
+  ensureExtra()
+  return screen.getByRole('button', { name: 'Add an ingredient' })
+}
 /** Picks a recipe from Explore's browse list. */
 export const pickFromExplore = (name: string) =>
   explore().getByRole('button', { name })
