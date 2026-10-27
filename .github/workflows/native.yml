@@ -8,7 +8,8 @@ on:
 
 jobs:
   ios:
-    runs-on: ubuntu-latest
+    # ubuntu-latest is 26.04, which swift-actions/setup-swift does not support yet.
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: swift-actions/setup-swift@v2
@@ -21,16 +22,31 @@ jobs:
         working-directory: ios/IngreCore
 
   android:
-    runs-on: ubuntu-latest
+    # ubuntu-latest is 26.04. setup-android@v3 then asks sdkmanager for the
+    # removed "tools" package and the job dies before Gradle starts.
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-      - uses: android-actions/setup-android@v3
       - name: Android SDK
-        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+        run: |
+          if command -v sdkmanager >/dev/null; then
+            SDKMANAGER=sdkmanager
+            echo "ANDROID_HOME=${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}" >> "$GITHUB_ENV"
+          else
+            mkdir -p "$HOME/android-sdk/cmdline-tools/latest"
+            curl -fsSL -o /tmp/cmdtools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            rm -rf /tmp/cmdtools
+            unzip -q /tmp/cmdtools.zip -d /tmp/cmdtools
+            mv /tmp/cmdtools/cmdline-tools/* "$HOME/android-sdk/cmdline-tools/latest/"
+            echo "ANDROID_HOME=$HOME/android-sdk" >> "$GITHUB_ENV"
+            SDKMANAGER="$HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" --install "platforms;android-35" "build-tools;35.0.0"
       - name: Copy the catalogue
         run: node scripts/copy-native-library.mjs
       - name: Unit tests and debug build
