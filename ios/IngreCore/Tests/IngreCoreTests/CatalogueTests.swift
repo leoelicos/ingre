@@ -80,4 +80,31 @@ final class CatalogueTests: XCTestCase {
         let edited = editCopy(pickRecipe(ListMemory(), toStored(recipe, ["garlic": "garlic"])), "spaghetti", [Line(ingredientId: "garlic", name: "garlic", quantity: 2, measure: "clove")])
         XCTAssertEqual(exploreRecipe(edited, "spaghetti")?.lines.first?.quantity, 0.5)
     }
+
+    func testTheRealCatalogueScalesAPickedRecipe() throws {
+        let root = try XCTUnwrap(catalogueDir())
+        let ingredients = parseIngredients(try String(contentsOf: root.appendingPathComponent("ingredients.json"), encoding: .utf8))
+        let recipes = parseRecipes(try String(contentsOf: root.appendingPathComponent("recipes.json"), encoding: .utf8))
+        XCTAssertEqual(ingredients.count, 111)
+        XCTAssertEqual(recipes.count, 14)
+        let dahl = try XCTUnwrap(recipes.first { $0.id == "dahl" })
+        let names = Dictionary(uniqueKeysWithValues: ingredients.map { ($0.id, $0.name) })
+        let picked = pickCatalogue(ListMemory(), dahl, names)
+        XCTAssertEqual(exploreRecipe(picked, "dahl")?.lines.first { $0.ingredientId == "garlic" }?.quantity, 1)
+        XCTAssertEqual(recipeCopies(picked).first?.lines.first { $0.ingredientId == "garlic" }?.quantity, 2)
+        XCTAssertEqual(names["onion"], "brown onion")
+        XCTAssertEqual(pickCatalogue(picked, dahl, names), picked)
+    }
+}
+
+private func catalogueDir() -> URL? {
+    var url = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+    for _ in 0..<6 {
+        let candidate = url.appendingPathComponent("client/src/data/recipes.json")
+        if FileManager.default.fileExists(atPath: candidate.path) {
+            return candidate.deletingLastPathComponent()
+        }
+        url.deleteLastPathComponent()
+    }
+    return nil
 }

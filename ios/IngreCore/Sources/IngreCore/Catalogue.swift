@@ -186,6 +186,7 @@ public struct ShopLine: Equatable, Sendable {
     public let quantity: Double
     public let measure: String
     public let category: String
+    public var key: String { ingredientId + "|" + measure }
     public init(ingredientId: String, name: String, quantity: Double, measure: String, category: String) {
         self.ingredientId = ingredientId
         self.name = name
@@ -279,6 +280,24 @@ public func toStored(_ recipe: CatalogRecipe, _ names: [String: String]) -> Stor
             )
         }
     )
+}
+
+/// Explore keeps the catalogue amounts. The copy is scaled to the portions, default 2.
+public func pickCatalogue(
+    _ memory: ListMemory,
+    _ recipe: CatalogRecipe,
+    _ names: [String: String],
+    _ portions: Int = defaultPortions
+) -> ListMemory {
+    if memory.copies[recipe.id] != nil { return memory }
+    var next = memory
+    next.originals[recipe.id] = toStored(recipe, names)
+    next.copies[recipe.id] = StoredRecipe(
+        id: recipe.id,
+        name: recipe.name,
+        lines: scaledLines(recipe, newCopy(recipe.id, portions), names)
+    )
+    return next
 }
 
 private func jsonObject(_ json: String) -> [String: Any]? {
