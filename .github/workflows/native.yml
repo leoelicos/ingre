@@ -33,20 +33,16 @@ jobs:
           java-version: 17
       - name: Android SDK
         run: |
-          if command -v sdkmanager >/dev/null; then
-            SDKMANAGER=sdkmanager
-            echo "ANDROID_HOME=${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}" >> "$GITHUB_ENV"
-          else
-            mkdir -p "$HOME/android-sdk/cmdline-tools/latest"
-            curl -fsSL -o /tmp/cmdtools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-            rm -rf /tmp/cmdtools
-            unzip -q /tmp/cmdtools.zip -d /tmp/cmdtools
-            mv /tmp/cmdtools/cmdline-tools/* "$HOME/android-sdk/cmdline-tools/latest/"
-            echo "ANDROID_HOME=$HOME/android-sdk" >> "$GITHUB_ENV"
-            SDKMANAGER="$HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager"
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          SM=$(find "$SDK" -path '*/bin/sdkmanager' -type f | head -1)
+          if [ -z "$SM" ]; then
+            echo "sdkmanager not found under $SDK" >&2
+            exit 1
           fi
-          yes | "$SDKMANAGER" --licenses >/dev/null || true
-          "$SDKMANAGER" --install "platforms;android-35" "build-tools;35.0.0"
+          yes | "$SM" --licenses >/dev/null || true
+          "$SM" --install "platforms;android-35" "build-tools;35.0.0"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
       - name: Copy the catalogue
         run: node scripts/copy-native-library.mjs
       - name: Unit tests and debug build
