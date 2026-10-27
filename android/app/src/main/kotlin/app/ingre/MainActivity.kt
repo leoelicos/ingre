@@ -86,6 +86,20 @@ fun PhoneScreen(ingredients: List<CatalogIngredient>, recipes: List<CatalogRecip
                 modifier = Modifier.heightIn(min = 48.dp)
             ) { Text(recipe.name) }
             if (recipe.id in opened) {
+                Row(Modifier.heightIn(min = 48.dp)) {
+                    Text("Portions", modifier = Modifier.padding(top = 12.dp, end = 8.dp))
+                    Button(
+                        onClick = { memory = setPortions(memory, recipe.id, recipe.portions - 1) },
+                        enabled = recipe.portions > MIN_PORTIONS,
+                        modifier = Modifier.heightIn(min = 48.dp)
+                    ) { Text("Fewer portions") }
+                    Text("${recipe.portions}", modifier = Modifier.padding(horizontal = 8.dp, top = 12.dp))
+                    Button(
+                        onClick = { memory = setPortions(memory, recipe.id, recipe.portions + 1) },
+                        enabled = recipe.portions < MAX_PORTIONS,
+                        modifier = Modifier.heightIn(min = 48.dp)
+                    ) { Text("More portions") }
+                }
                 recipe.lines.filter { it.quantity > 0 }.forEach { line ->
                     Text("${capitaliseFirst(line.name)} ${formatQuantity(line.quantity, line.measure)}")
                 }

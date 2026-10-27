@@ -96,6 +96,10 @@ class CatalogueTest {
         val picked = pickCatalogue(ListMemory(), dahl, names)
         assertEquals(1.0, exploreRecipe(picked, "dahl")?.lines?.single { it.ingredientId == "garlic" }?.quantity)
         assertEquals(2.0, recipeCopies(picked).single().lines.single { it.ingredientId == "garlic" }.quantity)
+        assertEquals(2, recipeCopies(picked).single().portions)
+        val four = pickCatalogue(ListMemory(), dahl, names, 4)
+        assertEquals(4, recipeCopies(four).single().portions)
+        assertEquals(4.0, recipeCopies(four).single().lines.single { it.ingredientId == "garlic" }.quantity)
         assertEquals("brown onion", names["onion"])
         assertEquals(picked, pickCatalogue(picked, dahl, names))
     }

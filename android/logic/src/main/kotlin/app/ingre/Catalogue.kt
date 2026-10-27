@@ -248,7 +248,12 @@ fun pickCatalogue(
     return memory.copy(
         originals = memory.originals + (recipe.id to toStored(recipe, names)),
         copies = memory.copies + (
-            recipe.id to StoredRecipe(recipe.id, recipe.name, scaledLines(recipe, newCopy(recipe.id, portions), names))
+            recipe.id to StoredRecipe(
+                recipe.id,
+                recipe.name,
+                scaledLines(recipe, newCopy(recipe.id, portions), names),
+                clampPortions(portions.toDouble())
+            )
             )
     )
 }

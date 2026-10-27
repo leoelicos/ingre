@@ -92,6 +92,10 @@ final class CatalogueTests: XCTestCase {
         let picked = pickCatalogue(ListMemory(), dahl, names)
         XCTAssertEqual(exploreRecipe(picked, "dahl")?.lines.first { $0.ingredientId == "garlic" }?.quantity, 1)
         XCTAssertEqual(recipeCopies(picked).first?.lines.first { $0.ingredientId == "garlic" }?.quantity, 2)
+        XCTAssertEqual(recipeCopies(picked).first?.portions, 2)
+        let four = pickCatalogue(ListMemory(), dahl, names, 4)
+        XCTAssertEqual(recipeCopies(four).first?.portions, 4)
+        XCTAssertEqual(recipeCopies(four).first?.lines.first { $0.ingredientId == "garlic" }?.quantity, 4)
         XCTAssertEqual(names["onion"], "brown onion")
         XCTAssertEqual(pickCatalogue(picked, dahl, names), picked)
     }

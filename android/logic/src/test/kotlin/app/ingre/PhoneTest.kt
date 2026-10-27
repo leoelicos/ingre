@@ -44,6 +44,23 @@ class PhoneTest {
     }
 
     @Test
+    fun portionsScaleTheCopyAndLeaveTheOriginal() {
+        val picked = pickRecipe(ListMemory(), dahl)
+        val four = setPortions(picked, "dahl", 4)
+        assertEquals(4, recipeCopies(four).single().portions)
+        assertEquals(0.5, recipeCopies(four).single().lines.first().quantity)
+        assertEquals(2.0, recipeCopies(four).single().lines[1].quantity)
+        assertEquals(0.25, exploreRecipe(four, "dahl")?.lines?.first()?.quantity)
+        val one = setPortions(four, "dahl", 0)
+        assertEquals(1, recipeCopies(one).single().portions)
+        assertEquals(0.125, recipeCopies(one).single().lines.first().quantity)
+        val capped = setPortions(one, "dahl", 40)
+        assertEquals(12, recipeCopies(capped).single().portions)
+        assertEquals(four, setPortions(four, "dahl", 4))
+        assertEquals(picked, setPortions(picked, "missing", 3))
+    }
+
+    @Test
     fun titlesSplitAndUpgradeStartsOnce() {
         assertEquals("Shaking beef" to "bò lúc lắc", splitTitle("Shaking beef (bò lúc lắc)"))
         assertEquals("Red lentil dahl" to null, splitTitle("Red lentil dahl"))

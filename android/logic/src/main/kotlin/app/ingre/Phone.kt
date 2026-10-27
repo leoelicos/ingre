@@ -30,7 +30,12 @@ const val SHOWS_BADGES: Boolean = false
 
 data class Line(val ingredientId: String, val name: String, val quantity: Double, val measure: String)
 
-data class StoredRecipe(val id: String, val name: String, val lines: List<Line>)
+data class StoredRecipe(
+    val id: String,
+    val name: String,
+    val lines: List<Line>,
+    val portions: Int = DEFAULT_PORTIONS
+)
 
 /**
  * What the list remembers. Explore keeps the original. Recipes keeps the edited copy.
@@ -56,6 +61,19 @@ fun editCopy(memory: ListMemory, id: String, lines: List<Line>): ListMemory {
 fun exploreRecipe(memory: ListMemory, id: String): StoredRecipe? = memory.originals[id]
 
 fun recipeCopies(memory: ListMemory): List<StoredRecipe> = memory.copies.values.toList()
+
+/**
+ * Portions for this copy: a whole number from 1 to 12. The lines scale with it.
+ * Explore keeps the original amounts.
+ */
+fun setPortions(memory: ListMemory, id: String, portions: Int): ListMemory {
+    val copy = memory.copies[id] ?: return memory
+    val next = clampPortions(portions.toDouble())
+    if (next == copy.portions) return memory
+    val factor = next.toDouble() / copy.portions.coerceAtLeast(1)
+    val lines = copy.lines.map { it.copy(quantity = it.quantity * factor) }
+    return memory.copy(copies = memory.copies + (id to copy.copy(portions = next, lines = lines)))
+}
 
 /** "Title (local name)" splits the same way as the web. */
 fun splitTitle(name: String): Pair<String, String?> {

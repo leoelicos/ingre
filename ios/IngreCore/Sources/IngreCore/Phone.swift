@@ -44,10 +44,12 @@ public struct StoredRecipe: Equatable, Sendable {
     public let id: String
     public let name: String
     public var lines: [Line]
-    public init(id: String, name: String, lines: [Line]) {
+    public var portions: Int
+    public init(id: String, name: String, lines: [Line], portions: Int = defaultPortions) {
         self.id = id
         self.name = name
         self.lines = lines
+        self.portions = portions
     }
 }
 
@@ -80,6 +82,27 @@ public func editCopy(_ memory: ListMemory, _ id: String, _ lines: [Line]) -> Lis
 public func exploreRecipe(_ memory: ListMemory, _ id: String) -> StoredRecipe? { memory.originals[id] }
 
 public func recipeCopies(_ memory: ListMemory) -> [StoredRecipe] { Array(memory.copies.values) }
+
+/// Portions for this copy: a whole number from 1 to 12. The lines scale. Explore stays.
+public func setPortions(_ memory: ListMemory, _ id: String, _ portions: Int) -> ListMemory {
+    guard let copy = memory.copies[id] else { return memory }
+    let next = clampPortions(Double(portions))
+    if next == copy.portions { return memory }
+    let factor = Double(next) / Double(max(copy.portions, 1))
+    var updated = copy
+    updated.portions = next
+    updated.lines = copy.lines.map { line in
+        Line(
+            ingredientId: line.ingredientId,
+            name: line.name,
+            quantity: line.quantity * factor,
+            measure: line.measure
+        )
+    }
+    var result = memory
+    result.copies[id] = updated
+    return result
+}
 
 /// "Title (local name)" splits the same way as the web.
 public func splitTitle(_ name: String) -> (String, String?) {
