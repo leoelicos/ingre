@@ -2,11 +2,10 @@ import { useSyncExternalStore } from 'react'
 
 /** Side by side from here (#181): Ingredients and Recipes in two columns. */
 export const SPLIT_MIN_WIDTH = 576
-/** From here: 25/75 and 75/25. */
-export const WIDE_MIN_WIDTH = 992
 /**
- * From here: Explore is a drawer column on the right holding the search bar, and the
- * layout toggle also offers 33/33/33. 1328px is the 1282px layout width plus room around it.
+ * From here: Explore is a drawer column on the right holding the search bar, and the layout
+ * toggle also offers 25/75, 33/33/33 and 75/25 (#193). 1328px is the 1282px layout width plus
+ * room around it.
  */
 export const DRAWER_MIN_WIDTH = 1328
 

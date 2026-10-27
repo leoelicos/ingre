@@ -2,7 +2,6 @@ import { useStored } from '../storage/useStored'
 import {
   DRAWER_MIN_WIDTH,
   SPLIT_MIN_WIDTH,
-  WIDE_MIN_WIDTH,
   useMinWidth
 } from '../media/useMinWidth'
 import type { Split, Widths } from './split'
@@ -17,7 +16,6 @@ import {
 /** The width breakpoints the viewport has reached; follows resizes. */
 export const useWidths = (): Widths => ({
   split: useMinWidth(SPLIT_MIN_WIDTH),
-  wide: useMinWidth(WIDE_MIN_WIDTH),
   drawer: useMinWidth(DRAWER_MIN_WIDTH)
 })
 

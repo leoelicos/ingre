@@ -10,10 +10,9 @@ import {
   splitOptions
 } from '../split'
 
-const NARROW: Widths = { split: false, wide: false, drawer: false }
-const SPLIT: Widths = { split: true, wide: false, drawer: false }
-const WIDE: Widths = { split: true, wide: true, drawer: false }
-const DRAWER: Widths = { split: true, wide: true, drawer: true }
+const NARROW: Widths = { split: false, drawer: false }
+const SPLIT: Widths = { split: true, drawer: false }
+const DRAWER: Widths = { split: true, drawer: true }
 
 describe('layout split (#181)', () => {
   it('reads only known splits from storage', () => {
@@ -23,10 +22,9 @@ describe('layout split (#181)', () => {
     expect(DEFAULT_SPLIT).toBe('50/50')
   })
 
-  it('offers nothing below 576px, vertical and 50/50 to 992px, four to 1328px, and 33/33/33 next to 25/75 from 1328px', () => {
+  it('offers nothing below 576px, vertical and 50/50 to 1328px, and all five in order from 1328px (#193)', () => {
     expect(splitOptions(NARROW)).toEqual([])
     expect(splitOptions(SPLIT)).toEqual(['vertical', '50/50'])
-    expect(splitOptions(WIDE)).toEqual(['vertical', '50/50', '25/75', '75/25'])
     expect(splitOptions(DRAWER)).toEqual([
       'vertical',
       '50/50',
@@ -38,13 +36,17 @@ describe('layout split (#181)', () => {
 
   it('is vertical when narrow, and falls back to 50/50 where a split is not offered', () => {
     expect(effectiveSplit('25/75', NARROW)).toBe('vertical')
+    expect(effectiveSplit('vertical', SPLIT)).toBe('vertical')
+    expect(effectiveSplit('50/50', SPLIT)).toBe('50/50')
+    expect(effectiveSplit('33/33/33', SPLIT)).toBe('50/50')
+    expect(effectiveSplit('33/33/33', DRAWER)).toBe('33/33/33')
+  })
+
+  it('shows 25/75 and 75/25 as 50/50 below 1328px and as themselves from 1328px (#193)', () => {
     expect(effectiveSplit('25/75', SPLIT)).toBe('50/50')
     expect(effectiveSplit('75/25', SPLIT)).toBe('50/50')
-    expect(effectiveSplit('vertical', SPLIT)).toBe('vertical')
-    expect(effectiveSplit('25/75', WIDE)).toBe('25/75')
-    expect(effectiveSplit('33/33/33', SPLIT)).toBe('50/50')
-    expect(effectiveSplit('33/33/33', WIDE)).toBe('50/50')
-    expect(effectiveSplit('33/33/33', DRAWER)).toBe('33/33/33')
+    expect(effectiveSplit('25/75', DRAWER)).toBe('25/75')
+    expect(effectiveSplit('75/25', DRAWER)).toBe('75/25')
   })
 
   it('places Explore inline below 1328px, then in the drawer, or the third column with 33/33/33', () => {

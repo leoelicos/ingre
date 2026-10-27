@@ -17,8 +17,8 @@ const SHORT: Readonly<Record<Split, string>> = {
 }
 
 /**
- * The layout toggle (#181): from 576px, vertical or 50/50; from 992px also 25/75 and 75/25; from
- * 1328px also 33/33/33, next to 25/75.
+ * The layout toggle (#181): from 576px, vertical or 50/50; from 1328px also 25/75, 33/33/33 and
+ * 75/25 (#193), in that order.
  * Radios, so VoiceOver reads the choice and which one is on. Hidden when there is no choice.
  */
 export const LayoutToggle: FC<{
