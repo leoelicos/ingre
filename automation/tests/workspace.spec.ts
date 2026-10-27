@@ -125,6 +125,27 @@ test.describe('layout (#192)', () => {
       .toBeGreaterThan((await box(card(page, DAHL))).y + 20)
   })
 
+  test('on a phone one recipe card stays short of the screen and clear of the FAB', async ({
+    page
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+    await pickRows(page, 'Lemongrass beef noodle salad')
+    await toTop(page)
+    const size = page.viewportSize() ?? { height: 0, width: 0 }
+    const recipe = card(page, 'Lemongrass beef noodle salad')
+    const closed = await box(recipe)
+    const button = await box(fab(page))
+    expect(closed.height).toBeLessThan(size.height * 0.75)
+    expect(closed.y + closed.height).toBeLessThanOrEqual(button.y)
+    await page
+      .getByRole('button', { name: 'Lemongrass beef noodle salad details' })
+      .click()
+    const opened = await box(recipe)
+    expect(opened.height).toBeLessThan(size.height)
+    expect(opened.y + opened.height).toBeLessThanOrEqual(button.y + 1)
+  })
+
   test('the Ingredients header sticks to the top while its list scrolls under it', async ({
     page
   }) => {

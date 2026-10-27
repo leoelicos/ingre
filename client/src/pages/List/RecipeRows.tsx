@@ -22,6 +22,8 @@ export interface RowControls {
   readonly recessed: boolean
   /** Recipes' rows (#192): a sideways scrolling row of cards below 576px, a column from there */
   readonly carousel: boolean
+  /** phone cards only: names on one scrolling row, so a card does not fill the screen */
+  readonly namesScroll: boolean
   /** how a row is swiped away, or null where rows can't be (Explore) */
   readonly swipe: RowSwipe | null
 }
@@ -60,9 +62,13 @@ const rowClass = (picked: boolean, recessed: boolean): string =>
     picked
   )} ${rowDepth(picked, recessed)}`
 
-/** A card in the mobile row: most of the screen wide, so the next one peeks in; it snaps. */
+/**
+ * A card in the mobile row. Most of the screen wide, so the next one peeks in, and never
+ * taller than the space above the FAB (the page chrome and the FAB take the rest), so one
+ * card cannot fill the screen and sit under it. From 576px it is just a row in the column.
+ */
 export const CAROUSEL_CARD =
-  'w-[85%] max-w-sm shrink-0 snap-start desk:w-auto desk:max-w-none'
+  'w-[85%] max-w-sm shrink-0 snap-start max-h-[calc(100dvh-22rem)] overflow-y-auto desk:max-h-none desk:w-auto desk:max-w-none desk:overflow-visible'
 
 /**
  * What a swipe may claim from the browser: a card swiped up keeps the row's sideways scroll,
@@ -231,6 +237,7 @@ const RowCard: FC<{
         <IngredientNames
           lines={row.lines}
           title={title}
+          scroll={controls.namesScroll}
         />
       )}
       <Collapse

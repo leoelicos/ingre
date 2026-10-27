@@ -291,6 +291,7 @@ export const ExploreBody: FC<{ props: ExploreProps; query: string }> = ({
     seeRecipe: true,
     recessed: false,
     carousel: false,
+    namesScroll: false,
     swipe: null
   }
   return (

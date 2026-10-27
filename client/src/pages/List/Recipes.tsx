@@ -217,6 +217,7 @@ export const Recipes: FC<{
             seeRecipe: false,
             recessed: true,
             carousel: true,
+            namesScroll: !desktop,
             swipe: { rule: swipeRule(desktop), onSwipe: removal.remove }
           }}
         />

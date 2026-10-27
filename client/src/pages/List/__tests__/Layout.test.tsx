@@ -86,8 +86,18 @@ describe('Scenario: Phase 2, the mobile recipe row (#192)', () => {
       'w-[85%]',
       'shrink-0',
       'snap-start',
+      'max-h-[calc(100dvh-22rem)]',
+      'overflow-y-auto',
+      'desk:max-h-none',
+      'desk:overflow-visible',
       'desk:w-auto'
     )
+    const names = card('Red lentil dahl').querySelector(
+      '[data-testid="ingredient-names"]'
+    )
+    expect(names).toHaveClass('flex-nowrap', 'overflow-x-auto')
+    expect(names).toHaveAttribute('tabindex', '0')
+    expect(names?.querySelector('li')).toHaveClass('shrink-0')
   })
 })
 
@@ -145,6 +155,17 @@ describe('Scenario: Swipe to delete with Undo (#192)', () => {
     pick('dahl', 'butter-chicken')
     renderList()
     expect(card('Butter chicken')).toHaveClass('touch-pan-y')
+    expect(
+      card('Butter chicken').querySelector('[data-testid="ingredient-names"]')
+    ).toHaveClass('flex-wrap')
+    expect(
+      card('Butter chicken').querySelector('[data-testid="ingredient-names"]')
+    ).not.toHaveAttribute('tabindex')
+    expect(
+      card('Butter chicken').querySelector(
+        '[data-testid="ingredient-names"] li'
+      )
+    ).not.toHaveClass('shrink-0')
     drag(card('Butter chicken'), 0, -200)
     expect(pickedIds()).toEqual(['dahl', 'butter-chicken'])
     drag(card('Butter chicken'), -130, 10)
