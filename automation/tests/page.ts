@@ -17,8 +17,8 @@ const scopeRegion = (page: Page, scope: Scope): Locator =>
       scope === 'chip'
         ? 'Ingredients'
         : scope === 'extra'
-          ? 'Extra'
-          : 'Recipes',
+        ? 'Extra'
+        : 'Recipes',
     exact: true
   })
 
