@@ -35,6 +35,21 @@ final class PhoneTests: XCTestCase {
         XCTAssertEqual(editCopy(picked, "missing", []), picked)
     }
 
+    func testPortionsScaleTheCopyAndLeaveTheOriginal() {
+        let picked = pickRecipe(ListMemory(), dahl)
+        let four = setPortions(picked, "dahl", 4)
+        XCTAssertEqual(recipeCopies(four).first?.portions, 4)
+        XCTAssertEqual(recipeCopies(four).first?.lines.first?.quantity, 0.5)
+        XCTAssertEqual(recipeCopies(four).first?.lines.last?.quantity, 2)
+        XCTAssertEqual(exploreRecipe(four, "dahl")?.lines.first?.quantity, 0.25)
+        let one = setPortions(four, "dahl", 0)
+        XCTAssertEqual(recipeCopies(one).first?.portions, 1)
+        XCTAssertEqual(recipeCopies(one).first?.lines.first?.quantity, 0.125)
+        XCTAssertEqual(recipeCopies(setPortions(one, "dahl", 40)).first?.portions, 12)
+        XCTAssertEqual(setPortions(four, "dahl", 4), four)
+        XCTAssertEqual(setPortions(picked, "missing", 3), picked)
+    }
+
     func testTitlesAndUpgrade() {
         let split = splitTitle("Shaking beef (bò lúc lắc)")
         XCTAssertEqual(split.0, "Shaking beef")

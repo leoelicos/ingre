@@ -48,6 +48,20 @@ struct PhoneView: View {
                     }
                     .frame(minHeight: 44)
                     if opened.contains(recipe.id) {
+                        HStack {
+                            Text("Portions")
+                            Button("Fewer portions") {
+                                memory = setPortions(memory, recipe.id, recipe.portions - 1)
+                            }
+                            .disabled(recipe.portions <= 1)
+                            .frame(minHeight: 44)
+                            Text("\(recipe.portions)")
+                            Button("More portions") {
+                                memory = setPortions(memory, recipe.id, recipe.portions + 1)
+                            }
+                            .disabled(recipe.portions >= 12)
+                            .frame(minHeight: 44)
+                        }
                         ForEach(recipe.lines.filter { $0.quantity > 0 }, id: \.ingredientId) { line in
                             Text("\(capitaliseFirst(line.name)) \(formatQuantity(line.quantity, line.measure))")
                         }

@@ -295,7 +295,8 @@ public func pickCatalogue(
     next.copies[recipe.id] = StoredRecipe(
         id: recipe.id,
         name: recipe.name,
-        lines: scaledLines(recipe, newCopy(recipe.id, portions), names)
+        lines: scaledLines(recipe, newCopy(recipe.id, portions), names),
+        portions: clampPortions(Double(portions))
     )
     return next
 }
