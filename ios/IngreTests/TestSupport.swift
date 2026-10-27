@@ -1,8 +1,10 @@
 import Foundation
+
 @testable import Ingre
 
 /// The repo root, from this file's path (ios/IngreTests/TestSupport.swift).
-let repoRoot = URL(fileURLWithPath: #filePath).resolvingSymlinksInPath().deletingLastPathComponent().deletingLastPathComponent()
+let repoRoot = URL(fileURLWithPath: #filePath).resolvingSymlinksInPath().deletingLastPathComponent()
+    .deletingLastPathComponent()
     .deletingLastPathComponent()
 
 /// The string catalog, read from the source file, so wording tests run hosted or not.
@@ -11,8 +13,9 @@ enum TestSupport {
     static let catalog: [String: String] = {
         let url = repoRoot.appendingPathComponent("ios/Ingre/Resources/Localizable.xcstrings")
         guard let data = try? Data(contentsOf: url),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let strings = json["strings"] as? [String: [String: Any]] else { return [:] }
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let strings = json["strings"] as? [String: [String: Any]]
+        else { return [:] }
         var result: [String: String] = [:]
         for (key, entry) in strings {
             let en = (entry["localizations"] as? [String: Any])?["en"] as? [String: Any]
@@ -104,7 +107,8 @@ func makeToken(firstName: String = "Ann", exp: Double = 4_102_444_800) -> String
         Data(json.utf8).base64EncodedString().replacingOccurrences(of: "=", with: "")
             .replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_")
     }
-    let payload = #"{"data":{"_id":"u1","email":"ann@example.com","firstName":"\#(firstName)","pro":false},"exp":\#(Int(exp))}"#
+    let payload =
+        #"{"data":{"_id":"u1","email":"ann@example.com","firstName":"\#(firstName)","pro":false},"exp":\#(Int(exp))}"#
     return "\(part(#"{"alg":"HS256","typ":"JWT"}"#)).\(part(payload)).sig"
 }
 

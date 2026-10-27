@@ -199,9 +199,11 @@ enum Chips {
     static func usedInSummary(_ chip: Chip) -> String {
         let n = chip.recipeSources.filter { !$0.removed }.count
         if n == 0 { return L10n.t(chip.extra == nil ? "usedIn.nowhere" : "usedIn.extraOnly") }
-        return L10n.t(chip.extra == nil ? "usedIn.recipes" : "usedIn.recipesAndExtra", [
-            "recipes": Units.formatRecipeCount(n),
-        ])
+        return L10n.t(
+            chip.extra == nil ? "usedIn.recipes" : "usedIn.recipesAndExtra",
+            [
+                "recipes": Units.formatRecipeCount(n)
+            ])
     }
 
     /// A recipe row's chips (#182): every ingredient of the copy at its portions; crossed off is

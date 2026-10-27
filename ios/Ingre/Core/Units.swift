@@ -144,7 +144,8 @@ enum Units {
     /// The amount in the item's parts (garlic 0.3 -> 3 cloves), or nil when it has none.
     static func partsOf(_ amount: Double, _ item: LibraryIngredient?) -> (quantity: Double, measure: String)? {
         guard let measure = item?.partMeasure, let each = item?.approxGrams,
-              let grams = item?.measureGrams?[measure] else { return nil }
+            let grams = item?.measureGrams?[measure]
+        else { return nil }
         return ((amount * each) / grams, measure)
     }
 

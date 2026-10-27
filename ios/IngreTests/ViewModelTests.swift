@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import Ingre
 
 @MainActor
@@ -162,13 +163,15 @@ import Testing
         var sawStarting = false
         api.duringCheckout = { @MainActor in
             sawStarting = upgrade.starting
-            await upgrade.startCheckout() // the second tap, while the first is in flight
+            await upgrade.startCheckout()  // the second tap, while the first is in flight
         }
         await upgrade.startCheckout()
         #expect(sawStarting)
         #expect(upgrade.attempts == 1)
         #expect(api.calls.filter { $0 == "checkout" }.count == 1)
-        #expect(opener.opened.map(\.absoluteString).first?.hasPrefix("https://checkout.example.test/c/pay/cs_test_123#") == true)
+        #expect(
+            opener.opened.map(\.absoluteString).first?.hasPrefix("https://checkout.example.test/c/pay/cs_test_123#")
+                == true)
         #expect(upgrade.cancelled)
         #expect(!upgrade.starting)
     }

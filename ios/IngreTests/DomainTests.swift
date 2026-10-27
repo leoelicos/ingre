@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import Ingre
 
 @MainActor
@@ -101,7 +102,8 @@ import Testing
     }
 
     @Test func groupsFollowShopOrder() {
-        let chips = Chips.build(Chips.entries([RecipeCopy(recipeId: "spaghetti-bolognese")], library), [], ChipState(), library)
+        let chips = Chips.build(
+            Chips.entries([RecipeCopy(recipeId: "spaghetti-bolognese")], library), [], ChipState(), library)
         let sections = Chips.groups(chips).map(\.section)
         #expect(sections == ShopSection.allCases.filter { sections.contains($0) })
         #expect(sections.first == .fruitVeg)
@@ -143,11 +145,15 @@ import Testing
             Issue.record("expected browse")
             return
         }
-        #expect(recipes.map(\.name) == library.recipes.map(\.name).sorted { $0.localizedCompare($1) == .orderedAscending })
+        #expect(
+            recipes.map(\.name) == library.recipes.map(\.name).sorted { $0.localizedCompare($1) == .orderedAscending })
     }
 
     @Test func matchesRankByTier() {
-        guard case let .matches(ingredients, recipes) = Search.results("spaghetti", library, savedOnly: false, savedIds: []) else {
+        guard
+            case let .matches(ingredients, recipes) = Search.results(
+                "spaghetti", library, savedOnly: false, savedIds: [])
+        else {
             Issue.record("expected matches")
             return
         }
@@ -159,7 +165,9 @@ import Testing
     }
 
     @Test func noMatchOffersCloseOnesThenBrowse() {
-        guard case let .none(ingredients, _, browse) = Search.results("spagetti", library, savedOnly: false, savedIds: []) else {
+        guard
+            case let .none(ingredients, _, browse) = Search.results("spagetti", library, savedOnly: false, savedIds: [])
+        else {
             Issue.record("expected none")
             return
         }
@@ -168,7 +176,9 @@ import Testing
     }
 
     @Test func savedShowsOnlyHearted() {
-        guard case let .browse(recipes) = Search.results("", library, savedOnly: true, savedIds: ["spaghetti-bolognese"]) else {
+        guard
+            case let .browse(recipes) = Search.results("", library, savedOnly: true, savedIds: ["spaghetti-bolognese"])
+        else {
             Issue.record("expected browse")
             return
         }
@@ -180,7 +190,9 @@ import Testing
         #expect(url.absoluteString.hasPrefix("https://checkout.stripe.com/c/pay/cs_test_1#"))
         let fragment = try #require(url.fragment)
         let decoded = try #require(Data(base64Encoded: fragment.removingPercentEncoding ?? fragment))
-        #expect(String(decoding: decoded.map { $0 ^ 5 }, as: UTF8.self) == #"{"apiKey":"pk_test_TYooMQauvdEDq54NiTphI7jx"}"#)
+        #expect(
+            String(decoding: decoded.map { $0 ^ 5 }, as: UTF8.self) == #"{"apiKey":"pk_test_TYooMQauvdEDq54NiTphI7jx"}"#
+        )
     }
 
     @Test func returnURLs() {

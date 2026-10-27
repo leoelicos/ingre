@@ -20,7 +20,9 @@ struct FileStore: KeyValueStore {
     let directory: URL
 
     init(directory: URL? = nil) {
-        let base = directory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let base =
+            directory
+            ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Ingre", isDirectory: true)
         try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
         self.directory = base
@@ -94,11 +96,13 @@ struct ListStorage: Sendable {
             guard let raw, let id = raw.recipeId, let portions = raw.portions, !seen.contains(id) else { continue }
             seen.insert(id)
             let amounts = (raw.amounts ?? [:]).compactMapValues { $0 }.filter { $0.value.isFinite && $0.value >= 0 }
-            state.copies.append(RecipeCopy(recipeId: id, portions: RecipeCopy.clampPortions(portions), amounts: amounts))
+            state.copies.append(
+                RecipeCopy(recipeId: id, portions: RecipeCopy.clampPortions(portions), amounts: amounts))
         }
         for raw in decode([LenientExtra?].self, .extras) ?? [] {
             guard let raw, let id = raw.id, let name = raw.name, let quantity = raw.quantity,
-                  quantity > 0, quantity == quantity.rounded() else { continue }
+                quantity > 0, quantity == quantity.rounded()
+            else { continue }
             state.extras.append(Extra(id: id, name: name, ingredientId: raw.ingredientId, quantity: Int(quantity)))
         }
         state.crossed = Set(decode([String].self, .crossed) ?? [])

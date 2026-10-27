@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import Ingre
 
 @MainActor
@@ -40,11 +41,11 @@ import Testing
     }
 
     #if os(iOS)
-    /// The build phase copied the JSON into the app bundle (scripts/copy-native-data.sh).
-    @Test func theAppBundleHasTheData() throws {
-        let library = try Library.load(from: .main)
-        #expect(!library.recipes.isEmpty)
-    }
+        /// The build phase copied the JSON into the app bundle (scripts/copy-native-data.sh).
+        @Test func theAppBundleHasTheData() throws {
+            let library = try Library.load(from: .main)
+            #expect(!library.recipes.isEmpty)
+        }
     #endif
 }
 
@@ -72,8 +73,12 @@ import Testing
 
     @Test func dropsMalformedEntries() {
         let store = MemoryStore([
-            .copies: Data(#"[{"recipeId":"a","portions":40,"amounts":{"x":-1,"y":2}},{"recipeId":"a","portions":2},{"nope":1}]"#.utf8),
-            .extras: Data(#"[{"id":"t","name":"tea","ingredientId":null,"quantity":1.5},{"id":"u","name":"u","ingredientId":null,"quantity":1}]"#.utf8),
+            .copies: Data(
+                #"[{"recipeId":"a","portions":40,"amounts":{"x":-1,"y":2}},{"recipeId":"a","portions":2},{"nope":1}]"#
+                    .utf8),
+            .extras: Data(
+                #"[{"id":"t","name":"tea","ingredientId":null,"quantity":1.5},{"id":"u","name":"u","ingredientId":null,"quantity":1}]"#
+                    .utf8),
             .edits: Data(#"{"a":{"section":"Nowhere"},"b":{"section":"Deli"}}"#.utf8),
             .crossed: Data("not json".utf8),
         ])

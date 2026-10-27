@@ -96,10 +96,13 @@ enum CheckoutURL {
     /// The web app's publishable test key (client/src/pages/Admin/checkout.ts).
     static let publishableKey = "pk_test_TYooMQauvdEDq54NiTphI7jx"
 
-    static func make(sessionId: String, base: URL = URL(string: "https://checkout.stripe.com/c/pay/")!,
-                     key: String = publishableKey) -> URL {
+    static func make(
+        sessionId: String, base: URL = URL(string: "https://checkout.stripe.com/c/pay/")!,
+        key: String = publishableKey
+    ) -> URL {
         let json = #"{"apiKey":"\#(key)"}"#
-        let fragment = Foundation.Data(json.utf8.map { $0 ^ 5 }).base64EncodedString()
+        let fragment =
+            Foundation.Data(json.utf8.map { $0 ^ 5 }).base64EncodedString()
             .addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) ?? ""
         let url = base.appendingPathComponent(sessionId)
         return URL(string: "\(url.absoluteString)#\(fragment)") ?? url

@@ -1,0 +1,108 @@
+name: Native
+
+# #195: the native apps. Each job builds, lints and tests its app, runs the UI journeys on
+# a simulator/emulator against canned GraphQL, and uploads the UI-test screenshots.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ios:
+    runs-on: macos-latest
+    timeout-minutes: 75
+    defaults:
+      run:
+        working-directory: ios
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: GraphQL schema is current with the server
+        run: ../scripts/export-graphql-schema.sh --check
+
+      - name: Tools
+        run: |
+          brew install xcodegen swiftlint
+          curl -fsSL -o /tmp/apollo-ios-cli.tar.gz \
+            https://github.com/apollographql/apollo-ios/releases/download/2.4.0/apollo-ios-cli.tar.gz
+          tar -xzf /tmp/apollo-ios-cli.tar.gz -C /tmp
+          xcodebuild -version
+
+      - name: Apollo codegen
+        run: /tmp/apollo-ios-cli generate --path apollo-codegen-config.json
+
+      - name: Generate the Xcode project
+        run: xcodegen generate
+
+      - name: SwiftLint
+        run: swiftlint lint --strict
+
+      - name: swift-format
+        run: xcrun swift-format lint --strict --recursive Ingre IngreTests IngreUITests
+
+      - name: Pick a simulator
+        id: sim
+        run: |
+          udid=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          phones = [(runtime, d) for runtime, ds in devices.items() if "iOS" in runtime
+                    for d in ds if d["name"].startswith("iPhone")]
+          phones.sort(key=lambda p: (p[0], p[1]["name"]))
+          print(phones[-1][1]["udid"])')
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+          xcrun simctl list devices | grep "$udid"
+
+      - name: Build and test (unit + UI journeys)
+        env:
+          TEST_RUNNER_SCREENSHOT_DIR: ${{ runner.temp }}/screenshots
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project Ingre.xcodeproj -scheme Ingre -configuration Debug \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -resultBundlePath "$RUNNER_TEMP/Ingre.xcresult" \
+            -skipPackagePluginValidation -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO | tee "$RUNNER_TEMP/xcodebuild.log" | grep -E "error:|warning: .*Ingre/|Test Suite|Test Case .* (passed|failed)|Executed|\*\* "
+
+      - name: Collect screenshots
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/screenshots" "$RUNNER_TEMP/attachments"
+          if [ -d "$RUNNER_TEMP/Ingre.xcresult" ]; then
+            xcrun xcresulttool export attachments --path "$RUNNER_TEMP/Ingre.xcresult" \
+              --output-path "$RUNNER_TEMP/attachments" || true
+          fi
+          ls -la "$RUNNER_TEMP/screenshots" "$RUNNER_TEMP/attachments"
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-screenshots
+          path: |
+            ${{ runner.temp }}/screenshots
+            ${{ runner.temp }}/attachments
+          if-no-files-found: warn
+
+      - name: Upload the test log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-log
+          path: |
+            ${{ runner.temp }}/xcodebuild.log
+          retention-days: 7
+
+      - name: Upload the generated GraphQL code
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-apollo-generated
+          path: ios/Ingre/Network/Generated
+
+      - name: Generated GraphQL code is committed and current
+        run: |
+          git add -N Ingre/Network/Generated
+          git diff --exit-code --stat -- Ingre/Network/Generated

@@ -84,14 +84,17 @@ enum Copies {
 
     /// The copy with one ingredient set to `quantity` at its portions. The original amount clears
     /// the edit, and 0 on an added ingredient takes it off again.
-    static func withAmount(_ copy: RecipeCopy, _ recipe: LibraryRecipe, _ ingredientId: String, _ quantity: Double) -> RecipeCopy {
+    static func withAmount(
+        _ copy: RecipeCopy, _ recipe: LibraryRecipe, _ ingredientId: String, _ quantity: Double
+    ) -> RecipeCopy {
         let perServe = max(0, quantity) / Double(copy.portions)
         let original = recipe.ingredients.first { $0.ingredientId == ingredientId }
-        let unchanged: Bool = if let original {
-            abs(perServe - original.quantity / Double(recipe.portions)) < 1e-9
-        } else {
-            perServe == 0
-        }
+        let unchanged: Bool =
+            if let original {
+                abs(perServe - original.quantity / Double(recipe.portions)) < 1e-9
+            } else {
+                perServe == 0
+            }
         var next = copy
         if unchanged {
             next.amounts.removeValue(forKey: ingredientId)
@@ -121,9 +124,11 @@ enum Copies {
                 if line.quantity == 0 {
                     result.removed.append(.init(ingredientId: line.ingredientId, from: Units.rounded(original)))
                 } else {
-                    result.changed.append(.init(
-                        ingredientId: line.ingredientId, from: Units.rounded(original), to: Units.rounded(line.quantity)
-                    ))
+                    result.changed.append(
+                        .init(
+                            ingredientId: line.ingredientId, from: Units.rounded(original),
+                            to: Units.rounded(line.quantity)
+                        ))
                 }
             } else {
                 result.added.append(.init(ingredientId: line.ingredientId, to: Units.rounded(line.quantity)))
@@ -137,16 +142,20 @@ enum Copies {
 
     private static func bullet(_ line: CopyLine) -> String {
         guard let original = line.original else {
-            return L10n.t("customisation.added", [
-                "name": line.name, "amount": Units.amountText(line.quantity, line.measure, line.item),
-            ])
+            return L10n.t(
+                "customisation.added",
+                [
+                    "name": line.name, "amount": Units.amountText(line.quantity, line.measure, line.item),
+                ])
         }
         if line.quantity == 0 { return L10n.t("customisation.removed", ["name": line.displayName]) }
-        return L10n.t("customisation.changed", [
-            "name": line.displayName,
-            "from": Units.amountText(original, line.measure, line.item),
-            "to": Units.amountText(line.quantity, line.measure, line.item),
-        ])
+        return L10n.t(
+            "customisation.changed",
+            [
+                "name": line.displayName,
+                "from": Units.amountText(original, line.measure, line.item),
+                "to": Units.amountText(line.quantity, line.measure, line.item),
+            ])
     }
 
     private static func rank(_ line: CopyLine) -> Int {
@@ -160,9 +169,13 @@ enum Copies {
             .filter { copy.isCustomised($0.element.ingredientId) }
             .sorted { (rank($0.element), $0.offset) < (rank($1.element), $1.offset) }
             .map { bullet($0.element) }
-        let portions = copy.portions == RecipeCopy.defaultPortions ? [] : [
-            L10n.t("customisation.portions", ["from": String(RecipeCopy.defaultPortions), "to": String(copy.portions)]),
-        ]
+        let portions =
+            copy.portions == RecipeCopy.defaultPortions
+            ? []
+            : [
+                L10n.t(
+                    "customisation.portions", ["from": String(RecipeCopy.defaultPortions), "to": String(copy.portions)])
+            ]
         return edited + portions
     }
 

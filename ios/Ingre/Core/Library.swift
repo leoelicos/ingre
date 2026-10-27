@@ -34,7 +34,8 @@ enum ShopSection: String, CaseIterable, Codable, Sendable {
         case "deli": .deli
         case "bakery": .bakery
         case "baking", "canned food", "herbs & spices", "international", "oils & vinegar",
-             "pasta & rice", "sauces", "breakfast & spreads", "tea & coffee": .pantry
+            "pasta & rice", "sauces", "breakfast & spreads", "tea & coffee":
+            .pantry
         default: .other
         }
     }

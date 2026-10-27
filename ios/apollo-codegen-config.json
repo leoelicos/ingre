@@ -1,0 +1,38 @@
+{
+  "schemaNamespace" : "IngreGraphQL",
+  "input" : {
+    "operationSearchPaths" : [
+      "./graphql/operations/*.graphql"
+    ],
+    "schemaSearchPaths" : [
+      "./graphql/schema.graphqls"
+    ]
+  },
+  "output" : {
+    "testMocks" : {
+      "none" : {
+      }
+    },
+    "schemaTypes" : {
+      "path" : "./Ingre/Network/Generated",
+      "moduleType" : {
+        "embeddedInTarget" : {
+          "name" : "Ingre",
+          "accessModifier" : "internal"
+        }
+      }
+    },
+    "operations" : {
+      "inSchemaModule" : {
+      }
+    }
+  },
+  "options" : {
+    "conversionStrategies" : {
+      "inputObjects" : "none",
+      "enumCases" : "none",
+      "fieldAccessors" : "idiomatic"
+    },
+    "pruneGeneratedFiles" : true
+  }
+}
