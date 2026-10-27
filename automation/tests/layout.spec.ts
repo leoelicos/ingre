@@ -12,7 +12,7 @@ import {
   section
 } from './page'
 
-/* #181 Layout: mobile-first; stacked below 576px, side by side from 576px, more splits from 992px. */
+/* #181 Layout: mobile-first; stacked below 576px, side by side from 576px, more splits from 1328px (#193). */
 
 const split = (page: Page) =>
   page.locator('[data-split]').getAttribute('data-split')
@@ -72,15 +72,16 @@ test.describe('layout (#181)', () => {
     expect(await split(page)).toBe('vertical')
   })
 
-  test('from 992px: the toggle also offers 25/75 and 75/25, and 25/75 gives Ingredients a quarter', async ({
+  test('from 1328px: the toggle also offers 25/75 and 75/25, and 25/75 gives Ingredients a quarter', async ({
     page
   }) => {
-    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.setViewportSize({ width: 1328, height: 800 })
     await page.goto('/')
     expect(await choices(page)).toEqual([
       'Vertical',
       'Ingredients 50%, Recipes 50%',
       'Ingredients 25%, Recipes 75%',
+      'Ingredients 33%, Recipes 33%, Explore 33%',
       'Ingredients 75%, Recipes 25%'
     ])
     await chooseLayout(page, '25/75')
@@ -105,15 +106,15 @@ test.describe('layout (#181)', () => {
     ).toBeLessThan(2)
   })
 
-  test('the preferred split comes back when the width drops below 992px and grows again', async ({
+  test('the preferred split comes back when the width drops below 1328px and grows again', async ({
     page
   }) => {
-    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.setViewportSize({ width: 1328, height: 800 })
     await page.goto('/')
     await chooseLayout(page, '25/75')
     await page.setViewportSize({ width: 800, height: 800 })
     await expect.poll(() => split(page)).toBe('50/50')
-    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.setViewportSize({ width: 1328, height: 800 })
     await expect.poll(() => split(page)).toBe('25/75')
     // and it is saved on the device
     await page.reload()

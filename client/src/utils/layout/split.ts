@@ -16,10 +16,9 @@ export const SPLIT_KEY = 'ingre.layout.split'
 
 export const DEFAULT_SPLIT: Split = '50/50'
 
-/** Which width breakpoints the viewport has reached (576px, 992px and 1328px). */
+/** Which width breakpoints the viewport has reached (576px and 1328px). */
 export interface Widths {
   readonly split: boolean
-  readonly wide: boolean
   readonly drawer: boolean
 }
 
@@ -27,18 +26,18 @@ export const parseSplit = (value: unknown): Split | null =>
   SPLITS.find((split) => split === value) ?? null
 
 const TWO: readonly Split[] = ['vertical', '50/50']
-const FOUR: readonly Split[] = SPLITS.filter((split) => split !== '33/33/33')
 
 /**
- * What the layout toggle offers: nothing below 576px, two choices to 992px, four to 1328px,
- * and from 1328px also 33/33/33.
+ * What the layout toggle offers (#193): nothing below 576px, vertical and 50/50 to 1328px, and
+ * from 1328px all five (25/75, 33/33/33 and 75/25 join with the Explore drawer).
  */
 export const splitOptions = (widths: Widths): readonly Split[] =>
-  !widths.split ? [] : widths.drawer ? SPLITS : widths.wide ? FOUR : TWO
+  !widths.split ? [] : widths.drawer ? SPLITS : TWO
 
 /**
- * The split in use: vertical when narrow; a preference this width does not offer (25/75 and
- * 75/25 below 992px, 33/33/33 below 1328px) shows as 50/50 and comes back when wide again.
+ * The split in use: vertical when narrow; a preference this width does not offer (25/75,
+ * 33/33/33 and 75/25 below 1328px) shows as 50/50 and comes back when wide again. The stored
+ * preference is never overwritten by this fallback.
  */
 export const effectiveSplit = (preferred: Split, widths: Widths): Split =>
   !widths.split

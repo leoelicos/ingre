@@ -75,47 +75,64 @@ describe('Scenario: Side by side from 576px (#181)', () => {
   })
 })
 
-describe('Scenario: All four splits from 992px (#181)', () => {
-  it('adds 25/75 and 75/25; 25/75 gives Ingredients a quarter', () => {
-    setViewportWidth(992)
+const TWO_SPLITS = ['Vertical', 'Ingredients 50%, Recipes 50%']
+const QUARTER = 'Ingredients 25%, Recipes 75%'
+const THREE_QUARTERS = 'Ingredients 75%, Recipes 25%'
+const THIRDS = 'Ingredients 33%, Recipes 33%, Explore 33%'
+
+describe('Scenario: 25/75 and 75/25 only from 1328px (#193)', () => {
+  it.each([991, 992, 1100, 1327])(
+    'at %ipx the toggle offers only vertical and 50/50',
+    (width) => {
+      setViewportWidth(width)
+      renderList()
+      expect(choices()).toEqual(TWO_SPLITS)
+    }
+  )
+
+  it('at 1328px adds 25/75 and 75/25; 25/75 gives Ingredients a quarter', () => {
+    setViewportWidth(1328)
     renderList()
-    expect(choices()).toEqual([
-      'Vertical',
-      'Ingredients 50%, Recipes 50%',
-      'Ingredients 25%, Recipes 75%',
-      'Ingredients 75%, Recipes 25%'
-    ])
-    choose('Ingredients 25%, Recipes 75%')
+    expect(choices()).toEqual([...TWO_SPLITS, QUARTER, THIRDS, THREE_QUARTERS])
+    choose(QUARTER)
     expect(grid()).toHaveClass('grid-cols-[minmax(0,1fr)_minmax(0,3fr)]')
-    choose('Ingredients 75%, Recipes 25%')
+    choose(THREE_QUARTERS)
     expect(grid()).toHaveAttribute('data-split', '75/25')
   })
 
-  it('falls back to 50/50 below 992px and restores the choice when the window grows, and after a refresh', () => {
-    setViewportWidth(1200)
-    const first = renderList()
-    choose('Ingredients 25%, Recipes 75%')
-    expect(localStorage.getItem(SPLIT_KEY)).toBe('"25/75"')
-    setViewportWidth(800)
-    expect(grid()).toHaveAttribute('data-split', '50/50')
-    expect(
-      screen.getByRole('radio', { name: 'Ingredients 50%, Recipes 50%' })
-    ).toBeChecked()
-    setViewportWidth(500)
-    expect(grid()).toHaveAttribute('data-split', 'vertical')
-    setViewportWidth(1200)
-    expect(grid()).toHaveAttribute('data-split', '25/75')
-    first.unmount()
-    renderList()
-    expect(grid()).toHaveAttribute('data-split', '25/75')
-  })
+  it.each([
+    [QUARTER, '25/75'],
+    [THREE_QUARTERS, '75/25']
+  ])(
+    'a saved %s falls back to 50/50 below 1328px, keeps the saved choice, and comes back at 1328px and after a refresh',
+    (name, split) => {
+      setViewportWidth(1328)
+      const first = renderList()
+      choose(name)
+      expect(localStorage.getItem(SPLIT_KEY)).toBe(`"${split}"`)
+      setViewportWidth(1100)
+      expect(grid()).toHaveAttribute('data-split', '50/50')
+      expect(
+        screen.getByRole('radio', { name: 'Ingredients 50%, Recipes 50%' })
+      ).toBeChecked()
+      expect(screen.queryByRole('radio', { name })).toBeNull()
+      expect(localStorage.getItem(SPLIT_KEY)).toBe(`"${split}"`)
+      setViewportWidth(500)
+      expect(grid()).toHaveAttribute('data-split', 'vertical')
+      setViewportWidth(1328)
+      expect(grid()).toHaveAttribute('data-split', split)
+      expect(screen.getByRole('radio', { name })).toBeChecked()
+      first.unmount()
+      renderList()
+      expect(grid()).toHaveAttribute('data-split', split)
+    }
+  )
 })
 
 const exploreHeader = () => screen.getByRole('button', { name: /^Explore/ })
 const banner = () => within(screen.getByRole('banner'))
 const column = () =>
   document.querySelector<HTMLElement>('[data-explore-column]')
-const THIRDS = 'Ingredients 33%, Recipes 33%, Explore 33%'
 const rail = () =>
   screen.getByRole('button', { name: 'Search ingredients and recipes' })
 
@@ -135,15 +152,10 @@ describe('Scenario: Explore inline below 1328px (#181)', () => {
     ).toBeTruthy()
   })
 
-  it('at 1327px the toggle offers four splits, not 33/33/33', () => {
+  it('at 1327px the toggle offers only vertical and 50/50, not 33/33/33', () => {
     setViewportWidth(1327)
     renderList()
-    expect(choices()).toEqual([
-      'Vertical',
-      'Ingredients 50%, Recipes 50%',
-      'Ingredients 25%, Recipes 75%',
-      'Ingredients 75%, Recipes 25%'
-    ])
+    expect(choices()).toEqual(TWO_SPLITS)
   })
 })
 

@@ -75,14 +75,14 @@ test.describe('1328px breakpoint', () => {
     expect(aside.x).toBeGreaterThanOrEqual(main.x + main.width)
   })
 
-  test('1327px: the toggle does not offer 33/33/33', async ({ page }) => {
+  test('1327px: the toggle offers only vertical and 50/50, not 33/33/33 (#193)', async ({
+    page
+  }) => {
     await page.setViewportSize(NARROW)
     await page.goto('/')
     expect(await choices(page)).toEqual([
       'Vertical',
-      'Ingredients 50%, Recipes 50%',
-      'Ingredients 25%, Recipes 75%',
-      'Ingredients 75%, Recipes 25%'
+      'Ingredients 50%, Recipes 50%'
     ])
   })
 
