@@ -39,7 +39,8 @@ jobs:
         run: swiftlint lint --strict
 
       - name: swift-format
-        run: xcrun swift-format lint --strict --recursive Ingre IngreTests IngreUITests
+        # the Apollo output in Ingre/Network/Generated is left as generated
+        run: find Ingre IngreTests IngreUITests -name '*.swift' -not -path '*/Generated/*' -print0 | xargs -0 xcrun swift-format lint --strict
 
       - name: Pick a simulator
         id: sim
