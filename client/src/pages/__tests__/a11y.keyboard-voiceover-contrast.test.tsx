@@ -67,16 +67,16 @@ describe('Keyboard-only', () => {
     expect(screen.getByRole('button', { name: /sign up/i })).toHaveFocus()
   })
 
-  it('the list has no Home control, and its section headers work from the keyboard', async () => {
+  it('the list has no Home control, and Find recipes opens from the keyboard', async () => {
     const user = userEvent.setup()
     renderAt(<ListPage />, '/')
     expect(screen.queryByRole('button', { name: 'Home' })).toBeNull()
-    const ingredients = screen.getByRole('button', { name: /^Ingredients/ })
-    ingredients.focus()
+    const find = screen.getByRole('button', { name: 'Find recipes' })
+    find.focus()
     await user.keyboard('{Enter}')
-    expect(ingredients).toHaveAttribute('aria-expanded', 'false')
-    await user.keyboard(' ')
-    expect(ingredients).toHaveAttribute('aria-expanded', 'true')
+    expect(
+      screen.getByRole('dialog', { name: 'Find recipes' })
+    ).toBeInTheDocument()
   })
 })
 
@@ -111,6 +111,7 @@ describe('VoiceOver (ARIA name, role, state)', () => {
   it('the list Saved filter exposes on/off state as a switch', async () => {
     const user = userEvent.setup()
     renderAt(<ListPage />, '/')
+    await user.click(screen.getByRole('button', { name: 'Find recipes' }))
     await user.click(
       within(
         screen.getByRole('toolbar', { name: 'Explore actions' })

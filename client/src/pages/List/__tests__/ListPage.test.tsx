@@ -6,6 +6,7 @@ import { saveMock, savedQuery } from '../../../test/savedMocks'
 import {
   chip,
   chipOrder,
+  ensureExtra,
   explore,
   groupOf,
   hasChipEl,
@@ -15,6 +16,7 @@ import {
   pickedIds,
   chevronOf,
   pickFromExplore,
+  plusButton,
   recipes,
   recipesHeader,
   region,
@@ -22,8 +24,9 @@ import {
   renderList,
   toggleOf
 } from '../../../test/renderList'
+import { newCopy } from '../../../utils/balance/copies'
 import { savedParam, withSaved } from '../ListPage'
-import { toggled } from '../Recipes'
+import { toggled, removalNotice } from '../Recipes'
 import { isAbove } from '../ScrollToTop'
 
 beforeEach(() => localStorage.clear())
@@ -37,6 +40,13 @@ describe('list helpers', () => {
     expect(withSaved(on, false).toString()).toBe('x=1')
     expect([...toggled(new Set(['a']), 'b')]).toEqual(['a', 'b'])
     expect([...toggled(new Set(['a', 'b']), 'a')]).toEqual(['b'])
+    ensureExtra()
+    const copy = newCopy('dahl')
+    expect(removalNotice(null, 'Red lentil dahl')).toBeNull()
+    expect(removalNotice(copy, 'Red lentil dahl')).toEqual({
+      copy,
+      title: 'Red lentil dahl'
+    })
   })
 })
 
@@ -56,7 +66,7 @@ describe('Scenario: One page', () => {
       name: /^Recipes/
     })
     expect(
-      ingredients.compareDocumentPosition(recipesHeading) &
+      recipesHeading.compareDocumentPosition(ingredients) &
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Home' })).toBeNull()
@@ -98,15 +108,15 @@ describe('Scenario: Cross off stays in place', () => {
     renderList()
     const before = chipOrder()
     fireEvent.click(toggleOf('tomato'))
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('tomato')).toBeChecked()
     expect(toggleOf('tomato')).toHaveAccessibleName(/, crossed off$/)
     expect(
-      within(toggleOf('tomato')).getByText('Tomatoes').parentElement
+      within(chip('tomato')).getByText('Tomatoes').parentElement
     ).toHaveClass('line-through')
     expect(chipOrder()).toEqual(before)
     expect(region('Ingredients')).toHaveTextContent(/\d+ items, 1 crossed off/)
     fireEvent.click(toggleOf('tomato'))
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'false')
+    expect(toggleOf('tomato')).not.toBeChecked()
     expect(toggleOf('tomato')).not.toHaveAccessibleName(/crossed off/)
     expect(chipOrder()).toEqual(before)
     expect(screen.queryByText(/undo/i)).toBeNull()
@@ -184,7 +194,7 @@ describe('Scenario: Edit quantity', () => {
     await user.tab()
     expect(quantity).toHaveValue('2')
     expect(toggleOf('tomato')).toHaveAccessibleName(/^Tomatoes, 2\b/)
-    expect(within(toggleOf('tomato')).getByText(/^2\b/)).toBeInTheDocument()
+    expect(within(chip('tomato')).getByText(/^2\b/)).toBeInTheDocument()
     await user.clear(quantity)
     await user.type(quantity, '3')
     await user.tab()
@@ -263,7 +273,7 @@ describe('Scenario: Add an extra', () => {
   it('opens category tabs inline below the plus; a Dairy row adds Butter', async () => {
     const user = userEvent.setup()
     renderList()
-    const plus = screen.getByRole('button', { name: 'Add an ingredient' })
+    const plus = plusButton()
     expect(plus).toHaveAttribute('aria-expanded', 'false')
     await user.click(plus)
     expect(plus).toHaveAttribute('aria-expanded', 'true')
@@ -292,7 +302,7 @@ describe('Scenario: Add an extra', () => {
   it('0 in the Extra box asks; Yes takes the extra off and focus goes to the plus', async () => {
     const user = userEvent.setup()
     renderList()
-    const plus = screen.getByRole('button', { name: 'Add an ingredient' })
+    const plus = plusButton()
     await user.click(plus)
     await user.click(screen.getByRole('tab', { name: 'Dairy' }))
     await user.click(screen.getByRole('button', { name: 'Butter' }))
@@ -323,7 +333,7 @@ describe('Scenario: Add an existing ingredient', () => {
     }
     pick('dahl')
     renderList()
-    await user.click(screen.getByRole('button', { name: 'Add an ingredient' }))
+    await user.click(plusButton())
     await user.click(screen.getByRole('tab', { name: 'Dairy' }))
     await user.click(
       screen.getByRole('button', { name: 'Butter, on your list' })
@@ -336,9 +346,7 @@ describe('Scenario: Add an existing ingredient', () => {
     expect(panel('Butter details')).toBeVisible()
     expect(scrolled).toEqual([chevron])
     expect(chevron).toHaveFocus()
-    expect(
-      screen.getByRole('button', { name: 'Add an ingredient' })
-    ).toHaveAttribute('aria-expanded', 'false')
+    expect(plusButton()).toHaveAttribute('aria-expanded', 'false')
   })
 })
 
@@ -346,7 +354,7 @@ describe('Scenario: Close the plus area', () => {
   it('closes on a click outside, stays open for clicks inside, and Escape returns focus to the plus', async () => {
     const user = userEvent.setup()
     renderList()
-    const plus = screen.getByRole('button', { name: 'Add an ingredient' })
+    const plus = plusButton()
     await user.click(plus)
     await user.click(screen.getByRole('tab', { name: 'Bakery' }))
     expect(plus).toHaveAttribute('aria-expanded', 'true')
@@ -356,6 +364,10 @@ describe('Scenario: Close the plus area', () => {
       screen.queryByRole('group', { name: 'Add an ingredient' })
     ).toBeNull()
     await user.click(plus)
+    fireEvent.pointerDown(
+      screen.getByRole('group', { name: 'Add an ingredient' })
+    )
+    expect(plus).toHaveAttribute('aria-expanded', 'true')
     await user.click(plus)
     expect(plus).toHaveAttribute('aria-expanded', 'false')
     await user.click(plus)
@@ -457,24 +469,14 @@ describe('Scenario: Save visibility', () => {
   })
 })
 
-describe('Scenario: Collapsible sections', () => {
-  it('hides the chips and announces collapsed; the same for Recipes', async () => {
-    const user = userEvent.setup()
+describe('Scenario: Sections stay open', () => {
+  it('keeps chips and recipes on the page; the headers are not an accordion', () => {
     pick('dahl')
     renderList()
-    expect(ingredientsHeader()).toHaveAttribute('aria-expanded', 'true')
-    await user.click(ingredientsHeader())
-    expect(ingredientsHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(chip('tomato')).not.toBeVisible()
-    expect(screen.queryByRole('button', { name: /^Tomatoes, / })).toBeNull()
-    await user.click(ingredientsHeader())
+    expect(ingredientsHeader().tagName).toBe('H2')
+    expect(recipesHeader().tagName).toBe('H2')
+    expect(ingredientsHeader()).not.toHaveAttribute('aria-expanded')
     expect(chip('tomato')).toBeVisible()
-    await user.click(recipesHeader())
-    expect(recipesHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(
-      recipes().queryByRole('button', { name: 'Red lentil dahl' })
-    ).toBeNull()
-    await user.click(recipesHeader())
     expect(
       recipes().getByRole('button', { name: 'Red lentil dahl' })
     ).toBeVisible()
@@ -486,7 +488,7 @@ describe('Scenario: Motion', () => {
     pick('dahl')
     renderList()
     fireEvent.click(chevronOf('tomato'))
-    fireEvent.click(screen.getByRole('button', { name: 'Add an ingredient' }))
+    fireEvent.click(plusButton())
     const parts = [
       ...document.querySelectorAll('[data-collapse]'),
       chip('tomato').nextElementSibling,
@@ -513,24 +515,28 @@ describe('Scenario: Scroll to top', () => {
   }
   let fire: (entry: Partial<IntersectionObserverEntry>) => void = () => {}
   const disconnected: string[] = []
+  const callbacks: IntersectionObserverCallback[] = []
   class FakeObserver {
     readonly root = null
     readonly rootMargin = ''
     readonly scrollMargin = ''
     readonly thresholds = []
     constructor(callback: IntersectionObserverCallback) {
+      callbacks.push(callback)
       fire = (entry) =>
-        act(() =>
-          callback(
-            [
-              {
-                ...ENTRY,
-                ...entry
-              }
-            ],
-            this
-          )
-        )
+        act(() => {
+          for (const cb of callbacks) {
+            cb(
+              [
+                {
+                  ...ENTRY,
+                  ...entry
+                }
+              ],
+              this
+            )
+          }
+        })
     }
     observe() {}
     unobserve() {}
@@ -542,6 +548,7 @@ describe('Scenario: Scroll to top', () => {
     }
   }
   afterEach(() => {
+    callbacks.length = 0
     window.IntersectionObserver = original
   })
 
@@ -566,8 +573,12 @@ describe('Scenario: Scroll to top', () => {
     ).toHaveFocus()
     fire({ isIntersecting: true, boundingClientRect: new DOMRect(0, 0) })
     expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: '+ Pantry Item' }))
+    expect(
+      screen.getByRole('dialog', { name: 'Add pantry item' })
+    ).toBeInTheDocument()
     unmount()
-    expect(disconnected).toEqual(['yes'])
+    expect(disconnected).toEqual(['yes', 'yes'])
   })
 
   it('hides again when a jump to the very top leaves the chips below the screen', () => {
@@ -581,10 +592,10 @@ describe('Scenario: Scroll to top', () => {
     expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
   })
 
-  it('treats only a box wholly above the screen as scrolled past', () => {
-    expect(isAbove({ bottom: -1 })).toBe(true)
-    expect(isAbove({ bottom: 0 })).toBe(false)
-    expect(isAbove({ bottom: 400 })).toBe(false)
+  it('treats a section whose top has left the screen as scrolled past', () => {
+    expect(isAbove({ top: -1 })).toBe(true)
+    expect(isAbove({ top: 0 })).toBe(false)
+    expect(isAbove({ top: 400 })).toBe(false)
   })
 
   it('never shows without IntersectionObserver', () => {
@@ -609,7 +620,7 @@ describe('Scenario: State kept', () => {
     await user.click(
       within(panel('Butter details')).getByRole('radio', { name: 'Deli' })
     )
-    await user.click(screen.getByRole('button', { name: 'Add an ingredient' }))
+    await user.click(plusButton())
     await user.click(screen.getByRole('tab', { name: 'Bakery' }))
     const [bread] = within(
       screen.getByRole('tabpanel', { name: 'Bakery' })
@@ -623,12 +634,13 @@ describe('Scenario: State kept', () => {
     expect(
       recipes().getByRole('button', { name: 'Red lentil dahl' })
     ).toHaveAttribute('aria-pressed', 'true')
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('tomato')).toBeChecked()
     expect(toggleOf('butter')).toHaveAccessibleName(/^Butter, 20 g, Deli, /)
     expect(chip('butter')).toHaveAttribute('data-category', 'Deli')
     expect(groupOf('butter')).toBe('Dairy')
     expect(chipOrder()).toEqual(order)
     expect(chipOrder()).toHaveLength(order.length)
+    plusButton()
     // in Ingredients and in Extra
     expect(
       screen.getAllByRole('heading', { level: 3, name: 'Bakery' })
@@ -644,18 +656,18 @@ describe('Scenario: Accessibility', () => {
     expect(toggleOf('onion')).toHaveAccessibleName(
       'Brown onion, 1 onion, Fruit & Veg, in 2 recipes, crossed off'
     )
-    expect(toggleOf('onion')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('onion')).toBeChecked()
     ;[
-      ingredientsHeader(),
-      recipesHeader(),
       chevronOf('onion'),
       recipes().getByRole('button', { name: 'Red lentil dahl details' }),
-      screen.getByRole('button', { name: 'Add an ingredient' })
+      plusButton()
     ].forEach((button) => {
       expect(button.tagName).toBe('BUTTON')
       expect(button).toHaveAttribute('aria-expanded')
       expect(button.className).toContain('focus-ring')
     })
+    expect(ingredientsHeader().tagName).toBe('H2')
+    expect(recipesHeader().tagName).toBe('H2')
   })
 
   it('works by keyboard: chips, chevrons, Sort, plus, tabs, rows and section headers', async () => {
@@ -663,10 +675,10 @@ describe('Scenario: Accessibility', () => {
     pick('dahl')
     renderList()
     toggleOf('tomato').focus()
-    await user.keyboard('{Enter}')
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'true')
     await user.keyboard(' ')
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'false')
+    expect(toggleOf('tomato')).toBeChecked()
+    await user.keyboard(' ')
+    expect(toggleOf('tomato')).not.toBeChecked()
     await user.tab()
     const chevron = chevronOf('tomato')
     expect(chevron).toHaveFocus()
@@ -680,7 +692,7 @@ describe('Scenario: Accessibility', () => {
     ).toHaveFocus()
     screen.getByRole('button', { name: 'Sort' }).focus()
     await user.keyboard('{Enter}')
-    const plus = screen.getByRole('button', { name: 'Add an ingredient' })
+    const plus = plusButton()
     plus.focus()
     await user.keyboard('{Enter}')
     expect(plus).toHaveAttribute('aria-expanded', 'true')
@@ -693,9 +705,7 @@ describe('Scenario: Accessibility', () => {
     row.focus()
     await user.keyboard('{Enter}')
     expect(row).toHaveAttribute('aria-pressed', 'true')
-    recipesHeader().focus()
-    await user.keyboard('{Enter}')
-    expect(recipesHeader()).toHaveAttribute('aria-expanded', 'false')
+    expect(recipesHeader().tagName).toBe('H2')
   })
 })
 
@@ -716,7 +726,8 @@ describe('Scenario: Neumorphic hierarchy', () => {
     expect(noFill(section)).toEqual([])
     // the header lies flat on the raised section: one raised level at a time
     expect(recipesHeader()).not.toHaveClass('shadow-raised')
-    expect(recipesHeader()).toHaveClass('data-[focus-visible]:focus-ring')
+    expect(recipesHeader()).toHaveClass('focus-visible:focus-ring')
+    expect(recipesHeader().firstElementChild).not.toHaveClass('shadow-raised')
     const row = recipes().getByRole('button', { name: 'Red lentil dahl' })
     const item = row.closest('li') ?? document.body
     expect(item).toHaveClass('shadow-recessed', 'border-primary')
@@ -735,7 +746,10 @@ describe('Scenario: Neumorphic hierarchy', () => {
     pick('dahl')
     renderList()
     expect(region('Ingredients')).not.toHaveClass('before:shadow-section')
-    expect(ingredientsHeader()).toHaveClass('shadow-raised', 'bg-bg')
+    expect(ingredientsHeader().firstElementChild).toHaveClass(
+      'shadow-raised',
+      'bg-bg'
+    )
   })
 
   it('chips are raised platforms with an ink edge, no fill or gradient, and flat parts', () => {

@@ -1,12 +1,13 @@
 import { translate, useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
-import { useId, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { Button, ToggleButton } from 'react-aria-components'
 import { Chevron, Collapse, MOTION } from '../../components/Collapse'
 import { splitTitle } from '../../components/recipeTitle'
 import type { LibraryRecipe } from '../../types/library'
 import type { CopyLine } from '../../utils/balance/copies'
 import { IngredientNames } from './IngredientNames'
+import { classifySwipe, rowScroll } from './gestures'
 
 /** What every row shares: picks, open rows, and what an open row shows. */
 export interface RowControls {
@@ -18,6 +19,10 @@ export interface RowControls {
   readonly seeRecipe: boolean
   /** Recipes' rows are recessed into the raised section; Explore's stay raised until picked */
   readonly recessed: boolean
+  /** Mobile: the picked recipes sit in a horizontal snapping row (#192). */
+  readonly snap: boolean
+  /** Removes the recipe from the list. null in Explore, where a tick does that. */
+  readonly onRemove: ((recipe: LibraryRecipe) => void) | null
 }
 
 /** A row: its recipe and what it shows open, the original in Explore or the copy in Recipes (#182). */
@@ -91,10 +96,45 @@ export const RecipeRow: FC<{
   const open = controls.openIds.has(recipe.id)
   const detailsId = `${id}-details`
   const shown = useShownOnce(open)
+  const start = useRef<{ x: number; y: number; scroll: number } | null>(null)
+  const [shift, setShift] = useState(0)
+  const onRemove = controls.onRemove
   return (
     <li
       data-recipe={recipe.id}
-      className={rowClass(picked, controls.recessed)}
+      style={{ transform: shift === 0 ? undefined : `translateX(${shift}px)` }}
+      onPointerDown={(event) => {
+        if (onRemove === null || event.button !== 0) return
+        start.current = {
+          x: event.clientX,
+          y: event.clientY,
+          scroll: rowScroll(event.currentTarget)
+        }
+      }}
+      onPointerMove={(event) => {
+        if (start.current === null) return
+        setShift(event.clientX - start.current.x)
+      }}
+      onPointerUp={(event) => {
+        if (start.current === null || onRemove === null) return
+        const sample = {
+          dx: event.clientX - start.current.x,
+          dy: event.clientY - start.current.y,
+          scrollDelta: rowScroll(event.currentTarget) - start.current.scroll
+        }
+        start.current = null
+        setShift(0)
+        if (classifySwipe(sample) === 'delete') onRemove(recipe)
+      }}
+      onPointerCancel={() => {
+        start.current = null
+        setShift(0)
+      }}
+      className={`${rowClass(picked, controls.recessed)} group ${
+        controls.snap
+          ? 'w-[85%] max-h-[calc(100dvh-22rem)] shrink-0 snap-center overflow-y-auto min-[576px]:max-h-none min-[576px]:w-auto min-[576px]:shrink min-[576px]:overflow-visible'
+          : ''
+      }`}
     >
       <ToggleButton
         isSelected={picked}
@@ -110,20 +150,31 @@ export const RecipeRow: FC<{
           {title}
         </span>
       </ToggleButton>
-      <Button
-        aria-label={
-          controls.seeRecipe
-            ? t('row.seeRecipeLabel', { title })
-            : t('row.details', { title })
-        }
-        aria-expanded={open}
-        aria-controls={detailsId}
-        onPress={() => controls.onToggleOpen(recipe.id)}
-        className="flex min-h-[44px] min-w-[44px] items-start justify-center gap-1 whitespace-nowrap rounded-r-card p-4 text-sm font-semibold text-text data-[focus-visible]:focus-ring"
-      >
-        {controls.seeRecipe && <span>{t('row.seeRecipe')}</span>}
-        <Chevron open={open} />
-      </Button>
+      <div className="flex flex-col items-end">
+        <Button
+          aria-label={
+            controls.seeRecipe
+              ? t('row.seeRecipeLabel', { title })
+              : t('row.details', { title })
+          }
+          aria-expanded={open}
+          aria-controls={detailsId}
+          onPress={() => controls.onToggleOpen(recipe.id)}
+          className="flex min-h-[44px] min-w-[44px] items-start justify-center gap-1 whitespace-nowrap rounded-r-card p-4 text-sm font-semibold text-text data-[focus-visible]:focus-ring"
+        >
+          {controls.seeRecipe && <span>{t('row.seeRecipe')}</span>}
+          <Chevron open={open} />
+        </Button>
+        {onRemove !== null && (
+          <Button
+            aria-label={t('recipes.remove', { title })}
+            onPress={() => onRemove(recipe)}
+            className="mb-2 mr-2 inline-flex min-h-[44px] items-center rounded-pill px-3 text-sm font-semibold text-text data-[focus-visible]:focus-ring min-[576px]:opacity-0 min-[576px]:focus:opacity-100 min-[576px]:group-hover:opacity-100"
+          >
+            {t('recipes.removeShort')}
+          </Button>
+        )}
+      </div>
       {!open && (
         <IngredientNames
           lines={row.lines}
@@ -150,7 +201,13 @@ export const RecipeRows: FC<{
   rows: readonly Row[]
   controls: RowControls
 }> = ({ rows, controls }) => (
-  <ul className="m-0 grid list-none grid-cols-1 gap-4 p-1">
+  <ul
+    className={
+      controls.snap
+        ? 'm-0 flex list-none snap-x snap-mandatory gap-4 overflow-x-auto p-1 min-[576px]:grid min-[576px]:snap-none min-[576px]:grid-cols-1 min-[576px]:overflow-visible'
+        : 'm-0 grid list-none grid-cols-1 gap-4 p-1'
+    }
+  >
     {rows.map((row) => (
       <RecipeRow
         key={row.recipe.id}

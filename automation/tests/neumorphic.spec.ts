@@ -144,11 +144,17 @@ test.describe('neumorphic hierarchy', () => {
       await page.keyboard.press('Shift+Tab')
       await page.keyboard.press('Tab')
       await expect(target).toBeFocused()
-      await expect(target).toHaveAttribute('data-focus-visible', 'true')
-      await expect(target).toHaveCSS('outline-style', 'solid')
-      await expect(target).toHaveCSS('outline-width', '3px')
+      const visible =
+        (await target.evaluate((el) => el.tagName)) === 'INPUT'
+          ? target.locator('xpath=..')
+          : target
+      if (visible === target) {
+        await expect(target).toHaveAttribute('data-focus-visible', 'true')
+      }
+      await expect(visible).toHaveCSS('outline-style', 'solid')
+      await expect(visible).toHaveCSS('outline-width', '3px')
       expect(
-        contrast(await css(target, 'outline-color'), bg)
+        contrast(await css(visible, 'outline-color'), bg)
       ).toBeGreaterThanOrEqual(3)
     }
   })

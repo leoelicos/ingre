@@ -1,6 +1,4 @@
 import type { FC, ReactNode } from 'react'
-import { Button } from 'react-aria-components'
-import { Chevron, Collapse } from '../../components/Collapse'
 
 /** What every section header row shares: its shape and text. */
 const HEADER_BASE =
@@ -26,7 +24,7 @@ export const RAISED_SECTION = `${SECTION} relative before:pointer-events-none be
 export const sectionClass = (raised: boolean): string =>
   raised ? RAISED_SECTION : SECTION
 
-/** Title on the left with its short summary under it; the chevron sits on the right. */
+/** Title on the left with its short summary under it. */
 const HeaderText: FC<{ id: string; title: string; summary: string }> = ({
   id,
   title,
@@ -48,36 +46,31 @@ const HeaderText: FC<{ id: string; title: string; summary: string }> = ({
 /** The title's id: the section and its heading are named by the title alone, not the summary. */
 export const titleId = (headingId: string): string => `${headingId}-title`
 
-/** The header row button's id, so focus can be sent back to it. */
-export const toggleId = (headingId: string): string => `${headingId}-toggle`
-
-/** How a header row toggles its content; null when it cannot collapse. */
-export interface HeaderToggle {
-  readonly open: boolean
-  readonly onToggle: () => void
-  readonly controls: string
-}
-
 /**
- * A section's header (#181): when it can collapse, the whole row is the button, with
- * aria-expanded, so a screen reader hears "Ingredients, collapsed". Otherwise it is a plain
- * heading with the same outline. The heading takes focus for Scroll to top.
+ * A section's header (#181, #192). It does not collapse: the workspace shows Recipes and
+ * Ingredients together. The heading takes focus for Scroll to top. Sticky headers pin under
+ * the top of the page once you scroll past what is above them.
  */
 export const HeaderRow: FC<{
   headingId: string
   title: string
   summary: string
-  toggle: HeaderToggle | null
   /** true inside a raised section */
-  flat?: boolean
-}> = ({ headingId, title, summary, toggle, flat = false }) => (
-  <h2
-    id={headingId}
-    aria-labelledby={titleId(headingId)}
-    tabIndex={-1}
-    className="m-0 min-w-0 flex-1 rounded-card focus-visible:focus-ring"
+  flat: boolean
+  sticky: boolean
+  action?: ReactNode
+}> = ({ headingId, title, summary, flat, sticky, action }) => (
+  <div
+    className={`flex items-start gap-2 ${
+      sticky ? 'sticky top-0 z-20 bg-bg' : ''
+    }`}
   >
-    {toggle === null ? (
+    <h2
+      id={headingId}
+      aria-labelledby={titleId(headingId)}
+      tabIndex={-1}
+      className="m-0 min-w-0 flex-1 rounded-card focus-visible:focus-ring"
+    >
       <span className={headerRowClass(flat)}>
         <HeaderText
           id={titleId(headingId)}
@@ -85,48 +78,29 @@ export const HeaderRow: FC<{
           summary={summary}
         />
       </span>
-    ) : (
-      <Button
-        id={toggleId(headingId)}
-        aria-expanded={toggle.open}
-        aria-controls={toggle.controls}
-        onPress={toggle.onToggle}
-        className={`${headerRowClass(flat)} data-[focus-visible]:focus-ring`}
-      >
-        <HeaderText
-          id={titleId(headingId)}
-          title={title}
-          summary={summary}
-        />
-        <Chevron open={toggle.open} />
-      </Button>
-    )}
-  </h2>
+    </h2>
+    {action}
+  </div>
 )
 
-/**
- * A page section (#179, #181). Collapse buttons exist only in the vertical layout; side by
- * side, both sections always show their content.
- */
+/** A page section (#179, #192). Always open: there is no accordion. */
 export const Section: FC<{
   id: string
   title: string
-  collapsible: boolean
-  open: boolean
-  onToggle: () => void
-  /** short text in the header row, e.g. "3 recipes"; stays visible while collapsed */
   summary: string
   /** the whole section is a raised outline (Recipes); its header then lies flat */
   raised?: boolean
+  /** pin the header while the rest of the page scrolls (#192) */
+  sticky?: boolean
+  action?: ReactNode
   children: ReactNode
 }> = ({
   id,
   title,
-  collapsible,
-  open,
-  onToggle,
   summary,
   raised = false,
+  sticky = false,
+  action,
   children
 }) => (
   <section
@@ -139,15 +113,9 @@ export const Section: FC<{
       title={title}
       summary={summary}
       flat={raised}
-      toggle={
-        collapsible ? { open, onToggle, controls: `${id}-content` } : null
-      }
+      sticky={sticky}
+      action={action}
     />
-    <Collapse
-      id={`${id}-content`}
-      open={!collapsible || open}
-    >
-      {children}
-    </Collapse>
+    <div id={`${id}-content`}>{children}</div>
   </section>
 )

@@ -40,17 +40,10 @@ test.describe('ingredient chips (#181)', () => {
     page
   }) => {
     await pickRows(page, DAHL)
-    const check = chip(page, 'tomato').getByTestId('chip-check')
-    await check.click()
-    await expect(chipToggle(page, 'tomato')).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
-    await chip(page, 'tomato').getByText('Tomatoes').click()
-    await expect(chipToggle(page, 'tomato')).toHaveAttribute(
-      'aria-pressed',
-      'false'
-    )
+    await chipToggle(page, 'tomato').click()
+    await expect(chipToggle(page, 'tomato')).toBeChecked()
+    await chip(page, 'tomato').getByText('Tomatoes').click({ force: true })
+    await expect(chipToggle(page, 'tomato')).not.toBeChecked()
     await expect(
       page.getByRole('group', { name: 'Tomatoes details' })
     ).toBeHidden()
@@ -60,7 +53,7 @@ test.describe('ingredient chips (#181)', () => {
     page
   }) => {
     await pickRows(page, DAHL)
-    const lentils = chipToggle(page, 'red-lentils')
+    const lentils = chip(page, 'red-lentils')
     await expect(lentils).toContainText('150 g')
     await expect(lentils).not.toContainText('×')
     await chevron(page, 'red-lentils').click()

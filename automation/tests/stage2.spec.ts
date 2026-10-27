@@ -12,15 +12,14 @@ import {
   extraRegion,
   ingredientsRegion,
   openExplore,
+  openPantry,
   panel,
   pickOption,
   pickRows,
   recipesRegion,
   row,
-  section,
   setBox,
-  sourceBox,
-  useVertical
+  sourceBox
 } from './page'
 
 /* #182 Stage 2: balance-sheet ingredients, per-source amounts, recipe copies, filters. */
@@ -54,16 +53,20 @@ const choose = async (
   await pickOption(page, option)
   await page.keyboard.press('Escape')
 }
-/** Collapses Explore however this width shows it, so it can't take focus from the filter. */
+/** Closes discovery so the workspace can take the click. */
 const closeExplore = async (page: Page) => {
-  const hide = page.getByRole('button', { name: 'Hide Explore' })
-  if (await hide.isVisible()) await hide.click()
+  const close = page.getByRole('button', { name: 'Close', exact: true })
+  if (await close.isVisible()) await close.click()
 }
-/** Adds a catalogue item to Extra by hand, from the search. */
+/** Adds a catalogue item to Extra from search, then shows Extra. */
 const addExtra = async (page: Page, query: string, name: string) => {
   await openExplore(page)
   await page.getByRole('searchbox').fill(query)
-  await page.getByRole('button', { name: `${name}, on your list` }).click()
+  const onList = page.getByRole('button', { name: `${name}, on your list` })
+  const add = page.getByRole('button', { name: `Add ${name.toLowerCase()}` })
+  if (await onList.isVisible()) await onList.click()
+  else await add.click()
+  await openPantry(page)
   await expect(chip(page, query, 'extra')).toHaveCount(1)
 }
 const openRow = (page: Page, title: string) =>
@@ -128,7 +131,7 @@ test.describe('balance-sheet ingredients (#182)', () => {
       'true'
     )
     await expect(chipToggle(page, 'red-lentils')).toBeDisabled()
-    await expect(chipToggle(page, 'red-lentils')).toContainText('0')
+    await expect(chip(page, 'red-lentils')).toContainText('0')
     await page.getByRole('button', { name: 'Sort', exact: true }).click()
     await page.reload()
     await expect(chip(page, 'red-lentils')).toHaveAttribute(
@@ -175,6 +178,7 @@ test.describe('Extra (#182)', () => {
   test('empty Extra says so and offers the plus (answer 11)', async ({
     page
   }) => {
+    await openPantry(page)
     await expect(extraRegion(page)).toContainText('Nothing extra yet')
     await expect(
       extraRegion(page).getByRole('button', { name: 'Add an ingredient' })
@@ -191,6 +195,7 @@ test.describe('Extra (#182)', () => {
     await expect(sourceBox(panel(page, 'Salt'), DAHL)).toHaveValue('0.5')
     await openRow(page, DAHL)
     await expect(chip(page, 'salt', 'row-dahl')).toHaveCount(1)
+    await openExplore(page)
     await exploreRow(page, DAHL).click()
     await expect(chip(page, 'salt')).toHaveCount(0)
     await expect(chip(page, 'butter')).toHaveCount(0)
@@ -201,7 +206,9 @@ test.describe('Extra (#182)', () => {
   }) => {
     await pickRows(page, DAHL)
     await addExtra(page, 'salt', 'Salt')
+    await openExplore(page)
     await exploreRow(page, DAHL).click()
+    await openPantry(page)
     await expect(chip(page, 'salt', 'extra')).toHaveCount(1)
     await expect(chip(page, 'butter')).toHaveCount(0)
   })
@@ -213,6 +220,7 @@ test.describe('Extra (#182)', () => {
     await openExplore(page)
     await page.getByRole('searchbox').fill('butter')
     await page.getByRole('button', { name: 'Butter, on your list' }).click()
+    await openPantry(page)
     await expect(chip(page, 'butter', 'extra')).toContainText('1 g')
     await chevron(page, 'butter', 'extra').click()
     const extra = panel(page, 'Butter', 'extra')
@@ -233,22 +241,14 @@ test.describe('Extra (#182)', () => {
   }) => {
     await pickRows(page, DAHL)
     await addExtra(page, 'salt', 'Salt')
-    await closeExplore(page)
     await chipToggle(page, 'salt', 'extra').click()
-    await expect(chipToggle(page, 'salt')).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    await closeExplore(page)
+    await expect(chipToggle(page, 'salt')).toBeChecked()
     await openRow(page, DAHL)
-    await expect(chipToggle(page, 'salt', 'row-dahl')).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    await expect(chipToggle(page, 'salt', 'row-dahl')).toBeChecked()
     await chipToggle(page, 'salt', 'row-dahl').click()
-    await expect(chipToggle(page, 'salt', 'extra')).toHaveAttribute(
-      'aria-pressed',
-      'false'
-    )
+    await openPantry(page)
+    await expect(chipToggle(page, 'salt', 'extra')).not.toBeChecked()
   })
 
   test('the Extra filter offers category and crossed off, with "N hidden by filter" and Clear (answers 41, 43)', async ({
@@ -256,7 +256,6 @@ test.describe('Extra (#182)', () => {
   }) => {
     await pickRows(page, DAHL)
     await addExtra(page, 'salt', 'Salt')
-    await closeExplore(page)
     await chipToggle(page, 'salt', 'extra').click()
     await openFilter(page, 'Extra')
     const filter = page.getByRole('group', { name: 'Filter extra' })
@@ -271,33 +270,19 @@ test.describe('Extra (#182)', () => {
   })
 })
 
-test.describe('layout (#182, answers 14-15)', () => {
-  test('Ingredients, Recipes, Extra; side by side, Extra sits under Recipes; only vertical collapses Extra', async ({
+test.describe('workspace columns (#192)', () => {
+  test('from 576px Recipes sits left of Ingredients, and Extra is not on the page', async ({
     page
   }) => {
     await page.setViewportSize({ width: 1280, height: 800 })
     await page.goto('/')
-    await pickRows(page, DAHL)
-    await addExtra(page, 'salt', 'Salt')
     const heading = (name: string) =>
       page.getByRole('heading', { level: 2, name, exact: true })
-    await expect(section(page, 'Extra')).toHaveCount(0)
+    await expect(heading('Extra')).toHaveCount(0)
     const ingredients = await box(heading('Ingredients'))
     const recipes = await box(heading('Recipes'))
-    const extra = await box(heading('Extra'))
-    expect(recipes.x).toBeGreaterThan(ingredients.x)
-    expect(Math.abs(extra.x - recipes.x)).toBeLessThan(2)
-    expect(extra.y).toBeGreaterThan(recipes.y)
-    await useVertical(page)
-    const top = async (name: string) => (await box(heading(name))).y
-    expect(await top('Ingredients')).toBeLessThan(await top('Recipes'))
-    expect(await top('Recipes')).toBeLessThan(await top('Extra'))
-    await section(page, 'Extra').click()
-    await expect(section(page, 'Extra')).toHaveAttribute(
-      'aria-expanded',
-      'false'
-    )
-    await expect(chip(page, 'salt', 'extra')).toBeHidden()
+    expect(recipes.x).toBeLessThan(ingredients.x)
+    expect(Math.abs(recipes.y - ingredients.y)).toBeLessThan(8)
   })
 })
 
@@ -350,6 +335,7 @@ test.describe('recipe copies (#182)', () => {
     await pickRows(page, DAHL)
     await chevron(page, 'butter').click()
     await setBox(sourceBox(panel(page, 'Butter'), DAHL), '30')
+    await openExplore(page)
     await exploreRow(page, DAHL).click()
     await expect(chip(page, 'butter')).toHaveCount(0)
     await exploreRow(page, DAHL).click()
@@ -505,7 +491,6 @@ test.describe('owner decisions (#182)', () => {
     await expect(chipToggle(page, 'garlic')).toHaveAccessibleName(
       /^Garlic, 12 cloves, /
     )
-    await closeExplore(page)
     await chevron(page, 'garlic', 'extra').click()
     const garlic = panel(page, 'Garlic', 'extra')
     await expect(
