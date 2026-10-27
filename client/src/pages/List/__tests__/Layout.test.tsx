@@ -48,6 +48,11 @@ describe('Scenario: Swipe to remove a recipe (#192)', () => {
   it('a long horizontal drag removes it, and Undo puts the copy back', () => {
     pick('dahl')
     renderList()
+    expect(card()).toHaveClass(
+      'max-h-[calc(100dvh-22rem)]',
+      'overflow-y-auto',
+      'w-[85%]'
+    )
     fireEvent.pointerDown(card(), { clientX: 220, clientY: 40, button: 0 })
     fireEvent.pointerUp(card(), { clientX: 40, clientY: 48, button: 0 })
     expect(screen.getByText('Removed Red lentil dahl')).toBeInTheDocument()

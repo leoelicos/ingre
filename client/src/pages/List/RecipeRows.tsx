@@ -132,7 +132,7 @@ export const RecipeRow: FC<{
       }}
       className={`${rowClass(picked, controls.recessed)} group ${
         controls.snap
-          ? 'w-[85%] shrink-0 snap-center min-[576px]:w-auto min-[576px]:shrink'
+          ? 'w-[85%] max-h-[calc(100dvh-22rem)] shrink-0 snap-center overflow-y-auto min-[576px]:max-h-none min-[576px]:w-auto min-[576px]:shrink min-[576px]:overflow-visible'
           : ''
       }`}
     >
