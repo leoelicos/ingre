@@ -237,6 +237,22 @@ fun toStored(recipe: CatalogRecipe, names: Map<String, String>): StoredRecipe =
         }
     )
 
+/** Explore keeps the catalogue amounts. The copy is scaled to the portions, default 2. */
+fun pickCatalogue(
+    memory: ListMemory,
+    recipe: CatalogRecipe,
+    names: Map<String, String>,
+    portions: Int = DEFAULT_PORTIONS
+): ListMemory {
+    if (memory.copies.containsKey(recipe.id)) return memory
+    return memory.copy(
+        originals = memory.originals + (recipe.id to toStored(recipe, names)),
+        copies = memory.copies + (
+            recipe.id to StoredRecipe(recipe.id, recipe.name, scaledLines(recipe, newCopy(recipe.id, portions), names))
+            )
+    )
+}
+
 fun parseIngredients(json: String): List<CatalogIngredient> {
     val root = runCatching { JSONObject(json) }.getOrNull() ?: return emptyList()
     val array = root.optJSONArray("ingredients") ?: return emptyList()

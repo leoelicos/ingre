@@ -3,6 +3,7 @@ package app.ingre
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.io.File
 
 class CatalogueTest {
     private val garlic = CatalogIngredient("garlic", "garlic", "fruit & veg", 60.0, mapOf("clove" to 6.0))
@@ -82,4 +83,31 @@ class CatalogueTest {
         val edited = editCopy(pickRecipe(ListMemory(), stored), "spaghetti", listOf(Line("garlic", "garlic", 2.0, "clove")))
         assertEquals(0.5, exploreRecipe(edited, "spaghetti")?.lines?.single()?.quantity)
     }
+
+    @Test
+    fun theRealCatalogueScalesAPickedRecipe() {
+        val root = catalogueDir()
+        val ingredients = parseIngredients(File(root, "ingredients.json").readText())
+        val recipes = parseRecipes(File(root, "recipes.json").readText())
+        assertEquals(111, ingredients.size)
+        assertEquals(14, recipes.size)
+        val dahl = recipes.single { it.id == "dahl" }
+        val names = ingredients.associate { it.id to it.name }
+        val picked = pickCatalogue(ListMemory(), dahl, names)
+        assertEquals(1.0, exploreRecipe(picked, "dahl")?.lines?.single { it.ingredientId == "garlic" }?.quantity)
+        assertEquals(2.0, recipeCopies(picked).single().lines.single { it.ingredientId == "garlic" }.quantity)
+        assertEquals("brown onion", names["onion"])
+        assertEquals(picked, pickCatalogue(picked, dahl, names))
+    }
+}
+
+private fun catalogueDir(): File {
+    var dir: File? = File("").absoluteFile
+    repeat(6) {
+        val current = dir ?: return@repeat
+        val candidate = File(current, "client/src/data")
+        if (File(candidate, "recipes.json").isFile) return candidate
+        dir = current.parentFile
+    }
+    error("client/src/data not found from ${File("").absolutePath}")
 }

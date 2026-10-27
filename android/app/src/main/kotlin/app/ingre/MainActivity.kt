@@ -21,44 +21,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private val sampleIngredients = listOf(
-    CatalogIngredient("garlic", "garlic", "fruit & veg", 60.0, mapOf("clove" to 6.0)),
-    CatalogIngredient("onion", "onion", "fruit & veg"),
-    CatalogIngredient("spaghetti", "spaghetti", "pantry")
-)
-
-private val sampleRecipes = listOf(
-    CatalogRecipe(
-        "spaghetti-bolognese",
-        "Spaghetti bolognese",
-        1,
-        listOf(
-            CatalogLine("spaghetti", 100.0, "g"),
-            CatalogLine("onion", 0.25, "whole"),
-            CatalogLine("garlic", 0.5, "clove")
-        )
-    ),
-    CatalogRecipe(
-        "dahl",
-        "Red lentil dahl",
-        1,
-        listOf(CatalogLine("onion", 0.5, "whole"), CatalogLine("garlic", 1.0, "clove"))
-    )
-)
-
-private val sampleNames = sampleIngredients.associate { it.id to it.name }
-private val sampleCategories = sampleIngredients.associate { it.id to it.category }
-
 /** The phone page. Sections stay on the page. Nothing opens a sheet. */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { PhoneScreen() }
+        val ingredients = parseIngredients(readAsset("ingredients.json"))
+        val recipes = parseRecipes(readAsset("recipes.json"))
+        setContent { PhoneScreen(ingredients, recipes) }
     }
+
+    private fun readAsset(name: String): String =
+        runCatching { assets.open(name).bufferedReader().use { it.readText() } }.getOrDefault("")
 }
 
 @androidx.compose.runtime.Composable
-fun PhoneScreen() {
+fun PhoneScreen(ingredients: List<CatalogIngredient>, recipes: List<CatalogRecipe>) {
+    val names = ingredients.associate { it.id to it.name }
+    val categories = ingredients.associate { it.id to it.category }
     var query by remember { mutableStateOf("") }
     var memory by remember { mutableStateOf(ListMemory()) }
     var open by remember { mutableStateOf(exploreStartsOpen(0, false)) }
@@ -80,21 +59,21 @@ fun PhoneScreen() {
                 label = { Text("Search ingredients and recipes") },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
             )
-            when (val results = explore(query, sampleIngredients, sampleRecipes)) {
-                is ExploreView.Browse -> RecipeHits(results.recipes) { memory = pickRecipe(memory, toStored(it, sampleNames)) }
+            when (val results = explore(query, ingredients, recipes)) {
+                is ExploreView.Browse -> RecipeHits(results.recipes) { memory = pickCatalogue(memory, it, names) }
                 is ExploreView.Matches -> {
                     results.ingredients.forEach { Text(capitaliseFirst(it.name), modifier = Modifier.heightIn(min = 48.dp)) }
-                    RecipeHits(results.recipes) { memory = pickRecipe(memory, toStored(it, sampleNames)) }
+                    RecipeHits(results.recipes) { memory = pickCatalogue(memory, it, names) }
                 }
                 is ExploreView.None -> {
                     Text("No matches")
                     results.ingredients.forEach { Text(capitaliseFirst(it.name), modifier = Modifier.heightIn(min = 48.dp)) }
-                    RecipeHits(results.recipes) { memory = pickRecipe(memory, toStored(it, sampleNames)) }
+                    RecipeHits(results.recipes) { memory = pickCatalogue(memory, it, names) }
                 }
             }
         }
         Text("Ingredients", fontSize = 22.sp, modifier = Modifier.padding(top = 16.dp))
-        shopLines(copies, sampleNames, sampleCategories).forEach { line ->
+        shopLines(copies, names, categories).forEach { line ->
             Text(
                 "${capitaliseFirst(line.name)} ${formatQuantity(line.quantity, line.measure)}",
                 modifier = Modifier.heightIn(min = 48.dp).padding(top = 8.dp)

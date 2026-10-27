@@ -1,26 +1,16 @@
 import SwiftUI
 import IngreCore
 
-private let sampleIngredients = [
-    CatalogIngredient(id: "garlic", name: "garlic", category: "fruit & veg", approxGrams: 60, measureGrams: ["clove": 6]),
-    CatalogIngredient(id: "onion", name: "onion", category: "fruit & veg"),
-    CatalogIngredient(id: "spaghetti", name: "spaghetti", category: "pantry")
-]
+private let catalogueIngredients: [CatalogIngredient] = parseIngredients(bundled("ingredients"))
+private let catalogueRecipes: [CatalogRecipe] = parseRecipes(bundled("recipes"))
+private let catalogueNames = Dictionary(uniqueKeysWithValues: catalogueIngredients.map { ($0.id, $0.name) })
+private let catalogueCategories = Dictionary(uniqueKeysWithValues: catalogueIngredients.map { ($0.id, $0.category) })
 
-private let sampleRecipes = [
-    CatalogRecipe(id: "spaghetti-bolognese", name: "Spaghetti bolognese", portions: 1, lines: [
-        CatalogLine(ingredientId: "spaghetti", quantity: 100, measure: "g"),
-        CatalogLine(ingredientId: "onion", quantity: 0.25, measure: "whole"),
-        CatalogLine(ingredientId: "garlic", quantity: 0.5, measure: "clove")
-    ]),
-    CatalogRecipe(id: "dahl", name: "Red lentil dahl", portions: 1, lines: [
-        CatalogLine(ingredientId: "onion", quantity: 0.5, measure: "whole"),
-        CatalogLine(ingredientId: "garlic", quantity: 1, measure: "clove")
-    ])
-]
-
-private let sampleNames = Dictionary(uniqueKeysWithValues: sampleIngredients.map { ($0.id, $0.name) })
-private let sampleCategories = Dictionary(uniqueKeysWithValues: sampleIngredients.map { ($0.id, $0.category) })
+private func bundled(_ name: String) -> String {
+    guard let url = Bundle.main.url(forResource: name, withExtension: "json"),
+          let text = try? String(contentsOf: url, encoding: .utf8) else { return "" }
+    return text
+}
 
 /// The phone page. Explore, Ingredients, Recipes, then Extra. No sheets.
 struct PhoneView: View {
@@ -47,7 +37,7 @@ struct PhoneView: View {
                     exploreBody
                 }
                 Text("Ingredients").font(.title2).accessibilityAddTraits(.isHeader)
-                ForEach(shopLines(recipeCopies(memory), sampleNames, sampleCategories), id: \.ingredientId) { line in
+                ForEach(shopLines(recipeCopies(memory), catalogueNames, catalogueCategories), id: \.key) { line in
                     Text("\(capitaliseFirst(line.name)) \(formatQuantity(line.quantity, line.measure))")
                         .frame(minHeight: 44, alignment: .leading)
                 }
@@ -87,7 +77,7 @@ struct PhoneView: View {
     }
 
     @ViewBuilder private var exploreBody: some View {
-        switch explore(query: query, ingredients: sampleIngredients, recipes: sampleRecipes) {
+        switch explore(query: query, ingredients: catalogueIngredients, recipes: catalogueRecipes) {
         case .browse(let recipes):
             recipeButtons(recipes)
         case .matches(let ingredients, let recipes):
@@ -102,7 +92,7 @@ struct PhoneView: View {
 
     private func recipeButtons(_ recipes: [CatalogRecipe]) -> some View {
         ForEach(recipes, id: \.id) { recipe in
-            Button(recipe.name) { memory = pickRecipe(memory, toStored(recipe, sampleNames)) }
+            Button(recipe.name) { memory = pickCatalogue(memory, recipe, catalogueNames) }
                 .frame(minHeight: 44)
         }
     }
