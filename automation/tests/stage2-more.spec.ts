@@ -16,7 +16,9 @@ import {
   row,
   setBox,
   sourceBox,
-  crossOff
+  crossOff,
+  toggleInExplore,
+  openExtra
 } from './page'
 
 /* #182 Stage 2: the remaining behaviours, one scenario each. */
@@ -136,12 +138,13 @@ test.describe('recipe copies, more (#182)', () => {
     await expect(
       recipesRegion(page).getByRole('button', { name: `Unsave ${DAHL}` })
     ).toBeVisible()
-    await exploreRow(page, DAHL).click()
+    await toggleInExplore(page, DAHL)
     await expect(row(page, DAHL)).toHaveCount(0)
-    await exploreRow(page, DAHL).click()
+    await toggleInExplore(page, DAHL)
     await expect(chipToggle(page, 'butter')).toHaveAccessibleName(
       /^Butter, 15 g, /
     )
+    await openExplore(page)
     await expect(explore(page).getByText('Butter 15 g → 30 g')).toHaveCount(0)
   })
 })
@@ -179,6 +182,7 @@ test.describe('kept from before this release (#182, answers 6, 10, 45)', () => {
     await expect(chipToggle(page, 'butter')).toHaveAccessibleName(
       /^Butter, 22\.5 g, /
     )
+    await openExtra(page)
     await expect(
       extraRegion(page).getByText('birthday candles', { exact: false })
     ).not.toHaveCount(0)

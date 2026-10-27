@@ -19,7 +19,9 @@ import {
   setBox,
   sourceBox,
   crossOff,
-  closeSheet
+  closeSheet,
+  openExtra,
+  toggleInExplore
 } from './page'
 
 /* #182 Stage 2: balance-sheet ingredients, per-source amounts, recipe copies, filters. */
@@ -52,11 +54,6 @@ const choose = async (
   await expect(input).toHaveValue(option)
   await pickOption(page, option)
   await page.keyboard.press('Escape')
-}
-/** Collapses Explore however this width shows it, so it can't take focus from the filter. */
-const closeExplore = async (page: Page) => {
-  const hide = page.getByRole('button', { name: 'Hide Explore' })
-  if (await hide.isVisible()) await hide.click()
 }
 /** Adds a catalogue item to Extra by hand, from the search. */
 const addExtra = async (page: Page, query: string, name: string) => {
@@ -172,12 +169,13 @@ test.describe('balance-sheet ingredients (#182)', () => {
 })
 
 test.describe('Extra (#182)', () => {
-  test('empty Extra says so and offers the plus (answer 11)', async ({
+  test('empty Extra says so and offers the catalogue (answer 11, #192)', async ({
     page
   }) => {
+    await openExtra(page)
     await expect(extraRegion(page)).toContainText('Nothing extra yet')
     await expect(
-      extraRegion(page).getByRole('button', { name: 'Add an ingredient' })
+      extraRegion(page).getByRole('region', { name: 'Add an ingredient' })
     ).toBeVisible()
   })
 
@@ -191,19 +189,21 @@ test.describe('Extra (#182)', () => {
     await expect(sourceBox(panel(page, 'Salt'), DAHL)).toHaveValue('0.5')
     await openRow(page, DAHL)
     await expect(chip(page, 'salt', 'row-dahl')).toHaveCount(1)
-    await exploreRow(page, DAHL).click()
+    await toggleInExplore(page, DAHL)
     await expect(chip(page, 'salt')).toHaveCount(0)
     await expect(chip(page, 'butter')).toHaveCount(0)
   })
 
-  test('a staple added by hand with the plus goes in Extra and stays after unpicking (owner decision 1)', async ({
+  test('a staple added by hand goes in Extra and stays after unpicking (owner decision 1)', async ({
     page
   }) => {
     await pickRows(page, DAHL)
     await addExtra(page, 'salt', 'Salt')
-    await exploreRow(page, DAHL).click()
-    await expect(chip(page, 'salt', 'extra')).toHaveCount(1)
+    await toggleInExplore(page, DAHL)
     await expect(chip(page, 'butter')).toHaveCount(0)
+    await expect(chip(page, 'salt')).toHaveCount(1)
+    await openExtra(page)
+    await expect(chip(page, 'salt', 'extra')).toHaveCount(1)
   })
 
   test('the Extra box holds whole numbers in the base unit; 0 asks, Yes leaves the recipe amount (answers 3, 12)', async ({
@@ -213,16 +213,24 @@ test.describe('Extra (#182)', () => {
     await openExplore(page)
     await page.getByRole('searchbox').fill('butter')
     await page.getByRole('button', { name: 'Butter, on your list' }).click()
+    await closeSheet(page)
+    await openExtra(page)
     await expect(chip(page, 'butter', 'extra')).toContainText('1 g')
     await chevron(page, 'butter', 'extra').click()
     const extra = panel(page, 'Butter', 'extra')
     await setBox(sourceBox(extra, 'Extra'), '3')
+    await expect(chip(page, 'butter', 'extra')).toContainText('3 g')
+    await closeSheet(page)
     await expect(chipToggle(page, 'butter')).toHaveAccessibleName(
       /^Butter, 18 g, /
     )
+    await openExtra(page)
+    if ((await panel(page, 'Butter', 'extra').count()) === 0)
+      await chevron(page, 'butter', 'extra').click()
     await setBox(sourceBox(extra, 'Extra'), '0')
     await answer(page, 'Remove butter from Extra?', 'Yes')
     await expect(chip(page, 'butter', 'extra')).toHaveCount(0)
+    await closeSheet(page)
     await expect(chipToggle(page, 'butter')).toHaveAccessibleName(
       /^Butter, 15 g, /
     )
@@ -233,12 +241,15 @@ test.describe('Extra (#182)', () => {
   }) => {
     await pickRows(page, DAHL)
     await addExtra(page, 'salt', 'Salt')
-    await closeExplore(page)
+    await openExtra(page)
     await crossOff(page, 'salt', 'extra')
+    await expect(chipToggle(page, 'salt', 'extra')).toBeChecked()
+    await closeSheet(page)
     await expect(chipToggle(page, 'salt')).toBeChecked()
     await openRow(page, DAHL)
     await expect(chipToggle(page, 'salt', 'row-dahl')).toBeChecked()
     await crossOff(page, 'salt', 'row-dahl')
+    await openExtra(page)
     await expect(chipToggle(page, 'salt', 'extra')).not.toBeChecked()
   })
 
@@ -247,7 +258,7 @@ test.describe('Extra (#182)', () => {
   }) => {
     await pickRows(page, DAHL)
     await addExtra(page, 'salt', 'Salt')
-    await closeExplore(page)
+    await openExtra(page)
     await crossOff(page, 'salt', 'extra')
     await openFilter(page, 'Extra')
     const filter = page.getByRole('group', { name: 'Filter extra' })
@@ -311,9 +322,9 @@ test.describe('recipe copies (#182)', () => {
     await pickRows(page, DAHL)
     await chevron(page, 'butter').click()
     await setBox(sourceBox(panel(page, 'Butter'), DAHL), '30')
-    await exploreRow(page, DAHL).click()
+    await toggleInExplore(page, DAHL)
     await expect(chip(page, 'butter')).toHaveCount(0)
-    await exploreRow(page, DAHL).click()
+    await toggleInExplore(page, DAHL)
     await expect(chipToggle(page, 'butter')).toHaveAccessibleName(
       /^Butter, 15 g, /
     )
@@ -393,7 +404,6 @@ test.describe('filters (#182)', () => {
     page
   }) => {
     await pickRows(page, DAHL, CURRY)
-    await closeExplore(page)
     const button = toolbar(page, 'Recipes actions').getByRole('button', {
       name: /^Filter/
     })
@@ -420,7 +430,6 @@ test.describe('filters (#182)', () => {
     page
   }) => {
     await pickRows(page, DAHL, CURRY)
-    await closeExplore(page)
     await openFilter(page, 'Recipes')
     const filter = page.getByRole('group', { name: 'Filter recipes' })
     await choose(page, filter, 'Contains', 'Butter')
@@ -462,11 +471,11 @@ test.describe('owner decisions (#182)', () => {
       /^Tomatoes, 1 tomato, /
     )
     await addExtra(page, 'garlic', 'Garlic')
-    await expect(chip(page, 'garlic', 'extra')).toContainText('1 head')
     await expect(chipToggle(page, 'garlic')).toHaveAccessibleName(
       /^Garlic, 12 cloves, /
     )
-    await closeExplore(page)
+    await openExtra(page)
+    await expect(chip(page, 'garlic', 'extra')).toContainText('1 head')
     await chevron(page, 'garlic', 'extra').click()
     const garlic = panel(page, 'Garlic', 'extra')
     await expect(
@@ -505,7 +514,10 @@ test.describe('owner decisions (#182)', () => {
     await unsave.click()
     await expect(save).toBeVisible()
     await exploreRow(page, DAHL).click()
-    await expect(row(page, DAHL)).toHaveCount(0)
+    await expect(exploreRow(page, DAHL)).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    )
     const original = await sent(() => save.click())
     expect(original).toContain('"customisations"')
     expect(original).not.toMatch(/"customisations":\{[^}]*"butter"/)

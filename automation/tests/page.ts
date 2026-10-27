@@ -141,6 +141,13 @@ export const pickRows = async (page: Page, ...titles: string[]) => {
   await closeSheet(page)
 }
 
+/** Picks or unpicks one recipe in Explore, then closes it: the list behind is back in view. */
+export const toggleInExplore = async (page: Page, title: string) => {
+  await openExplore(page)
+  await exploreRow(page, title).click()
+  await closeSheet(page)
+}
+
 export const box = async (l: Locator) => {
   const b = await l.boundingBox()
   return b ?? { x: 0, y: 0, width: 0, height: 0 }
