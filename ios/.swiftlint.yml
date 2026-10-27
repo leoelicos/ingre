@@ -1,0 +1,27 @@
+# #195: SwiftLint for the iOS app. Formatting itself is swift-format's job (.swift-format).
+included:
+  - Ingre
+  - IngreTests
+  - IngreUITests
+excluded:
+  - Ingre/Network/Generated
+disabled_rules:
+  - trailing_comma         # swift-format adds them to multi-line literals
+  - opening_brace          # swift-format owns brace placement
+  - line_length            # swift-format owns line length
+  - identifier_name        # recipe ids, `id`, `ok` and GraphQL `_id`
+  - type_body_length
+  - file_length
+  - function_body_length   # SwiftUI view bodies
+  - nesting
+  - todo
+opt_in_rules:
+  - empty_count
+  - first_where
+  - contains_over_first_not_nil
+  - redundant_nil_coalescing
+  - closure_spacing
+large_tuple:
+  warning: 4
+cyclomatic_complexity:
+  warning: 15

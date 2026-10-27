@@ -1,0 +1,54 @@
+# #195: the operations the iOS app sends. Same names as the web client's
+# (client/src/lib/apollo/graphQL), trimmed to the fields the app reads.
+
+mutation Login($email: String!, $password: String!) {
+  login(email: $email, password: $password) {
+    token
+    user {
+      _id
+      email
+      firstName
+      pro
+    }
+  }
+}
+
+query GetUser {
+  getUser {
+    _id
+    email
+    firstName
+    pro
+  }
+}
+
+query GetSavedRecipes {
+  getSavedRecipes {
+    _id
+    libraryId
+  }
+}
+
+mutation SaveRecipe($input: RecipeInput!) {
+  saveRecipe(input: $input) {
+    _id
+    libraryId
+  }
+}
+
+mutation RemoveRecipe($recipeId: ID!) {
+  removeRecipe(recipeId: $recipeId)
+}
+
+query Checkout {
+  checkout {
+    session
+  }
+}
+
+mutation MakeUserPro {
+  makeUserPro {
+    _id
+    pro
+  }
+}

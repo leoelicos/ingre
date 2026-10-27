@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- #195: Lint runs with warnings as errors. Only these are off, each for a reason. -->
+<lint>
+    <!-- Time-dependent: "a newer version is available" turns green builds red overnight.
+         Versions are bumped on purpose in gradle/libs.versions.toml. -->
+    <issue id="GradleDependency" severity="ignore" />
+    <issue id="NewerVersionAvailable" severity="ignore" />
+    <issue id="AndroidGradlePluginVersion" severity="ignore" />
+    <!-- Strings are looked up by the web locale's key at runtime (L10n.kt), so Lint can't see
+         their uses. Each one is used: the JVM tests check every key the code asks for exists. -->
+    <issue id="UnusedResources">
+        <ignore path="src/main/res/values/strings.xml" />
+    </issue>
+    <!-- No launcher icon artwork yet; store release is out of scope for #195. -->
+    <issue id="MissingApplicationIcon" severity="ignore" />
+    <issue id="MonochromeLauncherIcon" severity="ignore" />
+</lint>
