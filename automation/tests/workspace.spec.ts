@@ -74,7 +74,9 @@ const phone = (page: Page) => (page.viewportSize()?.width ?? 0) < 576
 const card = (page: Page, title: string) =>
   recipesRegion(page)
     .locator('li[data-recipe]')
-    .filter({ has: row(page, title) })
+    .filter({
+      has: page.getByRole('button', { name: title, exact: true })
+    })
 
 test.describe('layout (#192)', () => {
   test('575px stacks Recipes above Ingredients; 576px puts them side by side, Recipes left', async ({
@@ -216,8 +218,14 @@ test.describe('the sheet (#192)', () => {
     await page.goto('/')
     await openExplore(page)
     await expect(page.getByRole('searchbox')).toBeFocused()
+    // once it has slid in
+    await expect
+      .poll(async () => {
+        const b = await box(panelOf(page))
+        return Math.round(b.y + b.height)
+      })
+      .toBe(800)
     const sheet = await box(panelOf(page))
-    expect(Math.round(sheet.y + sheet.height)).toBe(800)
     expect(Math.round(sheet.width)).toBe(575)
     await expect(
       explore(page).locator('[data-sheet-grip] > span')
@@ -227,6 +235,7 @@ test.describe('the sheet (#192)', () => {
 
     await page.setViewportSize({ width: 576, height: 800 })
     await openExplore(page)
+    await expect(panelOf(page)).not.toHaveAttribute('data-entering', /.*/)
     const modal = await box(panelOf(page))
     expect(modal.y + modal.height).toBeLessThan(800 - 10)
     expect(Math.abs(modal.x - (576 - modal.x - modal.width))).toBeLessThan(2)

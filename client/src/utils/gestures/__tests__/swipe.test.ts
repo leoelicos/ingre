@@ -7,6 +7,7 @@ import {
   dragOffset,
   dragTransform,
   hasMoved,
+  holdPointer,
   isSwipe,
   onAxis
 } from '../swipe'
@@ -55,5 +56,17 @@ describe('Feature: Swipe rules (#192)', () => {
     expect(dragTransform(CARD_SWIPE, 30)).toBe('translateY(-30px)')
     expect(dragTransform(ROW_SWIPE, 30)).toBe('translateX(-30px)')
     expect(dragTransform(SHEET_SWIPE, 30)).toBe('translateY(30px)')
+  })
+
+  it('holds a dragging pointer where the browser can, and says so', () => {
+    const plain = document.createElement('li')
+    expect(holdPointer(plain, 1)).toBe(false)
+    const held: number[] = []
+    const capturing = document.createElement('li')
+    Object.defineProperty(capturing, 'setPointerCapture', {
+      value: (id: number) => held.push(id)
+    })
+    expect(holdPointer(capturing, 7)).toBe(true)
+    expect(held).toEqual([7])
   })
 })

@@ -62,6 +62,17 @@ export const dragTransform = (rule: SwipeRule, offset: number): string =>
     ? ''
     : `translate${rule.axis.toUpperCase()}(${rule.sign * offset}px)`
 
+/**
+ * Keeps a dragging pointer's moves and lift on this element, wherever the pointer goes: React
+ * Aria lets go of a touch on press, so without this the lift lands elsewhere. True if held;
+ * false where the browser has no pointer capture.
+ */
+export const holdPointer = (el: Element, pointerId: number): boolean => {
+  if (typeof el.setPointerCapture !== 'function') return false
+  el.setPointerCapture(pointerId)
+  return true
+}
+
 const pointOf = (e: PointerEvent): Point => ({ x: e.clientX, y: e.clientY })
 
 /**
@@ -90,7 +101,10 @@ export const useSwipe = (
       const from = start.current
       if (from === null) return
       const to = pointOf(e)
-      if (hasMoved(from, to)) dragged.current = true
+      if (!dragged.current && hasMoved(from, to)) {
+        dragged.current = true
+        holdPointer(e.currentTarget, e.pointerId)
+      }
       setOffset(dragOffset(from, to, rule))
     },
     onPointerUp: (e: PointerEvent) => {
