@@ -250,6 +250,18 @@ test.describe('the sheet (#192)', () => {
     await openExplore(page)
     const grip = explore(page).locator('[data-sheet-grip]')
     const from = await middle(grip)
+    // React Aria holds the sheet back (unhittable) while a phone keyboard may open for the
+    // autofocused search, so wait until a finger on the grip lands on the grip
+    await expect
+      .poll(() =>
+        page.evaluate(
+          ({ x, y }) =>
+            document.elementFromPoint(x, y)?.closest('[data-sheet-grip]') !=
+            null,
+          from
+        )
+      )
+      .toBe(true)
     // a short one is not enough
     await touchDrag(page, from, { x: from.x, y: from.y + 40 })
     await expect(explore(page)).toBeVisible()

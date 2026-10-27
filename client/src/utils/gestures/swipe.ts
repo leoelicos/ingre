@@ -76,9 +76,10 @@ export const holdPointer = (el: Element, pointerId: number): boolean => {
 const pointOf = (e: PointerEvent): Point => ({ x: e.clientX, y: e.clientY })
 
 /**
- * Pointer events (mouse, pen and touch) for a swipe. A drag past the slop is never also a
- * press: `wasDrag` stays true until the next press or key, so a tap handler can ignore the
- * click that follows a drag. While `enabled` is false nothing happens.
+ * Pointer events (mouse, pen and touch) for a swipe, caught on the way down (capture), as
+ * React Aria's buttons stop a press from bubbling up to the card around them. A drag past
+ * the slop is never also a press: `wasDrag` stays true until the next press or key, so a tap
+ * handler can ignore the click that follows a drag. While `enabled` is false nothing happens.
  */
 export const useSwipe = (
   rule: SwipeRule,
@@ -93,11 +94,11 @@ export const useSwipe = (
     setOffset(0)
   }
   const handlers = {
-    onPointerDown: (e: PointerEvent) => {
+    onPointerDownCapture: (e: PointerEvent) => {
       dragged.current = false
       if (enabled) start.current = pointOf(e)
     },
-    onPointerMove: (e: PointerEvent) => {
+    onPointerMoveCapture: (e: PointerEvent) => {
       const from = start.current
       if (from === null) return
       const to = pointOf(e)
@@ -107,12 +108,12 @@ export const useSwipe = (
       }
       setOffset(dragOffset(from, to, rule))
     },
-    onPointerUp: (e: PointerEvent) => {
+    onPointerUpCapture: (e: PointerEvent) => {
       const from = start.current
       end()
       if (from !== null && isSwipe(from, pointOf(e), rule)) onSwipe()
     },
-    onPointerCancel: end,
+    onPointerCancelCapture: end,
     onKeyDownCapture: () => {
       dragged.current = false
     }
