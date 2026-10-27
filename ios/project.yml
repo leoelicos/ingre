@@ -1,0 +1,42 @@
+name: Ingre
+options:
+  bundleIdPrefix: app.ingre
+  deploymentTarget:
+    iOS: "17.0"
+packages:
+  IngreCore:
+    path: IngreCore
+targets:
+  Ingre:
+    type: application
+    platform: iOS
+    sources:
+      - Ingre
+    dependencies:
+      - package: IngreCore
+    settings:
+      SWIFT_VERSION: "6.0"
+      TARGETED_DEVICE_FAMILY: "1"
+      GENERATE_INFOPLIST_FILE: YES
+      PRODUCT_BUNDLE_IDENTIFIER: app.ingre
+      INFOPLIST_KEY_UILaunchScreen_Generation: YES
+      INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+  IngreUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - IngreUITests
+    dependencies:
+      - target: Ingre
+    settings:
+      SWIFT_VERSION: "6.0"
+      GENERATE_INFOPLIST_FILE: YES
+      PRODUCT_BUNDLE_IDENTIFIER: app.ingre.uitests
+schemes:
+  Ingre:
+    build:
+      targets:
+        Ingre: all
+    test:
+      targets:
+        - IngreUITests

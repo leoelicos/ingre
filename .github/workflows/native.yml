@@ -1,0 +1,50 @@
+name: native
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ios:
+    # ubuntu-latest is 26.04, which swift-actions/setup-swift does not support yet.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.2"
+      - name: Copy the catalogue
+        run: node scripts/copy-native-library.mjs
+      - name: Unit tests
+        run: swift test
+        working-directory: ios/IngreCore
+
+  android:
+    # ubuntu-latest is 26.04. setup-android@v3 then asks sdkmanager for the
+    # removed "tools" package and the job dies before Gradle starts.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Android SDK
+        run: |
+          SDK="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          SM=$(find "$SDK" -path '*/bin/sdkmanager' -type f | head -1)
+          if [ -z "$SM" ]; then
+            echo "sdkmanager not found under $SDK" >&2
+            exit 1
+          fi
+          yes | "$SM" --licenses >/dev/null || true
+          "$SM" --install "platforms;android-35" "build-tools;35.0.0"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+      - name: Copy the catalogue
+        run: node scripts/copy-native-library.mjs
+      - name: Unit tests and debug build
+        run: ./gradlew :logic:test :app:assembleDebug
+        working-directory: android
