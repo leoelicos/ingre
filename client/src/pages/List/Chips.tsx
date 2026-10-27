@@ -1,7 +1,7 @@
 import { useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
 import { useLayoutEffect, useRef } from 'react'
-import { Button, ToggleButton } from 'react-aria-components'
+import { Button, Checkbox } from 'react-aria-components'
 import {
   COLLAPSE_INNER,
   Chevron,
@@ -54,8 +54,8 @@ export const SMALL_BUTTON =
   'inline-flex min-h-[44px] items-center justify-center rounded-pill border-2 border-current px-4 text-sm font-semibold data-[focus-visible]:focus-ring data-[pressed]:opacity-80'
 
 /**
- * The checkbox in the chip: ticked once crossed off. The chip itself is the control. Flat (no
- * fill or shadow) so only the chip reads as raised; its outline is the chip's ink.
+ * The tick box drawn in the chip: ticked once crossed off. Flat (no fill or shadow) so only the
+ * chip reads as raised; its outline is the chip's ink. The real checkbox is the hidden input.
  */
 const ChipCheck: FC<{ crossed: boolean }> = ({ crossed }) => (
   <span
@@ -68,19 +68,20 @@ const ChipCheck: FC<{ crossed: boolean }> = ({ crossed }) => (
 )
 
 /**
- * The chip itself: a tap anywhere, the checkbox included, crosses off or restores (#181). A
- * greyed chip (removed from every recipe) can't be crossed off (#182).
+ * The chip itself (#181, #192): one `<label>` wrapping its checkbox, so a tap anywhere on it
+ * crosses off or restores, and it is at least 44px tall. A greyed chip (removed from every
+ * recipe) can't be crossed off (#182).
  */
 const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
   const amount = view.amountOf(chip)
   return (
-    <ToggleButton
+    <Checkbox
       id={chipToggleId(chip.id, view.scope)}
       isSelected={chip.crossed}
       isDisabled={chip.greyed}
       onChange={() => view.onToggle(chip.id)}
       aria-label={chipLabel(chip, amount)}
-      className="flex min-h-[44px] items-center gap-2 rounded-l-pill py-1 pl-3 pr-1 text-left data-[focus-visible]:focus-ring"
+      className="flex min-h-[44px] min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-l-pill py-1 pl-3 pr-1 text-left data-[disabled]:cursor-default data-[focus-visible]:focus-ring"
     >
       <ChipCheck crossed={chip.crossed} />
       <span
@@ -91,7 +92,7 @@ const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
         <span className="font-semibold">{displayName(chip)}</span>
         <span className="text-xs">{amount}</span>
       </span>
-    </ToggleButton>
+    </Checkbox>
   )
 }
 
@@ -169,7 +170,10 @@ const FAN_TONES: Readonly<Record<BadgeTone, string>> = {
 const FAN =
   "relative before:pointer-events-none before:absolute before:left-[var(--fan-x)] before:top-[var(--fan-top)] before:h-[var(--fan-h)] before:w-[var(--fan-w)] before:-translate-x-1/2 before:opacity-40 before:content-[''] before:[clip-path:polygon(30%_0,70%_0,100%_100%,0_100%)]"
 
-/** Where the fan goes: from the chip's bottom edge (centred on it) to the panel's top. */
+/**
+ * Where the fan goes: from the chip's bottom edge (centred on it) to the panel's top, never
+ * wider than the panel, so a full-width row (#192) does not push the page sideways.
+ */
 export interface Fan {
   readonly x: number
   readonly top: number
@@ -182,14 +186,14 @@ export const fanFor = (
     HTMLElement,
     'offsetLeft' | 'offsetTop' | 'offsetWidth' | 'offsetHeight'
   >,
-  panel: Pick<HTMLElement, 'offsetLeft' | 'offsetTop'>
+  panel: Pick<HTMLElement, 'offsetLeft' | 'offsetTop' | 'offsetWidth'>
 ): Fan => {
   const top = chip.offsetTop + chip.offsetHeight - panel.offsetTop
   return {
     x: chip.offsetLeft + chip.offsetWidth / 2 - panel.offsetLeft,
     top,
     height: Math.max(0, -top) + 8,
-    width: chip.offsetWidth * 1.6
+    width: Math.min(chip.offsetWidth * 1.6, panel.offsetWidth)
   }
 }
 
@@ -247,12 +251,21 @@ const ChipPanel: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
   )
 }
 
-/** Chips in a wrapping row; the open chip's panel follows it in the flow. */
-export const ChipList: FC<{ chips: readonly Chip[]; view: ChipView }> = ({
-  chips,
-  view
-}) => (
-  <ul className="relative m-0 flex list-none flex-wrap gap-3 p-0">
+/**
+ * Chips in a wrapping row, or one full-width row each (#192: Ingredients); the open chip's
+ * panel follows it in the flow.
+ */
+export const chipListClass = (rows: boolean): string =>
+  rows
+    ? 'relative m-0 flex list-none flex-col gap-3 p-0'
+    : 'relative m-0 flex list-none flex-wrap gap-3 p-0'
+
+export const ChipList: FC<{
+  chips: readonly Chip[]
+  view: ChipView
+  rows?: boolean
+}> = ({ chips, view, rows = false }) => (
+  <ul className={chipListClass(rows)}>
     {chips.flatMap((chip) => [
       <ChipItem
         key={chip.id}
@@ -276,7 +289,8 @@ export const ChipList: FC<{ chips: readonly Chip[]; view: ChipView }> = ({
 export const ChipGroups: FC<{
   groups: readonly ChipGroup[]
   view: ChipView
-}> = ({ groups, view }) => (
+  rows?: boolean
+}> = ({ groups, view, rows = false }) => (
   <div className="flex flex-col gap-4">
     {groups.map((group) => (
       <div
@@ -293,6 +307,7 @@ export const ChipGroups: FC<{
         <ChipList
           chips={group.chips}
           view={view}
+          rows={rows}
         />
       </div>
     ))}

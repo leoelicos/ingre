@@ -15,7 +15,10 @@ import {
   recipesRegion,
   row,
   setBox,
-  sourceBox
+  sourceBox,
+  crossOff,
+  toggleInExplore,
+  openExtra
 } from './page'
 
 /* #182 Stage 2: the remaining behaviours, one scenario each. */
@@ -74,7 +77,7 @@ test.describe('recipe copies, more (#182)', () => {
     await setBox(sourceBox(panel(page, 'Butter'), DAHL), '30')
     await openRow(page, DAHL)
     await setBox(portions(page), '4')
-    await chipToggle(page, 'tomato').click()
+    await crossOff(page, 'tomato')
     await expect(page.getByRole('button', { name: /undo/i })).toHaveCount(0)
     await toolbar(page, 'Ingredients actions')
       .getByRole('button', { name: 'Refresh' })
@@ -88,10 +91,7 @@ test.describe('recipe copies, more (#182)', () => {
       /^Butter, 15 g, /
     )
     await expect(portions(page)).toHaveValue('2')
-    await expect(chipToggle(page, 'tomato')).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    await expect(chipToggle(page, 'tomato')).toBeChecked()
     // staples belong to the recipe (owner decision 1): Refresh keeps them and adds no Extra
     await expect(chip(page, 'salt')).toHaveCount(1)
     await expect(chip(page, 'salt', 'extra')).toHaveCount(0)
@@ -138,12 +138,13 @@ test.describe('recipe copies, more (#182)', () => {
     await expect(
       recipesRegion(page).getByRole('button', { name: `Unsave ${DAHL}` })
     ).toBeVisible()
-    await exploreRow(page, DAHL).click()
+    await toggleInExplore(page, DAHL)
     await expect(row(page, DAHL)).toHaveCount(0)
-    await exploreRow(page, DAHL).click()
+    await toggleInExplore(page, DAHL)
     await expect(chipToggle(page, 'butter')).toHaveAccessibleName(
       /^Butter, 15 g, /
     )
+    await openExplore(page)
     await expect(explore(page).getByText('Butter 15 g → 30 g')).toHaveCount(0)
   })
 })
@@ -181,6 +182,7 @@ test.describe('kept from before this release (#182, answers 6, 10, 45)', () => {
     await expect(chipToggle(page, 'butter')).toHaveAccessibleName(
       /^Butter, 22\.5 g, /
     )
+    await openExtra(page)
     await expect(
       extraRegion(page).getByText('birthday candles', { exact: false })
     ).not.toHaveCount(0)

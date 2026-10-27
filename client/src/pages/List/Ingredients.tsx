@@ -27,6 +27,7 @@ import {
 } from './ChipDetails'
 import type { ChipScope } from './chipText'
 import {
+  EXTRA_SCOPE,
   INGREDIENTS_SCOPE,
   chipAmount,
   chipCategoryId,
@@ -40,13 +41,15 @@ import {
   FilterButton,
   HiddenNote
 } from './Filters'
-import { PLUS_ID } from './PlusArea'
-import { Section } from './Section'
+import { Section, headingId } from './Section'
+import { sheetCloseId } from '../../components/Sheet'
 import type { FocusTarget } from './usePanel'
 import { useFocusAfterRender, usePanel } from './usePanel'
 
 export const INGREDIENTS_ID = 'ingredients'
-export const INGREDIENTS_HEADING_ID = `${INGREDIENTS_ID}-heading`
+export const INGREDIENTS_HEADING_ID = headingId(INGREDIENTS_ID)
+/** The Extra sheet (#192), opened from "+ Pantry Item". */
+export const EXTRA_SHEET_ID = 'extra-sheet'
 
 /** Shown when there are no chips yet. */
 export const NO_CHIPS_HINT = translate('ingredients.empty')
@@ -70,6 +73,13 @@ export const chipFilterCount = (filter: ChipFilter): number =>
   filter.sections.size + filter.statuses.size
 
 /**
+ * Where focus goes once a chip has left this scope altogether: the Extra sheet's close button
+ * inside the sheet (focus stays trapped there), the Ingredients heading on the page (#192).
+ */
+export const lastFocus = (scope: ChipScope): string =>
+  scope === EXTRA_SCOPE ? sheetCloseId(EXTRA_SHEET_ID) : INGREDIENTS_HEADING_ID
+
+/**
  * What a chip's boxes do (#182): recipe boxes change that recipe's copy, the Extra box the
  * shared Extra amount. After a removal focus goes to the box, or on when it has gone.
  */
@@ -88,7 +98,11 @@ export const sourceActions = (
       list.removeExtra(chip.id)
       focusAfterRender({
         kind: 'first',
-        ids: [chipChevronId(chip.id, scope), chipChevronId(chip.id), PLUS_ID]
+        ids: [
+          chipChevronId(chip.id, scope),
+          chipChevronId(chip.id),
+          lastFocus(scope)
+        ]
       })
       return
     }
@@ -101,42 +115,33 @@ export const sourceActions = (
 })
 
 /**
- * Everything the Ingredients section shares with Extra and Explore (#181, #182): the open
- * chip panel, the section's open state, and picking a catalogue item (from the plus or an
- * Explore result). It goes into Extra at 1; one already on the list is scrolled to and opened.
+ * Everything the Ingredients section shares with the Explore and Extra sheets (#181, #182,
+ * #192): the open chip panel, the filter, and adding a catalogue item (from an Explore result
+ * or Extra's category tabs). It goes into Extra at 1; one already in Extra stays as it is.
  */
 export const useIngredients = (list: ChipsState) => {
-  const { panel, show } = usePanel()
-  const [open, setOpen] = useState(true)
+  const { panel } = usePanel()
   const [message, setMessage] = useState('')
   const [filter, setFilter] = useState<ChipFilter>(NO_CHIP_FILTER)
   const focusAfterRender = useFocusAfterRender()
-  const pick = (item: LibraryIngredient): boolean => {
-    const onList = list.hasChip(item.id)
+  const add = (item: LibraryIngredient): void => {
+    const name = capitaliseFirst(item.name)
+    const inExtra = list.extraChips.some((chip) => chip.id === item.id)
     list.addExtra(item)
-    if (onList) {
-      setOpen(true)
-      setFilter(NO_CHIP_FILTER)
-      show(item.id)
-      focusAfterRender({ kind: 'reveal', id: chipChevronId(item.id) })
-      return true
-    }
     setMessage(
-      translate('ingredients.added', { name: capitaliseFirst(item.name) })
+      translate(inExtra ? 'ingredients.alreadyExtra' : 'ingredients.added', {
+        name
+      })
     )
-    return false
   }
   return {
     list,
     panel,
-    open,
-    toggle: () => setOpen(!open),
     message,
-    setMessage,
     filter,
     setFilter,
     focusAfterRender,
-    pick
+    add
   }
 }
 
@@ -202,11 +207,13 @@ const RefreshQuestion: FC<{ onYes: () => void; onDone: () => void }> = ({
 const FILTER_ID = `${INGREDIENTS_ID}-filter`
 export const REFRESH_ID = 'refresh'
 
-/** The Ingredients section (#179, #182): actions, filter, and the chips by category. */
-export const Ingredients: FC<{
-  state: IngredientsState
-  collapsible: boolean
-}> = ({ state, collapsible }) => {
+/**
+ * The Ingredients section (#179, #182, #192): actions, filter, and the chips by category, each
+ * a full-width row. Its header stays pinned while the list scrolls; the section is at least a
+ * screen tall, so the header can always reach the top (that is when the FAB says "+ Pantry
+ * Item"), and room at the bottom keeps the last row clear of the FAB.
+ */
+export const Ingredients: FC<{ state: IngredientsState }> = ({ state }) => {
   const t = useT()
   const { list, filter, setFilter } = state
   const [filterOpen, setFilterOpen] = useState(false)
@@ -217,12 +224,14 @@ export const Ingredients: FC<{
     <Section
       id={INGREDIENTS_ID}
       title={t('ingredients.title')}
-      collapsible={collapsible}
-      open={state.open}
-      onToggle={state.toggle}
       summary={ingredientsSummary(list.chips)}
+      sticky
+      className="min-h-dvh"
     >
-      <div className="flex flex-col gap-4">
+      <div
+        data-fab-clearance=""
+        className="flex flex-col gap-4 pb-36"
+      >
         <ActionsRow label={t('ingredients.actions')}>
           <FilterButton
             panelId={FILTER_ID}
@@ -273,6 +282,7 @@ export const Ingredients: FC<{
         <ChipGroups
           groups={groupChips(shown)}
           view={view}
+          rows
         />
       </div>
     </Section>
