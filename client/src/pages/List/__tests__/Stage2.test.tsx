@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom'
 import {
-  act,
   fireEvent,
   render,
   screen,
@@ -19,6 +18,11 @@ import {
   region,
   renderList,
   searchBox,
+  sheet,
+  closeSheet,
+  extra,
+  pickInExplore,
+  ingredientsAtTop,
   storedCopies,
   toggleOf
 } from '../../../test/renderList'
@@ -181,11 +185,11 @@ describe('Feature: Balance-sheet ingredients (#182)', () => {
 })
 
 describe('Feature: Extra (#182)', () => {
-  it('Scenario: Empty Extra says so and offers the plus', () => {
+  it('Scenario: Empty Extra says so and offers the catalogue (#192: in its sheet)', () => {
     renderList()
-    expect(region('Extra')).toHaveTextContent(NO_EXTRA_HINT)
+    expect(extra().getByText(NO_EXTRA_HINT)).toBeInTheDocument()
     expect(
-      within(region('Extra')).getByRole('button', { name: 'Add an ingredient' })
+      extra().getByRole('tablist', { name: 'Categories' })
     ).toBeInTheDocument()
   })
 
@@ -193,25 +197,24 @@ describe('Feature: Extra (#182)', () => {
     const user = userEvent.setup()
     pick('dahl')
     renderList()
-    const plus = within(region('Extra')).getByRole('button', {
-      name: 'Add an ingredient'
-    })
-    await user.click(plus)
-    await user.click(screen.getByRole('tab', { name: 'Dairy' }))
+    await user.click(extra().getByRole('tab', { name: 'Dairy' }))
     await user.click(
-      screen.getByRole('button', { name: 'Butter, on your list' })
+      extra().getByRole('button', { name: 'Butter, on your list' })
     )
-    expect(plus).toHaveAttribute('aria-expanded', 'false')
     expect(chip('butter', 'extra')).toHaveTextContent('1 g')
-    // the Ingredients chip is open; Extra's has the same panel
+    closeSheet()
+    // the Ingredients chip has an Extra box; Extra's chip has the same panel
+    await user.click(chevronOf('butter'))
     const extraBox = () =>
       scopedPanel('butter', 'chip').getByRole('textbox', { name: /^Extra, / })
     await setBox(user, extraBox(), '3')
     expect(toggleOf('butter')).toHaveAccessibleName(/^Butter, 18 g, /)
+    extra()
     await user.click(chevronOf('butter', 'extra'))
     expect(
       scopedPanel('butter', 'extra').getByRole('textbox', { name: /^Extra, / })
     ).toHaveValue('3')
+    closeSheet()
     await setBox(user, extraBox(), '0')
     await answer(user, 'Remove butter from Extra?', 'Yes')
     expect(hasChipEl('butter', 'extra')).toBe(0)
@@ -219,10 +222,10 @@ describe('Feature: Extra (#182)', () => {
     expect(chevronOf('butter')).toHaveFocus()
   })
 
-  it('Scenario: Staples belong to their recipe, and only the plus puts one in Extra', async () => {
+  it('Scenario: Staples belong to their recipe, and only the Extra sheet puts one in Extra', async () => {
     const user = userEvent.setup()
     renderList()
-    fireEvent.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
+    pickInExplore('Red lentil dahl')
     expect(hasChipEl('salt')).toBe(1)
     expect(hasChipEl('salt', 'extra')).toBe(0)
     await user.click(chevronOf('salt'))
@@ -231,34 +234,27 @@ describe('Feature: Extra (#182)', () => {
         name: /^Red lentil dahl, salt \(tsp\)$/
       })
     ).toHaveValue('0.5')
-    const plus = within(region('Extra')).getByRole('button', {
-      name: 'Add an ingredient'
-    })
-    await user.click(plus)
-    await user.click(screen.getByRole('tab', { name: 'Pantry' }))
-    await user.click(screen.getByRole('button', { name: 'Salt, on your list' }))
+    await user.click(extra().getByRole('tab', { name: 'Pantry' }))
+    await user.click(
+      extra().getByRole('button', { name: 'Salt, on your list' })
+    )
     expect(hasChipEl('salt', 'extra')).toBe(1)
-    fireEvent.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
+    closeSheet()
+    pickInExplore('Red lentil dahl')
+    expect(hasChipEl('salt')).toBe(1)
+    extra()
     expect(hasChipEl('salt', 'extra')).toBe(1)
     expect(hasChipEl('butter')).toBe(0)
   })
 
   it('Scenario: Unpicking the last recipe that uses a staple removes it', () => {
     renderList()
-    fireEvent.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
-    fireEvent.click(
-      explore().getByRole('button', {
-        name: 'Pork chops with apples and onion'
-      })
-    )
+    pickInExplore('Red lentil dahl')
+    pickInExplore('Pork chops with apples and onion')
     expect(toggleOf('salt')).toHaveAccessibleName(/in 2 recipes/)
-    fireEvent.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
+    pickInExplore('Red lentil dahl')
     expect(toggleOf('salt')).toHaveAccessibleName(/in 1 recipe/)
-    fireEvent.click(
-      explore().getByRole('button', {
-        name: 'Pork chops with apples and onion'
-      })
-    )
+    pickInExplore('Pork chops with apples and onion')
     expect(hasChipEl('salt')).toBe(0)
   })
 
@@ -271,13 +267,16 @@ describe('Feature: Extra (#182)', () => {
       ])
     )
     renderList()
-    await user.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
+    pickInExplore('Red lentil dahl')
+    extra()
     await user.click(toggleOf('salt', 'extra'))
-    expect(toggleOf('salt')).toHaveAttribute('aria-pressed', 'true')
+    closeSheet()
+    expect(toggleOf('salt')).toBeChecked()
     await openRow(user, 'Red lentil dahl')
-    expect(toggleOf('salt', 'row-dahl')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('salt', 'row-dahl')).toBeChecked()
     await user.click(toggleOf('salt', 'row-dahl'))
-    expect(toggleOf('salt', 'extra')).toHaveAttribute('aria-pressed', 'false')
+    extra()
+    expect(toggleOf('salt', 'extra')).not.toBeChecked()
   })
 
   it('Scenario: The Extra filter offers category and crossed off, with Clear', async () => {
@@ -291,11 +290,8 @@ describe('Feature: Extra (#182)', () => {
       ])
     )
     renderList()
-    await user.click(
-      explore().getByRole('button', {
-        name: 'Pork chops with apples and onion'
-      })
-    )
+    pickInExplore('Pork chops with apples and onion')
+    extra()
     await user.click(toggleOf('salt', 'extra'))
     openFilter('Extra')
     const filter = within(screen.getByRole('group', { name: 'Filter extra' }))
@@ -305,15 +301,11 @@ describe('Feature: Extra (#182)', () => {
       })
     ).toHaveLength(1)
     await user.click(filter.getByRole('checkbox', { name: 'Crossed off' }))
-    expect(
-      within(region('Extra')).getByText('2 hidden by filter')
-    ).toBeInTheDocument()
+    expect(extra().getByText('2 hidden by filter')).toBeInTheDocument()
     expect(
       toolbar('Extra actions').getByRole('button', { name: 'Filter (1)' })
     ).toBeInTheDocument()
-    await user.click(
-      within(region('Extra')).getByRole('button', { name: 'Clear' })
-    )
+    await user.click(extra().getByRole('button', { name: 'Clear' }))
     expect(hasChipEl('salt', 'extra')).toBe(1)
   })
 
@@ -326,6 +318,7 @@ describe('Feature: Extra (#182)', () => {
       ])
     )
     renderList()
+    extra()
     const candles = document.querySelector<HTMLElement>(
       '[data-scope="extra"][data-category="Other"]'
     )
@@ -339,16 +332,18 @@ describe('Feature: Extra (#182)', () => {
     ).toBeNull()
   })
 
-  it('Scenario: Escape closes the Extra plus and focus goes back to it', async () => {
+  it('Scenario: Escape closes the Extra sheet and focus goes back to the FAB (#192)', async () => {
     const user = userEvent.setup()
     renderList()
-    const plus = within(region('Extra')).getByRole('button', {
-      name: 'Add an ingredient'
-    })
-    await user.click(plus)
+    ingredientsAtTop(true)
+    await user.click(screen.getByRole('button', { name: 'Add a pantry item' }))
     await user.keyboard('{Escape}')
-    expect(plus).toHaveFocus()
-    expect(plus).toHaveAttribute('aria-expanded', 'false')
+    expect(sheet('Extra')).toBeNull()
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Add a pantry item' })
+      ).toHaveFocus()
+    )
   })
 })
 
@@ -365,27 +360,25 @@ describe('Feature: Counted items have a buying unit (#182, owner decision 2)', (
     expect(
       box('Garlic details', 'Red lentil dahl, garlic (cloves)')
     ).toHaveValue('2')
-    const plus = within(region('Extra')).getByRole('button', {
-      name: 'Add an ingredient'
-    })
-    await user.click(plus)
-    await user.click(screen.getByRole('tab', { name: 'Fruit & Veg' }))
+    await user.click(extra().getByRole('tab', { name: 'Fruit & Veg' }))
     await user.click(
-      screen.getByRole('button', { name: 'Garlic, on your list' })
+      extra().getByRole('button', { name: 'Garlic, on your list' })
     )
     expect(chip('garlic', 'extra')).toHaveTextContent('1 head')
+    closeSheet()
     expect(toggleOf('garlic')).toHaveAccessibleName(/^Garlic, 12 cloves, /)
     const extraBox = () =>
       scopedPanel('garlic', 'chip').getByRole('textbox', {
         name: 'Extra, garlic (head)'
       })
     await setBox(user, extraBox(), '2')
-    expect(chip('garlic', 'extra')).toHaveTextContent('2 heads')
     expect(
       scopedPanel('garlic', 'chip').getByRole('textbox', {
         name: 'Extra, garlic (heads)'
       })
     ).toHaveValue('2')
+    extra()
+    expect(chip('garlic', 'extra')).toHaveTextContent('2 heads')
   })
 
   it('Scenario: A recipe row and its customisations show counted amounts with their unit', async () => {
@@ -430,7 +423,7 @@ describe('Feature: Ingredients filter (#182)', () => {
     expect(hasChipEl('red-lentils')).toBe(1)
   })
 
-  it('Scenario: Picking an item already on the list clears the filter and opens its chip', async () => {
+  it('Scenario: Adding an item already on the list from the Extra sheet keeps the filter (#192)', async () => {
     const user = userEvent.setup()
     pick('dahl')
     renderList()
@@ -440,17 +433,15 @@ describe('Feature: Ingredients filter (#182)', () => {
         screen.getByRole('group', { name: 'Filter ingredients' })
       ).getByRole('checkbox', { name: 'Pantry' })
     )
+    await user.click(extra().getByRole('tab', { name: 'Dairy' }))
     await user.click(
-      within(region('Extra')).getByRole('button', { name: 'Add an ingredient' })
+      extra().getByRole('button', { name: 'Butter, on your list' })
     )
-    await user.click(screen.getByRole('tab', { name: 'Dairy' }))
-    await user.click(
-      screen.getByRole('button', { name: 'Butter, on your list' })
-    )
-    expect(chevronOf('butter')).toHaveAttribute('aria-expanded', 'true')
+    expect(hasChipEl('butter', 'extra')).toBe(1)
+    closeSheet()
     expect(
-      within(region('Ingredients')).queryByText(/hidden by filter/)
-    ).toBeNull()
+      within(region('Ingredients')).getByText(/hidden by filter/)
+    ).toBeInTheDocument()
   })
 })
 
@@ -481,7 +472,7 @@ describe('Feature: Recipe copies (#182)', () => {
     renderList()
     const row = await openRow(user, 'Red lentil dahl')
     await user.click(toggleOf('tomato', 'row-dahl'))
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('tomato')).toBeChecked()
     await user.click(chevronOf('tomato', 'row-dahl'))
     await setBox(user, box('Tomatoes details', /^Red lentil dahl, /), '0')
     await answer(user, 'Remove tomatoes from Red lentil dahl?', 'Yes')
@@ -504,6 +495,10 @@ describe('Feature: Recipe copies (#182)', () => {
         name: 'Add an ingredient to Red lentil dahl'
       })
     )
+    // a press inside the area keeps it open
+    fireEvent.pointerDown(area.getByRole('tab', { name: 'Dairy' }))
+    // and so does any key but Escape
+    fireEvent.keyDown(document.body, { key: 'a' })
     await user.click(area.getByRole('tab', { name: 'Dairy' }))
     expect(
       area.getByRole('button', { name: 'Butter, in this recipe' })
@@ -529,7 +524,7 @@ describe('Feature: Recipe copies (#182)', () => {
     await user.keyboard('{Escape}')
     expect(add).toHaveFocus()
     await user.click(add)
-    await user.click(document.body)
+    fireEvent.pointerDown(document.body)
     expect(
       screen.queryByRole('group', {
         name: 'Add an ingredient to Red lentil dahl'
@@ -548,7 +543,7 @@ describe('Feature: Recipe copies (#182)', () => {
     await answer(user, 'Remove butter from Red lentil dahl?', 'Yes')
     expect(row.queryByText('Contains: milk')).toBeNull()
     expect(row.getByText('Butter removed')).toBeInTheDocument()
-    act(() => searchBox().focus())
+    expect(searchBox()).toHaveFocus()
     await user.click(
       explore().getByRole('button', { name: 'See recipe: Red lentil dahl' })
     )
@@ -565,8 +560,8 @@ describe('Feature: Recipe copies (#182)', () => {
     const tick = recipes().getByRole('button', { name: 'Red lentil dahl' })
     await user.click(tick)
     expect(hasChipEl('butter')).toBe(0)
-    act(() => searchBox().focus())
-    await user.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
+    expect(searchBox()).toHaveFocus()
+    pickInExplore('Red lentil dahl')
     expect(toggleOf('butter')).toHaveAccessibleName(/^Butter, 15 g, /)
   })
 
@@ -601,7 +596,7 @@ describe('Feature: Recipe copies (#182)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Pretend login' }))
     await user.click(chevronOf('butter'))
     await setBox(user, box('Butter details', /^Red lentil dahl, /), '30')
-    act(() => searchBox().focus())
+    expect(searchBox()).toHaveFocus()
     await user.click(
       explore().getByRole('button', { name: 'See recipe: Red lentil dahl' })
     )
@@ -679,11 +674,10 @@ describe('Feature: Recipe filters (#182)', () => {
   it('Scenario: Explore filters the originals, and Clear also turns Saved off', async () => {
     const user = userEvent.setup()
     renderList('/?saved=1')
+    expect(sheet('Explore')).toBeInTheDocument()
     const filter = within(screen.getByRole('group', { name: 'Filter Explore' }))
     await choose(user, filter, 'Contains', 'Red lentils')
-    await user.click(
-      within(region('Explore')).getByRole('button', { name: 'Clear' })
-    )
+    await user.click(explore().getByRole('button', { name: 'Clear' }))
     expect(filter.getByRole('switch', { name: 'Saved' })).not.toBeChecked()
     expect(screen.getByLabelText('where')).toHaveTextContent(/^\/$/)
     await choose(user, filter, 'Contains', 'Red lentils')

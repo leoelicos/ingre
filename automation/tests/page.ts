@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from './fixtures'
 
-/* Shared locators for the one list page (#179, #181). */
+/* Shared locators for the one list page (#179, #181, #192). */
 
 export const DAHL = 'Red lentil dahl'
 export const CURRY = 'Potato, cauliflower and chickpea curry'
@@ -10,27 +10,29 @@ export const SEARCH = 'Search ingredients and recipes'
 /** Where a chip sits (#182): Ingredients ("chip"), Extra ("extra") or a recipe row ("row-<id>"). */
 export type Scope = 'chip' | 'extra' | `row-${string}`
 
-/** The section a scope's chips sit in. */
+/** Where a scope's chips sit: the Ingredients or Recipes section, or the Extra sheet (#192). */
 const scopeRegion = (page: Page, scope: Scope): Locator =>
-  page.getByRole('region', {
-    name:
-      scope === 'chip'
-        ? 'Ingredients'
-        : scope === 'extra'
-        ? 'Extra'
-        : 'Recipes',
-    exact: true
-  })
+  scope === 'chip'
+    ? ingredientsRegion(page)
+    : scope === 'extra'
+    ? extraRegion(page)
+    : recipesRegion(page)
 
 /** A chip; Ingredients unless a scope says otherwise. */
 export const chip = (page: Page, id: string, scope: Scope = 'chip'): Locator =>
   page.locator(`[data-scope="${scope}"][data-chip="${id}"]`)
-/** The chip's cross-off button: its spoken label is a comma list; the chevron's is not. */
+/** The chip's cross-off checkbox (#192): its spoken label is a comma list; the chevron's is not. */
 export const chipToggle = (
   page: Page,
   id: string,
   scope: Scope = 'chip'
-): Locator => chip(page, id, scope).getByRole('button', { name: /, / })
+): Locator => chip(page, id, scope).getByRole('checkbox', { name: /, / })
+/** Crosses a chip off (or back on) the way a shopper does: a tap on its row (#192). */
+export const crossOff = (
+  page: Page,
+  id: string,
+  scope: Scope = 'chip'
+): Promise<void> => chip(page, id, scope).locator('label').first().click()
 /** The chip's chevron, which opens its panel. */
 export const chevron = (
   page: Page,
@@ -66,21 +68,21 @@ export const groupOf = (page: Page, id: string, scope: Scope = 'chip') =>
     (el) => el.closest('[role="group"]')?.querySelector('h3')?.textContent
   )
 
+/** Explore (#192): a bottom sheet below 576px, a centred modal from there. */
 export const explore = (page: Page): Locator =>
-  page.getByRole('region', { name: 'Explore', exact: true })
+  page.getByRole('dialog', { name: 'Explore', exact: true })
 export const recipesRegion = (page: Page): Locator =>
   page.getByRole('region', { name: 'Recipes', exact: true })
 export const ingredientsRegion = (page: Page): Locator =>
   page.getByRole('region', { name: 'Ingredients', exact: true })
+/** Extra (#192): its own sheet, opened from "+ Pantry Item". */
 export const extraRegion = (page: Page): Locator =>
-  page.getByRole('region', { name: 'Extra', exact: true })
+  page.getByRole('dialog', { name: 'Extra', exact: true })
 export const searchBox = (page: Page): Locator =>
   page.getByRole('searchbox', { name: SEARCH })
-export const drawer = (page: Page): Locator =>
-  page.getByRole('complementary', { name: 'Explore drawer' })
-/** The collapsed drawer's strip button (1328px and up). */
-export const rail = (page: Page): Locator =>
-  drawer(page).getByRole('button', { name: SEARCH })
+/** The floating action button (#192): "+ Recipe" or "+ Pantry Item". */
+export const fab = (page: Page): Locator =>
+  page.getByRole('button', { name: /^Add a (recipe|pantry item)$/ })
 
 /** A recipe row in Explore (the browse list or the matches). */
 export const exploreRow = (page: Page, title: string): Locator =>
@@ -89,40 +91,44 @@ export const exploreRow = (page: Page, title: string): Locator =>
 export const row = (page: Page, title: string): Locator =>
   recipesRegion(page).getByRole('button', { name: title, exact: true })
 
-/** A collapsible section's header button (vertical layout only). */
-export const section = (
-  page: Page,
-  name: 'Ingredients' | 'Recipes' | 'Extra'
-) =>
-  page.getByRole('heading', { level: 2, name, exact: true }).getByRole('button')
-
-export const layoutToggle = (page: Page): Locator =>
-  page.getByRole('radiogroup', { name: 'Layout' })
-/** Chooses a layout by its visible text (the radio itself is visually hidden). */
-export const chooseLayout = (page: Page, text: string) =>
-  layoutToggle(page)
-    .locator('label')
-    .filter({ hasText: new RegExp(`^${text}$`) })
-    .click()
-
-/** Explore's header row button, which expands and collapses it. */
-export const exploreHeader = (page: Page): Locator =>
-  explore(page)
-    .getByRole('heading', { level: 2, name: 'Explore', exact: true })
-    .getByRole('button')
-/** Explore's X, which collapses it (it never goes away). */
-export const hideX = (page: Page): Locator =>
-  explore(page).getByRole('button', { name: 'Hide Explore' })
-
-/** Expands Explore however this width shows it: the drawer strip, or the search bar. */
-export const openExplore = async (page: Page) => {
-  if (await rail(page).isVisible()) await rail(page).click()
-  else if ((await exploreHeader(page).getAttribute('aria-expanded')) !== 'true')
-    await searchBox(page).click()
-  await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
+/** Scrolls the page to the top, where the FAB says "+ Recipe". */
+export const toTop = async (page: Page) => {
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await expect(fab(page)).toHaveAccessibleName('Add a recipe')
 }
 
-/** Picks recipes by ticking their rows in Explore. */
+/** Scrolls Ingredients to the top of the screen, where the FAB says "+ Pantry Item". */
+export const toIngredients = async (page: Page) => {
+  await ingredientsRegion(page).evaluate((el) =>
+    window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY)
+  )
+  await expect(fab(page)).toHaveAccessibleName('Add a pantry item')
+}
+
+/** Opens Explore from "+ Recipe", unless it is open already. */
+export const openExplore = async (page: Page) => {
+  if (await explore(page).isVisible()) return
+  await toTop(page)
+  await fab(page).click()
+  await expect(explore(page)).toBeVisible()
+}
+
+/** Opens the Extra sheet from "+ Pantry Item", unless it is open already. */
+export const openExtra = async (page: Page) => {
+  if (await extraRegion(page).isVisible()) return
+  await toIngredients(page)
+  await fab(page).click()
+  await expect(extraRegion(page)).toBeVisible()
+}
+
+/** Closes whichever sheet is open with its ✕, and waits for it to go. */
+export const closeSheet = async (page: Page) => {
+  const dialog = page.getByRole('dialog')
+  await page.getByRole('button', { name: /^Close (Explore|Extra)$/ }).click()
+  await expect(dialog).toHaveCount(0)
+}
+
+/** Picks recipes by ticking their rows in Explore, then closes it. */
 export const pickRows = async (page: Page, ...titles: string[]) => {
   await openExplore(page)
   for (const title of titles) {
@@ -132,11 +138,7 @@ export const pickRows = async (page: Page, ...titles: string[]) => {
       'true'
     )
   }
-}
-
-/** Uses the vertical layout when this width offers a choice, so sections can collapse. */
-export const useVertical = async (page: Page) => {
-  if (await layoutToggle(page).isVisible()) await chooseLayout(page, 'Vertical')
+  await closeSheet(page)
 }
 
 export const box = async (l: Locator) => {

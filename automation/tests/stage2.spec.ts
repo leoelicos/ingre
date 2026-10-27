@@ -3,7 +3,6 @@ import { expect, newAccount, signUp, test } from './fixtures'
 import {
   CURRY,
   DAHL,
-  box,
   chevron,
   chip,
   chipToggle,
@@ -17,10 +16,10 @@ import {
   pickRows,
   recipesRegion,
   row,
-  section,
   setBox,
   sourceBox,
-  useVertical
+  crossOff,
+  closeSheet
 } from './page'
 
 /* #182 Stage 2: balance-sheet ingredients, per-source amounts, recipe copies, filters. */
@@ -64,7 +63,8 @@ const addExtra = async (page: Page, query: string, name: string) => {
   await openExplore(page)
   await page.getByRole('searchbox').fill(query)
   await page.getByRole('button', { name: `${name}, on your list` }).click()
-  await expect(chip(page, query, 'extra')).toHaveCount(1)
+  await closeSheet(page)
+  await expect(chip(page, query)).toHaveCount(1)
 }
 const openRow = (page: Page, title: string) =>
   recipesRegion(page)
@@ -128,7 +128,7 @@ test.describe('balance-sheet ingredients (#182)', () => {
       'true'
     )
     await expect(chipToggle(page, 'red-lentils')).toBeDisabled()
-    await expect(chipToggle(page, 'red-lentils')).toContainText('0')
+    await expect(chip(page, 'red-lentils')).toContainText('0')
     await page.getByRole('button', { name: 'Sort', exact: true }).click()
     await page.reload()
     await expect(chip(page, 'red-lentils')).toHaveAttribute(
@@ -234,21 +234,12 @@ test.describe('Extra (#182)', () => {
     await pickRows(page, DAHL)
     await addExtra(page, 'salt', 'Salt')
     await closeExplore(page)
-    await chipToggle(page, 'salt', 'extra').click()
-    await expect(chipToggle(page, 'salt')).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    await crossOff(page, 'salt', 'extra')
+    await expect(chipToggle(page, 'salt')).toBeChecked()
     await openRow(page, DAHL)
-    await expect(chipToggle(page, 'salt', 'row-dahl')).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
-    await chipToggle(page, 'salt', 'row-dahl').click()
-    await expect(chipToggle(page, 'salt', 'extra')).toHaveAttribute(
-      'aria-pressed',
-      'false'
-    )
+    await expect(chipToggle(page, 'salt', 'row-dahl')).toBeChecked()
+    await crossOff(page, 'salt', 'row-dahl')
+    await expect(chipToggle(page, 'salt', 'extra')).not.toBeChecked()
   })
 
   test('the Extra filter offers category and crossed off, with "N hidden by filter" and Clear (answers 41, 43)', async ({
@@ -257,7 +248,7 @@ test.describe('Extra (#182)', () => {
     await pickRows(page, DAHL)
     await addExtra(page, 'salt', 'Salt')
     await closeExplore(page)
-    await chipToggle(page, 'salt', 'extra').click()
+    await crossOff(page, 'salt', 'extra')
     await openFilter(page, 'Extra')
     const filter = page.getByRole('group', { name: 'Filter extra' })
     await expect(filter.getByRole('checkbox')).not.toHaveCount(0)
@@ -268,36 +259,6 @@ test.describe('Extra (#182)', () => {
     await expect(extraRegion(page).getByText(/hidden by filter/)).toBeVisible()
     await extraRegion(page).getByRole('button', { name: 'Clear' }).click()
     await expect(chip(page, 'salt', 'extra')).toBeVisible()
-  })
-})
-
-test.describe('layout (#182, answers 14-15)', () => {
-  test('Ingredients, Recipes, Extra; side by side, Extra sits under Recipes; only vertical collapses Extra', async ({
-    page
-  }) => {
-    await page.setViewportSize({ width: 1280, height: 800 })
-    await page.goto('/')
-    await pickRows(page, DAHL)
-    await addExtra(page, 'salt', 'Salt')
-    const heading = (name: string) =>
-      page.getByRole('heading', { level: 2, name, exact: true })
-    await expect(section(page, 'Extra')).toHaveCount(0)
-    const ingredients = await box(heading('Ingredients'))
-    const recipes = await box(heading('Recipes'))
-    const extra = await box(heading('Extra'))
-    expect(recipes.x).toBeGreaterThan(ingredients.x)
-    expect(Math.abs(extra.x - recipes.x)).toBeLessThan(2)
-    expect(extra.y).toBeGreaterThan(recipes.y)
-    await useVertical(page)
-    const top = async (name: string) => (await box(heading(name))).y
-    expect(await top('Ingredients')).toBeLessThan(await top('Recipes'))
-    expect(await top('Recipes')).toBeLessThan(await top('Extra'))
-    await section(page, 'Extra').click()
-    await expect(section(page, 'Extra')).toHaveAttribute(
-      'aria-expanded',
-      'false'
-    )
-    await expect(chip(page, 'salt', 'extra')).toBeHidden()
   })
 })
 

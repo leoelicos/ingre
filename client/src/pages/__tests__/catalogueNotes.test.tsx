@@ -6,7 +6,6 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import ingredientData from '../../data/ingredients.json'
 import recipeData from '../../data/recipes.json'
 import { AuthProvider } from '../../utils/auth/AuthContext'
-import { ExploreProvider } from '../../utils/explore/ExploreContext'
 import { StoreProvider } from '../../utils/state/GlobalState'
 import { PICKED_KEY } from '../../utils/storage/shoppingState'
 import { ListPage } from '../List/ListPage'
@@ -20,14 +19,12 @@ const renderAt = (path: string, pattern: string, page: ReactElement) =>
       <MemoryRouter initialEntries={[path]}>
         <AuthProvider>
           <StoreProvider>
-            <ExploreProvider>
-              <Routes>
-                <Route
-                  path={pattern}
-                  element={page}
-                />
-              </Routes>
-            </ExploreProvider>
+            <Routes>
+              <Route
+                path={pattern}
+                element={page}
+              />
+            </Routes>
           </StoreProvider>
         </AuthProvider>
       </MemoryRouter>
@@ -50,8 +47,10 @@ describe('catalogue notes stay internal', () => {
     expect(recipeData._note.length).toBeGreaterThan(0)
   })
 
-  it('Explore, with the recipe row open, shows no note text (#181)', () => {
-    const { container } = renderAt('/', '/', <ListPage />)
+  it('Explore, with the recipe row open, shows no note text (#181, #192)', () => {
+    renderAt('/', '/', <ListPage />)
+    const container = document.body
+    fireEvent.click(screen.getByRole('button', { name: 'Add a recipe' }))
     fireEvent.click(
       screen.getByRole('button', {
         name: 'See recipe: Pork chops with apples and onion'
