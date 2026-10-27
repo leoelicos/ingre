@@ -1,0 +1,38 @@
+name: native
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ios:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.2"
+      - name: Copy the catalogue
+        run: node scripts/copy-native-library.mjs
+      - name: Unit tests
+        run: swift test
+        working-directory: ios/IngreCore
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+      - name: Android SDK
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+      - name: Copy the catalogue
+        run: node scripts/copy-native-library.mjs
+      - name: Unit tests and debug build
+        run: ./gradlew :logic:test :app:assembleDebug
+        working-directory: android
