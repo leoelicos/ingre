@@ -40,7 +40,6 @@ test.describe('ingredient chips (#181)', () => {
     page
   }) => {
     await pickRows(page, DAHL)
-    const check = chip(page, 'tomato').getByTestId('chip-check')
     await chipToggle(page, 'tomato').click()
     await expect(chipToggle(page, 'tomato')).toBeChecked()
     await chip(page, 'tomato').getByText('Tomatoes').click({ force: true })
