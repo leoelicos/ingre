@@ -90,7 +90,7 @@ export const Extra: FC<{ state: IngredientsState }> = ({ state }) => {
           groups={groupChips(shown)}
           view={chipView(state, EXTRA_SCOPE, panel, extraAmount)}
         />
-        <div>
+        <div className="flex flex-col">
           <PlusButton
             open={plusOpen}
             onPress={() => setPlusOpen(!plusOpen)}

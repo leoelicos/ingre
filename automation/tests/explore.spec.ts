@@ -287,13 +287,12 @@ test.describe('Explore (#181)', () => {
   }) => {
     await typeQuery(page, 'banana')
     await explore(page).getByRole('button', { name: 'Add banana' }).click()
-    await expect(chip(page, 'banana')).toHaveCount(1)
-    await openPantry(page)
-    await expect(chip(page, 'banana', 'extra')).toHaveCount(1)
-    await openExplore(page)
     await expect(
       explore(page).getByRole('button', { name: 'Banana, on your list' })
     ).toBeVisible()
+    await expect(chip(page, 'banana')).toHaveCount(1)
+    await openPantry(page)
+    await expect(chip(page, 'banana', 'extra')).toHaveCount(1)
   })
 
   test('an ingredient already on the list adds an Extra source at 1, then scrolls to its chip and opens it (#182, answer 8)', async ({
