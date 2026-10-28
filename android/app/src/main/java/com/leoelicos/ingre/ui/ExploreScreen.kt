@@ -48,7 +48,10 @@ fun ExploreScreen(token: String? = null) {
 
     val q = query.trim()
     val filteredRecipes = remember(recipes, q) {
-        if (q.isEmpty()) recipes else recipes.filter { it.name.contains(q, ignoreCase = true) }
+        if (q.isEmpty()) recipes else recipes.filter {
+            it.name.contains(q, ignoreCase = true) ||
+                it.name.split(" ").any { word -> word.startsWith(q, ignoreCase = true) }
+        }
     }
     val filteredIngredients = remember(ingredients, q) {
         if (q.isEmpty()) ingredients else ingredients.filter { it.contains(q, ignoreCase = true) }

@@ -43,6 +43,7 @@ fun AccountScreen(token: String?, store: TokenStore) {
             onLogin = { t -> scope.launch { store.save(t); mode = "menu" } },
             onSignup = { mode = "signup" }
         )
+        "upgrade" -> UpgradeScreen()
         "signup" -> SignupScreen(
             onSignup = { t -> scope.launch { store.save(t); mode = "menu" } },
             onBack = { mode = "menu" }
@@ -55,6 +56,7 @@ fun AccountScreen(token: String?, store: TokenStore) {
             Text("Optional. The app works without an account. Sign in to sync saved recipes.")
             Button(onClick = { mode = "login" }, modifier = Modifier.fillMaxWidth()) { Text("Log in") }
             Button(onClick = { mode = "signup" }, modifier = Modifier.fillMaxWidth()) { Text("Sign up") }
+            Button(onClick = { mode = "upgrade" }, modifier = Modifier.fillMaxWidth()) { Text("Upgrade") }
         }
     }
 }

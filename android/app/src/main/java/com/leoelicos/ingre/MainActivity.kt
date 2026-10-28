@@ -15,6 +15,8 @@ import androidx.compose.runtime.setValue
 import com.leoelicos.ingre.data.TokenStore
 import com.leoelicos.ingre.ui.AccountScreen
 import com.leoelicos.ingre.ui.ExploreScreen
+import com.leoelicos.ingre.ui.ExtraScreen
+import com.leoelicos.ingre.ui.UpgradeScreen
 import com.leoelicos.ingre.ui.HomeScreen
 import com.leoelicos.ingre.ui.IngreTheme
 import com.leoelicos.ingre.ui.RecipeDetailScreen
@@ -42,7 +44,8 @@ class MainActivity : ComponentActivity() {
                                 NavigationBarItem(selected = tab == 0, onClick = { tab = 0 }, label = { Text("Recipes") }, icon = {})
                                 NavigationBarItem(selected = tab == 1, onClick = { tab = 1 }, label = { Text("List") }, icon = {})
                                 NavigationBarItem(selected = tab == 2, onClick = { tab = 2 }, label = { Text("Explore") }, icon = {})
-                                NavigationBarItem(selected = tab == 3, onClick = { tab = 3 }, label = { Text("Account") }, icon = {})
+                                NavigationBarItem(selected = tab == 3, onClick = { tab = 3 }, label = { Text("Extra") }, icon = {})
+                                NavigationBarItem(selected = tab == 4, onClick = { tab = 4 }, label = { Text("Account") }, icon = {})
                             }
                         }
                     ) { _ ->
@@ -50,7 +53,9 @@ class MainActivity : ComponentActivity() {
                             0 -> HomeScreen(onOpenRecipe = { openRecipeId = it })
                             1 -> ShoppingListScreen()
                             2 -> ExploreScreen(token = token)
-                            else -> AccountScreen(token = token, store = store)
+                            3 -> ExtraScreen()
+                            4 -> AccountScreen(token = token, store = store)
+                            else -> UpgradeScreen()
                         }
                     }
                 }
