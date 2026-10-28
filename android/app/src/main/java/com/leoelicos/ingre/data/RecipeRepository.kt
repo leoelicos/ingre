@@ -4,6 +4,18 @@ import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
 
+data class RecipeSummary(val id: String, val name: String, val portions: Int)
+
+data class IngredientItem(val name: String, val quantity: Float, val measure: String)
+
+data class RecipeDetail(
+    val id: String,
+    val name: String,
+    val portions: Int,
+    val ingredients: List<IngredientItem>,
+    val instructions: String?
+)
+
 class RecipeRepository(private val client: GraphQLClient = GraphQLClient()) {
     fun getSavedRecipes(token: String): List<RecipeSummary> {
         val query = """
