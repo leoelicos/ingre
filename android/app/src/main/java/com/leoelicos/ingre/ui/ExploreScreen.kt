@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leoelicos.ingre.data.CatalogueRecipe
+import com.leoelicos.ingre.data.RecipeRepository
 import com.leoelicos.ingre.data.SavedRecipesStore
 import com.leoelicos.ingre.data.ShoppingListStore
 import com.leoelicos.ingre.data.loadCatalogueRecipes
@@ -33,7 +34,7 @@ private fun loadIngredients(context: Context): List<String> {
 }
 
 @Composable
-fun ExploreScreen() {
+fun ExploreScreen(token: String? = null) {
     val context = LocalContext.current
     var ingredients by remember { mutableStateOf<List<String>>(emptyList()) }
     var recipes by remember { mutableStateOf<List<CatalogueRecipe>>(emptyList()) }
@@ -75,6 +76,18 @@ fun ExploreScreen() {
                         .clickable {
                             SavedRecipesStore.save(recipe.id)
                             message = "Saved ${recipe.name}"
+                            if (token != null) {
+                                scope.launch {
+                                    try {
+                                        withContext(Dispatchers.IO) {
+                                            RecipeRepository().saveCatalogueRecipe(context, token, recipe.id)
+                                        }
+                                        message = "Saved ${recipe.name} to account"
+                                    } catch (e: Exception) {
+                                        message = e.message ?: "Saved locally; server sync failed"
+                                    }
+                                }
+                            }
                         }
                         .padding(vertical = 10.dp),
                     fontSize = 16.sp
