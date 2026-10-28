@@ -1,0 +1,41 @@
+name: Native Android
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-native.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-android-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+
+      - name: Print APK link
+        run: |
+          echo "Native Android debug APK:"
+          echo "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
