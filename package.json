@@ -11,7 +11,8 @@
     "build": "cd client && npm run build",
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "npm --prefix client test -- --coverage --coverageThreshold='{\"global\":{\"branches\":100,\"functions\":100,\"lines\":100,\"statements\":100}}' && npm --prefix server test",
-    "test:e2e": "npm --prefix automation test"
+    "test:e2e": "npm --prefix automation test",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "repository": {
     "type": "git",
@@ -25,9 +26,16 @@
   },
   "homepage": "https://github.com/leoelicos/ingre#readme",
   "devDependencies": {
-    "concurrently": "^7.3.0"
+    "@graphql-codegen/cli": "^7.4.6",
+    "@graphql-codegen/typescript": "^6.1.2",
+    "@graphql-codegen/typescript-operations": "^6.2.0",
+    "concurrently": "^7.3.0",
+    "graphql": "^16.14.2"
   },
   "engines": {
     "node": "22.x"
+  },
+  "directories": {
+    "doc": "docs"
   }
 }
