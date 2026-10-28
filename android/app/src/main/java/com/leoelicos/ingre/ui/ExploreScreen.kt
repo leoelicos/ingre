@@ -15,19 +15,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leoelicos.ingre.data.CatalogueRecipe
-import com.leoelicos.ingre.data.RecipeRepository
+import com.leoelicos.ingre.data.SavedRecipesStore
 import com.leoelicos.ingre.data.ShoppingListStore
 import com.leoelicos.ingre.data.loadCatalogueRecipes
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.json.JSONArray
 
 private fun loadIngredients(context: Context): List<String> {
@@ -37,14 +33,12 @@ private fun loadIngredients(context: Context): List<String> {
 }
 
 @Composable
-fun ExploreScreen(token: String) {
+fun ExploreScreen() {
     val context = LocalContext.current
     var ingredients by remember { mutableStateOf<List<String>>(emptyList()) }
     var recipes by remember { mutableStateOf<List<CatalogueRecipe>>(emptyList()) }
     var query by remember { mutableStateOf("") }
     var message by remember { mutableStateOf<String?>(null) }
-    val scope = rememberCoroutineScope()
-    val repo = remember { RecipeRepository() }
 
     LaunchedEffect(Unit) {
         ingredients = loadIngredients(context)
@@ -79,17 +73,8 @@ fun ExploreScreen(token: String) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            message = "Saving ${recipe.name}..."
-                            scope.launch {
-                                try {
-                                    withContext(Dispatchers.IO) {
-                                        repo.saveCatalogueRecipe(context, token, recipe.id)
-                                    }
-                                    message = "Saved ${recipe.name}"
-                                } catch (e: Exception) {
-                                    message = e.message ?: "Failed to save"
-                                }
-                            }
+                            SavedRecipesStore.save(recipe.id)
+                            message = "Saved ${recipe.name}"
                         }
                         .padding(vertical = 10.dp),
                     fontSize = 16.sp
