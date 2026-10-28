@@ -9,3 +9,9 @@ Backend: Render, https://ingre-backend.onrender.com/graphql. Free tier sleeps; t
 Production mode (`APP_MODE === 'production'`) is the only client mode that calls Render. Local dev calls port 3001.
 
 Do not put secrets in the repo. Server env is read at process start (Mongo URL, JWT secret, Stripe).
+
+## Server pipeline
+
+`main` is production. Pushes to `main` that touch `server/**` run `.github/workflows/server-deploy.yml`, which POSTs the `RENDER_DEPLOY_HOOK` secret. That secret is the deploy hook URL from the Render service.
+
+Do not merge to `main` unless the change is production-ready.
