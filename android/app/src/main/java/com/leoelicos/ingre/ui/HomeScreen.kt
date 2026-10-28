@@ -28,7 +28,7 @@ fun HomeScreen(onOpenRecipe: (String) -> Unit) {
 
     if (saved.isEmpty()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("No saved recipes.\nAdd some from Explore.", fontSize = 16.sp)
+            Text("No saved recipes yet.\nSign in is optional. Tap recipes in Explore to save them.", fontSize = 16.sp)
         }
     } else {
         LazyColumn(Modifier.fillMaxSize().padding(16.dp)) {
