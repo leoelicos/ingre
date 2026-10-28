@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun LoginScreen(onLogin: (String) -> Unit) {
+fun LoginScreen(onLogin: (String) -> Unit, onSignup: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
@@ -91,5 +91,7 @@ fun LoginScreen(onLogin: (String) -> Unit) {
             if (loading) CircularProgressIndicator(modifier = Modifier.height(20.dp))
             else Text("Log in")
         }
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = onSignup, modifier = Modifier.fillMaxWidth()) { Text("Sign up") }
     }
 }

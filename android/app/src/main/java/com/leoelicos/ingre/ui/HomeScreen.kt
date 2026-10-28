@@ -1,10 +1,12 @@
 package com.leoelicos.ingre.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun HomeScreen(token: String) {
+fun HomeScreen(token: String, onOpenRecipe: (String) -> Unit, onLogout: () -> Unit) {
     var recipes by remember { mutableStateOf<List<RecipeSummary>?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
     val repo = remember { RecipeRepository() }
@@ -36,25 +38,36 @@ fun HomeScreen(token: String) {
         }
     }
 
-    when {
-        error != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(error!!, color = androidx.compose.material3.MaterialTheme.colorScheme.error)
-        }
-        recipes == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        recipes!!.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("No saved recipes", fontSize = 18.sp)
-        }
-        else -> LazyColumn(Modifier.fillMaxSize().padding(16.dp)) {
-            item { Text("Saved recipes", fontSize = 24.sp, modifier = Modifier.padding(bottom = 12.dp)) }
-            items(recipes!!) { recipe ->
-                Text(
-                    "${recipe.name} (${recipe.portions})",
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    fontSize = 16.sp
-                )
+    Box(Modifier.fillMaxSize()) {
+        when {
+            error != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(error!!, color = androidx.compose.material3.MaterialTheme.colorScheme.error)
+            }
+            recipes == null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+            recipes!!.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No saved recipes", fontSize = 18.sp)
+            }
+            else -> LazyColumn(Modifier.fillMaxSize().padding(16.dp)) {
+                item {
+                    Text("Saved recipes", fontSize = 24.sp, modifier = Modifier.padding(bottom = 12.dp))
+                }
+                items(recipes!!) { recipe ->
+                    Text(
+                        "${recipe.name} (${recipe.portions})",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable { onOpenRecipe(recipe.id) }
+                            .padding(vertical = 12.dp),
+                        fontSize = 16.sp
+                    )
+                }
             }
         }
+        Button(
+            onClick = onLogout,
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+        ) { Text("Log out") }
     }
 }
