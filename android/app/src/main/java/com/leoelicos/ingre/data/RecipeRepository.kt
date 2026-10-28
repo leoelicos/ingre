@@ -2,6 +2,8 @@ package com.leoelicos.ingre.data
 
 import org.json.JSONObject
 
+data class RecipeSummary(val id: String, val name: String, val portions: Int)
+
 data class IngredientItem(val name: String, val quantity: Float, val measure: String)
 
 data class RecipeDetail(

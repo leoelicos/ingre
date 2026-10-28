@@ -2,6 +2,8 @@ package com.leoelicos.ingre.data
 
 import org.json.JSONObject
 
+data class AuthResult(val token: String, val firstName: String, val email: String)
+
 class AuthRepository(private val client: GraphQLClient = GraphQLClient()) {
     fun login(email: String, password: String): AuthResult {
         val query = """
