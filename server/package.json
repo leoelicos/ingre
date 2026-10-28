@@ -60,5 +60,8 @@
   },
   "resolutions": {
     "graphql": "16.14.2"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }
