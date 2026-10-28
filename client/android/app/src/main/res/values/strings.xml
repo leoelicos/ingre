@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ingre</string>
+    <string name="title_activity_main">ingre</string>
+    <string name="package_name">com.leoelicos.ingre</string>
+    <string name="custom_url_scheme">com.leoelicos.ingre</string>
+</resources>
