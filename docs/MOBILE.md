@@ -24,7 +24,7 @@ On every pull request (and on manual workflow runs) the Android workflow builds 
 4. Transfer the APK to an unmanaged Android device and install it
    (allow “Install unknown apps” for the file manager if prompted).
 
-The workflow log also prints a direct link to the run so you can copy it easily.
+The workflow log prints a direct link to the run.
 
 ## Production pipelines
 

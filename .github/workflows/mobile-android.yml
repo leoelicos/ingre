@@ -55,18 +55,10 @@ jobs:
           path: client/android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
 
-      - name: Print APK download instructions
+      - name: Print APK download link
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         run: |
-          echo "========================================"
-          echo "Debug APK ready for download"
-          echo "========================================"
-          echo "1. Open this workflow run in a browser:"
-          echo "   ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          echo "2. Scroll to the Artifacts section"
-          echo "3. Download 'app-debug-apk'"
-          echo "4. Transfer to an Android device and install"
-          echo "========================================"
+          echo "Debug APK: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
       # Signed release AAB for production tags
       - name: Decode keystore
