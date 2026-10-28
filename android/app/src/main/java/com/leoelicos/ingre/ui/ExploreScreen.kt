@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -25,6 +26,9 @@ import com.leoelicos.ingre.data.RecipeRepository
 import com.leoelicos.ingre.data.SavedRecipesStore
 import com.leoelicos.ingre.data.ShoppingListStore
 import com.leoelicos.ingre.data.loadCatalogueRecipes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 
 private fun loadIngredients(context: Context): List<String> {
@@ -36,6 +40,7 @@ private fun loadIngredients(context: Context): List<String> {
 @Composable
 fun ExploreScreen(token: String? = null) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var ingredients by remember { mutableStateOf<List<String>>(emptyList()) }
     var recipes by remember { mutableStateOf<List<CatalogueRecipe>>(emptyList()) }
     var query by remember { mutableStateOf("") }
