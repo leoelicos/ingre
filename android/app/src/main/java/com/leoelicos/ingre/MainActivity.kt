@@ -16,11 +16,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             IngreTheme {
-                var loggedIn by rememberSaveable { mutableStateOf(false) }
-                if (loggedIn) {
+                var token by rememberSaveable { mutableStateOf<String?>(null) }
+                if (token != null) {
                     HomeScreen()
                 } else {
-                    LoginScreen(onLogin = { loggedIn = true })
+                    LoginScreen(onLogin = { token = it })
                 }
             }
         }
