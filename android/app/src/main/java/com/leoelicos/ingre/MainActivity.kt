@@ -3,24 +3,24 @@ package com.leoelicos.ingre
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import com.leoelicos.ingre.ui.HomeScreen
+import com.leoelicos.ingre.ui.IngreTheme
+import com.leoelicos.ingre.ui.LoginScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Text("ingre", fontSize = 32.sp)
-                    }
+            IngreTheme {
+                var loggedIn by rememberSaveable { mutableStateOf(false) }
+                if (loggedIn) {
+                    HomeScreen()
+                } else {
+                    LoginScreen(onLogin = { loggedIn = true })
                 }
             }
         }
