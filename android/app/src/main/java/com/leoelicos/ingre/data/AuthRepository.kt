@@ -19,6 +19,9 @@ class AuthRepository(private val client: GraphQLClient = GraphQLClient()) {
             put("password", password)
         }
         val data = client.query(query, vars)
+        if (data.isNull("login")) {
+            throw Exception("Invalid email or password")
+        }
         val auth = data.getJSONObject("login")
         val user = auth.getJSONObject("user")
         return AuthResult(
