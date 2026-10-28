@@ -44,6 +44,7 @@ fun RecipeDetailScreen(recipeId: String, onBack: () -> Unit) {
     val customisations by CustomisationStore.all.collectAsState()
     val custom = customisations[recipeId]
     var plusName by remember { mutableStateOf("") }
+    var notes by remember { mutableStateOf(custom?.notes ?: "") }
 
     if (recipe == null) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Recipe not found") }
@@ -64,7 +65,9 @@ fun RecipeDetailScreen(recipeId: String, onBack: () -> Unit) {
         }
         item { Text("Ingredients", fontSize = 20.sp, modifier = Modifier.padding(top = 12.dp, bottom = 8.dp)) }
         items(recipe.ingredients.filter { ing -> custom?.removed?.none { it.equals(ing.name, ignoreCase = true) } != false }) { ing ->
-            Text("${ing.quantity} ${ing.measure} ${ing.name}", modifier = Modifier.padding(vertical = 4.dp))
+            Text("${custom?.amounts?.get(ing.name) ?: ing.quantity} ${ing.measure} ${ing.name}", modifier = Modifier.padding(vertical = 4.dp))
+            Button(onClick = { CustomisationStore.setAmount(recipeId, ing.name, (custom?.amounts?.get(ing.name) ?: ing.quantity) + 1f) }) { Text("+") }
+            Button(onClick = { CustomisationStore.removeIngredient(recipeId, ing.name) }) { Text("Remove") }
         }
         custom?.added?.forEach { name ->
             item { Text("+ $name (added)", modifier = Modifier.padding(vertical = 4.dp)) }
@@ -84,6 +87,8 @@ fun RecipeDetailScreen(recipeId: String, onBack: () -> Unit) {
         }
         if (recipe.instructions.isNotBlank()) {
             item {
+                Text("Notes", fontSize = 20.sp, modifier = Modifier.padding(top = 16.dp))
+                OutlinedTextField(notes, { notes = it; CustomisationStore.setNotes(recipeId, it) }, modifier = Modifier.fillMaxSize())
                 Text("Method", fontSize = 20.sp, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
                 Text(recipe.instructions)
             }

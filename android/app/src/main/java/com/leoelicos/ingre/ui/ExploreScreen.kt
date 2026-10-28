@@ -77,8 +77,13 @@ fun ExploreScreen(token: String? = null) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
+                            if (recipe.id in SavedRecipesStore.ids.value) {
+                                SavedRecipesStore.remove(recipe.id)
+                                message = "Unsaved ${recipe.name}"
+                            } else {
                             SavedRecipesStore.save(recipe.id)
                             message = "Saved ${recipe.name}"
+                            }
                             if (token != null) {
                                 scope.launch {
                                     try {

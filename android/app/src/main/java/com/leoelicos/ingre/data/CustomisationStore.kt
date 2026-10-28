@@ -8,7 +8,9 @@ data class Customisation(
     val recipeId: String,
     val added: List<String> = emptyList(),
     val removed: List<String> = emptyList(),
-    val portions: Int? = null
+    val amounts: Map<String, Float> = emptyMap(),
+    val portions: Int? = null,
+    val notes: String = ""
 )
 
 object CustomisationStore {
@@ -17,19 +19,31 @@ object CustomisationStore {
 
     fun of(recipeId: String): Customisation = _all.value[recipeId] ?: Customisation(recipeId)
 
+    private fun put(recipeId: String, next: Customisation) {
+        _all.value = _all.value + (recipeId to next)
+    }
+
     fun addIngredient(recipeId: String, name: String) {
         val current = of(recipeId)
-        _all.value = _all.value + (recipeId to current.copy(added = (current.added + name).distinct()))
+        put(recipeId, current.copy(added = (current.added + name).distinct()))
     }
 
     fun removeIngredient(recipeId: String, name: String) {
         val current = of(recipeId)
-        _all.value = _all.value + (recipeId to current.copy(removed = (current.removed + name).distinct()))
+        put(recipeId, current.copy(removed = (current.removed + name).distinct()))
+    }
+
+    fun setAmount(recipeId: String, name: String, amount: Float) {
+        val current = of(recipeId)
+        put(recipeId, current.copy(amounts = current.amounts + (name to amount)))
     }
 
     fun setPortions(recipeId: String, portions: Int) {
-        val current = of(recipeId)
-        _all.value = _all.value + (recipeId to current.copy(portions = portions))
+        put(recipeId, of(recipeId).copy(portions = portions))
+    }
+
+    fun setNotes(recipeId: String, notes: String) {
+        put(recipeId, of(recipeId).copy(notes = notes))
     }
 
     fun reset(recipeId: String) {

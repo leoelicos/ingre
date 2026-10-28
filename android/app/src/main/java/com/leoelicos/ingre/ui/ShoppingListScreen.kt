@@ -28,6 +28,7 @@ fun ShoppingListScreen() {
     val items by ShoppingListStore.items.collectAsState()
     var sortBySection by remember { mutableStateOf(true) }
     var hideCrossed by remember { mutableStateOf(false) }
+    var sectionFilter by remember { mutableStateOf<String?>(null) }
 
     if (items.isEmpty()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -36,7 +37,7 @@ fun ShoppingListScreen() {
         return
     }
 
-    val visible = if (hideCrossed) items.filter { !it.crossed } else items
+    val visible = items.filter { (if (hideCrossed) !it.crossed else true) && (sectionFilter == null || it.section == sectionFilter) }
     val grouped = if (sortBySection) visible.groupBy { it.section } else mapOf("All" to visible.sortedBy { it.name })
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("Shopping list", fontSize = 24.sp)
@@ -47,8 +48,8 @@ fun ShoppingListScreen() {
             grouped.forEach { (section, group) ->
                 item { Text(section, fontSize = 18.sp, modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)) }
                 items(group) { item ->
-                    Text(
-                        item.name,
+                    Text("${item.quantity} ${item.name} · used in ${item.sources.joinToString().ifEmpty { "Extra" }}",
+                        
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { ShoppingListStore.toggleCrossed(item.name) }

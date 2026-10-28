@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leoelicos.ingre.data.SavedRecipesStore
+import androidx.compose.material3.Button
 import com.leoelicos.ingre.data.loadCatalogueRecipes
 
 @Composable
@@ -42,6 +43,7 @@ fun HomeScreen(onOpenRecipe: (String) -> Unit) {
                         .padding(vertical = 12.dp),
                     fontSize = 16.sp
                 )
+                Button(onClick = { SavedRecipesStore.remove(recipe.id) }) { Text("Unsave") }
             }
         }
     }
