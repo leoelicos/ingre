@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenRecipe = { openRecipeId = it },
                                 onLogout = { scope.launch { store.clear() } }
                             )
-                            1 -> ShoppingListScreen(token = token!!)
+                            1 -> ShoppingListScreen()
                             else -> ExploreScreen()
                         }
                     }
