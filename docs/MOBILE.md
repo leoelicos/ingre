@@ -13,6 +13,19 @@ npx cap open ios       # requires macOS + Xcode
 npx cap open android   # requires Android Studio
 ```
 
+
+## Debug APK from CI (easiest for testing)
+
+On every pull request (and on manual workflow runs) the Android workflow builds a debug APK and uploads it as an artifact.
+
+1. Open the PR or go to the Actions tab.
+2. Click the **Mobile Android** workflow run.
+3. Scroll to **Artifacts** and download `app-debug-apk`.
+4. Transfer the APK to an unmanaged Android device and install it
+   (allow “Install unknown apps” for the file manager if prompted).
+
+The workflow log also prints a direct link to the run so you can copy it easily.
+
 ## Production pipelines
 
 GitHub Actions workflows:
