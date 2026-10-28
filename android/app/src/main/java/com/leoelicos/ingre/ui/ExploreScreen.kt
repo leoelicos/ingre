@@ -15,12 +15,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.leoelicos.ingre.data.CatalogueRecipe
+import com.leoelicos.ingre.data.RecipeRepository
 import com.leoelicos.ingre.data.ShoppingListStore
+import com.leoelicos.ingre.data.loadCatalogueRecipes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 
 private fun loadIngredients(context: Context): List<String> {
@@ -30,19 +37,26 @@ private fun loadIngredients(context: Context): List<String> {
 }
 
 @Composable
-fun ExploreScreen() {
+fun ExploreScreen(token: String) {
     val context = LocalContext.current
-    var all by remember { mutableStateOf<List<String>>(emptyList()) }
+    var ingredients by remember { mutableStateOf<List<String>>(emptyList()) }
+    var recipes by remember { mutableStateOf<List<CatalogueRecipe>>(emptyList()) }
     var query by remember { mutableStateOf("") }
     var message by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
+    val repo = remember { RecipeRepository() }
 
     LaunchedEffect(Unit) {
-        all = loadIngredients(context)
+        ingredients = loadIngredients(context)
+        recipes = loadCatalogueRecipes(context)
     }
 
-    val filtered = remember(all, query) {
-        val q = query.trim()
-        if (q.isEmpty()) all else all.filter { it.contains(q, ignoreCase = true) }
+    val q = query.trim()
+    val filteredRecipes = remember(recipes, q) {
+        if (q.isEmpty()) recipes else recipes.filter { it.name.contains(q, ignoreCase = true) }
+    }
+    val filteredIngredients = remember(ingredients, q) {
+        if (q.isEmpty()) ingredients else ingredients.filter { it.contains(q, ignoreCase = true) }
     }
 
     Column(Modifier.fillMaxSize().padding(16.dp)) {
@@ -53,13 +67,36 @@ fun ExploreScreen() {
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
-            label = { Text("Search ingredients") },
+            label = { Text("Search") },
             modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
             singleLine = true
         )
-        Text("${filtered.size} ingredients — tap to add", fontSize = 12.sp, modifier = Modifier.padding(bottom = 8.dp))
         LazyColumn {
-            items(filtered) { name ->
+            item { Text("Recipes — tap to save", fontSize = 18.sp, modifier = Modifier.padding(vertical = 8.dp)) }
+            items(filteredRecipes) { recipe ->
+                Text(
+                    recipe.name,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            message = "Saving ${recipe.name}..."
+                            scope.launch {
+                                try {
+                                    withContext(Dispatchers.IO) {
+                                        repo.saveCatalogueRecipe(context, token, recipe.id)
+                                    }
+                                    message = "Saved ${recipe.name}"
+                                } catch (e: Exception) {
+                                    message = e.message ?: "Failed to save"
+                                }
+                            }
+                        }
+                        .padding(vertical = 10.dp),
+                    fontSize = 16.sp
+                )
+            }
+            item { Text("Ingredients — tap to add", fontSize = 18.sp, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)) }
+            items(filteredIngredients) { name ->
                 Text(
                     name,
                     modifier = Modifier

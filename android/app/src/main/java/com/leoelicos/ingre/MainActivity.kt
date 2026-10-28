@@ -80,7 +80,7 @@ class MainActivity : ComponentActivity() {
                                 onLogout = { scope.launch { store.clear() } }
                             )
                             1 -> ShoppingListScreen()
-                            else -> ExploreScreen()
+                            else -> ExploreScreen(token = token!!)
                         }
                     }
                 }
