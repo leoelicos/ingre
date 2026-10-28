@@ -1,3 +1,22 @@
+import type {
+  RecipeInput,
+  IngredientInput,
+  AddedIngredientInput,
+  RemovedIngredientInput,
+  ChangedIngredientInput,
+  PortionsChangeInput,
+  CustomisationsInput
+} from './generated/graphql'
+
+export type {
+  RecipeInput,
+  IngredientInput,
+  AddedIngredientInput,
+  RemovedIngredientInput,
+  ChangedIngredientInput,
+  PortionsChangeInput,
+  CustomisationsInput
+}
 import { Types } from 'mongoose'
 import { createDataSources } from '../datasources'
 
@@ -44,13 +63,6 @@ export type CustomisationDoc = {
   to?: number
 }
 
-export type CustomisationsInput = {
-  added: Array<{ ingredientId: string; to: number }>
-  removed: Array<{ ingredientId: string; from: number }>
-  changed: Array<{ ingredientId: string; from: number; to: number }>
-  portions?: { from: number; to: number } | null
-}
-
 export interface RecipePopulated extends Omit<Recipe, 'ingredients'> {
   ingredients: Array<{
     _id: Types.ObjectId
@@ -62,16 +74,6 @@ export interface RecipePopulated extends Omit<Recipe, 'ingredients'> {
   }>
 }
 
-export type RecipeInput = {
-  name: string
-  portions: number
-  ingredients: Array<IngredientInput>
-  picture_url: string
-  libraryId?: string | null
-  instructions?: string | null
-  customisations: CustomisationsInput
-}
-
 export type Ingredient = {
   _id: Types.ObjectId
   name: string
@@ -79,14 +81,6 @@ export type Ingredient = {
   measure: string
   category: Category
   ingredientId?: string | null
-}
-
-export type IngredientInput = {
-  name: string
-  quantity: number
-  measure: string
-  category: string
-  ingredientId: string
 }
 
 export type Category = {

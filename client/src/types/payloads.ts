@@ -7,4 +7,4 @@ export type {
   ChangedIngredientInput,
   PortionsChangeInput,
   CustomisationsInput
-} from '../lib/apollo/graphQL/generated/graphql'
+} from '../../../server/src/schemas/generated/graphql'
