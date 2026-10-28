@@ -58,7 +58,8 @@ jobs:
       - name: Print APK download link
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         run: |
-          echo "Debug APK: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "Debug APK:"
+          echo "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
       # Signed release AAB for production tags
       - name: Decode keystore
