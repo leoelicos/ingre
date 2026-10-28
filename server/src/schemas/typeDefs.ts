@@ -158,3 +158,5 @@ export const typeDefs = gql`
     makeUserPro: User!
   }
 `
+
+export const schema = typeDefs
