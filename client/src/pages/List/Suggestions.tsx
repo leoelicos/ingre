@@ -10,11 +10,16 @@ import { catalogue } from '../../utils/library/recipeLibrary'
 import { placeInShop, SHOP_SECTIONS } from '../../utils/shopping/sections'
 import type { Suggestion } from '../../utils/suggest/suggest'
 import { ACTION_BUTTON } from './Filters'
+import { Tip } from './Tip'
 
 /* The ingredient-first loop's parts (#204): pick ingredients, see what they suggest. */
 
 const CHIP =
   'inline-flex min-h-[44px] items-center gap-1 rounded-pill bg-bg px-3 text-sm font-semibold text-text shadow-chip data-[focus-visible]:focus-ring data-[pressed]:shadow-chip-pressed data-[selected]:bg-chip-active data-[selected]:shadow-chip-pressed'
+
+/** A filled button, for when adding is the one thing to do (Hand-held, #206). */
+const PRIMARY_BUTTON =
+  'inline-flex min-h-[44px] items-center justify-center rounded-pill bg-primary px-4 text-sm font-semibold text-on-primary data-[focus-visible]:focus-ring data-[pressed]:shadow-pressed'
 
 const ROW_NOTE = 'col-span-2 px-4 pb-4 pl-14'
 
@@ -34,15 +39,17 @@ export const UseToggle: FC<{ item: LibraryIngredient }> = ({ item }) => {
   const { selected, toggleSelected } = useExplore()
   const on = selected.has(item.id)
   return (
-    <ToggleButton
-      isSelected={on}
-      onChange={() => toggleSelected(item.id)}
-      aria-label={t('suggest.useLabel', { name: item.name })}
-      className={CHIP}
-    >
-      <span aria-hidden="true">{on ? '✓' : '+'}</span>
-      <span>{t('suggest.use')}</span>
-    </ToggleButton>
+    <Tip text={t('guidance.tipUse')}>
+      <ToggleButton
+        isSelected={on}
+        onChange={() => toggleSelected(item.id)}
+        aria-label={t('suggest.useLabel', { name: item.name })}
+        className={CHIP}
+      >
+        <span aria-hidden="true">{on ? '✓' : '+'}</span>
+        <span>{t('suggest.use')}</span>
+      </ToggleButton>
+    </Tip>
   )
 }
 
@@ -102,7 +109,16 @@ export const SuggestionNote: FC<{
   onAdd: () => void
   /** where it sits: under a recipe row by default */
   className?: string
-}> = ({ suggestion, title, picked, onAdd, className = ROW_NOTE }) => {
+  /** Hand-held (#206): the action to add is the page's primary one */
+  primary?: boolean
+}> = ({
+  suggestion,
+  title,
+  picked,
+  onAdd,
+  className = ROW_NOTE,
+  primary = false
+}) => {
   const t = useT()
   return (
     <div
@@ -119,7 +135,7 @@ export const SuggestionNote: FC<{
         <Button
           aria-label={t('suggest.addLabel', { title })}
           onPress={onAdd}
-          className={`${ACTION_BUTTON} self-start`}
+          className={`${primary ? PRIMARY_BUTTON : ACTION_BUTTON} self-start`}
         >
           {t('suggest.add')}
         </Button>
@@ -149,17 +165,19 @@ export const BrowseIngredients: FC = () => {
   const [built, setBuilt] = useState(false)
   return (
     <div className="flex flex-col gap-2">
-      <Button
-        aria-expanded={open}
-        aria-controls={BROWSE_ID}
-        onPress={() => {
-          setOpen(!open)
-          setBuilt(true)
-        }}
-        className={`${ACTION_BUTTON} self-start`}
-      >
-        {t('suggest.browse')}
-      </Button>
+      <Tip text={t('guidance.tipBrowse')}>
+        <Button
+          aria-expanded={open}
+          aria-controls={BROWSE_ID}
+          onPress={() => {
+            setOpen(!open)
+            setBuilt(true)
+          }}
+          className={`${ACTION_BUTTON} self-start`}
+        >
+          {t('suggest.browse')}
+        </Button>
+      </Tip>
       <Collapse
         id={BROWSE_ID}
         open={open}

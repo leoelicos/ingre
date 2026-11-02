@@ -13,6 +13,7 @@ import type { CopyEntry } from '../../utils/chips/chips'
 import { categoryLabel } from '../../utils/chips/chips'
 import type { RecipeCopy } from '../../utils/balance/copies'
 import { useExplore } from '../../utils/explore/ExploreContext'
+import { flaggedIds, showsSuggestions } from '../../utils/guidance/guidance'
 import type {
   ExploreResults,
   ExploreSource
@@ -37,6 +38,7 @@ import {
   HiddenNote,
   RecipeFilterPanel
 } from './Filters'
+import { GuidanceDial } from './GuidanceDial'
 import { IngredientDetails } from './IngredientJourney'
 import type { IngredientsState } from './Ingredients'
 import { NO_SAVED_HINT } from './recipeFilter'
@@ -101,6 +103,7 @@ const IngredientResult: FC<{
   controls: RowControls
 }> = ({ item, ingredients, controls }) => {
   const t = useT()
+  const { guidance } = useExplore()
   const onList = ingredients.list.hasChip(item.id)
   const name = capitaliseFirst(item.name)
   const category = categoryLabel(placeInShop(item.category).section)
@@ -123,7 +126,7 @@ const IngredientResult: FC<{
             {onList ? t('explore.categoryOnList', { category }) : category}
           </span>
         </Button>
-        <UseToggle item={item} />
+        {showsSuggestions(guidance) && <UseToggle item={item} />}
       </div>
       <AllergenTags allergens={item.allergens} />
       <IngredientDetails
@@ -162,16 +165,20 @@ export const listCopyOf = (
 ): RecipeCopy | null =>
   entries.find((entry) => entry.recipe.id === recipeId)?.copy ?? null
 
-const NO_NOTES: ReadonlyMap<string, ReactNode> = new Map()
-
-/** A row's note when it has one: nothing is passed for a row without (exactOptionalPropertyTypes). */
-const noteFor = (
-  notes: ReadonlyMap<string, ReactNode>,
-  recipeId: string
-): { note?: ReactNode } => {
-  const note = notes.get(recipeId)
-  return note === undefined ? {} : { note }
+/** What a suggestion adds to its row: a note, and the ingredients to outline (#204, #206). */
+interface Annotation {
+  readonly note: ReactNode
+  readonly flagged: ReadonlySet<string>
 }
+
+const NO_NOTES: ReadonlyMap<string, Annotation> = new Map()
+
+/** A row's note and outlines when it has them: nothing is passed for a row without (exactOptionalPropertyTypes). */
+const noteFor = (
+  notes: ReadonlyMap<string, Annotation>,
+  recipeId: string
+): { note?: ReactNode; flagged?: ReadonlySet<string> } =>
+  notes.get(recipeId) ?? {}
 
 const RecipeGroup: FC<{
   title: string
@@ -180,8 +187,8 @@ const RecipeGroup: FC<{
   saved: SavedState | null
   /** the copies on the list: saving a listed recipe saves its customisations (#182) */
   entries: readonly CopyEntry[]
-  /** a note under some rows, by recipe id (#204) */
-  notes?: ReadonlyMap<string, ReactNode>
+  /** a note and outlines for some rows, by recipe id (#204) */
+  notes?: ReadonlyMap<string, Annotation>
 }> = ({ title, recipes, controls, saved, entries, notes = NO_NOTES }) => (
   <div>
     <h3 className={GROUP_HEADING}>{title}</h3>
@@ -216,7 +223,7 @@ const SuggestionsSection: FC<{
   controls: RowControls
 }> = ({ props, controls }) => {
   const t = useT()
-  const { selected } = useExplore()
+  const { selected, guidance } = useExplore()
   const [ack, setAck] = useState('')
   const suggestions = bundledSuggestions(selected)
   const using = catalogue.filter((item) => selected.has(item.id))
@@ -229,13 +236,19 @@ const SuggestionsSection: FC<{
   const notes = new Map(
     suggestions.map((suggestion) => [
       suggestion.recipe.id,
-      <SuggestionNote
-        key={suggestion.recipe.id}
-        suggestion={suggestion}
-        title={splitTitle(suggestion.recipe.name).title}
-        picked={controls.pickedIds.has(suggestion.recipe.id)}
-        onAdd={() => add(suggestion)}
-      />
+      {
+        note: (
+          <SuggestionNote
+            key={suggestion.recipe.id}
+            suggestion={suggestion}
+            title={splitTitle(suggestion.recipe.name).title}
+            picked={controls.pickedIds.has(suggestion.recipe.id)}
+            onAdd={() => add(suggestion)}
+            primary={guidance === 'hand-held'}
+          />
+        ),
+        flagged: flaggedIds(suggestion.missing, guidance)
+      }
     ])
   )
   return (
@@ -363,7 +376,8 @@ export const savedIdsOf = (saved: SavedState | null): ReadonlySet<string> =>
  */
 const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   const t = useT()
-  const { query, selected } = useExplore()
+  const { query, selected, guidance } = useExplore()
+  const proactive = showsSuggestions(guidance)
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set())
   const [filterOpen, setFilterOpen] = useState(props.savedOnly)
   const [picked, setPicked] =
@@ -421,8 +435,9 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           }}
         />
       )}
-      {query.trim() === '' && <BrowseIngredients />}
-      {selected.size > 0 && (
+      <GuidanceDial />
+      {query.trim() === '' && proactive && <BrowseIngredients />}
+      {selected.size > 0 && proactive && (
         <SuggestionsSection
           props={props}
           controls={controls}

@@ -28,6 +28,8 @@ export interface Row {
   readonly details: (title: string) => ReactNode
   /** what a suggestion adds under the ingredients, open or closed (#204) */
   readonly note?: ReactNode
+  /** ingredient ids to outline in the closed row: the missing ones, by the dial (#206) */
+  readonly flagged?: ReadonlySet<string>
 }
 
 export const ROW_HEADING = 'm-0 text-sm font-semibold uppercase tracking-wide'
@@ -130,6 +132,7 @@ export const RecipeRow: FC<{
         <IngredientNames
           lines={row.lines}
           title={title}
+          flagged={row.flagged}
         />
       )}
       {row.note}
