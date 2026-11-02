@@ -35,8 +35,10 @@ test.describe('Explore sections (#226)', () => {
     page
   }) => {
     await page.goto('/')
-    await search(page, 'a')
-    const hue = async (name: string) => hueOf(result(page, name))
+    const hue = async (name: string) => {
+      await search(page, name)
+      return hueOf(result(page, name))
+    }
     expect(await hue('carrot')).toBeGreaterThan(100)
     expect(await hue('carrot')).toBeLessThan(160)
     expect(await hue('banana')).toBeGreaterThan(15)
