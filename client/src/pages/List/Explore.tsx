@@ -1,9 +1,10 @@
 import { translate, useT } from '../../i18n'
-import type { FC } from 'react'
+import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
 import { Button } from 'react-aria-components'
 import { AllergenTags } from '../../components/AllergenTags'
 import { Collapse } from '../../components/Collapse'
+import { splitTitle } from '../../components/recipeTitle'
 import { SEARCH_LABEL, SearchBox } from '../../components/SearchBox/SearchBox'
 import { IngreIconSearch } from '../../lib/icon/Icon'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
@@ -45,6 +46,15 @@ import { OriginalDetails } from './RowDetails'
 import { HeaderRow, titleId, toggleId } from './Section'
 import { useFocusAfterRender } from './usePanel'
 import { copyLines, newCopy, usedLines } from '../../utils/balance/copies'
+import { catalogue } from '../../utils/library/recipeLibrary'
+import { bundledSuggestions } from '../../utils/suggest/suggest'
+import type { Suggestion } from '../../utils/suggest/suggest'
+import {
+  BrowseIngredients,
+  SuggestionNote,
+  UseToggle,
+  UsingBar
+} from './Suggestions'
 
 export const EXPLORE_ID = 'explore'
 export const HIDE_EXPLORE = translate('explore.hide')
@@ -94,22 +104,25 @@ const IngredientResult: FC<{
   const category = categoryLabel(placeInShop(item.category).section)
   return (
     <li className="flex flex-col gap-1">
-      <Button
-        onPress={() => ingredients.pick(item)}
-        aria-label={
-          onList
-            ? t('explore.onListLabel', { name })
-            : t('explore.add', { name: item.name })
-        }
-        className={RESULT}
-      >
-        <span className="font-semibold">
-          {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
-        </span>
-        <span className="text-xs text-text-secondary">
-          {onList ? t('explore.categoryOnList', { category }) : category}
-        </span>
-      </Button>
+      <div className="flex items-stretch gap-2">
+        <Button
+          onPress={() => ingredients.pick(item)}
+          aria-label={
+            onList
+              ? t('explore.onListLabel', { name })
+              : t('explore.add', { name: item.name })
+          }
+          className={`${RESULT} flex-1`}
+        >
+          <span className="font-semibold">
+            {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
+          </span>
+          <span className="text-xs text-text-secondary">
+            {onList ? t('explore.categoryOnList', { category }) : category}
+          </span>
+        </Button>
+        <UseToggle item={item} />
+      </div>
       <AllergenTags allergens={item.allergens} />
     </li>
   )
@@ -141,6 +154,17 @@ export const listCopyOf = (
 ): RecipeCopy | null =>
   entries.find((entry) => entry.recipe.id === recipeId)?.copy ?? null
 
+const NO_NOTES: ReadonlyMap<string, ReactNode> = new Map()
+
+/** A row's note when it has one: nothing is passed for a row without (exactOptionalPropertyTypes). */
+const noteFor = (
+  notes: ReadonlyMap<string, ReactNode>,
+  recipeId: string
+): { note?: ReactNode } => {
+  const note = notes.get(recipeId)
+  return note === undefined ? {} : { note }
+}
+
 const RecipeGroup: FC<{
   title: string
   recipes: readonly LibraryRecipe[]
@@ -148,7 +172,9 @@ const RecipeGroup: FC<{
   saved: SavedState | null
   /** the copies on the list: saving a listed recipe saves its customisations (#182) */
   entries: readonly CopyEntry[]
-}> = ({ title, recipes, controls, saved, entries }) => (
+  /** a note under some rows, by recipe id (#204) */
+  notes?: ReadonlyMap<string, ReactNode>
+}> = ({ title, recipes, controls, saved, entries, notes = NO_NOTES }) => (
   <div>
     <h3 className={GROUP_HEADING}>{title}</h3>
     <RecipeRows
@@ -164,12 +190,73 @@ const RecipeGroup: FC<{
             saved={saved}
             listCopy={listCopyOf(entries, recipe.id)}
           />
-        )
+        ),
+        ...noteFor(notes, recipe.id)
       }))}
       controls={controls}
     />
   </div>
 )
+
+/**
+ * The ingredient-first loop (#204): the ingredients being cooked with, then up to three
+ * recipes that use them, each with what is missing, the extra cost and one "Add to list"
+ * button. Recipe content stays closed until "See recipe". Nothing shows until one is selected.
+ */
+const SuggestionsSection: FC<{
+  props: ExploreProps
+  controls: RowControls
+}> = ({ props, controls }) => {
+  const t = useT()
+  const { selected } = useExplore()
+  const [ack, setAck] = useState('')
+  const suggestions = bundledSuggestions(selected)
+  const using = catalogue.filter((item) => selected.has(item.id))
+  const add = (suggestion: Suggestion) => {
+    controls.onTogglePicked(suggestion.recipe)
+    setAck(
+      t('suggest.added', { title: splitTitle(suggestion.recipe.name).title })
+    )
+  }
+  const notes = new Map(
+    suggestions.map((suggestion) => [
+      suggestion.recipe.id,
+      <SuggestionNote
+        key={suggestion.recipe.id}
+        suggestion={suggestion}
+        title={splitTitle(suggestion.recipe.name).title}
+        picked={controls.pickedIds.has(suggestion.recipe.id)}
+        onAdd={() => add(suggestion)}
+      />
+    ])
+  )
+  return (
+    <section
+      aria-label={t('suggest.title')}
+      className="flex flex-col gap-3"
+    >
+      <UsingBar items={using} />
+      <p
+        role="status"
+        className="m-0 text-sm font-semibold text-success"
+      >
+        {ack}
+      </p>
+      {suggestions.length === 0 ? (
+        <p className="m-0 text-text-secondary">{t('suggest.none')}</p>
+      ) : (
+        <RecipeGroup
+          title={t('suggest.title')}
+          recipes={suggestions.map((suggestion) => suggestion.recipe)}
+          controls={controls}
+          saved={props.saved}
+          entries={props.ingredients.list.entries}
+          notes={notes}
+        />
+      )}
+    </section>
+  )
+}
 
 /** Ingredients and recipes; side by side (ingredients left) once Explore is 768px wide. */
 const Groups: FC<{
@@ -267,7 +354,7 @@ export const savedIdsOf = (saved: SavedState | null): ReadonlySet<string> =>
  */
 const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   const t = useT()
-  const { query } = useExplore()
+  const { query, selected } = useExplore()
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set())
   const [filterOpen, setFilterOpen] = useState(props.savedOnly)
   const [picked, setPicked] =
@@ -323,6 +410,13 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
             setPicked(NO_RECIPE_FILTER)
             props.onSaved(false)
           }}
+        />
+      )}
+      {query.trim() === '' && <BrowseIngredients />}
+      {selected.size > 0 && (
+        <SuggestionsSection
+          props={props}
+          controls={controls}
         />
       )}
       {props.savedOnly && savedIds.size === 0 ? (

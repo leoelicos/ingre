@@ -223,5 +223,23 @@
   "notFound": {
     "message": "Page Not Found",
     "goHome": "Go home"
+  },
+  "suggest": {
+    "using": "Using",
+    "use": "Use",
+    "useLabel": "Use {{name}}",
+    "stopUsing": "Stop using {{name}}",
+    "title": "Suggestions",
+    "none": "No recipes use these yet. Try another ingredient.",
+    "missing": "Missing: {{items}}",
+    "nothingMissing": "You have everything",
+    "extraCost": "About {{cost}} more",
+    "money": "${{amount}}",
+    "listSeparator": ", ",
+    "add": "Add to list",
+    "addLabel": "Add {{title}} to your list",
+    "onList": "✓ On your list",
+    "added": "{{title}} added to your list",
+    "browse": "Browse ingredients"
   }
 }
