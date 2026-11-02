@@ -15,7 +15,7 @@ import {
   useLocation
 } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
-import { Header } from './components/Header'
+import { Header, WAR_ROOM_PATH } from './components/Header'
 import { PageMain, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
@@ -23,6 +23,7 @@ import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
 import { ListPage } from './pages/List/ListPage'
+import { WarRoom } from './pages/WarRoom/WarRoom'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
@@ -101,6 +102,14 @@ export const Ingre: FC = () => {
                 <Route
                   path="/"
                   element={<ListPage />}
+                />
+                <Route
+                  path={WAR_ROOM_PATH}
+                  element={
+                    <PageMain>
+                      <WarRoom />
+                    </PageMain>
+                  }
                 />
                 <Route
                   path="/saved"
