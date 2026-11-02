@@ -10,8 +10,10 @@ import {
   renderList,
   searchBox
 } from '../../../test/renderList'
+import { addFontAwesome } from '../../../utils/addFontAwesome'
 
 expect.extend(toHaveNoViolations)
+addFontAwesome()
 
 beforeEach(() => localStorage.clear())
 

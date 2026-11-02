@@ -241,5 +241,17 @@
     "onList": "✓ On your list",
     "added": "{{title}} added to your list",
     "browse": "Browse ingredients"
+  },
+  "journey": {
+    "details": "Details",
+    "detailsLabel": "Details of {{name}}",
+    "about": "About {{name}}",
+    "section": "Shop section",
+    "goesWith": "Goes with",
+    "usedIn": "Used in",
+    "suggested": "Suggested recipes",
+    "noPairs": "Nothing pairs with it yet",
+    "noRecipes": "No recipe in the library uses it yet",
+    "noSuggestions": "No recipes to suggest yet"
   }
 }

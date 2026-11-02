@@ -16,6 +16,8 @@ import { ACTION_BUTTON } from './Filters'
 const CHIP =
   'inline-flex min-h-[44px] items-center gap-1 rounded-pill bg-bg px-3 text-sm font-semibold text-text shadow-chip data-[focus-visible]:focus-ring data-[pressed]:shadow-chip-pressed data-[selected]:bg-chip-active data-[selected]:shadow-chip-pressed'
 
+const ROW_NOTE = 'col-span-2 px-4 pb-4 pl-14'
+
 /** "Missing: sugar, raisins", or that nothing is. */
 export const missingText = (missing: readonly LibraryIngredient[]): string =>
   missing.length === 0
@@ -45,7 +47,7 @@ export const UseToggle: FC<{ item: LibraryIngredient }> = ({ item }) => {
 }
 
 /** An ingredient in the browse list: its own name is the label; a tick and "pressed" show it is selected. */
-const IngredientChoice: FC<{ item: LibraryIngredient }> = ({ item }) => {
+export const IngredientChoice: FC<{ item: LibraryIngredient }> = ({ item }) => {
   const { selected, toggleSelected } = useExplore()
   const on = selected.has(item.id)
   return (
@@ -98,12 +100,14 @@ export const SuggestionNote: FC<{
   title: string
   picked: boolean
   onAdd: () => void
-}> = ({ suggestion, title, picked, onAdd }) => {
+  /** where it sits: under a recipe row by default */
+  className?: string
+}> = ({ suggestion, title, picked, onAdd, className = ROW_NOTE }) => {
   const t = useT()
   return (
     <div
       data-testid="suggestion-note"
-      className="col-span-2 flex flex-col gap-2 px-4 pb-4 pl-14 text-sm text-text"
+      className={`flex flex-col gap-2 text-sm text-text ${className}`}
     >
       <p className="m-0">{missingText(suggestion.missing)}</p>
       <p className="m-0 font-semibold">
