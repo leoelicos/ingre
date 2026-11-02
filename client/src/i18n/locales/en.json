@@ -82,10 +82,9 @@
     "browse": "Browse recipes",
     "closeMatches": "Close matches",
     "noMatches": "No matches for ‘{{query}}’",
-    "add": "Add {{name}}",
-    "onListLabel": "{{name}}, on your list",
-    "onListName": "✓ {{name}}",
-    "addName": "+ {{name}}",
+    "onListMark": "✓",
+    "onListName": "{{name}}",
+    "addName": "Add {{name}}",
     "categoryOnList": "{{category}} · on your list"
   },
   "saved": {

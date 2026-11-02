@@ -46,7 +46,7 @@ const ingredientResults = () =>
       .parentElement ?? document.body
   )
     .getAllByRole('button')
-    .map((button) => button.getAttribute('aria-label'))
+    .map((button) => button.textContent)
 const browseNames = () => groupNames('Browse recipes')
 const signIn = () =>
   fireEvent.click(screen.getByRole('button', { name: 'Pretend login' }))
@@ -193,7 +193,7 @@ describe('Scenario: Browse and search (#181)', () => {
     const recipeNames = groupNames('Recipes')
     expect(recipeNames[0]).toMatch(/^Chick/)
     const ingredients = ingredientResults()
-    expect(ingredients[0]).toMatch(/^Add chick/)
+    expect(ingredients[0]).toMatch(/^Add Chick/)
     const grid = explore().getByRole('heading', {
       level: 3,
       name: 'Ingredients'
@@ -215,7 +215,7 @@ describe('Scenario: Browse and search (#181)', () => {
     expect(groupNames('Recipes')).toEqual(['Red lentil dahl'])
     await user.clear(searchBox())
     await search(user, 'red lentils')
-    expect(ingredientResults()).toContain('Add red lentils')
+    expect(ingredientResults()).toContain('Add Red lentils Pantry')
   })
 
   it('says No matches, then close matches, then the browse list', async () => {
@@ -277,12 +277,12 @@ describe('Scenario: Explore results act in place (#181)', () => {
     }
     renderList()
     await search(user, 'banana')
-    await user.click(explore().getByRole('button', { name: 'Add banana' }))
+    await user.click(explore().getByRole('button', { name: /^Add Banana / }))
     expect(hasChipEl('banana')).toBe(1)
     expect(hasChipEl('banana', 'extra')).toBe(1)
     expect(screen.getByText('Banana added to Extra')).toBeInTheDocument()
     const onList = explore().getByRole('button', {
-      name: 'Banana, on your list'
+      name: /^Banana .* on your list$/
     })
     expect(onList).toHaveTextContent('on your list')
     await user.click(onList)
@@ -299,7 +299,7 @@ describe('Scenario: Explore results act in place (#181)', () => {
     renderList()
     await search(user, 'butter')
     const item = explore()
-      .getByRole('button', { name: 'Add butter' })
+      .getByRole('button', { name: /^Add Butter / })
       .closest('li')
     expect(
       within(item ?? document.body).getByRole('list', { name: 'Allergens' })
@@ -351,5 +351,18 @@ describe('Scenario: Search bar (#181)', () => {
     expect(searchBox()).toHaveValue('d')
     expect(searchBox()).toHaveFocus()
     expect(region('Explore')).toBeInTheDocument()
+  })
+
+  it('a result is named by what it shows, so voice control can say what it sees (WCAG 2.5.3, #223)', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'banana')
+    const add = explore().getByRole('button', { name: /^Add Banana / })
+    expect(add).not.toHaveAttribute('aria-label')
+    expect(add).toHaveAccessibleName('Add Banana Fruit & Veg')
+    await user.click(add)
+    const onList = explore().getByRole('button', { name: /^Banana / })
+    expect(onList).not.toHaveAttribute('aria-label')
+    expect(onList).toHaveAccessibleName('Banana Fruit & Veg · on your list')
   })
 })

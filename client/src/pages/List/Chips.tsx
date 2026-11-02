@@ -88,7 +88,7 @@ const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
           chip.crossed ? 'line-through' : ''
         }`}
       >
-        <span className="font-semibold">{displayName(chip)}</span>
+        <span className="font-semibold">{displayName(chip)}</span>{' '}
         <span className="text-xs">{amount}</span>
       </span>
     </ToggleButton>
