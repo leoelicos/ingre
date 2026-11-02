@@ -11,8 +11,7 @@ export const TONE_CLASSES: Readonly<Record<BadgeTone, string>> = {
   meat: 'bg-badge-meat text-badge-meat-ink border-badge-meat-ink',
   dairy: 'bg-badge-dairy text-badge-dairy-ink border-badge-dairy-ink',
   fruit: 'bg-badge-fruit text-badge-fruit-ink border-badge-fruit-ink',
-  seafood:
-    'bg-badge-seafood text-badge-seafood-ink border-badge-seafood-ink',
+  seafood: 'bg-badge-seafood text-badge-seafood-ink border-badge-seafood-ink',
   deli: 'bg-badge-deli text-badge-deli-ink border-badge-deli-ink',
   bakery: 'bg-badge-bakery text-badge-bakery-ink border-badge-bakery-ink',
   pantry: 'bg-badge-pantry text-badge-pantry-ink border-badge-pantry-ink',
