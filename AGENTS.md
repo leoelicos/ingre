@@ -34,7 +34,7 @@ client/
   src/components/   Header, AccountMenu, HeaderSearch, SectionTone, Widgets, ...
   src/pages/        Home, Recipe, Search, ShoppingList, TapOff, Admin (login/signup/upgrade/success/404)
   src/lib/apollo/graphQL   queries/mutations
-  src/utils/        auth, idb, storage, shopping, state, library
+  src/utils/        auth, idb, storage, shopping, state, library, profile
   src/data/         ingredients.json, recipes.json
   src/styles/       theme.css (design tokens), segmented.css
 server/
