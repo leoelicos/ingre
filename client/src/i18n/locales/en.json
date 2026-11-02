@@ -86,7 +86,20 @@
     "onListLabel": "{{name}}, on your list",
     "onListName": "✓ {{name}}",
     "addName": "+ {{name}}",
-    "categoryOnList": "{{category}} · on your list"
+    "categoryOnList": "{{category}} · on your list",
+    "sectionFilter": "Filter ingredients by section"
+  },
+  "exploreSection": {
+    "vegetables": "Vegetables",
+    "fruit": "Fruit",
+    "meat": "Meat",
+    "seafood": "Seafood",
+    "dairy": "Dairy, eggs & fridge",
+    "deli": "Deli",
+    "bakery": "Bakery",
+    "pantry": "Pantry",
+    "frozen": "Frozen",
+    "other": "Other"
   },
   "saved": {
     "filter": "Saved",
