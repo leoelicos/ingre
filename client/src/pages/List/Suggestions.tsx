@@ -145,12 +145,17 @@ export const bySection = (
 export const BrowseIngredients: FC = () => {
   const t = useT()
   const [open, setOpen] = useState(false)
+  /* The list is built the first time it opens, then kept so it closes smoothly: it is a hundred buttons. */
+  const [built, setBuilt] = useState(false)
   return (
     <div className="flex flex-col gap-2">
       <Button
         aria-expanded={open}
         aria-controls={BROWSE_ID}
-        onPress={() => setOpen(!open)}
+        onPress={() => {
+          setOpen(!open)
+          setBuilt(true)
+        }}
         className={`${ACTION_BUTTON} self-start`}
       >
         {t('suggest.browse')}
@@ -160,7 +165,7 @@ export const BrowseIngredients: FC = () => {
         open={open}
       >
         <div className="flex flex-col gap-3">
-          {bySection().map(({ section, items }) => (
+          {(built ? bySection() : []).map(({ section, items }) => (
             <div key={section}>
               <h3 className="m-0 mb-1 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                 {section}
