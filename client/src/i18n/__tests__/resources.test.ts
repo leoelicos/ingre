@@ -45,8 +45,8 @@ const usedKeys = (): string[] =>
     )
   )
 
-/** Keys the code builds at run time: measure words by measure. */
-const DYNAMIC = /^measure\./
+/** Keys the code builds at run time: measure words by measure, section names by section. */
+const DYNAMIC = /^(measure|exploreSection)\./
 
 describe('English resources', () => {
   const keys = leafKeys(en)
