@@ -18,4 +18,4 @@ Success stores the same JWT as password login. Failure falls back to email and p
 | iOS | Capacitor Google Auth or ASWebAuthenticationSession |
 | Android | Capacitor Google Auth or Chrome Custom Tabs |
 
-The server exchanges the Google identity for the existing JWT session. A new user is created when no account matches the Google email.
+Desktop opens the Google authorize URL. iOS and Android pass `platform=ios|android` so the shell can use Capacitor Google Auth or a system browser session. The server maps the Google identity onto an existing user or creates one, then issues the same JWT.
