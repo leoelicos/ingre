@@ -24,7 +24,7 @@ package.json          root scripts (install/develop/build/seed), concurrently
 vercel.json           SPA rewrite to /index.html
 .github/workflows/ci.yml  the only CI workflow
 .cursor/              rules + atomised context notes (context/*.md)
-docs/                 TODO.md, TEST_MOCK_INVENTORY.md
+docs/                 TODO.md, TEST_MOCK_INVENTORY.md, MOBILE_CONSTRAINTS.md
 MODERNIZATION.md      modernisation checklist (history)
 scripts/convert-catalogue.py  catalogue data conversion
 client/
@@ -102,6 +102,8 @@ Accounts and header
 - No account needed this phase. Saved stays on the device.
 - Header shows only: logo, search, account icon. Log in / Sign up live in the account icon menu.
 - Saved appears in the account icon menu after sign-in.
+Mobile (#241)
+- Mobile first at 390 px: one-thumb reach, 44 px targets, keyboard coverage, safe areas, short sessions (`docs/MOBILE_CONSTRAINTS.md`). Gestures are shortcuts; every one has a visible control.
 Process
 - One PR per batch of work. Automated checks only during the build; one review on the Vercel preview; the owner merges.
 - No paid services, and no new dependencies with paid tiers, without sign-off from Alana (finance).
