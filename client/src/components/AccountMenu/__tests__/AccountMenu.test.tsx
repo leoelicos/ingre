@@ -9,7 +9,12 @@ import { Header } from '../../Header'
 import { logIn } from '../../../test/providers'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { ACCOUNT_LABEL, AccountMenu } from '../AccountMenu'
-import { SAVED_PATH, accountItems, actionsFor } from '../accountItems'
+import {
+  SAVED_PATH,
+  TRANSFER_PATH,
+  accountItems,
+  actionsFor
+} from '../accountItems'
 
 addFontAwesome()
 
@@ -60,18 +65,18 @@ describe('AccountMenu (#164)', () => {
     ).toBeInTheDocument()
   })
 
-  it('signed out: Log in and Sign up', async () => {
+  it('signed out: Log in, Sign up and Import and export', async () => {
     const user = userEvent.setup()
     renderMenu(false)
     await user.click(trigger())
-    expect(itemNames()).toEqual(['Log in', 'Sign up'])
+    expect(itemNames()).toEqual(['Log in', 'Sign up', 'Import and export'])
   })
 
-  it('signed in: also Saved (with Log out)', async () => {
+  it('signed in: Saved, Import and export and Log out', async () => {
     const user = userEvent.setup()
     renderMenu(true)
     await user.click(trigger())
-    expect(itemNames()).toEqual(['Saved', 'Log out'])
+    expect(itemNames()).toEqual(['Saved', 'Import and export', 'Log out'])
   })
 
   it('arrow keys move between items; Escape closes and returns focus to the icon', async () => {
@@ -115,9 +120,24 @@ describe('AccountMenu (#164)', () => {
     expect(localStorage.getItem('id_token')).toBeNull()
   })
 
+  it('Import and export opens its page', async () => {
+    const user = userEvent.setup()
+    renderMenu(false)
+    await user.click(trigger())
+    await user.click(
+      screen.getByRole('menuitem', { name: 'Import and export' })
+    )
+    expect(where()).toBe(`${TRANSFER_PATH} null`)
+  })
+
   it('maps menu keys to actions; anything else is no action', () => {
-    expect(accountItems(false).map((i) => i.id)).toEqual(['login', 'signup'])
+    expect(accountItems(false).map((i) => i.id)).toEqual([
+      'login',
+      'signup',
+      'transfer'
+    ])
     expect(actionsFor('saved')).toEqual(['saved'])
+    expect(actionsFor('transfer')).toEqual(['transfer'])
     expect(actionsFor('nope')).toEqual([])
     expect(actionsFor(3)).toEqual([])
   })
@@ -161,11 +181,11 @@ describe('AccountMenu (#164)', () => {
       </MockedProvider>
     )
     await user.click(trigger())
-    expect(itemNames()).toEqual(['Log in', 'Sign up'])
+    expect(itemNames()).toEqual(['Log in', 'Sign up', 'Import and export'])
     await user.keyboard('{Escape}')
     await user.click(screen.getByRole('button', { name: 'Pretend login' }))
     await user.click(trigger())
-    expect(itemNames()).toEqual(['Saved', 'Log out'])
+    expect(itemNames()).toEqual(['Saved', 'Import and export', 'Log out'])
     await user.click(screen.getByRole('menuitem', { name: 'Saved' }))
     expect(where()).toBe(`${SAVED_PATH} null`)
   })

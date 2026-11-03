@@ -23,6 +23,7 @@ import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
 import { ListPage } from './pages/List/ListPage'
+import { Transfer } from './pages/Transfer/Transfer'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
@@ -113,6 +114,14 @@ export const Ingre: FC = () => {
                 <Route
                   path="/tapoff"
                   element={<WorkspaceRedirect />}
+                />
+                <Route
+                  path="/transfer"
+                  element={
+                    <PageMain>
+                      <Transfer />
+                    </PageMain>
+                  }
                 />
                 {/* admin */}
                 <Route

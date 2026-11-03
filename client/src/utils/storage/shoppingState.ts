@@ -3,6 +3,7 @@ import type { RecipeCopy } from '../balance/copies'
 import { DEFAULT_PORTIONS, clampPortions, newCopy } from '../balance/copies'
 import type { ShopSection } from '../shopping/sections'
 import { SHOP_SECTIONS } from '../shopping/sections'
+import { asRecord } from './asRecord'
 import { PEOPLE_KEY, parsePeople } from './people'
 import { readStored } from './storage'
 import { parseStringSet, useStored, useStoredSet } from './useStored'
@@ -49,11 +50,6 @@ export const useCrossedIds = () => useStoredSet(CROSSED_KEY, new Set())
 
 const isPositiveWhole = (value: unknown): value is number =>
   typeof value === 'number' && Number.isInteger(value) && value > 0
-
-const asRecord = (value: unknown): Record<string, unknown> | null =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
-    ? { ...value }
-    : null
 
 const parseExtra = (value: unknown): Extra[] => {
   const record = asRecord(value)

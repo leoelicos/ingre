@@ -170,7 +170,31 @@
     "logIn": "Log in",
     "signUp": "Sign up",
     "saved": "Saved",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "transfer": "Import and export"
+  },
+  "transfer": {
+    "title": "Import and export",
+    "back": "Back to your list",
+    "exportHeading": "Export",
+    "exportHint": "Recipes are saved as schema.org Recipe JSON-LD, which other recipe apps and sites understand. The shopping list is a CSV for a spreadsheet.",
+    "exportPicked": "Recipes on my list",
+    "exportAll": "All recipes",
+    "exportList": "Shopping list (CSV)",
+    "importHeading": "Import",
+    "importHint": "Choose a recipe file, or paste its JSON. Lines for ingredients we do not stock are left out and listed here.",
+    "chooseFile": "Choose a recipe file",
+    "pasteLabel": "Or paste recipe JSON",
+    "importPasted": "Import pasted recipe",
+    "notJson": "That is not valid JSON.",
+    "noRecipe": "No schema.org Recipe found in that file.",
+    "added": "Added {{name}}: {{matched}} of {{total}} ingredients.",
+    "alreadyHave": "{{name}} is already in your recipes.",
+    "unmatched": "Not matched: {{lines}}",
+    "skipped": "Not imported (no name or no ingredients we know): {{names}}",
+    "importedHeading": "Imported recipes",
+    "none": "Nothing imported yet.",
+    "remove": "Remove {{name}}"
   },
   "search": {
     "label": "Search ingredients and recipes"

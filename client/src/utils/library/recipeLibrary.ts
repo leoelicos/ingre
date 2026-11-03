@@ -13,13 +13,45 @@ import {
   parseSectionColours
 } from './parseLibrary'
 import { normaliseTerm } from './searchTerms'
+import {
+  IMPORTED_PREFIX,
+  loadImported,
+  saveImported
+} from '../transfer/storage'
 
 export const PLACEHOLDER_PICTURE = '/ingre.png'
 
 export const catalogue: LibraryIngredient[] = parseCatalogue(ingredientData)
-export const library: LibraryRecipe[] = parseRecipes(recipeData)
+export const library: LibraryRecipe[] = [
+  ...parseRecipes(recipeData),
+  ...loadImported()
+]
 /** Colour per shop section (data/ingredients.json `sectionColours`). */
 export const sectionColours = parseSectionColours(ingredientData)
+
+const savedImports = () =>
+  saveImported(
+    library.filter((recipe) => recipe.id.startsWith(IMPORTED_PREFIX))
+  )
+
+/** Adds imported recipes (#230) that are not in the library yet; says how many were new. */
+export const addRecipes = (recipes: readonly LibraryRecipe[]): number => {
+  const fresh = recipes.filter(
+    (recipe) => !library.some((known) => known.id === recipe.id)
+  )
+  library.push(...fresh)
+  savedImports()
+  return fresh.length
+}
+
+/** Removes an imported recipe (#230); the built-in recipes stay. */
+export const removeImported = (id: string): void => {
+  const index = library.findIndex(
+    (recipe) => recipe.id === id && id.startsWith(IMPORTED_PREFIX)
+  )
+  if (index >= 0) library.splice(index, 1)
+  savedImports()
+}
 
 export function toClientRecipe(
   recipe: LibraryRecipe,
