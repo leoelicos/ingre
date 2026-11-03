@@ -141,6 +141,20 @@ export const Login: FC = () => {
           >
             {t('auth.logIn')}
           </PrimaryButton>
+          <button
+            type="button"
+            className="auth-form__submit focus-visible:focus-ring"
+            onClick={() => undefined}
+          >
+            {t('auth.google')}
+          </button>
+          <button
+            type="button"
+            className="auth-form__submit focus-visible:focus-ring"
+            onClick={() => undefined}
+          >
+            {t('auth.biometric')}
+          </button>
         </form>
       )}
       <p className="auth-page__alt">
