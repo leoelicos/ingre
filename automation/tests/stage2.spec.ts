@@ -63,7 +63,9 @@ const closeExplore = async (page: Page) => {
 const addExtra = async (page: Page, query: string, name: string) => {
   await openExplore(page)
   await page.getByRole('searchbox').fill(query)
-  await page.getByRole('button', { name: `${name}, on your list` }).click()
+  await page
+    .getByRole('button', { name: new RegExp(`^${name} .* on your list$`) })
+    .click()
   await expect(chip(page, query, 'extra')).toHaveCount(1)
 }
 const openRow = (page: Page, title: string) =>
@@ -212,7 +214,7 @@ test.describe('Extra (#182)', () => {
     await pickRows(page, DAHL)
     await openExplore(page)
     await page.getByRole('searchbox').fill('butter')
-    await page.getByRole('button', { name: 'Butter, on your list' }).click()
+    await page.getByRole('button', { name: /^Butter .* on your list$/ }).click()
     await expect(chip(page, 'butter', 'extra')).toContainText('1 g')
     await chevron(page, 'butter', 'extra').click()
     const extra = panel(page, 'Butter', 'extra')

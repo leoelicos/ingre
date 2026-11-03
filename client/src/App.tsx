@@ -15,7 +15,7 @@ import {
   useLocation
 } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
-import { Header } from './components/Header'
+import { Header, WAR_ROOM_PATH } from './components/Header'
 import { PageMain, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
@@ -23,6 +23,11 @@ import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
 import { ListPage } from './pages/List/ListPage'
+<<<<<<< HEAD
+import { WarRoom } from './pages/WarRoom/WarRoom'
+=======
+import { DemoPage } from './pages/Demo/DemoPage'
+>>>>>>> origin/main
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
@@ -96,6 +101,7 @@ export const Ingre: FC = () => {
         <AuthProvider>
           <StoreProvider>
             <ExploreProvider>
+<<<<<<< HEAD
               <GuestsProvider>
                 <SkipLink />
                 <Header />
@@ -160,6 +166,82 @@ export const Ingre: FC = () => {
                 </Routes>
                 <SiteAnalytics mode={APP_MODE} />
               </GuestsProvider>
+=======
+              <SkipLink />
+              <Header />
+              <Routes>
+                <Route
+                  path="/"
+                  element={<ListPage />}
+                />
+                <Route
+                  path={WAR_ROOM_PATH}
+                  element={
+                    <PageMain>
+                      <WarRoom />
+                    </PageMain>
+                  }
+                />
+                <Route
+                  path="/saved"
+                  element={<SavedRedirect />}
+                />
+                <Route
+                  path="/ingredients"
+                  element={<WorkspaceRedirect />}
+                />
+                <Route
+                  path="/tapoff"
+                  element={<WorkspaceRedirect />}
+                />
+                {/* admin */}
+                <Route
+                  path="/login"
+                  element={
+                    <PageMain>
+                      <Login />
+                    </PageMain>
+                  }
+                />
+                <Route
+                  path="/signup"
+                  element={
+                    <PageMain>
+                      <Signup />
+                    </PageMain>
+                  }
+                />
+                <Route
+                  path="/upgrade"
+                  element={
+                    <PageMain>
+                      <Upgrade />
+                    </PageMain>
+                  }
+                />
+                <Route
+                  path="/success"
+                  element={
+                    <PageMain>
+                      <Success />
+                    </PageMain>
+                  }
+                />
+                <Route
+                  path="/demo"
+                  element={<DemoPage />}
+                />
+                <Route
+                  path="*"
+                  element={
+                    <PageMain>
+                      <NoMatch />
+                    </PageMain>
+                  }
+                />
+              </Routes>
+              <SiteAnalytics mode={APP_MODE} />
+>>>>>>> origin/main
             </ExploreProvider>
           </StoreProvider>
         </AuthProvider>

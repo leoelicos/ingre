@@ -97,7 +97,7 @@ const ChipToggle: FC<{ chip: Chip; view: ChipView; warning: string }> = ({
           chip.crossed ? 'line-through' : ''
         }`}
       >
-        <span className="font-semibold">{displayName(chip)}</span>
+        <span className="font-semibold">{displayName(chip)}</span>{' '}
         <span className="text-xs">{amount}</span>
       </span>
     </ToggleButton>
@@ -171,6 +171,8 @@ const FAN_TONES: Readonly<Record<BadgeTone, string>> = {
   produce: 'before:bg-badge-produce-ink',
   meat: 'before:bg-badge-meat-ink',
   dairy: 'before:bg-badge-dairy-ink',
+  fruit: 'before:bg-badge-fruit-ink',
+  seafood: 'before:bg-badge-seafood-ink',
   deli: 'before:bg-badge-deli-ink',
   bakery: 'before:bg-badge-bakery-ink',
   pantry: 'before:bg-badge-pantry-ink',
