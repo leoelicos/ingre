@@ -52,9 +52,24 @@ type Env = Readonly<Record<string, string | undefined>>
 
 type StripeConnection = Pick<Stripe.StripeConfig, 'host' | 'port' | 'protocol'>
 
-/** The sample test key, unless a stand-in host is set with its own dummy STRIPE_API_KEY (e2e). */
+const requireTestKey = (key: string): string => {
+  if (!key.startsWith('sk_test_')) {
+    throw new Error('Stripe runs in test-mode only: expected an sk_test_ key')
+  }
+  return key
+}
+
+/**
+ * The key to use, and only ever a test key (#208, #218: no live keys, no real charges).
+ * STRIPE_SECRET_KEY (a test key from the environment) wins; else a stand-in host with its
+ * own dummy STRIPE_API_KEY (e2e); else the public sample test key.
+ */
 export const stripeKey = (env: Env): string =>
-  (env['STRIPE_API_HOST'] && env['STRIPE_API_KEY']) || SAMPLE_TEST_KEY
+  requireTestKey(
+    env['STRIPE_SECRET_KEY'] ||
+      (env['STRIPE_API_HOST'] && env['STRIPE_API_KEY']) ||
+      SAMPLE_TEST_KEY
+  )
 
 /**
  * Where the Stripe API lives. Unset (production): stripe-node's default, api.stripe.com.

@@ -1,0 +1,27 @@
+{
+  "_note": "DRAFT seasonal calendar for Sydney (months 1-12, 1 = January) from general knowledge of NSW produce seasons. It is NOT sourced from a published guide: the owner is to supply or approve a sourced calendar (and its licence) before this is treated as authoritative. Only catalogue ingredients. A seasonal calendar is only a hint: recipes are never hidden or reordered because of it.",
+  "region": "sydney",
+  "timeZone": "Australia/Sydney",
+  "ingredients": {
+    "tomato": [11, 12, 1, 2, 3, 4],
+    "cucumber": [11, 12, 1, 2, 3],
+    "capsicum": [12, 1, 2, 3, 4, 5],
+    "zucchini": [11, 12, 1, 2, 3, 4],
+    "corn": [11, 12, 1, 2, 3],
+    "watermelon": [11, 12, 1, 2, 3],
+    "blueberries": [11, 12, 1, 2],
+    "strawberries": [8, 9, 10, 11, 12],
+    "grapes": [1, 2, 3, 4],
+    "apple": [3, 4, 5, 6],
+    "pear": [3, 4, 5, 6, 7],
+    "lime": [2, 3, 4, 5],
+    "pumpkin": [3, 4, 5, 6, 7, 8],
+    "sweet-potato": [3, 4, 5, 6, 7, 8],
+    "mandarin": [4, 5, 6, 7, 8],
+    "cauliflower": [4, 5, 6, 7, 8, 9],
+    "broccoli": [4, 5, 6, 7, 8, 9, 10],
+    "baby-spinach": [4, 5, 6, 7, 8, 9, 10],
+    "orange": [6, 7, 8, 9, 10],
+    "carrot": [5, 6, 7, 8, 9]
+  }
+}

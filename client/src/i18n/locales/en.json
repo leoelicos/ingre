@@ -170,7 +170,8 @@
     "logIn": "Log in",
     "signUp": "Sign up",
     "saved": "Saved",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "plans": "Plans"
   },
   "search": {
     "label": "Search ingredients and recipes"
@@ -211,6 +212,70 @@
     "failed": "We couldn't start the Stripe checkout. You have not been charged. Please try again.",
     "starting": "Starting the Stripe checkout…",
     "checkout": "Checkout with Stripe"
+  },
+  "plans": {
+    "title": "Plans",
+    "intro": "Everything in ingré stays available. Plans are optional extras you switch on.",
+    "notYet": "Plans open after your first shop: pick a recipe, then cross off every ingredient.",
+    "testMode": "Test mode: no real charges. Pay with the Stripe test card 4242 4242 4242 4242, any future expiry and any 3-digit CVC.",
+    "price": "{{price}} USD",
+    "adds": "Adds",
+    "includes": "Everything in {{tier}}",
+    "choose": "Choose {{tier}}",
+    "current": "Your plan"
+  },
+  "tiers": {
+    "names": {
+      "EXPLORER": "Explorer",
+      "MANAGER": "Manager",
+      "LEADER": "Leader"
+    },
+    "features": {
+      "suggestions": "Suggestions",
+      "capture": "Capture support",
+      "triage": "Triage",
+      "budget": "Budget",
+      "calendar": "Calendar",
+      "composedMenus": "Composed menus",
+      "guestProfiles": "Guest profiles",
+      "riskHandling": "Risk handling",
+      "preciseExecution": "Precise execution",
+      "multiDayPrep": "Multi-day prep",
+      "dietarySeparation": "Dietary separation",
+      "haccp": "HACCP",
+      "exactTechnique": "Exact technique"
+    }
+  },
+  "seasonality": {
+    "title": "In season now",
+    "when": "{{month}} in Sydney",
+    "hint": "A guide only. Every recipe stays in Explore.",
+    "ingredients": "Ingredients in season",
+    "recipes": "Recipes using something in season",
+    "uses": "In season: {{items}}",
+    "pickRecipe": "Pick {{name}}",
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "pick": {
+      "title": "Editor's pick",
+      "unlock": "Unlock why it is in season, 1 USD (stub, no charge)",
+      "unlocking": "Unlocking…",
+      "unlocked": "Unlocked. This is a stub: you were not charged.",
+      "failed": "We could not unlock this pick. You have not been charged.",
+      "why": "Why it is in season: {{items}}"
+    }
   },
   "success": {
     "paymentError": "Payment error",
