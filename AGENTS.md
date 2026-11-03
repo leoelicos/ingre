@@ -24,6 +24,7 @@ package.json          root scripts (install/develop/build/seed), concurrently
 vercel.json           SPA rewrite to /index.html
 .github/workflows/ci.yml  the only CI workflow
 .cursor/              rules + atomised context notes (context/*.md)
+docs/                 TODO.md, TEST_MOCK_INVENTORY.md, ANALYTICS.md
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, RAG.md (retrieval over curated profiles, #225)
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, ENGAGEMENT_LOOP.md
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, MOBILE_CONSTRAINTS.md
@@ -119,6 +120,9 @@ Accounts and header
 - Navigation is four tabs in one stable bottom bar (BottomNav): Explore, Inventory, Cook, Profile (#227). Saved recipes and other collections live under Profile, never as top-level tabs.
 - Header shows only: logo, search, account icon. Log in / Sign up live in the account icon menu.
 - Saved appears in the account icon menu after sign-in.
+Analytics
+- Core-loop actions are logged as named events with `track()` (`client/src/utils/analytics/events.ts`,
+  list in `docs/ANALYTICS.md`). Local logging only until the owner says otherwise; no personal data in details.
 Mobile (#241)
 - Mobile first at 390 px: one-thumb reach, 44 px targets, keyboard coverage, safe areas, short sessions (`docs/MOBILE_CONSTRAINTS.md`). Gestures are shortcuts; every one has a visible control.
 Engineering showcase (#240)

@@ -14,6 +14,8 @@ import {
   renderList,
   searchBox
 } from '../../../test/renderList'
+import { SEARCH_SETTLE_MS } from '../../../utils/analytics/useSearchedEvent'
+import { readEvents } from '../../../utils/analytics/events'
 import { SETTINGS_KEY } from '../../../utils/profile/settings'
 import { HIDE_EXPLORE } from '../Explore'
 
@@ -470,5 +472,45 @@ describe('Explore sections (#226)', () => {
     expect(
       explore().queryByRole('group', { name: 'Filter ingredients by section' })
     ).toBeNull()
+  })
+})
+
+describe('analytics (#222)', () => {
+  const searched = () =>
+    readEvents()
+      .filter((event) => event.name === 'ingredient_searched')
+      .map((event) => event.props)
+  const settled = (count: number) =>
+    waitFor(() => expect(searched()).toHaveLength(count), {
+      timeout: SEARCH_SETTLE_MS * 4
+    })
+
+  it('logs ingredient_searched once with its matches, and ticket_added when a recipe is added', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'dahl')
+    await settled(1)
+    expect(searched()[0]).toEqual({
+      query: 'dahl',
+      ingredients: expect.any(Number),
+      recipes: expect.any(Number)
+    })
+    expect(searched()[0]?.['recipes']).toBeGreaterThan(0)
+    fireEvent.click(pickFromExplore('Red lentil dahl'))
+    expect(
+      readEvents().filter((event) => event.name === 'ticket_added')
+    ).toHaveLength(1)
+  })
+
+  it('logs a search with no matches as zero matches', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'zzzzqq')
+    await settled(1)
+    expect(searched()[0]).toEqual({
+      query: 'zzzzqq',
+      ingredients: 0,
+      recipes: 0
+    })
   })
 })
