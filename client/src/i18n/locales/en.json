@@ -223,6 +223,22 @@
     "message": "Page Not Found",
     "goHome": "Go home"
   },
+  "warRoom": {
+    "title": "War room",
+    "open": "War room",
+    "hint": "Type or say what you need. Generic names are fine: \"2 carrots, onion and garlic\".",
+    "field": "Add an item",
+    "matches": "Matches",
+    "add": "Add {{name}}",
+    "added": "{{names}} added",
+    "already": "{{names}} already on your list",
+    "noMatch": "No match for {{terms}}",
+    "speak": "Speak",
+    "stop": "Stop listening",
+    "captured": "Captured",
+    "capturedCount": "{{count}} captured",
+    "back": "Back to your list"
+  },
   "suggest": {
     "using": "Using",
     "use": "Use",
