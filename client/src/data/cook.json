@@ -1,0 +1,83 @@
+{
+  "_note": "Precise execution (#221). `prepAhead`: tasks that can be done days before, per recipe id. `sourcing`: where to look and what to ask for, per ingredient id. `keepDays`: how long cooked food keeps once refrigerated within 2 hours: 3 days for most leftovers and 2 for cooked rice and pasta (NSW Food Authority, Leftovers); salads and rolls are set to 1 day as a cautious call, not an official figure. Prep and sourcing text is general cooking guidance. A test checks every id against the library and catalogue.",
+  "prepAhead": {
+    "spaghetti-bolognese": [
+      {
+        "daysBefore": 1,
+        "task": "Make the sauce (steps 1 and 2) and keep it covered in the fridge. Reheat it until steaming on the day and cook the spaghetti fresh."
+      }
+    ],
+    "butter-chicken": [
+      {
+        "daysBefore": 1,
+        "task": "Marinate the diced chicken in the yoghurt and half the spices, covered, in the fridge."
+      }
+    ],
+    "dahl": [
+      {
+        "daysBefore": 1,
+        "task": "Simmer the lentils with the turmeric (step 1, without the rice), cool them quickly and keep them covered in the fridge. Reheat them until steaming before adding the onion mixture."
+      }
+    ],
+    "rice-paper-rolls": [
+      {
+        "daysBefore": 1,
+        "task": "Simmer and slice the pork belly (step 1) and keep it covered in the fridge. Roll the rolls on the day."
+      }
+    ],
+    "vegetable-curry": [
+      {
+        "daysBefore": 1,
+        "task": "Make the curry up to the end of step 3 (without the rice) and keep it covered in the fridge. Add the chickpeas, spinach and garam masala when you reheat it."
+      }
+    ],
+    "shaking-beef": [
+      {
+        "daysBefore": 1,
+        "task": "Cut the beef and marinate it, covered, in the fridge. The marinade works in 15 minutes; overnight is fine."
+      }
+    ],
+    "lemongrass-chilli-chicken": [
+      {
+        "daysBefore": 1,
+        "task": "Chop the lemongrass, garlic and chilli, and marinate the chicken with the fish sauce, sugar and turmeric, covered, in the fridge."
+      }
+    ],
+    "lemongrass-beef-noodle-salad": [
+      {
+        "daysBefore": 1,
+        "task": "Make the dressing (step 1) and marinate the sliced beef (step 2), both covered in the fridge."
+      }
+    ],
+    "egg-fried-rice": [
+      {
+        "daysBefore": 1,
+        "task": "Cook the rice, spread it on a tray to cool quickly, then refrigerate it covered. Day-old rice fries best."
+      }
+    ]
+  },
+  "sourcing": {
+    "beef-rump": "Butcher: rump steak, trimmed of fat. Ask for it cut into 3 cm cubes for shaking beef, or sliced thin for stir-fries.",
+    "pork-belly": "Butcher: a boneless, skinless slab, about 5 cm thick.",
+    "pork-loin-chop": "Butcher: loin chops about 2.5 cm thick, with the fat left on.",
+    "cooked-prawns": "Fishmonger or seafood counter: cooked prawns, shells on, bought the day you cook.",
+    "lemongrass": "Asian grocer or the fresh herb section: fresh stalks, not paste.",
+    "rice-paper": "Asian grocer or the international aisle: 22 cm round sheets.",
+    "water-chestnuts": "Asian grocer or the international aisle: tinned, whole or sliced.",
+    "ground-almonds": "Baking aisle: sold as almond meal."
+  },
+  "keepDays": {
+    "default": 3,
+    "recipes": {
+      "greek-salad-haloumi": 1,
+      "rice-paper-rolls": 1,
+      "egg-fried-rice": 2
+    },
+    "components": {
+      "basmati-rice": 2,
+      "jasmine-rice": 2,
+      "spaghetti": 2,
+      "rice-vermicelli": 2
+    }
+  }
+}

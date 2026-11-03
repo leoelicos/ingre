@@ -6,6 +6,7 @@ export type { Translate } from './useT'
 export {
   formatCount,
   formatCountUnit,
+  formatDay,
   formatFraction,
   formatItemCount,
   formatItemUnit,

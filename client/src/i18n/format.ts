@@ -117,3 +117,12 @@ export const formatRecipeCount = (n: number): string =>
 /** "2 items", "1 item". */
 export const formatItemCount = (n: number): string =>
   joinQuantity(formatNumber(n), formatItemUnit(n))
+
+/** A "YYYY-MM-DD" day as "Thu 5 Nov", read as that calendar day wherever the device is. */
+export const formatDay = (day: string): string =>
+  new Intl.DateTimeFormat(translate('format.dayLocale'), {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC'
+  }).format(new Date(`${day}T12:00:00Z`))
