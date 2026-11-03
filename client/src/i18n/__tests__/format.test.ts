@@ -6,8 +6,10 @@ import {
   formatItemCount,
   formatItemUnit,
   formatMass,
+  formatMoney,
   formatMeasure,
   formatNumber,
+  formatOneDecimal,
   formatQuantity,
   formatRecipeCount,
   pluralCount,
@@ -149,5 +151,28 @@ describe('counted phrases', () => {
     expect(translate('explore.noMatches', { query: 'kale' })).toBe(
       'No matches for ‘kale’'
     )
+  })
+})
+
+describe('formatMoney (#204)', () => {
+  it('always shows dollars and cents', () => {
+    expect([14, 2.5, 0, 1234.5].map(formatMoney)).toEqual([
+      '$14.00',
+      '$2.50',
+      '$0.00',
+      '$1234.50'
+    ])
+  })
+})
+
+describe('formatOneDecimal (#232)', () => {
+  it('shows one decimal place at most', () => {
+    expect([12.34, 20, 0.04, 0.05, 1999.96].map(formatOneDecimal)).toEqual([
+      '12.3',
+      '20',
+      '0',
+      '0.1',
+      '2000'
+    ])
   })
 })
