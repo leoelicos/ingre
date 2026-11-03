@@ -24,7 +24,7 @@ package.json          root scripts (install/develop/build/seed), concurrently
 vercel.json           SPA rewrite to /index.html
 .github/workflows/ci.yml  the only CI workflow
 .cursor/              rules + atomised context notes (context/*.md)
-docs/                 TODO.md, TEST_MOCK_INVENTORY.md
+docs/                 TODO.md, TEST_MOCK_INVENTORY.md, DESIGN_PRINCIPLES.md
 MODERNIZATION.md      modernisation checklist (history)
 scripts/convert-catalogue.py  catalogue data conversion
 client/
@@ -45,6 +45,8 @@ server/
   src/datasources/  per-model data access (+ stripe)
   src/utils/        auth, requireUser, ingredientDefaults
   seeds/            seed script
+  migrations/       Postgres SQL migrations (#217; not used by the API yet), see docs/POSTGRES_MIGRATION.md
+  scripts/pg.ts     Postgres migrate / backfill / verify CLI (never default-connects)
   eslint.config.mjs (ESLint 9 flat), jest.config.js
 ```
 Tests sit beside code (`*.test.ts`) or in `__tests__/` folders.
@@ -94,10 +96,16 @@ Accessibility
 - Menus announce open/closed state, close on Escape, and support arrow keys.
 UI text
 - Plain, literal language. Say what happens ("Add to list", not "Let's go!").
+- Design principles (#212, `docs/DESIGN_PRINCIPLES.md`): plain translatable English with no culinary jargon by default,
+  one primary name per ingredient (aliases for search only), service animations of about 500 ms ease-out that become
+  instant under reduced motion, minimalist look, thumb-zone first.
 Ingredient colours
 - No ingredient icons or three-letter code badges (removed #191: recipe rows show just their name).
   Chips and category tabs are coloured by supermarket section (produce = green), never colour alone.
   See `client/src/components/SectionTone/` (badgeTone.ts, tones.ts).
+Naming (#214, `docs/TERMINOLOGY.md`)
+- English first for home cooks, Australian English primary. One primary display name per ingredient; aliases are for
+  search only. Regional and specialist names get an optional tooltip. Don't settle cut-name debates.
 Accounts and header
 - No account needed this phase. Saved stays on the device.
 - Header shows only: logo, search, account icon. Log in / Sign up live in the account icon menu.
@@ -112,6 +120,6 @@ Process
 - [ ] All CI-equivalent checks above pass locally (tsc, lint 0 warnings, prettier, 100% coverage, build, server tests).
 - [ ] New UI has tests including a `jest-axe` check; keyboard path and accessible names tested.
 - [ ] Manually checked with keyboard only and VoiceOver; nothing relies on colour alone.
-- [ ] UI text is plain, literal, Australian English.
+- [ ] UI text is plain, literal, Australian English; motion and layout follow `docs/DESIGN_PRINCIPLES.md`.
 - [ ] No new paid service/dependency without Alana's sign-off; lockfile committed.
 - [ ] One PR for the batch, with a short description and preview link; owner merges.

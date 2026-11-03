@@ -222,3 +222,20 @@
 #root {
   height: 100vh !important;
 }
+
+/*
+ * Reduced motion (#223): when the device asks for less motion, nothing transitions, animates
+ * or scrolls smoothly, whatever a component sets. Components still add `motion-reduce:` utilities
+ * where they can; this is the safety net for everything that follows (#236).
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}

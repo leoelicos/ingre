@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { translate } from '../i18n'
 import { useAuthContext } from '../utils/auth/AuthContext'
 import { IngreIconLogoEgg } from '../lib/icon/Icon'
 import { AccountMenu } from './AccountMenu/AccountMenu'
@@ -21,8 +22,20 @@ const Logo: FC = () => (
   </Link>
 )
 
+/** The War room button (#207): opens the capture feature; it is not one of the Explore modes. */
+export const WAR_ROOM_PATH = '/war-room'
+
+const WarRoomLink: FC = () => (
+  <Link
+    to={WAR_ROOM_PATH}
+    className="flex min-h-[44px] shrink-0 items-center rounded-control px-2 text-sm font-semibold text-primary no-underline focus-visible:focus-ring"
+  >
+    {translate('warRoom.open')}
+  </Link>
+)
+
 /**
- * One header everywhere (#164): the logo, search and the account menu. On the list page from
+ * One header everywhere (#164): the logo, search, the War room button and the account menu. On the list page from
  * 1328px the search bar lives in the Explore drawer (or the 33/33/33 Explore column) instead
  * (#181); below that it stays here.
  */
@@ -35,6 +48,7 @@ export const Header: FC = () => {
       <div className="ingre-page flex items-center gap-2 py-2 sm:gap-4 sm:py-3">
         <Logo />
         <div className="flex min-w-0 flex-1">{!inDrawer && <SearchBox />}</div>
+        <WarRoomLink />
         <AccountMenu loggedIn={auth.loggedIn} />
       </div>
     </header>
