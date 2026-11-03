@@ -37,4 +37,23 @@ describe('Header (#164)', () => {
     for (const name of ['Recipes', 'Saved', 'Shopping list', 'Log in'])
       expect(header.queryByText(name)).toBeNull()
   })
+
+  it('sticks to the top below the drawer width, so the search stays high (#228)', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <MemoryRouter>
+          <AuthProvider>
+            <ExploreProvider>
+              <Header />
+            </ExploreProvider>
+          </AuthProvider>
+        </MemoryRouter>
+      </MockedProvider>
+    )
+    expect(screen.getByRole('banner')).toHaveClass(
+      'sticky',
+      'top-0',
+      'min-[1328px]:static'
+    )
+  })
 })
