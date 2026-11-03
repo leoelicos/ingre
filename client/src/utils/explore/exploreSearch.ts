@@ -2,6 +2,8 @@
 import Fuse from 'fuse.js'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
 import { catalogue, library, matchesSearch } from '../library/recipeLibrary'
+import { holdsEveryWord, namesOf } from '../library/aliases'
+import type { Named } from '../library/aliases'
 import { normaliseTerm } from '../library/searchTerms'
 
 /**
@@ -16,13 +18,17 @@ export const tierOf = (name: string, query: string): number => {
   return text.includes(q) ? 2 : 3
 }
 
+/** The best tier of any of its names (its aliases count, #239). */
+const bestTier = (item: Named, query: string): number =>
+  Math.min(...namesOf(item).map((name) => tierOf(name, query)))
+
 /** By tier, then alphabetically within a tier. */
-export const ranked = <T extends { readonly name: string }>(
+export const ranked = <T extends Named>(
   items: readonly T[],
   query: string
 ): T[] =>
   items
-    .map((item) => ({ item, tier: tierOf(item.name, query) }))
+    .map((item) => ({ item, tier: bestTier(item, query) }))
     .sort((a, b) => a.tier - b.tier || a.item.name.localeCompare(b.item.name))
     .map(({ item }) => item)
 
@@ -30,23 +36,18 @@ export const alphabetical = <T extends { readonly name: string }>(
   items: readonly T[]
 ): T[] => [...items].sort((a, b) => a.name.localeCompare(b.name))
 
-/** An ingredient matches when its name holds every word of the query. */
+/** An ingredient matches when its name, or one of its aliases (#239), holds every word of the query. */
 export const ingredientMatches = (
   item: LibraryIngredient,
   query: string
-): boolean => {
-  const name = normaliseTerm(item.name)
-  return normaliseTerm(query)
-    .split(' ')
-    .every((word) => name.includes(word))
-}
+): boolean => namesOf(item).some((name) => holdsEveryWord(name, query))
 
 /** Close matches by name from Fuse.js with its standard settings: no spelling rules of our own. */
-export const closeMatches = <T extends { readonly name: string }>(
+export const closeMatches = <T extends Named>(
   items: readonly T[],
   query: string
 ): T[] =>
-  new Fuse(items, { keys: ['name'] })
+  new Fuse(items, { keys: ['name', 'aliases'] })
     .search(query.trim())
     .map((result) => result.item)
 

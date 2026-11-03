@@ -36,6 +36,8 @@ export type HomeLocation = 'Fridge' | 'Cupboard' | 'Spice rack' | 'Bench'
 export interface LibraryIngredient {
   id: string
   name: string
+  /** other names people search by, never shown as the name (#239): regional or trade names */
+  aliases?: string[]
   /** catalogue aisle id; mapped to a shop section in utils/shopping/sections */
   category: Aisle
   /** pantry staple most kitchens already have (salt, cooking oils) */

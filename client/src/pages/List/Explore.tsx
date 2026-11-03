@@ -1,6 +1,6 @@
 import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { Button } from 'react-aria-components'
 import { AllergenTags } from '../../components/AllergenTags'
 import { Collapse } from '../../components/Collapse'
@@ -28,6 +28,7 @@ import {
   recipeFilterOn,
   recipeMatches
 } from '../../utils/filters/filters'
+import { matchedAlias } from '../../utils/library/aliases'
 import { library } from '../../utils/library/recipeLibrary'
 import type { SavedState } from '../../utils/saved/useSaved'
 import {
@@ -92,6 +93,9 @@ const IngredientResult: FC<{
   const onList = ingredients.list.hasChip(item.id)
   const name = capitaliseFirst(item.name)
   const category = categoryLabel(placeInShop(item.category).section)
+  const { query } = useExplore()
+  const alias = matchedAlias(item, query)
+  const aliasId = useId()
   return (
     <li className="flex flex-col gap-1">
       <Button
@@ -101,11 +105,20 @@ const IngredientResult: FC<{
             ? t('explore.onListLabel', { name })
             : t('explore.add', { name: item.name })
         }
+        {...(alias === null ? {} : { 'aria-describedby': aliasId })}
         className={RESULT}
       >
         <span className="font-semibold">
           {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
         </span>
+        {alias !== null && (
+          <span
+            id={aliasId}
+            className="text-xs text-text-secondary"
+          >
+            {t('explore.alsoCalled', { alias })}
+          </span>
+        )}
         <span className="text-xs text-text-secondary">
           {onList ? t('explore.categoryOnList', { category }) : category}
         </span>

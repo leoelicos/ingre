@@ -14,6 +14,7 @@
     {
       "id": "beef-mince",
       "name": "beef mince",
+      "aliases": ["ground beef", "minced beef"],
       "category": "meat",
       "sold": [
         {
@@ -41,6 +42,7 @@
     {
       "id": "pork-mince",
       "name": "pork mince",
+      "aliases": ["ground pork", "minced pork"],
       "category": "meat",
       "sold": [
         {
@@ -61,6 +63,7 @@
     {
       "id": "chicken-thigh",
       "name": "chicken thigh fillets",
+      "aliases": ["chicken thighs"],
       "category": "meat",
       "sold": [
         {
@@ -141,6 +144,7 @@
     {
       "id": "cream",
       "name": "thickened cream",
+      "aliases": ["whipping cream"],
       "category": "dairy & eggs",
       "sold": [
         {
@@ -164,6 +168,7 @@
     {
       "id": "natural-yoghurt",
       "name": "natural yoghurt",
+      "aliases": ["plain yogurt", "natural yogurt"],
       "category": "dairy & eggs",
       "sold": [
         {
@@ -187,6 +192,7 @@
     {
       "id": "haloumi",
       "name": "haloumi",
+      "aliases": ["halloumi"],
       "category": "dairy & eggs",
       "sold": [
         {
@@ -439,6 +445,7 @@
     {
       "id": "spring-onion",
       "name": "spring onions",
+      "aliases": ["scallion", "green onion"],
       "category": "fruit & veg",
       "sold": [
         {
@@ -531,6 +538,7 @@
     {
       "id": "capsicum",
       "name": "green capsicum",
+      "aliases": ["green bell pepper", "green pepper"],
       "category": "fruit & veg",
       "sold": [
         {
@@ -552,6 +560,7 @@
     {
       "id": "tinned-peas",
       "name": "tinned peas",
+      "aliases": ["canned peas"],
       "category": "canned food",
       "sold": [
         {
@@ -653,6 +662,7 @@
     {
       "id": "crushed-tomatoes",
       "name": "canned crushed tomatoes",
+      "aliases": ["tinned crushed tomatoes", "crushed tomatoes"],
       "category": "canned food",
       "sold": [
         {
@@ -861,6 +871,7 @@
     {
       "id": "ground-cumin",
       "name": "ground cumin",
+      "aliases": ["cumin powder"],
       "category": "herbs & spices",
       "sold": [
         {
@@ -877,6 +888,7 @@
     {
       "id": "chilli-powder",
       "name": "chilli powder",
+      "aliases": ["chili powder"],
       "category": "herbs & spices",
       "sold": [
         {
@@ -934,6 +946,7 @@
     {
       "id": "fresh-coriander",
       "name": "fresh coriander",
+      "aliases": ["cilantro"],
       "category": "fruit & veg",
       "sold": [
         {
@@ -1040,6 +1053,7 @@
     {
       "id": "green-chilli",
       "name": "green chilli",
+      "aliases": ["green chili"],
       "category": "fruit & veg",
       "sold": [
         {
@@ -1111,6 +1125,7 @@
     {
       "id": "chickpeas",
       "name": "chickpeas",
+      "aliases": ["garbanzo beans"],
       "category": "canned food",
       "sold": [
         {
@@ -1127,6 +1142,7 @@
     {
       "id": "ground-almonds",
       "name": "almond meal",
+      "aliases": ["ground almonds"],
       "category": "baking",
       "sold": [
         {
@@ -1150,6 +1166,7 @@
     {
       "id": "cumin-seeds",
       "name": "cumin seeds",
+      "aliases": ["jeera"],
       "category": "herbs & spices",
       "sold": [
         {
@@ -1166,6 +1183,7 @@
     {
       "id": "ground-coriander",
       "name": "ground coriander",
+      "aliases": ["coriander powder"],
       "category": "herbs & spices",
       "sold": [
         {
@@ -1238,6 +1256,7 @@
     {
       "id": "cooked-prawns",
       "name": "cooked prawns",
+      "aliases": ["cooked shrimp"],
       "category": "seafood",
       "sold": [
         {
@@ -1283,6 +1302,7 @@
     {
       "id": "red-chilli",
       "name": "red chilli",
+      "aliases": ["red chili"],
       "category": "fruit & veg",
       "sold": [
         {
@@ -1350,6 +1370,7 @@
     {
       "id": "bean-sprouts",
       "name": "bean sprouts",
+      "aliases": ["beansprouts"],
       "category": "fruit & veg",
       "sold": [
         {
@@ -1428,6 +1449,7 @@
     {
       "id": "rice-vermicelli",
       "name": "rice vermicelli noodles",
+      "aliases": ["vermicelli"],
       "category": "pasta & rice",
       "sold": [
         {
@@ -1758,6 +1780,7 @@
     {
       "id": "kiwifruit",
       "name": "kiwifruit",
+      "aliases": ["kiwi fruit", "kiwi"],
       "category": "fruit & veg",
       "sold": [
         {
@@ -1829,6 +1852,7 @@
     {
       "id": "zucchini",
       "name": "zucchini",
+      "aliases": ["courgette"],
       "category": "fruit & veg",
       "sold": [
         {
@@ -1850,6 +1874,7 @@
     {
       "id": "sweet-potato",
       "name": "sweet potato",
+      "aliases": ["kumara"],
       "category": "fruit & veg",
       "sold": [
         {
@@ -1908,6 +1933,7 @@
     {
       "id": "corn",
       "name": "sweet corn",
+      "aliases": ["corn", "sweetcorn"],
       "category": "fruit & veg",
       "sold": [
         {
@@ -2014,6 +2040,7 @@
     {
       "id": "greek-yoghurt",
       "name": "Greek yoghurt",
+      "aliases": ["Greek yogurt"],
       "category": "dairy & eggs",
       "sold": [
         {
@@ -2109,6 +2136,7 @@
     {
       "id": "sausages",
       "name": "beef sausages",
+      "aliases": ["snags"],
       "category": "meat",
       "sold": [
         {
@@ -2173,6 +2201,7 @@
     {
       "id": "bread-rolls",
       "name": "bread rolls",
+      "aliases": ["buns"],
       "category": "bakery",
       "sold": [
         {
@@ -2194,6 +2223,7 @@
     {
       "id": "wraps",
       "name": "wraps",
+      "aliases": ["tortillas"],
       "category": "bakery",
       "sold": [
         {
@@ -2215,6 +2245,7 @@
     {
       "id": "rolled-oats",
       "name": "rolled oats",
+      "aliases": ["porridge oats"],
       "category": "breakfast & spreads",
       "sold": [
         {
@@ -2325,6 +2356,7 @@
     {
       "id": "tea-bags",
       "name": "tea bags",
+      "aliases": ["teabags"],
       "category": "tea & coffee",
       "sold": [
         {
@@ -2346,6 +2378,7 @@
     {
       "id": "plain-flour",
       "name": "plain flour",
+      "aliases": ["all-purpose flour"],
       "category": "baking",
       "sold": [
         {
@@ -2362,6 +2395,7 @@
     {
       "id": "canned-tuna",
       "name": "canned tuna",
+      "aliases": ["tinned tuna"],
       "category": "canned food",
       "sold": [
         {

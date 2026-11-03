@@ -12,6 +12,7 @@ import {
   parseRecipes,
   parseSectionColours
 } from './parseLibrary'
+import { namesOf } from './aliases'
 import { normaliseTerm } from './searchTerms'
 
 export const PLACEHOLDER_PICTURE = '/ingre.png'
@@ -50,10 +51,10 @@ export function matchesSearch(
 ): boolean {
   const query = normaliseTerm(q ?? '')
   if (!query) return true
-  const byId = new Map(ingredients.map((i) => [i.id, i.name]))
+  const byId = new Map(ingredients.map((i) => [i.id, namesOf(i)]))
   const haystack = [
     recipe.name,
-    ...recipe.ingredients.map((ri) => byId.get(ri.ingredientId) ?? '')
+    ...recipe.ingredients.flatMap((ri) => byId.get(ri.ingredientId) ?? [''])
   ].map(normaliseTerm)
   return query
     .split(/\s+/)
