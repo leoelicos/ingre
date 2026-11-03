@@ -223,5 +223,23 @@
   "notFound": {
     "message": "Page Not Found",
     "goHome": "Go home"
+  },
+  "menu": {
+    "title": "Menu",
+    "hint": "Pick a main and Menu suggests a starter and a dessert that suit it, with a wine for each course.",
+    "courses_one": "{{count}} course picked",
+    "courses_other": "{{count}} courses picked",
+    "starter": "Starter",
+    "main": "Main",
+    "dessert": "Dessert",
+    "onList": "On your list",
+    "suggested": "Suggested",
+    "add": "Add {{name}} to your list",
+    "wine": "Wine: {{name}}",
+    "noStarter": "No starter in the library suits your main yet.",
+    "noDessert": "No dessert in the library suits your main yet.",
+    "check": "Check: {{reason}}",
+    "clashProtein": "{{name}} repeats a main ingredient of {{main}}.",
+    "clashHeavy": "{{name}} is heavy next to {{main}}."
   }
 }

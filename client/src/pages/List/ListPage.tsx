@@ -25,6 +25,7 @@ import {
   useIngredients
 } from './Ingredients'
 import { LayoutToggle } from './LayoutToggle'
+import { Menu } from './Menu'
 import { Recipes } from './Recipes'
 import { ScrollToTop } from './ScrollToTop'
 import { PageMain } from '../../components/SkipLink'
@@ -113,6 +114,10 @@ export const ListPage: FC = () => {
             <Recipes
               list={list}
               saved={saved}
+              collapsible={vertical}
+            />
+            <Menu
+              list={list}
               collapsible={vertical}
             />
             <Extra

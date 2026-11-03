@@ -1,0 +1,131 @@
+{
+  "_note": "Composed menus (#219): each recipe's course, weight and main proteins, and a wine to match. A starter suits a main when it is lighter and shares no protein with it; a dessert suits a main when the two weights add up to no more than rich (light 0, medium 1, rich 2). Wine pairings are general guidance for the owner to review, not a sommelier's list. Recipes with no entry here count as medium mains with no wine.",
+  "recipes": {
+    "spaghetti-bolognese": {
+      "course": "main",
+      "weight": "rich",
+      "proteins": ["beef"],
+      "wine": {
+        "name": "Sangiovese or Chianti",
+        "why": "Bright acidity and soft tannin cut through the rich tomato and beef sauce."
+      }
+    },
+    "egg-fried-rice": {
+      "course": "main",
+      "weight": "medium",
+      "proteins": ["egg"],
+      "wine": {
+        "name": "Off-dry Riesling",
+        "why": "A little sweetness and acidity suit the soy and sesame."
+      }
+    },
+    "butter-chicken": {
+      "course": "main",
+      "weight": "rich",
+      "proteins": ["chicken"],
+      "wine": {
+        "name": "Gewürztraminer or off-dry Riesling",
+        "why": "Aromatic and slightly sweet, it softens the spice and the cream."
+      }
+    },
+    "greek-salad-haloumi": {
+      "course": "starter",
+      "weight": "light",
+      "proteins": [],
+      "wine": {
+        "name": "Assyrtiko or dry Sauvignon Blanc",
+        "why": "Crisp and citrusy, it matches the olives, feta and vinegar."
+      }
+    },
+    "san-choy-bau": {
+      "course": "starter",
+      "weight": "light",
+      "proteins": ["pork"],
+      "wine": {
+        "name": "Dry Riesling",
+        "why": "Fresh and zesty, it keeps up with the ginger and oyster sauce."
+      }
+    },
+    "chicken-korma": {
+      "course": "main",
+      "weight": "rich",
+      "proteins": ["chicken"],
+      "wine": {
+        "name": "Lightly oaked Chardonnay",
+        "why": "Round and soft, it suits the mild, creamy almond sauce."
+      }
+    },
+    "dahl": {
+      "course": "main",
+      "weight": "medium",
+      "proteins": ["lentil"],
+      "wine": {
+        "name": "Pinot Gris",
+        "why": "Soft and lightly spiced, it does not fight the turmeric and cumin."
+      }
+    },
+    "beef-keema": {
+      "course": "main",
+      "weight": "medium",
+      "proteins": ["beef"],
+      "wine": {
+        "name": "Grenache",
+        "why": "A fruity, low-tannin red that sits well with the warm spices."
+      }
+    },
+    "vegetable-curry": {
+      "course": "main",
+      "weight": "medium",
+      "proteins": ["chickpea"],
+      "wine": {
+        "name": "Off-dry Chenin Blanc",
+        "why": "Its fruit and acidity balance the chilli and the coconut."
+      }
+    },
+    "shaking-beef": {
+      "course": "main",
+      "weight": "medium",
+      "proteins": ["beef"],
+      "wine": {
+        "name": "Pinot Noir",
+        "why": "A light red with soft tannin suits seared beef and the sharp lime dip."
+      }
+    },
+    "lemongrass-chilli-chicken": {
+      "course": "main",
+      "weight": "medium",
+      "proteins": ["chicken"],
+      "wine": {
+        "name": "Off-dry Riesling",
+        "why": "A little sweetness calms the chilli and lifts the lemongrass."
+      }
+    },
+    "lemongrass-beef-noodle-salad": {
+      "course": "main",
+      "weight": "light",
+      "proteins": ["beef"],
+      "wine": {
+        "name": "Dry Riesling",
+        "why": "Lime-like and crisp, it suits the fresh herbs and the dressing."
+      }
+    },
+    "rice-paper-rolls": {
+      "course": "starter",
+      "weight": "light",
+      "proteins": ["pork", "prawn"],
+      "wine": {
+        "name": "Dry sparkling wine",
+        "why": "Bubbles and acidity refresh the palate between the fresh herbs and the hoisin."
+      }
+    },
+    "pork-chops-apple-onion": {
+      "course": "main",
+      "weight": "medium",
+      "proteins": ["pork"],
+      "wine": {
+        "name": "Pinot Gris or Pinot Noir",
+        "why": "Pork and apple like a soft white, or a light red if you prefer."
+      }
+    }
+  }
+}
