@@ -1,7 +1,7 @@
 import { translate, useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
-import { Button } from 'react-aria-components'
+import { Button, ToggleButton } from 'react-aria-components'
 import { AllergenTags } from '../../components/AllergenTags'
 import { Collapse } from '../../components/Collapse'
 import { splitTitle } from '../../components/recipeTitle'
@@ -9,8 +9,11 @@ import { SEARCH_LABEL, SearchBox } from '../../components/SearchBox/SearchBox'
 import { IngreIconSearch } from '../../lib/icon/Icon'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
 import { capitaliseFirst } from '../../utils/capitaliseFirst'
+import {
+  EDGE_TONE_CLASSES,
+  TONE_CLASSES
+} from '../../components/SectionTone/badgeTone'
 import type { CopyEntry } from '../../utils/chips/chips'
-import { categoryLabel } from '../../utils/chips/chips'
 import type { RecipeCopy } from '../../utils/balance/copies'
 import { useExplore } from '../../utils/explore/ExploreContext'
 import { flaggedIds, showsSuggestions } from '../../utils/guidance/guidance'
@@ -23,7 +26,14 @@ import {
   exploreResults,
   shownRecipes
 } from '../../utils/explore/exploreSearch'
-import { placeInShop } from '../../utils/shopping/sections'
+import type { ExploreSection } from '../../utils/explore/sections'
+import {
+  SECTION_ACCENT,
+  SECTION_TONE,
+  exploreSectionOf,
+  inSections,
+  sectionsOf
+} from '../../utils/explore/sections'
 import type { RecipeFilter } from '../../utils/filters/filters'
 import {
   NO_RECIPE_FILTER,
@@ -98,7 +108,7 @@ const GROUP_HEADING =
   'm-0 mb-2 text-sm font-semibold uppercase tracking-wide text-text-secondary'
 
 const RESULT =
-  'flex min-h-[44px] w-full flex-col items-start rounded-control bg-bg px-3 py-1 text-left text-text shadow-raised data-[pressed]:shadow-pressed data-[focus-visible]:focus-ring'
+  'flex min-h-[44px] w-full flex-col items-start rounded-control border-l-4 bg-bg px-3 py-1 text-left text-text shadow-raised data-[pressed]:shadow-pressed data-[focus-visible]:focus-ring'
 
 /** An ingredient result: adds it as an extra, or opens its chip when it is on the list. */
 const IngredientResult: FC<{
@@ -110,9 +120,29 @@ const IngredientResult: FC<{
   const { guidance } = useExplore()
   const onList = ingredients.list.hasChip(item.id)
   const name = capitaliseFirst(item.name)
-  const category = categoryLabel(placeInShop(item.category).section)
+  const section = exploreSectionOf(item)
+  const category = t(`exploreSection.${section}`)
   return (
     <li className="flex flex-col gap-1">
+<<<<<<< HEAD
+      <Button
+        data-section={section}
+        onPress={() => ingredients.pick(item)}
+        aria-label={
+          onList
+            ? t('explore.onListLabel', { name })
+            : t('explore.add', { name: item.name })
+        }
+        className={`${RESULT} ${SECTION_ACCENT[section]}`}
+      >
+        <span className="font-semibold">
+          {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
+        </span>
+        <span className="text-xs text-text-secondary">
+          {onList ? t('explore.categoryOnList', { category }) : category}
+        </span>
+      </Button>
+=======
       <div className="flex items-stretch gap-2">
         <Button
           onPress={() => ingredients.pick(item)}
@@ -132,6 +162,7 @@ const IngredientResult: FC<{
         </Button>
         {showsSuggestions(guidance) && <UseToggle item={item} />}
       </div>
+>>>>>>> origin/main
       <AllergenTags allergens={item.allergens} />
       <IngredientDetails
         item={item}
@@ -141,10 +172,90 @@ const IngredientResult: FC<{
   )
 }
 
+/** One section's toggle: filled in its colour when on, outlined when off. */
+const SectionToggle: FC<{
+  section: ExploreSection
+  on: boolean
+  onChange: () => void
+}> = ({ section, on, onChange }) => {
+  const t = useT()
+  const tone = SECTION_TONE[section]
+  return (
+    <ToggleButton
+      isSelected={on}
+      onChange={onChange}
+      className={`inline-flex min-h-[44px] items-center rounded-pill border-2 px-3 text-sm font-semibold data-[focus-visible]:focus-ring ${
+        on ? TONE_CLASSES[tone] : EDGE_TONE_CLASSES[tone]
+      }`}
+    >
+      {t(`exploreSection.${section}`)}
+    </ToggleButton>
+  )
+}
+
+/** The sections the results fall in, to narrow them to; shown when there is more than one. */
+const SectionFilter: FC<{
+  sections: readonly ExploreSection[]
+  chosen: ReadonlySet<ExploreSection>
+  onToggle: (section: ExploreSection) => void
+}> = ({ sections, chosen, onToggle }) => {
+  const t = useT()
+  return (
+    sections.length > 1 && (
+      <div
+        role="group"
+        aria-label={t('explore.sectionFilter')}
+        className="mb-2 flex flex-wrap gap-2"
+      >
+        {sections.map((section) => (
+          <SectionToggle
+            key={section}
+            section={section}
+            on={chosen.has(section)}
+            onChange={() => onToggle(section)}
+          />
+        ))}
+      </div>
+    )
+  )
+}
+
+const toggled = (
+  chosen: ReadonlySet<ExploreSection>,
+  section: ExploreSection
+): Set<ExploreSection> =>
+  chosen.has(section)
+    ? new Set([...chosen].filter((s) => s !== section))
+    : new Set([...chosen, section])
+
 const IngredientGroup: FC<{
   title: string
   items: readonly LibraryIngredient[]
   ingredients: IngredientsState
+<<<<<<< HEAD
+}> = ({ title, items, ingredients }) => {
+  const [chosen, setChosen] = useState<ReadonlySet<ExploreSection>>(new Set())
+  return (
+    <div>
+      <h3 className={GROUP_HEADING}>{title}</h3>
+      <SectionFilter
+        sections={sectionsOf(items)}
+        chosen={chosen}
+        onToggle={(section) => setChosen((now) => toggled(now, section))}
+      />
+      <ul className="m-0 flex list-none flex-col gap-2 p-1">
+        {inSections(items, chosen).map((item) => (
+          <IngredientResult
+            key={item.id}
+            item={item}
+            ingredients={ingredients}
+          />
+        ))}
+      </ul>
+    </div>
+  )
+}
+=======
   controls: RowControls
 }> = ({ title, items, ingredients, controls }) => (
   <div>
@@ -161,6 +272,7 @@ const IngredientGroup: FC<{
     </ul>
   </div>
 )
+>>>>>>> origin/main
 
 /** The list's copy of a recipe, or null when it is not on the list. */
 export const listCopyOf = (

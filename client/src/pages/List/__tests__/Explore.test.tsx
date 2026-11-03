@@ -47,7 +47,12 @@ const ingredientResults = () =>
       .parentElement ?? document.body
   )
     .getAllByRole('button')
+<<<<<<< HEAD
+    .filter((button) => button.hasAttribute('data-section'))
+    .map((button) => button.getAttribute('aria-label'))
+=======
     .map((button) => button.textContent)
+>>>>>>> origin/main
 const browseNames = () => groupNames('Browse recipes')
 const signIn = () =>
   fireEvent.click(screen.getByRole('button', { name: 'Pretend login' }))
@@ -401,5 +406,72 @@ describe('Explore and the profile (#224)', () => {
     const names = browseNames()
     expect(names).toContain('Red lentil dahl')
     expect(names.join('|')).not.toMatch(/beef|chicken|pork|prawn/i)
+  })
+})
+
+describe('Explore sections (#226)', () => {
+  const filter = () =>
+    within(
+      explore().getByRole('group', { name: 'Filter ingredients by section' })
+    )
+
+  it('marks each ingredient result with its section: a name, and an accent bar', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'o')
+    const results = explore().getAllByRole('button', {
+      name: /^(Add|.*on your list)/
+    })
+    expect(results.length).toBeGreaterThan(3)
+    results.forEach((result) => {
+      expect(result.className).toMatch(/border-l-4 .*border-badge-[a-z]+-ink/)
+      expect(result.getAttribute('data-section')).not.toBeNull()
+    })
+  })
+
+  it('tells fruit from vegetables and seafood from meat', async () => {
+    const user = userEvent.setup()
+    renderList()
+    const sectionOf = async (name: string): Promise<string | null> => {
+      await user.clear(searchBox())
+      await search(user, name)
+      return explore()
+        .getByRole('button', { name: `Add ${name}` })
+        .getAttribute('data-section')
+    }
+    expect(await sectionOf('banana')).toBe('fruit')
+    expect(await sectionOf('carrot')).toBe('vegetables')
+    expect(await sectionOf('beef mince')).toBe('meat')
+    expect(await sectionOf('cooked prawns')).toBe('seafood')
+  })
+
+  it('narrows the ingredient results to the sections toggled, and back with none', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'a')
+    const all = ingredientResults().length
+    await user.click(filter().getByRole('button', { name: 'Fruit' }))
+    expect(filter().getByRole('button', { name: 'Fruit' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
+    const fruit = ingredientResults()
+    expect(fruit.length).toBeLessThan(all)
+    expect(fruit).toContain('Add banana')
+    expect(fruit).not.toContain('Add carrot')
+    await user.click(filter().getByRole('button', { name: 'Seafood' }))
+    expect(ingredientResults()).toContain('Add cooked prawns')
+    await user.click(filter().getByRole('button', { name: 'Fruit' }))
+    await user.click(filter().getByRole('button', { name: 'Seafood' }))
+    expect(ingredientResults()).toHaveLength(all)
+  })
+
+  it('has no filter when the results fall in one section', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'red lentils')
+    expect(
+      explore().queryByRole('group', { name: 'Filter ingredients by section' })
+    ).toBeNull()
   })
 })
