@@ -24,7 +24,7 @@ package.json          root scripts (install/develop/build/seed), concurrently
 vercel.json           SPA rewrite to /index.html
 .github/workflows/ci.yml  the only CI workflow
 .cursor/              rules + atomised context notes (context/*.md)
-docs/                 TODO.md, TEST_MOCK_INVENTORY.md
+docs/                 TODO.md, TEST_MOCK_INVENTORY.md, ENGAGEMENT_LOOP.md
 MODERNIZATION.md      modernisation checklist (history)
 scripts/convert-catalogue.py  catalogue data conversion
 client/
@@ -98,6 +98,9 @@ Ingredient colours
 - No ingredient icons or three-letter code badges (removed #191: recipe rows show just their name).
   Chips and category tabs are coloured by supermarket section (produce = green), never colour alone.
   See `client/src/components/SectionTone/` (badgeTone.ts, tones.ts).
+Engagement loop (#215, `docs/ENGAGEMENT_LOOP.md`)
+- scroll, tap an ingredient, read a suggestion, act, then the suggestions update. Acting (adding a ticket) stays in the loop:
+  no navigation, no blocking dialog, next suggestions still in view. Always a next tap. Any gesture also has a button.
 Accounts and header
 - No account needed this phase. Saved stays on the device.
 - Header shows only: logo, search, account icon. Log in / Sign up live in the account icon menu.
