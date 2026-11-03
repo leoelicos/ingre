@@ -30,7 +30,9 @@ import { LayoutToggle } from './LayoutToggle'
 import { Recipes } from './Recipes'
 import { useTabArrival } from './tabArrival'
 import { ScrollToTop } from './ScrollToTop'
+import { Bra } from '../../components/Bra'
 import { PageMain } from '../../components/SkipLink'
+import { AddFab } from './AddFab'
 
 /** "?saved=1" from the Saved account link or old Saved links: Explore's Saved filter (#181). */
 export const savedParam = (params: URLSearchParams): boolean =>
@@ -90,7 +92,7 @@ export const ListPage: FC = () => {
   }
   return (
     <div className="mx-auto flex w-full max-w-layout gap-6 px-gutter">
-      <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-24 pt-4">
+      <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-36 pt-4">
         <h1 className="sr-only">{t('list.title')}</h1>
         {placement === 'inline' && (
           <Explore
@@ -139,10 +141,13 @@ export const ListPage: FC = () => {
         >
           {[ingredients.message, saved?.error ?? ''].join(' ').trim()}
         </p>
-        <ScrollToTop
-          watchId={INGREDIENTS_ID}
-          headingId={INGREDIENTS_HEADING_ID}
-        />
+        <Bra>
+          <ScrollToTop
+            watchId={INGREDIENTS_ID}
+            headingId={INGREDIENTS_HEADING_ID}
+          />
+          <AddFab />
+        </Bra>
       </PageMain>
       {placement === 'drawer' && (
         <ExploreDrawer
