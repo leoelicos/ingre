@@ -33,6 +33,7 @@ import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
 import { ExploreProvider } from './utils/explore/ExploreContext'
+import { GuestsProvider } from './utils/guests/GuestsContext'
 import { changeTitle } from './utils/changeTitle'
 import { StoreProvider } from './utils/state/GlobalState'
 
@@ -100,6 +101,72 @@ export const Ingre: FC = () => {
         <AuthProvider>
           <StoreProvider>
             <ExploreProvider>
+<<<<<<< HEAD
+              <GuestsProvider>
+                <SkipLink />
+                <Header />
+                <Routes>
+                  <Route
+                    path="/"
+                    element={<ListPage />}
+                  />
+                  <Route
+                    path="/saved"
+                    element={<SavedRedirect />}
+                  />
+                  <Route
+                    path="/ingredients"
+                    element={<WorkspaceRedirect />}
+                  />
+                  <Route
+                    path="/tapoff"
+                    element={<WorkspaceRedirect />}
+                  />
+                  {/* admin */}
+                  <Route
+                    path="/login"
+                    element={
+                      <PageMain>
+                        <Login />
+                      </PageMain>
+                    }
+                  />
+                  <Route
+                    path="/signup"
+                    element={
+                      <PageMain>
+                        <Signup />
+                      </PageMain>
+                    }
+                  />
+                  <Route
+                    path="/upgrade"
+                    element={
+                      <PageMain>
+                        <Upgrade />
+                      </PageMain>
+                    }
+                  />
+                  <Route
+                    path="/success"
+                    element={
+                      <PageMain>
+                        <Success />
+                      </PageMain>
+                    }
+                  />
+                  <Route
+                    path="*"
+                    element={
+                      <PageMain>
+                        <NoMatch />
+                      </PageMain>
+                    }
+                  />
+                </Routes>
+                <SiteAnalytics mode={APP_MODE} />
+              </GuestsProvider>
+=======
               <SkipLink />
               <Header />
               <Routes>
@@ -174,6 +241,7 @@ export const Ingre: FC = () => {
                 />
               </Routes>
               <SiteAnalytics mode={APP_MODE} />
+>>>>>>> origin/main
             </ExploreProvider>
           </StoreProvider>
         </AuthProvider>

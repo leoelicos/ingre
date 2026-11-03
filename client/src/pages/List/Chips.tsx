@@ -19,6 +19,9 @@ import { categoryLabel } from '../../utils/chips/chips'
 import type { ShopSection } from '../../utils/shopping/sections'
 import { displayName } from '../../utils/shopping/shoppingList'
 import type { ChipScope } from './chipText'
+import { useGuestList } from '../../utils/guests/GuestsContext'
+import { conflictText, conflictsOf } from '../../utils/guests/guests'
+import { GUEST_OUTLINE } from './IngredientNames'
 import { chipChevronId, chipLabel, chipPanelId, chipToggleId } from './chipText'
 
 /** Which chip's panel is open, or closing (kept mounted so it can animate shut). */
@@ -71,7 +74,11 @@ const ChipCheck: FC<{ crossed: boolean }> = ({ crossed }) => (
  * The chip itself: a tap anywhere, the checkbox included, crosses off or restores (#181). A
  * greyed chip (removed from every recipe) can't be crossed off (#182).
  */
-const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
+const ChipToggle: FC<{ chip: Chip; view: ChipView; warning: string }> = ({
+  chip,
+  view,
+  warning
+}) => {
   const amount = view.amountOf(chip)
   return (
     <ToggleButton
@@ -79,7 +86,9 @@ const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
       isSelected={chip.crossed}
       isDisabled={chip.greyed}
       onChange={() => view.onToggle(chip.id)}
-      aria-label={chipLabel(chip, amount)}
+      aria-label={[chipLabel(chip, amount), warning]
+        .filter((part) => part !== '')
+        .join('. ')}
       className="flex min-h-[44px] items-center gap-2 rounded-l-pill py-1 pl-3 pr-1 text-left data-[focus-visible]:focus-ring"
     >
       <ChipCheck crossed={chip.crossed} />
@@ -124,17 +133,24 @@ const CHEVRON =
 const ChipItem: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
   const t = useT()
   const expanded = view.panel.open && view.panel.id === chip.id
+  const warning = conflictText(
+    conflictsOf(chip.item?.allergens ?? [], useGuestList())
+  )
   return (
     <li
       data-chip={chip.id}
+      data-guest-flag={warning === '' ? undefined : 'true'}
       data-scope={view.scope}
       data-category={categoryLabel(chip.section)}
       data-greyed={chip.greyed}
-      className={chipClass(chip)}
+      className={`${chipClass(chip)}${
+        warning === '' ? '' : ` ${GUEST_OUTLINE}`
+      }`}
     >
       <ChipToggle
         chip={chip}
         view={view}
+        warning={warning}
       />
       <Button
         id={chipChevronId(chip.id, view.scope)}

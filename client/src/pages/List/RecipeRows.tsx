@@ -6,6 +6,8 @@ import { Chevron, Collapse, MOTION } from '../../components/Collapse'
 import { splitTitle } from '../../components/recipeTitle'
 import type { LibraryRecipe } from '../../types/library'
 import type { CopyLine } from '../../utils/balance/copies'
+import { linesAllergens } from '../../utils/guests/guests'
+import { GuestFlag } from './GuestFlag'
 import { IngredientNames } from './IngredientNames'
 
 /** What every row shares: picks, open rows, and what an open row shows. */
@@ -135,7 +137,14 @@ export const RecipeRow: FC<{
           flagged={row.flagged}
         />
       )}
+<<<<<<< HEAD
+      <GuestFlag
+        tags={linesAllergens(row.lines)}
+        className="col-span-2 mx-4 mb-4 ml-14"
+      />
+=======
       {row.note}
+>>>>>>> origin/main
       <Collapse
         id={detailsId}
         open={open}
