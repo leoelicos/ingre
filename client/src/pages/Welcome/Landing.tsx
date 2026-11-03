@@ -70,7 +70,7 @@ export const Landing: FC<{ onStart: () => void }> = ({ onStart }) => {
     </Card>
   ]
   return (
-    <div className="ingre-page flex flex-col gap-6 py-8">
+    <div className="ingre-page mx-auto flex w-full max-w-xl flex-col gap-6 py-8">
       <h1 className="m-0 text-3xl font-medium tracking-tight">
         {t('landing.headline')}
       </h1>

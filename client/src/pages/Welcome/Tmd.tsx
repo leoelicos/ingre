@@ -146,7 +146,7 @@ export const Tmd: FC<{ onDone: () => void }> = ({ onDone }) => {
     onDone()
   }
   return (
-    <div className="ingre-page flex flex-col gap-5 py-8">
+    <div className="ingre-page mx-auto flex w-full max-w-xl flex-col gap-5 py-8">
       <ProgressBar
         value={step + 1}
         minValue={1}
