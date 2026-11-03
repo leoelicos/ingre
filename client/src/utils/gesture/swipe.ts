@@ -1,5 +1,5 @@
 /* A swipe to the right with a finger or pen (#229). Never the mouse: dragging with a mouse selects text. */
-import type { PointerEvent } from 'react'
+import type { MouseEvent, PointerEvent } from 'react'
 import { useRef } from 'react'
 
 /** How far right a swipe must go, in CSS pixels. */
@@ -24,20 +24,40 @@ const pointOf = (event: PointerEvent): Point => ({
   y: event.clientY
 })
 
-/** Pointer handlers for an element: calls `onSwipe` when a finger or pen swipes right across it. */
+/**
+ * Handlers for an element: calls `onSwipe` when a finger or pen swipes right across it.
+ * They are capture handlers, because a button inside the element stops pointer events bubbling.
+ * A swipe that starts and ends on a button is also a press of that button, and some browsers
+ * send a click after it, so neither is a tap: `wasSwipe` says the press is the swipe's, and the
+ * click is swallowed. Any new touch or key press starts fresh (the keyboard's click has no detail).
+ */
 export const useSwipeRight = (onSwipe: () => void) => {
   const start = useRef<Point | null>(null)
+  const swiped = useRef(false)
+  const forget = () => {
+    swiped.current = false
+  }
   return {
-    onPointerDown: (event: PointerEvent) => {
-      start.current = fromFinger(event) ? pointOf(event) : null
+    handlers: {
+      onPointerDownCapture: (event: PointerEvent) => {
+        forget()
+        start.current = fromFinger(event) ? pointOf(event) : null
+      },
+      onPointerUpCapture: (event: PointerEvent) => {
+        const from = start.current
+        start.current = null
+        if (from === null || !isSwipeRight(from, pointOf(event))) return
+        swiped.current = true
+        onSwipe()
+      },
+      onPointerCancelCapture: () => {
+        start.current = null
+      },
+      onKeyDownCapture: forget,
+      onClickCapture: (event: MouseEvent) => {
+        if (swiped.current && event.detail > 0) event.stopPropagation()
+      }
     },
-    onPointerUp: (event: PointerEvent) => {
-      const from = start.current
-      start.current = null
-      if (from !== null && isSwipeRight(from, pointOf(event))) onSwipe()
-    },
-    onPointerCancel: () => {
-      start.current = null
-    }
+    wasSwipe: (): boolean => swiped.current
   }
 }

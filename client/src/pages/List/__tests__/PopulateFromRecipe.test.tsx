@@ -84,6 +84,36 @@ describe('swipe right on an Explore row', () => {
     expect(pickedIds()).toEqual(['dahl'])
   })
 
+  it('a swipe that starts and ends on the row button picks once; it is not also a tap that un-picks', () => {
+    renderList()
+    const button = explore().getByRole('button', { name: DAHL })
+    button.getBoundingClientRect = () => new DOMRect(0, 0, 300, 80)
+    const finger = { pointerType: 'touch', pointerId: 1, button: 0 }
+    fireEvent.pointerDown(button, { ...finger, clientX: 50, clientY: 40 })
+    fireEvent.pointerUp(button, { ...finger, clientX: 170, clientY: 40 })
+    expect(pickedIds()).toEqual(['dahl'])
+  })
+
+  it('a click that follows a swipe is swallowed; the keyboard still toggles afterwards', async () => {
+    const user = userEvent.setup()
+    renderList()
+    swipe(rowOf(DAHL), 120)
+    const button = explore().getByRole('button', { name: DAHL })
+    fireEvent.click(button, { detail: 1 })
+    expect(pickedIds()).toEqual(['dahl'])
+    button.focus()
+    await user.keyboard('{Enter}')
+    expect(pickedIds()).toEqual([])
+  })
+
+  it('a tap after a swipe still picks and un-picks as usual', async () => {
+    const user = userEvent.setup()
+    renderList()
+    swipe(rowOf(DAHL), 120)
+    await user.click(explore().getByRole('button', { name: DAHL }))
+    expect(pickedIds()).toEqual([])
+  })
+
   it('does not pick it a second time', () => {
     renderList()
     swipe(rowOf(DAHL), 120)

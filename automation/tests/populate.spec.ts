@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect, test } from './fixtures'
 import {
   DAHL,
@@ -14,9 +14,25 @@ import {
 
 const FROM = 'From a recipe'
 
+/** The row's box once it has stopped moving, so a finger lands where the row is. */
+const settledBox = async (target: Locator) => {
+  let previous = await target.boundingBox()
+  for (let tries = 0; tries < 20; tries++) {
+    await target.page().waitForTimeout(100)
+    const current = await target.boundingBox()
+    if (JSON.stringify(current) === JSON.stringify(previous)) return current
+    previous = current
+  }
+  throw new Error('the row never stopped moving')
+}
+
 /** A real touch swipe (finger down, moves, up) across the row, through the browser's touch input. */
 const swipeRight = async (page: Page, title: string, dx: number, dy = 0) => {
-  const box = await exploreRow(page, title).boundingBox()
+  const target = exploreRow(page, title)
+  await target.evaluate((el) =>
+    el.scrollIntoView({ block: 'center', behavior: 'instant' })
+  )
+  const box = await settledBox(target)
   if (box === null) throw new Error(`no box for ${title}`)
   const x = box.x + 40
   const y = box.y + box.height / 2

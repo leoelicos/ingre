@@ -94,18 +94,23 @@ export const RecipeRow: FC<{
   const open = controls.openIds.has(recipe.id)
   const detailsId = `${id}-details`
   const shown = useShownOnce(open)
-  const swipe = useSwipeRight(() => controls.onSwipePick?.(recipe))
+  const { handlers, wasSwipe } = useSwipeRight(() =>
+    controls.onSwipePick?.(recipe)
+  )
   return (
     <li
       data-recipe={recipe.id}
       className={`${rowClass(picked, controls.recessed)}${
         controls.onSwipePick === undefined ? '' : ' touch-pan-y'
       }`}
-      {...swipe}
+      {...handlers}
     >
       <ToggleButton
         isSelected={picked}
-        onChange={() => controls.onTogglePicked(recipe)}
+        onChange={() => {
+          if (wasSwipe()) return
+          controls.onTogglePicked(recipe)
+        }}
         aria-labelledby={`${id}-title`}
         className="flex min-h-[44px] items-start gap-3 rounded-l-card p-4 text-left data-[focus-visible]:focus-ring"
       >
