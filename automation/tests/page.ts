@@ -25,12 +25,12 @@ const scopeRegion = (page: Page, scope: Scope): Locator =>
 /** A chip; Ingredients unless a scope says otherwise. */
 export const chip = (page: Page, id: string, scope: Scope = 'chip'): Locator =>
   page.locator(`[data-scope="${scope}"][data-chip="${id}"]`)
-/** The chip's cross-off button: its spoken label is a comma list; the chevron's is not. */
+/** The chip's cross-off checkbox (#192): its spoken label is a comma list. */
 export const chipToggle = (
   page: Page,
   id: string,
   scope: Scope = 'chip'
-): Locator => chip(page, id, scope).getByRole('button', { name: /, / })
+): Locator => chip(page, id, scope).getByRole('checkbox')
 /** The chip's chevron, which opens its panel. */
 export const chevron = (
   page: Page,
@@ -89,38 +89,54 @@ export const exploreRow = (page: Page, title: string): Locator =>
 export const row = (page: Page, title: string): Locator =>
   recipesRegion(page).getByRole('button', { name: title, exact: true })
 
-/** A collapsible section's header button (vertical layout only). */
+/** A section heading. Sections do not collapse (#192). */
 export const section = (
   page: Page,
-  name: 'Ingredients' | 'Recipes' | 'Extra'
-) =>
-  page.getByRole('heading', { level: 2, name, exact: true }).getByRole('button')
+  name: 'Ingredients' | 'Recipes' | 'Extra' | 'Explore'
+) => page.getByRole('heading', { level: 2, name, exact: true })
 
+/** There is no layout toggle (#192). Kept so older specs can assert it is gone. */
 export const layoutToggle = (page: Page): Locator =>
   page.getByRole('radiogroup', { name: 'Layout' })
-/** Chooses a layout by its visible text (the radio itself is visually hidden). */
-export const chooseLayout = (page: Page, text: string) =>
-  layoutToggle(page)
-    .locator('label')
-    .filter({ hasText: new RegExp(`^${text}$`) })
-    .click()
+/** No-op: the workspace no longer has a layout choice (#192). */
+export const chooseLayout = async (_page: Page, _text: string) => {}
+/** No-op: every width uses the same sections (#192). */
+export const useVertical = async (_page: Page) => {}
 
-/** Explore's header row button, which expands and collapses it. */
-export const exploreHeader = (page: Page): Locator =>
-  explore(page)
-    .getByRole('heading', { level: 2, name: 'Explore', exact: true })
-    .getByRole('button')
-/** Explore's X, which collapses it (it never goes away). */
-export const hideX = (page: Page): Locator =>
-  explore(page).getByRole('button', { name: 'Hide Explore' })
-
-/** Expands Explore however this width shows it: the drawer strip, or the search bar. */
+/** Opens recipe discovery. Explore is not on the page until then (#192). */
 export const openExplore = async (page: Page) => {
-  if (await rail(page).isVisible()) await rail(page).click()
-  else if ((await exploreHeader(page).getAttribute('aria-expanded')) !== 'true')
-    await searchBox(page).click()
-  await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
+  if (await explore(page).isVisible()) return
+  await closeDiscovery(page)
+  await page.getByRole('button', { name: 'Find recipes' }).click()
+  await expect(explore(page)).toBeVisible()
 }
+
+/** Opens pantry discovery, where Extra and the plus live (#192). */
+export const openPantry = async (page: Page) => {
+  if (await extraRegion(page).isVisible()) return
+  await closeDiscovery(page)
+  await page.getByRole('button', { name: 'Add pantry item' }).click()
+  await expect(extraRegion(page)).toBeVisible()
+}
+
+export const closeDiscovery = async (page: Page) => {
+  const dialog = page.getByRole('dialog')
+  if (!(await dialog.isVisible())) return
+  const search = dialog.getByRole('searchbox')
+  if (await search.isVisible()) await search.fill('')
+  await page.keyboard.press('Escape')
+  if (await dialog.isVisible()) {
+    await dialog.getByRole('button', { name: 'Close', exact: true }).click()
+  }
+  await expect(dialog).toBeHidden()
+}
+
+/** Explore's heading inside discovery. It does not collapse (#192). */
+export const exploreHeader = (page: Page): Locator =>
+  explore(page).getByRole('heading', { level: 2, name: 'Explore', exact: true })
+/** Discovery's Close control (#192). */
+export const hideX = (page: Page): Locator =>
+  page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true })
 
 /** Picks recipes by ticking their rows in Explore. */
 export const pickRows = async (page: Page, ...titles: string[]) => {
@@ -132,11 +148,7 @@ export const pickRows = async (page: Page, ...titles: string[]) => {
       'true'
     )
   }
-}
-
-/** Uses the vertical layout when this width offers a choice, so sections can collapse. */
-export const useVertical = async (page: Page) => {
-  if (await layoutToggle(page).isVisible()) await chooseLayout(page, 'Vertical')
+  await closeDiscovery(page)
 }
 
 export const box = async (l: Locator) => {

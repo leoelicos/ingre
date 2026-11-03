@@ -1,319 +1,105 @@
 import '@testing-library/jest-dom'
-import { fireEvent, screen, within } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { resetViewport, setViewportWidth } from '../../../test/media'
-import { pick, region, renderList, searchBox } from '../../../test/renderList'
-import { SPLIT_KEY } from '../../../utils/layout/split'
-import { HIDE_EXPLORE } from '../Explore'
+import { pick, region, renderList } from '../../../test/renderList'
 
 beforeEach(() => localStorage.clear())
 afterEach(resetViewport)
 
-const layout = () => screen.queryByRole('radiogroup', { name: 'Layout' })
-const choices = () =>
-  within(screen.getByRole('radiogroup', { name: 'Layout' }))
-    .getAllByRole('radio')
-    .map((radio) => radio.getAttribute('aria-label'))
-const choose = (name: string) =>
-  fireEvent.click(screen.getByRole('radio', { name }))
-const grid = () => {
-  const found = document.querySelector<HTMLElement>('[data-split]')
-  if (found === null) throw new Error('no split grid')
+const workspace = () => {
+  const found = document.querySelector<HTMLElement>('[data-workspace]')
+  if (found === null) throw new Error('no workspace')
   return found
 }
-const sectionHeaderButtons = () =>
-  screen.queryAllByRole('button', { name: /^(Ingredients|Recipes|Extra)/ })
-const drawer = () =>
-  screen.queryByRole('complementary', { name: 'Explore drawer' })
 
-describe('Scenario: Mobile first, vertical below 576px (#181)', () => {
-  it('stacks the sections, offers no layout toggle, and keeps the collapse buttons, Extra too (#182, answer 15)', () => {
+describe('Scenario: One workspace (#192)', () => {
+  it('stacks Recipes above Ingredients below 576px and splits 50/50 from 576px', () => {
     setViewportWidth(575)
     renderList()
-    expect(layout()).toBeNull()
-    expect(grid()).toHaveAttribute('data-split', 'vertical')
-    expect(grid()).toHaveClass('grid-cols-1')
-    expect(sectionHeaderButtons()).toHaveLength(3)
-    const extra = screen.getByRole('button', { name: /^Extra/ })
-    fireEvent.click(extra)
-    expect(extra).toHaveAttribute('aria-expanded', 'false')
-    expect(drawer()).toBeNull()
-  })
-})
-
-describe('Scenario: Side by side from 576px (#181)', () => {
-  it('is 50/50 by default, with a right-aligned toggle of Vertical and 50/50', () => {
+    expect(screen.queryByRole('radiogroup', { name: 'Layout' })).toBeNull()
+    expect(workspace()).toHaveClass('grid-cols-1', 'min-[576px]:grid-cols-2')
+    const recipes = region('Recipes')
+    const ingredients = region('Ingredients')
+    expect(
+      recipes.compareDocumentPosition(ingredients) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(screen.queryByRole('button', { name: /^Ingredients/ })).toBeNull()
+    expect(screen.queryByRole('region', { name: 'Explore' })).toBeNull()
+    expect(screen.queryByRole('region', { name: 'Extra' })).toBeNull()
     setViewportWidth(576)
-    renderList()
-    expect(grid()).toHaveAttribute('data-split', '50/50')
-    expect(choices()).toEqual(['Vertical', 'Ingredients 50%, Recipes 50%'])
-    expect(layout()).toHaveClass('justify-end')
-    expect(
-      screen.getByRole('radio', { name: 'Ingredients 50%, Recipes 50%' })
-    ).toBeChecked()
-    // above the sections
-    expect(
-      (layout()?.compareDocumentPosition(region('Ingredients')) ?? 0) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
+    expect(workspace()).toHaveClass('min-[576px]:grid-cols-2')
   })
 
-  it('side by side, the headers keep the outline but are plain headings with no button or chevron', () => {
-    setViewportWidth(700)
+  it('pins the Ingredients header and keeps the last rows clear of the add button', () => {
+    renderList()
+    expect(region('Ingredients').querySelector('.sticky')).not.toBeNull()
+    expect(document.querySelector('main')).toHaveClass('pb-28')
+  })
+})
+
+describe('Scenario: Swipe to remove a recipe (#192)', () => {
+  const card = () => {
+    const found = document.querySelector<HTMLElement>('[data-recipe="dahl"]')
+    if (found === null) throw new Error('no card')
+    return found
+  }
+
+  it('a long horizontal drag removes it, and Undo puts the copy back', () => {
     pick('dahl')
     renderList()
-    expect(sectionHeaderButtons()).toHaveLength(0)
-    const heading = screen.getByRole('heading', {
-      level: 2,
-      name: 'Ingredients'
-    })
-    expect(heading.querySelector('svg')).toBeNull()
-    expect(heading.firstElementChild).toHaveClass('shadow-raised')
-    expect(region('Ingredients').querySelector('[data-chip]')).toBeVisible()
-    choose('Vertical')
-    expect(grid()).toHaveAttribute('data-split', 'vertical')
-    expect(sectionHeaderButtons()).toHaveLength(3)
-  })
-})
-
-const TWO_SPLITS = ['Vertical', 'Ingredients 50%, Recipes 50%']
-const QUARTER = 'Ingredients 25%, Recipes 75%'
-const THREE_QUARTERS = 'Ingredients 75%, Recipes 25%'
-const THIRDS = 'Ingredients 33%, Recipes 33%, Explore 33%'
-
-describe('Scenario: 25/75 and 75/25 only from 1328px (#193)', () => {
-  it.each([991, 992, 1100, 1327])(
-    'at %ipx the toggle offers only vertical and 50/50',
-    (width) => {
-      setViewportWidth(width)
-      renderList()
-      expect(choices()).toEqual(TWO_SPLITS)
-    }
-  )
-
-  it('at 1328px adds 25/75 and 75/25; 25/75 gives Ingredients a quarter', () => {
-    setViewportWidth(1328)
-    renderList()
-    expect(choices()).toEqual([...TWO_SPLITS, QUARTER, THIRDS, THREE_QUARTERS])
-    choose(QUARTER)
-    expect(grid()).toHaveClass('grid-cols-[minmax(0,1fr)_minmax(0,3fr)]')
-    choose(THREE_QUARTERS)
-    expect(grid()).toHaveAttribute('data-split', '75/25')
-  })
-
-  it.each([
-    [QUARTER, '25/75'],
-    [THREE_QUARTERS, '75/25']
-  ])(
-    'a saved %s falls back to 50/50 below 1328px, keeps the saved choice, and comes back at 1328px and after a refresh',
-    (name, split) => {
-      setViewportWidth(1328)
-      const first = renderList()
-      choose(name)
-      expect(localStorage.getItem(SPLIT_KEY)).toBe(`"${split}"`)
-      setViewportWidth(1100)
-      expect(grid()).toHaveAttribute('data-split', '50/50')
-      expect(
-        screen.getByRole('radio', { name: 'Ingredients 50%, Recipes 50%' })
-      ).toBeChecked()
-      expect(screen.queryByRole('radio', { name })).toBeNull()
-      expect(localStorage.getItem(SPLIT_KEY)).toBe(`"${split}"`)
-      setViewportWidth(500)
-      expect(grid()).toHaveAttribute('data-split', 'vertical')
-      setViewportWidth(1328)
-      expect(grid()).toHaveAttribute('data-split', split)
-      expect(screen.getByRole('radio', { name })).toBeChecked()
-      first.unmount()
-      renderList()
-      expect(grid()).toHaveAttribute('data-split', split)
-    }
-  )
-})
-
-const exploreHeader = () => screen.getByRole('button', { name: /^Explore/ })
-const banner = () => within(screen.getByRole('banner'))
-const column = () =>
-  document.querySelector<HTMLElement>('[data-explore-column]')
-const rail = () =>
-  screen.getByRole('button', { name: 'Search ingredients and recipes' })
-
-describe('Scenario: Explore inline below 1328px (#181)', () => {
-  it('at 1327px Explore is inline above the sections and the search bar stays in the header', () => {
-    setViewportWidth(1327)
-    renderList()
-    expect(drawer()).toBeNull()
-    expect(banner().getByRole('searchbox')).toBe(searchBox())
-    const main = screen.getByRole('main')
-    expect(within(main).getByRole('region', { name: 'Explore' })).toBe(
-      region('Explore')
+    expect(card()).toHaveClass(
+      'max-h-[calc(100dvh-22rem)]',
+      'overflow-y-auto',
+      'w-[85%]'
     )
+    fireEvent.pointerDown(card(), { clientX: 220, clientY: 40, button: 0 })
+    fireEvent.pointerUp(card(), { clientX: 40, clientY: 48, button: 0 })
+    expect(screen.getByText('Removed Red lentil dahl')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Red lentil dahl' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     expect(
-      region('Explore').compareDocumentPosition(region('Ingredients')) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-  })
-
-  it('at 1327px the toggle offers only vertical and 50/50, not 33/33/33', () => {
-    setViewportWidth(1327)
-    renderList()
-    expect(choices()).toEqual(TWO_SPLITS)
-  })
-})
-
-describe('Scenario: Explore drawer from 1328px (#181)', () => {
-  it('is a push column on the right holding the search bar; the split uses the space left', () => {
-    setViewportWidth(1328)
-    renderList()
-    const aside = drawer()
-    expect(aside).toHaveClass('w-[360px]', 'shrink-0')
-    expect(aside?.className).not.toMatch(/\b(absolute|fixed)\b/)
-    expect(within(aside ?? document.body).getByRole('searchbox')).toBe(
-      searchBox()
-    )
-    expect(banner().queryByRole('searchbox')).toBeNull()
-    expect(
-      within(aside ?? document.body).getByRole('region', { name: 'Explore' })
-    ).toBeVisible()
-    // the main column comes first, then the drawer on the right
-    const main = screen.getByRole('main')
-    expect(main.nextElementSibling).toBe(aside)
-    expect(
-      within(main).getByRole('radiogroup', { name: 'Layout' })
-    ).toBeVisible()
-  })
-
-  it('X shrinks it to a strip, focused, whose search button expands it and focuses the search box; Explore stays mounted', () => {
-    setViewportWidth(1328)
-    renderList()
-    fireEvent.click(screen.getByRole('button', { name: HIDE_EXPLORE }))
-    expect(drawer()).toHaveClass('w-14')
-    expect(document.getElementById('explore')).toBeInTheDocument()
-    expect(screen.queryByRole('region', { name: 'Explore' })).toBeNull()
-    expect(screen.queryByRole('searchbox')).toBeNull()
-    expect(rail()).toHaveFocus()
-    expect(rail()).toHaveAttribute('aria-expanded', 'false')
-    expect(rail()).toHaveAttribute('aria-controls', 'explore-drawer-content')
-    fireEvent.click(rail())
-    expect(drawer()).toHaveClass('w-[360px]')
-    expect(searchBox()).toHaveFocus()
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-  })
-
-  it('starts as the strip when something is selected, with Explore still mounted', () => {
-    setViewportWidth(1328)
-    pick('dahl')
-    renderList()
-    expect(drawer()).toHaveClass('w-14')
-    expect(document.getElementById('explore')).toBeInTheDocument()
-    expect(screen.queryByRole('region', { name: 'Explore' })).toBeNull()
-  })
-
-  it('the header search shows on other pages at wide widths', () => {
-    setViewportWidth(1328)
-    renderList('/elsewhere')
-    expect(banner().getByRole('searchbox')).toBeInTheDocument()
-  })
-
-  it('its header row collapses it to the strip as well', () => {
-    setViewportWidth(1328)
-    renderList()
-    fireEvent.click(exploreHeader())
-    expect(drawer()).toHaveClass('w-14')
-    expect(rail()).toHaveFocus()
-  })
-
-  it('moves inline when the window shrinks to 1327px, and back when it grows', () => {
-    setViewportWidth(1328)
-    renderList()
-    setViewportWidth(1327)
-    expect(drawer()).toBeNull()
-    expect(banner().getByRole('searchbox')).toBe(searchBox())
-    expect(region('Explore')).toBeVisible()
-    setViewportWidth(1328)
-    expect(drawer()).not.toBeNull()
-    expect(banner().queryByRole('searchbox')).toBeNull()
-  })
-})
-
-describe('Scenario: 33/33/33 from 1328px', () => {
-  it('is offered next to 25/75 and makes Explore the third equal column, with the search bar above it', () => {
-    setViewportWidth(1328)
-    pick('dahl')
-    renderList()
-    expect(choices()).toEqual([
-      'Vertical',
-      'Ingredients 50%, Recipes 50%',
-      'Ingredients 25%, Recipes 75%',
-      THIRDS,
-      'Ingredients 75%, Recipes 25%'
-    ])
-    expect(
-      screen.getByRole('radio', { name: THIRDS }).closest('label')
-    ).toHaveTextContent('33/33/33')
-    choose(THIRDS)
-    expect(localStorage.getItem(SPLIT_KEY)).toBe('"33/33/33"')
-    expect(grid()).toHaveAttribute('data-split', '33/33/33')
-    expect(grid()).toHaveClass(
-      'grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]'
-    )
-    expect(drawer()).toBeNull()
-    expect(banner().queryByRole('searchbox')).toBeNull()
-    const third = column()
-    expect(grid().lastElementChild).toBe(third)
-    expect(Array.from(grid().children)).toHaveLength(3)
-    expect(grid().firstElementChild).toBe(region('Ingredients'))
-    expect(grid().children[1]).toContainElement(region('Extra'))
-    expect(
-      within(third ?? document.body).getByRole('searchbox')
+      screen.getByRole('button', { name: 'Red lentil dahl' })
     ).toBeInTheDocument()
-    // choosing it shows Explore, expanded
+  })
+
+  it('a short drag, or the Remove button, and a drag that scrolls, do not surprise-delete', () => {
+    pick('dahl')
+    renderList()
+    fireEvent.pointerDown(card(), { clientX: 80, clientY: 40, button: 0 })
+    fireEvent.pointerUp(card(), { clientX: 100, clientY: 44, button: 0 })
     expect(
-      within(third ?? document.body).getByRole('region', { name: 'Explore' })
-    ).toBeVisible()
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
+      screen.getByRole('button', { name: 'Red lentil dahl' })
+    ).toBeInTheDocument()
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Remove Red lentil dahl' })
+    )
+    expect(screen.getByText('Removed Red lentil dahl')).toBeInTheDocument()
   })
 
-  it('in the column, X collapses Explore to its header row, which expands it again', () => {
-    setViewportWidth(1328)
+  it('ignores a secondary button, a cancelled drag, and a drag in Explore', () => {
+    pick('dahl')
     renderList()
-    choose(THIRDS)
-    fireEvent.click(screen.getByRole('button', { name: HIDE_EXPLORE }))
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(exploreHeader()).toHaveFocus()
-    expect(column()).not.toBeNull()
-    expect(region('Explore')).toBeVisible()
-    fireEvent.click(exploreHeader())
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-  })
-
-  it('a saved 33/33/33 shows as 50/50 at 1327px and comes back at 1328px, and after a refresh', () => {
-    setViewportWidth(1328)
-    const first = renderList()
-    choose(THIRDS)
-    setViewportWidth(1327)
-    expect(grid()).toHaveAttribute('data-split', '50/50')
+    fireEvent.pointerMove(card(), { clientX: 10, clientY: 10, button: 0 })
+    fireEvent.pointerUp(card(), { clientX: 10, clientY: 10, button: 0 })
+    fireEvent.pointerDown(card(), { clientX: 200, clientY: 40, button: 2 })
+    fireEvent.pointerMove(card(), { clientX: 40, clientY: 40, button: 2 })
+    expect(card().style.transform).toBe('')
+    fireEvent.pointerDown(card(), { clientX: 200, clientY: 40, button: 0 })
+    fireEvent.pointerMove(card(), { clientX: 140, clientY: 44, button: 0 })
+    expect(card().style.transform).toBe('translateX(-60px)')
+    fireEvent.pointerCancel(card())
+    expect(card().style.transform).toBe('')
     expect(
-      screen.getByRole('radio', { name: 'Ingredients 50%, Recipes 50%' })
-    ).toBeChecked()
-    expect(column()).toBeNull()
-    expect(region('Explore')).toBeVisible()
-    expect(banner().getByRole('searchbox')).toBe(searchBox())
-    setViewportWidth(1328)
-    expect(grid()).toHaveAttribute('data-split', '33/33/33')
-    expect(column()).not.toBeNull()
-    first.unmount()
-    setViewportWidth(1327)
-    renderList()
-    expect(grid()).toHaveAttribute('data-split', '50/50')
-    setViewportWidth(1328)
-    expect(grid()).toHaveAttribute('data-split', '33/33/33')
-  })
-
-  it('choosing another split moves Explore back to the drawer', () => {
-    setViewportWidth(1328)
-    renderList()
-    choose(THIRDS)
-    choose('Ingredients 50%, Recipes 50%')
-    expect(column()).toBeNull()
-    expect(drawer()).toHaveClass('w-[360px]')
+      screen.getByRole('button', { name: 'Red lentil dahl' })
+    ).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Find recipes' }))
+    const exploreRow = screen
+      .getByRole('dialog', { name: 'Find recipes' })
+      .querySelector<HTMLElement>('[data-recipe="dahl"]')
+    if (exploreRow === null) throw new Error('no explore row')
+    fireEvent.pointerDown(exploreRow, { clientX: 200, clientY: 20, button: 0 })
+    fireEvent.pointerUp(exploreRow, { clientX: 20, clientY: 20, button: 0 })
+    expect(exploreRow).toBeInTheDocument()
   })
 })

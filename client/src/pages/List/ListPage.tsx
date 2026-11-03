@@ -1,33 +1,25 @@
 import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { PageMain } from '../../components/SkipLink'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 import { changeTitle } from '../../utils/changeTitle'
 import { useChips } from '../../utils/chips/useChips'
 import { useExplore } from '../../utils/explore/ExploreContext'
-import type { Split } from '../../utils/layout/split'
-import { SPLIT_COLUMNS, explorePlacement } from '../../utils/layout/split'
-import { useSplit } from '../../utils/layout/useSplit'
 import { useSaved } from '../../utils/saved/useSaved'
-import type { ExploreProps } from './Explore'
-import {
-  EXPLORE_TOGGLE_ID,
-  Explore,
-  ExploreColumn,
-  ExploreDrawer
-} from './Explore'
-import { Extra } from './Extra'
+import { Discovery } from './Discovery'
+import type { DiscoveryMode } from './Discovery'
+import { openerFrom } from './gestures'
 import {
   INGREDIENTS_HEADING_ID,
   INGREDIENTS_ID,
   Ingredients,
   useIngredients
 } from './Ingredients'
-import { LayoutToggle } from './LayoutToggle'
 import { Recipes } from './Recipes'
 import { ScrollToTop } from './ScrollToTop'
-import { PageMain } from '../../components/SkipLink'
+import { WorkspaceFab } from './WorkspaceFab'
 
 /** "?saved=1" from the Saved account link or old Saved links: Explore's Saved filter (#181). */
 export const savedParam = (params: URLSearchParams): boolean =>
@@ -44,14 +36,9 @@ export const withSaved = (
   return next
 }
 
-/** Choosing 33/33/33 shows Explore, expanded, as the third column. */
-export const showsExplore = (split: Split): boolean => split === '33/33/33'
-
 /**
- * The one page (#179, #181, #182): Explore, then Ingredients, Recipes and Extra, stacked or
- * side by side (Ingredients on the left; Recipes with Extra under it on the right). From 1328px
- * Explore is a drawer column on the right, or with 33/33/33 the third equal column. Explore is
- * always on the page: on load it is expanded when nothing is selected, collapsed otherwise.
+ * The workspace (#192): Recipes and Ingredients, side by side from 576px and stacked
+ * (Recipes first) below that. Search, Explore and Extra open from discovery, not the page.
  */
 export const ListPage: FC = () => {
   const t = useT()
@@ -59,73 +46,54 @@ export const ListPage: FC = () => {
   const explore = useExplore()
   const list = useChips()
   const ingredients = useIngredients(list)
-  const { split, options, drawer, choose } = useSplit()
   const [params, setParams] = useSearchParams()
   const savedOnly = savedParam(params)
   const loggedIn = useAuthContext()[0].loggedIn
   const savedState = useSaved(loggedIn)
   const saved = loggedIn ? savedState : null
-  /* on load, Explore is expanded when nothing is selected (or Saved was asked for) */
-  const [expandedOnLoad] = useState(
-    () => list.entries.length === 0 || savedOnly
-  )
-  const expanded = explore.expanded ?? expandedOnLoad
-  const placement = explorePlacement(drawer, split)
-  const vertical = split === 'vertical'
-  const exploreProps: ExploreProps = {
-    ingredients,
-    rows: {
-      pickedIds: list.pickedIds,
-      onTogglePicked: list.togglePicked
-    },
-    saved,
-    savedOnly,
-    onSaved: (on) => setParams(withSaved(params, on))
+  const [discovery, setDiscovery] = useState<DiscoveryMode | null>(null)
+  const opener = useRef<HTMLElement | null>(null)
+  const exploreRef = useRef(explore)
+  exploreRef.current = explore
+  useEffect(() => {
+    if (!savedOnly) return
+    setDiscovery('recipe')
+    exploreRef.current.show()
+    exploreRef.current.requestFocus()
+  }, [savedOnly])
+  useEffect(() => {
+    if (!explore.focusPending) return
+    setDiscovery('recipe')
+    exploreRef.current.show()
+  }, [explore.focusPending])
+
+  const open = (mode: DiscoveryMode) => {
+    opener.current = openerFrom(document.activeElement)
+    setDiscovery(mode)
+    exploreRef.current.show()
+    if (mode === 'recipe') exploreRef.current.requestFocus()
+  }
+  const close = () => {
+    setDiscovery(null)
+    exploreRef.current.collapse()
   }
   return (
-    <div className="mx-auto flex w-full max-w-layout gap-6 px-gutter">
-      <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-24 pt-4">
+    <div className="mx-auto flex w-full max-w-layout px-gutter">
+      <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-28 pt-4">
         <h1 className="sr-only">{t('list.title')}</h1>
-        {placement === 'inline' && (
-          <Explore
-            {...exploreProps}
-            expanded={expanded}
-            collapseFocusId={EXPLORE_TOGGLE_ID}
-          />
-        )}
-        <LayoutToggle
-          split={split}
-          options={options}
-          onChange={(next) => {
-            if (showsExplore(next)) explore.show()
-            choose(next)
-          }}
-        />
         <div
-          data-split={split}
-          className={`grid items-start gap-6 ${SPLIT_COLUMNS[split]}`}
+          data-workspace=""
+          className="grid grid-cols-1 items-start gap-6 min-[576px]:grid-cols-2"
         >
+          <Recipes
+            list={list}
+            saved={saved}
+            onFind={() => open('recipe')}
+          />
           <Ingredients
             state={ingredients}
-            collapsible={vertical}
+            onAdd={() => open('pantry')}
           />
-          <div className="flex min-w-0 flex-col gap-6">
-            <Recipes
-              list={list}
-              saved={saved}
-              collapsible={vertical}
-            />
-            <Extra
-              state={ingredients}
-              collapsible={vertical}
-            />
-          </div>
-          {placement === 'column' && (
-            <ExploreColumn
-              {...exploreProps}
-              expanded={expanded}
-            />
-          )}
         </div>
         <p
           role="status"
@@ -133,17 +101,32 @@ export const ListPage: FC = () => {
         >
           {[ingredients.message, saved?.error ?? ''].join(' ').trim()}
         </p>
+        <WorkspaceFab
+          watchId={INGREDIENTS_ID}
+          onRecipe={() => open('recipe')}
+          onPantry={() => open('pantry')}
+        />
         <ScrollToTop
           watchId={INGREDIENTS_ID}
           headingId={INGREDIENTS_HEADING_ID}
         />
-      </PageMain>
-      {placement === 'drawer' && (
-        <ExploreDrawer
-          {...exploreProps}
-          expanded={expanded}
+        <Discovery
+          mode={discovery}
+          opener={opener}
+          onClose={close}
+          explore={{
+            ingredients,
+            rows: {
+              pickedIds: list.pickedIds,
+              onTogglePicked: list.togglePicked
+            },
+            saved,
+            savedOnly,
+            onSaved: (on) => setParams(withSaved(params, on))
+          }}
+          ingredients={ingredients}
         />
-      )}
+      </PageMain>
     </div>
   )
 }

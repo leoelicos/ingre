@@ -11,6 +11,7 @@ import userEvent from '@testing-library/user-event'
 import {
   chevronOf,
   chip,
+  ensureExtra,
   explore,
   hasChipEl,
   panel,
@@ -273,11 +274,11 @@ describe('Feature: Extra (#182)', () => {
     renderList()
     await user.click(explore().getByRole('button', { name: 'Red lentil dahl' }))
     await user.click(toggleOf('salt', 'extra'))
-    expect(toggleOf('salt')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('salt')).toBeChecked()
     await openRow(user, 'Red lentil dahl')
-    expect(toggleOf('salt', 'row-dahl')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('salt', 'row-dahl')).toBeChecked()
     await user.click(toggleOf('salt', 'row-dahl'))
-    expect(toggleOf('salt', 'extra')).toHaveAttribute('aria-pressed', 'false')
+    expect(toggleOf('salt', 'extra')).not.toBeChecked()
   })
 
   it('Scenario: The Extra filter offers category and crossed off, with Clear', async () => {
@@ -326,6 +327,7 @@ describe('Feature: Extra (#182)', () => {
       ])
     )
     renderList()
+    ensureExtra()
     const candles = document.querySelector<HTMLElement>(
       '[data-scope="extra"][data-category="Other"]'
     )
@@ -481,7 +483,7 @@ describe('Feature: Recipe copies (#182)', () => {
     renderList()
     const row = await openRow(user, 'Red lentil dahl')
     await user.click(toggleOf('tomato', 'row-dahl'))
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('tomato')).toBeChecked()
     await user.click(chevronOf('tomato', 'row-dahl'))
     await setBox(user, box('Tomatoes details', /^Red lentil dahl, /), '0')
     await answer(user, 'Remove tomatoes from Red lentil dahl?', 'Yes')

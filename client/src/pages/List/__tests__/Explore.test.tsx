@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { savedQuery, savedRecipe } from '../../../test/savedMocks'
 import {
@@ -14,7 +14,7 @@ import {
   renderList,
   searchBox
 } from '../../../test/renderList'
-import { HIDE_EXPLORE } from '../Explore'
+import { focusableIn } from '../gestures'
 
 beforeEach(() => localStorage.clear())
 
@@ -52,103 +52,108 @@ const signIn = () =>
   fireEvent.click(screen.getByRole('button', { name: 'Pretend login' }))
 const openFilter = () =>
   fireEvent.click(
-    within(screen.getByRole('toolbar', { name: 'Explore actions' })).getByRole(
-      'button',
-      { name: /^Filter/ }
-    )
+    within(
+      explore().getByRole('toolbar', { name: 'Explore actions' })
+    ).getByRole('button', { name: /^Filter/ })
   )
 
-describe('Scenario: Explore is always on the page (#181)', () => {
-  it('is expanded on load when nothing is selected: an inline, labelled region that pushes content down', () => {
+describe('Scenario: Discovery holds Explore (#192)', () => {
+  it('keeps Explore off the page until Find recipes opens the dialog', () => {
     renderList()
-    const area = region('Explore')
-    expect(area.tagName).toBe('SECTION')
-    expect(area).toHaveClass('shadow-raised')
-    expect(area.className).not.toMatch(/\b(absolute|fixed)\b/)
     expect(screen.queryByRole('dialog')).toBeNull()
-    // Explore comes before the sections, in the flow
-    expect(
-      area.compareDocumentPosition(region('Ingredients')) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    expect(exploreHeader()).toHaveAttribute('aria-controls', 'explore-content')
-    expect(document.getElementById('explore-content')).toBeVisible()
+    expect(screen.queryByRole('region', { name: 'Explore' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Find recipes' }))
+    const dialog = screen.getByRole('dialog', { name: 'Find recipes' })
+    expect(dialog).toBeInTheDocument()
+    expect(region('Explore').tagName).toBe('SECTION')
+    expect(exploreHeader()).toHaveTextContent('Explore')
+    expect(searchBox()).toHaveFocus()
   })
 
-  it('is collapsed on load when something is selected, but still there; search focus expands it', () => {
-    pick('dahl')
+  it('opens from the add button when Ingredients is not in view', () => {
     renderList()
-    expect(region('Explore')).toBeVisible()
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(document.getElementById('explore-content')).not.toBeVisible()
-    expect(screen.queryByRole('button', { name: HIDE_EXPLORE })).toBeNull()
-    act(() => searchBox().focus())
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
+    fireEvent.click(screen.getByRole('button', { name: '+ Recipe' }))
+    expect(
+      screen.getByRole('dialog', { name: 'Find recipes' })
+    ).toBeInTheDocument()
   })
 
-  it('expands when typing', async () => {
+  it('Escape clears a search first, then closes and returns focus', async () => {
     const user = userEvent.setup()
-    pick('dahl')
     renderList()
-    act(() => searchBox().blur())
-    fireEvent.change(searchBox(), { target: { value: 'dahl' } })
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    await user.clear(searchBox())
-    expect(
-      explore().getByRole('heading', { name: 'Browse recipes' })
-    ).toBeVisible()
+    const find = screen.getByRole('button', { name: 'Find recipes' })
+    await user.click(find)
+    await user.type(searchBox(), 'beef')
+    await user.keyboard('{Escape}')
+    expect(searchBox()).toHaveValue('')
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(find).toHaveFocus()
+  })
+
+  it('closes from the Close button and from the backdrop', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await user.click(screen.getByRole('button', { name: 'Find recipes' }))
+    await user.click(screen.getByRole('button', { name: 'Close' }))
+    expect(screen.queryByRole('dialog')).toBeNull()
+    await user.click(screen.getByRole('button', { name: '+ Recipe' }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.pointerDown(dialog.parentElement ?? dialog)
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('a downward drag on the handle closes the sheet; a sideways drag does not', () => {
+    renderList()
+    fireEvent.click(screen.getByRole('button', { name: 'Find recipes' }))
+    const dialog = screen.getByRole('dialog')
+    const handle = dialog.firstElementChild
+    if (!(handle instanceof HTMLElement)) throw new Error('no handle')
+    fireEvent.pointerUp(handle, { clientX: 1, clientY: 1 })
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    fireEvent.pointerDown(handle, { clientX: 10, clientY: 10, pointerId: 1 })
+    fireEvent.pointerUp(handle, { clientX: 80, clientY: 20, pointerId: 1 })
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    fireEvent.pointerDown(handle, { clientX: 10, clientY: 10, pointerId: 1 })
+    fireEvent.pointerUp(handle, { clientX: 14, clientY: 120, pointerId: 1 })
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('keeps Tab inside the dialog', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await user.click(screen.getByRole('button', { name: 'Find recipes' }))
+    const items = focusableIn(screen.getByRole('dialog'))
+    const first = items[0]
+    const second = items[1]
+    const last = items[items.length - 1]
+    if (first === undefined || second === undefined || last === undefined) {
+      throw new Error('no focusables')
+    }
+    last.focus()
+    await user.keyboard('{Tab}')
+    expect(first).toHaveFocus()
+    await user.keyboard('{Shift>}{Tab}{/Shift}')
+    expect(last).toHaveFocus()
+    first.focus()
+    await user.tab()
+    expect(second).toHaveFocus()
   })
 })
 
-describe('Scenario: Explore collapses, never goes away (#181)', () => {
-  it('stays expanded on an outside click and Escape; X collapses it to its header row and focuses that', async () => {
-    const user = userEvent.setup()
+describe('Scenario: Pantry discovery (#192)', () => {
+  it('opens Extra from Add pantry item, not on the workspace', () => {
     renderList()
-    await user.click(screen.getByRole('heading', { level: 1, hidden: true }))
-    fireEvent.pointerDown(document.body)
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    explore()
-      .getByRole('button', { name: /^Filter/ })
-      .focus()
-    await user.keyboard('{Escape}')
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    const hide = screen.getByRole('button', { name: HIDE_EXPLORE })
-    expect(hide).toHaveAttribute('aria-controls', 'explore-content')
-    await user.click(hide)
-    expect(region('Explore')).toBeVisible()
-    expect(screen.getByRole('heading', { name: 'Explore' })).toBeVisible()
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(exploreHeader()).toHaveFocus()
-    expect(screen.queryByRole('button', { name: HIDE_EXPLORE })).toBeNull()
-    await user.click(exploreHeader())
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    expect(exploreHeader()).toHaveFocus()
-  })
-
-  it('keeps what is inside while collapsed: an open filter is still open when it expands', async () => {
-    const user = userEvent.setup()
-    renderList()
-    openFilter()
-    await user.click(screen.getByRole('button', { name: HIDE_EXPLORE }))
-    await user.click(exploreHeader())
-    expect(explore().getByRole('switch', { name: 'Saved' })).toBeVisible()
-  })
-
-  it('the header row collapses the results but keeps the header; search focus or typing expands it', async () => {
-    const user = userEvent.setup()
-    renderList()
-    await user.click(exploreHeader())
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(exploreHeader()).toHaveClass('shadow-raised')
-    expect(explore().queryByRole('switch', { name: 'Saved' })).toBeNull()
-    act(() => searchBox().focus())
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('button', { name: HIDE_EXPLORE })).toBeVisible()
-    await user.click(exploreHeader())
-    act(() => searchBox().blur())
-    fireEvent.change(searchBox(), { target: { value: 'b' } })
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.queryByRole('region', { name: 'Extra' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Add pantry item' }))
+    expect(
+      screen.getByRole('dialog', { name: 'Add pantry item' })
+    ).toBeInTheDocument()
+    expect(region('Extra')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Add an ingredient' })
+    ).toBeInTheDocument()
   })
 })
 

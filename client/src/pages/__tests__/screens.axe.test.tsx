@@ -49,6 +49,7 @@ describe('All screens accessibility (axe)', () => {
   it('Explore browsing, with an open See recipe row, has no axe violations (#181)', async () => {
     localStorage.clear()
     const { container } = renderScreen(<ListPage />, '/')
+    fireEvent.click(screen.getByRole('button', { name: 'Find recipes' }))
     fireEvent.click(
       screen.getByRole('button', { name: 'See recipe: Red lentil dahl' })
     )
@@ -94,6 +95,7 @@ describe('All screens accessibility (axe)', () => {
     )
     const { container } = renderScreen(<ListPage />, '/')
     fireEvent.click(screen.getByRole('button', { name: 'Brown onion details' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add pantry item' }))
     fireEvent.click(screen.getByRole('button', { name: 'Add an ingredient' }))
     fireEvent.click(
       screen.getByRole('button', { name: 'Red lentil dahl details' })

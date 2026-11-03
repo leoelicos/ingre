@@ -212,7 +212,7 @@ const CopyChips: FC<{ entry: CopyEntry; list: ChipsState; chips: Chip[] }> = ({
         chips={chips}
         view={view}
       />
-      <div>
+      <div className="flex flex-col">
         <PlusButton
           id={addId}
           areaId={`${addId}-area`}

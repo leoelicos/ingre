@@ -4,17 +4,13 @@ import { useEffect, useState } from 'react'
 import { Button } from 'react-aria-components'
 import { focusById, scrollToStartOf } from '../../utils/focus'
 
-/** True once the chips have scrolled up out of view (not when they are below the screen). */
+/** True once the top of the chips has left the screen (the list may still be in view). */
 export const isScrolledPast = (
-  entry: Pick<
-    IntersectionObserverEntry,
-    'isIntersecting' | 'boundingClientRect'
-  >
-): boolean => !entry.isIntersecting && entry.boundingClientRect.top < 0
+  entry: Pick<IntersectionObserverEntry, 'boundingClientRect'>
+): boolean => entry.boundingClientRect.top < 0
 
-/** True while the element's box sits wholly above the screen. */
-export const isAbove = (rect: Pick<DOMRect, 'bottom'>): boolean =>
-  rect.bottom < 0
+/** True once the element's top has left the screen. */
+export const isAbove = (rect: Pick<DOMRect, 'top'>): boolean => rect.top < 0
 
 /**
  * Watches the element with this id; true while it is scrolled up out of view. The observer
@@ -41,9 +37,9 @@ export const useScrolledPast = (id: string): boolean => {
 }
 
 /**
- * Scroll to top (#179): shows once the chips are out of view. Scrolls the chips back to the top of
- * the screen (Explore may sit above them, #181) and
- * moves focus to the Ingredients heading, so keyboard and screen reader users land there too.
+ * Scroll to top (#179, #192): shows once the Ingredients section has started to leave the
+ * screen, including on a phone where that section is last and never wholly disappears.
+ * Scrolls the chips back to the top and moves focus to the Ingredients heading.
  */
 export const ScrollToTop: FC<{ watchId: string; headingId: string }> = ({
   watchId,
@@ -58,7 +54,7 @@ export const ScrollToTop: FC<{ watchId: string; headingId: string }> = ({
         scrollToStartOf(watchId)
         focusById(headingId)
       }}
-      className="fixed bottom-4 right-4 z-10 inline-flex h-12 w-12 items-center justify-center rounded-pill bg-primary text-xl text-on-primary shadow-raised data-[focus-visible]:focus-ring"
+      className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-4 z-10 inline-flex h-12 w-12 items-center justify-center rounded-pill bg-primary text-xl text-on-primary shadow-raised data-[focus-visible]:focus-ring"
     >
       <span aria-hidden="true">↑</span>
     </Button>

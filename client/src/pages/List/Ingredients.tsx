@@ -102,12 +102,11 @@ export const sourceActions = (
 
 /**
  * Everything the Ingredients section shares with Extra and Explore (#181, #182): the open
- * chip panel, the section's open state, and picking a catalogue item (from the plus or an
- * Explore result). It goes into Extra at 1; one already on the list is scrolled to and opened.
+ * chip panel, and picking a catalogue item (from the plus or an Explore result). It goes
+ * into Extra at 1; one already on the list is scrolled to and opened.
  */
 export const useIngredients = (list: ChipsState) => {
   const { panel, show } = usePanel()
-  const [open, setOpen] = useState(true)
   const [message, setMessage] = useState('')
   const [filter, setFilter] = useState<ChipFilter>(NO_CHIP_FILTER)
   const focusAfterRender = useFocusAfterRender()
@@ -115,7 +114,6 @@ export const useIngredients = (list: ChipsState) => {
     const onList = list.hasChip(item.id)
     list.addExtra(item)
     if (onList) {
-      setOpen(true)
       setFilter(NO_CHIP_FILTER)
       show(item.id)
       focusAfterRender({ kind: 'reveal', id: chipChevronId(item.id) })
@@ -129,8 +127,6 @@ export const useIngredients = (list: ChipsState) => {
   return {
     list,
     panel,
-    open,
-    toggle: () => setOpen(!open),
     message,
     setMessage,
     filter,
@@ -202,11 +198,11 @@ const RefreshQuestion: FC<{ onYes: () => void; onDone: () => void }> = ({
 const FILTER_ID = `${INGREDIENTS_ID}-filter`
 export const REFRESH_ID = 'refresh'
 
-/** The Ingredients section (#179, #182): actions, filter, and the chips by category. */
+/** The Ingredients section (#179, #182, #192): actions, filter, and the chips by category. */
 export const Ingredients: FC<{
   state: IngredientsState
-  collapsible: boolean
-}> = ({ state, collapsible }) => {
+  onAdd: () => void
+}> = ({ state, onAdd }) => {
   const t = useT()
   const { list, filter, setFilter } = state
   const [filterOpen, setFilterOpen] = useState(false)
@@ -217,10 +213,16 @@ export const Ingredients: FC<{
     <Section
       id={INGREDIENTS_ID}
       title={t('ingredients.title')}
-      collapsible={collapsible}
-      open={state.open}
-      onToggle={state.toggle}
+      sticky
       summary={ingredientsSummary(list.chips)}
+      action={
+        <Button
+          onPress={onAdd}
+          className={ACTION_BUTTON}
+        >
+          {t('ingredients.addPantry')}
+        </Button>
+      }
     >
       <div className="flex flex-col gap-4">
         <ActionsRow label={t('ingredients.actions')}>

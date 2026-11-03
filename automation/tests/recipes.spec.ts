@@ -2,6 +2,7 @@ import { expect, test } from './fixtures'
 import {
   DAHL,
   chevron,
+  chip,
   chipToggle,
   explore,
   openExplore,
@@ -52,10 +53,7 @@ test.describe('recipes (#181)', () => {
     ).toEqual([...DAHL_INGREDIENTS].sort())
     // a tap crosses off; the chevron opens the recipe's box (#182, answer 27)
     await chipToggle(page, 'tomato', 'row-dahl').click()
-    await expect(chipToggle(page, 'tomato')).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    await expect(chipToggle(page, 'tomato')).toBeChecked()
     await chevron(page, 'tomato', 'row-dahl').click()
     await expect(
       sourceBox(panel(page, 'Tomatoes', 'row-dahl'), DAHL)
@@ -69,7 +67,7 @@ test.describe('recipes (#181)', () => {
     await recipesRegion(page)
       .getByRole('button', { name: `${DAHL} details` })
       .click()
-    const lentils = chipToggle(page, 'red-lentils', 'row-dahl')
+    const lentils = chip(page, 'red-lentils', 'row-dahl')
     await expect(lentils).toContainText('150 g')
     await chevron(page, 'butter', 'row-dahl').click()
     await setBox(sourceBox(panel(page, 'Butter', 'row-dahl'), DAHL), '30')
@@ -86,7 +84,7 @@ test.describe('recipes (#181)', () => {
       recipesRegion(page).getByText('Butter 30 g → 60 g')
     ).toBeVisible()
     await expect(recipesRegion(page).getByText('Portions 2 → 4')).toBeVisible()
-    await expect(chipToggle(page, 'red-lentils')).toContainText('300 g')
+    await expect(chip(page, 'red-lentils')).toContainText('300 g')
     await openExplore(page)
     await explore(page)
       .getByRole('button', { name: `See recipe: ${DAHL}` })

@@ -1,7 +1,7 @@
 import { useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
 import { useLayoutEffect, useRef } from 'react'
-import { Button, ToggleButton } from 'react-aria-components'
+import { Button } from 'react-aria-components'
 import {
   COLLAPSE_INNER,
   Chevron,
@@ -68,20 +68,22 @@ const ChipCheck: FC<{ crossed: boolean }> = ({ crossed }) => (
 )
 
 /**
- * The chip itself: a tap anywhere, the checkbox included, crosses off or restores (#181). A
- * greyed chip (removed from every recipe) can't be crossed off (#182).
+ * The chip itself (#192): a label wrapping a checkbox, so a tap anywhere on the row
+ * crosses it off. At least 44px tall. A greyed chip can't be crossed off.
  */
 const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
   const amount = view.amountOf(chip)
   return (
-    <ToggleButton
-      id={chipToggleId(chip.id, view.scope)}
-      isSelected={chip.crossed}
-      isDisabled={chip.greyed}
-      onChange={() => view.onToggle(chip.id)}
-      aria-label={chipLabel(chip, amount)}
-      className="flex min-h-[44px] items-center gap-2 rounded-l-pill py-1 pl-3 pr-1 text-left data-[focus-visible]:focus-ring"
-    >
+    <label className="relative flex min-h-[44px] flex-1 items-center gap-2 rounded-l-pill py-1 pl-3 pr-1 text-left has-[:focus-visible]:focus-ring">
+      <input
+        id={chipToggleId(chip.id, view.scope)}
+        type="checkbox"
+        checked={chip.crossed}
+        disabled={chip.greyed}
+        aria-label={chipLabel(chip, amount)}
+        onChange={() => view.onToggle(chip.id)}
+        className="absolute inset-0 z-10 m-0 cursor-pointer opacity-0 data-[focus-visible]:focus-ring"
+      />
       <ChipCheck crossed={chip.crossed} />
       <span
         className={`flex flex-col leading-tight ${
@@ -91,7 +93,7 @@ const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
         <span className="font-semibold">{displayName(chip)}</span>
         <span className="text-xs">{amount}</span>
       </span>
-    </ToggleButton>
+    </label>
   )
 }
 

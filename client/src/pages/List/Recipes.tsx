@@ -1,7 +1,8 @@
 import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
 import { useState } from 'react'
-import type { CopyLine } from '../../utils/balance/copies'
+import { splitTitle } from '../../components/recipeTitle'
+import type { CopyLine, RecipeCopy } from '../../utils/balance/copies'
 import { usedLines } from '../../utils/balance/copies'
 import type { CopyEntry } from '../../utils/chips/chips'
 import { rowChips } from '../../utils/chips/chips'
@@ -13,13 +14,15 @@ import {
   recipeMatches
 } from '../../utils/filters/filters'
 import type { SavedState } from '../../utils/saved/useSaved'
-import type { FilterOption } from './Filters'
+import { Button } from 'react-aria-components'
 import {
+  ACTION_BUTTON,
   ActionsRow,
   FilterButton,
   HiddenNote,
   RecipeFilterPanel
 } from './Filters'
+import type { FilterOption } from './Filters'
 import { recipeCount } from './recipeFilter'
 import { RecipeRows } from './RecipeRows'
 import { CopyDetails } from './RowDetails'
@@ -48,33 +51,51 @@ export const usedIds = (entry: Pick<CopyEntry, 'lines'>): ReadonlySet<string> =>
 export const recipeFilterCount = (filter: RecipeFilter): number =>
   filter.contains.length + filter.excludes.length + (filter.savedOnly ? 1 : 0)
 
+/** The undo notice for a dismissed copy, or null when that recipe was not picked. */
+export const removalNotice = (
+  copy: RecipeCopy | null,
+  name: string
+): { copy: RecipeCopy; title: string } | null =>
+  copy === null ? null : { copy, title: splitTitle(name).title }
+
 const FILTER_ID = 'recipes-filter'
 
-/** The Recipes section (#181, #182): the picked copies as rows, with a filter. */
+/** The Recipes section (#181, #182, #192): the picked copies as rows, with a filter. */
 export const Recipes: FC<{
   list: ChipsState
   saved: SavedState | null
-  collapsible: boolean
-}> = ({ list, saved, collapsible }) => {
+  onFind: () => void
+}> = ({ list, saved, onFind }) => {
   const t = useT()
-  const [open, setOpen] = useState(true)
+  const [undo, setUndo] = useState<{
+    copy: RecipeCopy
+    title: string
+  } | null>(null)
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set())
   const [filterOpen, setFilterOpen] = useState(false)
   const [filter, setFilter] = useState<RecipeFilter>(NO_RECIPE_FILTER)
   const shown = list.entries.filter((entry) =>
     recipeMatches(usedIds(entry), filter)
   )
+  const remove = (recipe: { id: string; name: string }) => {
+    setUndo(removalNotice(list.dismissPicked(recipe.id), recipe.name))
+  }
   return (
     <Section
       id="recipes"
       title={t('recipes.title')}
-      collapsible={collapsible}
       raised
-      open={open}
-      onToggle={() => setOpen(!open)}
       summary={t('recipes.picked', {
         recipes: recipeCount(list.entries.length)
       })}
+      action={
+        <Button
+          onPress={onFind}
+          className={ACTION_BUTTON}
+        >
+          {t('recipes.find')}
+        </Button>
+      }
     >
       <div className="flex flex-col gap-4">
         <ActionsRow label={t('recipes.actions')}>
@@ -96,6 +117,23 @@ export const Recipes: FC<{
         />
         {list.entries.length === 0 && (
           <p className="m-0 text-text-secondary">{NO_PICKS_HINT}</p>
+        )}
+        {undo !== null && (
+          <p
+            role="status"
+            className="m-0 flex flex-wrap items-center gap-3 text-text"
+          >
+            <span>{t('recipes.removed', { title: undo.title })}</span>
+            <Button
+              onPress={() => {
+                list.restoreCopy(undo.copy)
+                setUndo(null)
+              }}
+              className={ACTION_BUTTON}
+            >
+              {t('recipes.undo')}
+            </Button>
+          </p>
         )}
         {recipeFilterOn(filter) && (
           <HiddenNote
@@ -123,7 +161,9 @@ export const Recipes: FC<{
             openIds,
             onToggleOpen: (id) => setOpenIds((ids) => toggled(ids, id)),
             seeRecipe: false,
-            recessed: true
+            recessed: true,
+            snap: true,
+            onRemove: remove
           }}
         />
       </div>

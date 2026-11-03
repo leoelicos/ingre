@@ -9,6 +9,7 @@ import {
   exploreRow,
   extraRegion,
   openExplore,
+  openPantry,
   panel,
   pickOption,
   pickRows,
@@ -88,10 +89,7 @@ test.describe('recipe copies, more (#182)', () => {
       /^Butter, 15 g, /
     )
     await expect(portions(page)).toHaveValue('2')
-    await expect(chipToggle(page, 'tomato')).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    await expect(chipToggle(page, 'tomato')).toBeChecked()
     // staples belong to the recipe (owner decision 1): Refresh keeps them and adds no Extra
     await expect(chip(page, 'salt')).toHaveCount(1)
     await expect(chip(page, 'salt', 'extra')).toHaveCount(0)
@@ -138,6 +136,7 @@ test.describe('recipe copies, more (#182)', () => {
     await expect(
       recipesRegion(page).getByRole('button', { name: `Unsave ${DAHL}` })
     ).toBeVisible()
+    await openExplore(page)
     await exploreRow(page, DAHL).click()
     await expect(row(page, DAHL)).toHaveCount(0)
     await exploreRow(page, DAHL).click()
@@ -181,6 +180,7 @@ test.describe('kept from before this release (#182, answers 6, 10, 45)', () => {
     await expect(chipToggle(page, 'butter')).toHaveAccessibleName(
       /^Butter, 22\.5 g, /
     )
+    await openPantry(page)
     await expect(
       extraRegion(page).getByText('birthday candles', { exact: false })
     ).not.toHaveCount(0)

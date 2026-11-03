@@ -20,26 +20,29 @@ describe('App', () => {
     localStorage.clear()
   })
 
-  it('opens on the one page: the header, Explore, Ingredients and Recipes (#164, #179, #181)', () => {
+  it('opens on the workspace: Recipes and Ingredients, with discovery closed (#192)', () => {
     openAt('/')
     expect(screen.getByRole('link', { name: 'ingré' })).toHaveAttribute(
       'href',
       '/'
     )
-    expect(
-      screen.getByRole('searchbox', { name: 'Search ingredients and recipes' })
-    ).toBeInTheDocument()
+    expect(screen.queryByRole('searchbox')).toBeNull()
     expect(screen.getByRole('button', { name: 'Account' })).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { level: 1, name: 'Shopping list' })
     ).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: 'Explore' })).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Explore' })).toBeNull()
+    expect(screen.queryByRole('dialog')).toBeNull()
     expect(
       screen.getByRole('heading', { level: 2, name: 'Ingredients' })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { level: 2, name: 'Recipes' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Find recipes' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '+ Recipe' })).toBeInTheDocument()
     expect(screen.queryByText('At home')).not.toBeInTheDocument()
     expect(screen.queryByText('At the shop')).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Home' })).toBeNull()
@@ -111,7 +114,7 @@ describe('App skip link (#131)', () => {
     expect(screen.getByRole('main')).toHaveAttribute('id', 'main')
   })
 
-  it('on the list page, Skip to content lands on the list column, beside the Explore drawer (#131, #181)', async () => {
+  it('on the list page, Skip to content lands on the workspace (#131, #192)', async () => {
     const user = userEvent.setup()
     openAt('/')
     await user.tab()

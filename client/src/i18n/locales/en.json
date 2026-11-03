@@ -75,8 +75,6 @@
   },
   "explore": {
     "title": "Explore",
-    "hide": "Hide Explore",
-    "drawer": "Explore drawer",
     "actions": "Explore actions",
     "filter": "Filter Explore",
     "browse": "Browse recipes",
@@ -102,18 +100,24 @@
     "sort": "Sort",
     "refresh": "Refresh",
     "filter": "Filter ingredients",
-    "empty": "Nothing on your list yet. Tick recipes in Explore, or add an ingredient with the plus in Extra.",
+    "empty": "Nothing on your list yet. Find a recipe, or add a pantry item.",
     "refreshQuestion": "Reset every recipe to its original ingredients and 2 portions?",
     "summaryCrossed": "{{items}}, {{count}} crossed off",
     "usedIn": "Used in",
-    "added": "{{name}} added to Extra"
+    "added": "{{name}} added to Extra",
+    "addPantry": "Add pantry item"
   },
   "recipes": {
     "title": "Recipes",
     "actions": "Recipes actions",
     "filter": "Filter recipes",
-    "empty": "No recipes picked yet. Tick recipes in Explore and they show here.",
-    "picked": "{{recipes}} picked"
+    "empty": "No recipes picked yet. Find a recipe and it shows here.",
+    "picked": "{{recipes}} picked",
+    "find": "Find recipes",
+    "remove": "Remove {{title}}",
+    "removeShort": "Remove",
+    "removed": "Removed {{title}}",
+    "undo": "Undo"
   },
   "extra": {
     "title": "Extra",
@@ -152,6 +156,13 @@
     "notes": "Notes",
     "customisations": "Customisations",
     "portions": "Portions"
+  },
+  "discovery": {
+    "close": "Close"
+  },
+  "fab": {
+    "recipe": "+ Recipe",
+    "pantry": "+ Pantry Item"
   },
   "layout": {
     "label": "Layout",

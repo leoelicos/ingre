@@ -8,7 +8,14 @@ import {
   LAYOUT_KEY
 } from '../../storage/shoppingState'
 import type { Chip } from '../chips'
-import { addOnce, catalogueExtra, copyEntries, useChips } from '../useChips'
+import {
+  addOnce,
+  catalogueExtra,
+  copyEntries,
+  restoring,
+  useChips,
+  withoutRecipe
+} from '../useChips'
 
 const stored = (key: string): unknown =>
   JSON.parse(localStorage.getItem(key) ?? 'null')
@@ -37,6 +44,15 @@ describe('helpers', () => {
     })
     expect(addOnce([butter], { ...butter, quantity: 3 })).toEqual([butter])
   })
+
+  it('drops a recipe and puts that copy back once (#192)', () => {
+    const copy = newCopy('dahl')
+    expect(withoutRecipe([copy, newCopy('pork')], 'dahl')).toEqual([
+      newCopy('pork')
+    ])
+    expect(restoring([], copy)).toEqual([copy])
+    expect(restoring([copy], copy)).toEqual([copy])
+  })
 })
 
 describe('useChips', () => {
@@ -63,6 +79,17 @@ describe('useChips', () => {
     act(() => result.current.togglePicked(pork))
     expect(stored(COPIES_KEY)).toEqual([])
     expect(ids(result.current.chips)).toEqual([])
+    expect(result.current.dismissPicked('nope')).toBeNull()
+    act(() => result.current.togglePicked(dahl))
+    let removed = newCopy('missing')
+    act(() => {
+      const copy = result.current.dismissPicked(dahl.id)
+      if (copy !== null) removed = copy
+    })
+    expect(removed).toEqual(newCopy(dahl.id))
+    act(() => result.current.restoreCopy(removed))
+    act(() => result.current.restoreCopy(removed))
+    expect([...result.current.pickedIds]).toEqual([dahl.id])
   })
 
   it('sets amounts and portions per copy, and refresh resets them', () => {
