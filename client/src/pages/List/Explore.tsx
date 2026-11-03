@@ -41,6 +41,7 @@ import { NO_SAVED_HINT } from './recipeFilter'
 import { filterOptions, recipeFilterCount } from './Recipes'
 import type { RowControls } from './RecipeRows'
 import { RecipeRows } from './RecipeRows'
+import { PopulateFromRecipe } from './PopulateFromRecipe'
 import { OriginalDetails } from './RowDetails'
 import { HeaderRow, titleId, toggleId } from './Section'
 import { useFocusAfterRender } from './usePanel'
@@ -76,6 +77,14 @@ export const exploreOptions = (recipes: readonly LibraryRecipe[] = library) =>
       copyLines(recipe, newCopy(recipe.id), DEFAULT_SOURCE.ingredients)
     )
   )
+
+/** Picks a recipe unless it is already picked: a swipe or a menu choice never un-picks (#229). */
+export const pickOnce = (
+  rows: ExploreRowControls,
+  recipe: LibraryRecipe
+): void => {
+  if (!rows.pickedIds.has(recipe.id)) rows.onTogglePicked(recipe)
+}
 
 const GROUP_HEADING =
   'm-0 mb-2 text-sm font-semibold uppercase tracking-wide text-text-secondary'
@@ -292,11 +301,17 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           new Set(ids.has(id) ? [...ids].filter((x) => x !== id) : [...ids, id])
       ),
     seeRecipe: true,
-    recessed: false
+    recessed: false,
+    onSwipePick: (recipe) => pickOnce(props.rows, recipe)
   }
   return (
     <div className="flex flex-col gap-4">
       <ActionsRow label={t('explore.actions')}>
+        <PopulateFromRecipe
+          recipes={DEFAULT_SOURCE.recipes}
+          pickedIds={props.rows.pickedIds}
+          onPick={(recipe) => pickOnce(props.rows, recipe)}
+        />
         <FilterButton
           panelId={FILTER_ID}
           open={filterOpen}

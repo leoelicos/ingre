@@ -86,7 +86,9 @@
     "onListLabel": "{{name}}, on your list",
     "onListName": "✓ {{name}}",
     "addName": "+ {{name}}",
-    "categoryOnList": "{{category}} · on your list"
+    "categoryOnList": "{{category}} · on your list",
+    "fromRecipe": "From a recipe",
+    "fromRecipeAdded": "✓ {{name}}"
   },
   "saved": {
     "filter": "Saved",
