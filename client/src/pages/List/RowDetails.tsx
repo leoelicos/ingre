@@ -26,6 +26,7 @@ import type { ChipView } from './Chips'
 import { ChipList, edgeToneOf } from './Chips'
 import { ChipAllergens, SourceFields, sourceMeasure } from './ChipDetails'
 import { chipChevronId, rowScope, sourceFieldId } from './chipText'
+import { OrderPad } from './OrderPad'
 import { PlusArea, PlusButton } from './PlusArea'
 import { Method, Notes, ROW_HEADING } from './RecipeRows'
 import { useFocusAfterRender, usePanel } from './usePanel'
@@ -260,6 +261,11 @@ export const CopyDetails: FC<{
     <PortionsField
       value={entry.copy.portions}
       onChange={(portions) => list.setPortions(entry.recipe.id, portions)}
+    />
+    <OrderPad
+      lines={entry.lines}
+      onPortions={(portions) => list.setPortions(entry.recipe.id, portions)}
+      onAmount={(id, quantity) => list.setAmount(entry.recipe.id, id, quantity)}
     />
     <CopyChips
       entry={entry}
