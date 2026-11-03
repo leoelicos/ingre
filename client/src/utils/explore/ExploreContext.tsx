@@ -18,7 +18,19 @@ export interface ExploreState {
   readonly focusPending: boolean
   readonly requestFocus: () => void
   readonly focusTaken: () => void
+  /** the ingredients being cooked with (#204): suggestions are built from these */
+  readonly selected: ReadonlySet<string>
+  readonly toggleSelected: (id: string) => void
 }
+
+/** The selection with an ingredient added, or taken out when it is already there. */
+export const toggled = (
+  selected: ReadonlySet<string>,
+  id: string
+): ReadonlySet<string> =>
+  new Set(
+    selected.has(id) ? [...selected].filter((x) => x !== id) : [...selected, id]
+  )
 
 const ExploreContext = createContext<ExploreState | null>(null)
 
@@ -26,6 +38,7 @@ export const useExploreState = (): ExploreState => {
   const [query, setQuery] = useState('')
   const [expanded, setExpanded] = useState<boolean | null>(null)
   const [focusPending, setFocusPending] = useState(false)
+  const [selected, setSelected] = useState<ReadonlySet<string>>(new Set())
   return {
     query,
     setQuery,
@@ -34,7 +47,9 @@ export const useExploreState = (): ExploreState => {
     collapse: () => setExpanded(false),
     focusPending,
     requestFocus: () => setFocusPending(true),
-    focusTaken: () => setFocusPending(false)
+    focusTaken: () => setFocusPending(false),
+    selected,
+    toggleSelected: (id) => setSelected((current) => toggled(current, id))
   }
 }
 

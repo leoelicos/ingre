@@ -29,3 +29,15 @@ describe('Explore state (#181)', () => {
     expect(result.current.query).toBe('dahl')
   })
 })
+
+describe('Selected ingredients (#204)', () => {
+  it('toggles an ingredient in and out of the selection', () => {
+    const { result } = renderHook(() => useExplore(), { wrapper })
+    expect(result.current.selected.size).toBe(0)
+    act(() => result.current.toggleSelected('apple'))
+    act(() => result.current.toggleSelected('onion'))
+    expect([...result.current.selected]).toEqual(['apple', 'onion'])
+    act(() => result.current.toggleSelected('apple'))
+    expect([...result.current.selected]).toEqual(['onion'])
+  })
+})

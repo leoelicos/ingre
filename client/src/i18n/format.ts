@@ -117,3 +117,13 @@ export const formatRecipeCount = (n: number): string =>
 /** "2 items", "1 item". */
 export const formatItemCount = (n: number): string =>
   joinQuantity(formatNumber(n), formatItemUnit(n))
+
+/** Dollars as the shop shows them, always with cents: 14 -> "$14.00". */
+export const formatMoney = (dollars: number): string =>
+  translate('suggest.money', {
+    amount: new Intl.NumberFormat(locale(), {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      useGrouping: false
+    }).format(dollars)
+  })

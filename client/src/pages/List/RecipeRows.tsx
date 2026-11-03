@@ -26,6 +26,8 @@ export interface Row {
   /** the ingredients it uses, named under the title while the row is closed (#191) */
   readonly lines: readonly CopyLine[]
   readonly details: (title: string) => ReactNode
+  /** what a suggestion adds under the ingredients, open or closed (#204) */
+  readonly note?: ReactNode
 }
 
 export const ROW_HEADING = 'm-0 text-sm font-semibold uppercase tracking-wide'
@@ -130,6 +132,7 @@ export const RecipeRow: FC<{
           title={title}
         />
       )}
+      {row.note}
       <Collapse
         id={detailsId}
         open={open}
