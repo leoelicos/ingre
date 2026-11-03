@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react'
 import type { ReactNode } from 'react'
-import { ExploreProvider, useExplore } from '../ExploreContext'
+import { GUIDANCE_KEY, ExploreProvider, useExplore } from '../ExploreContext'
 
 const wrapper = ({ children }: { children: ReactNode }) => (
   <ExploreProvider>{children}</ExploreProvider>
@@ -39,5 +39,29 @@ describe('Selected ingredients (#204)', () => {
     expect([...result.current.selected]).toEqual(['apple', 'onion'])
     act(() => result.current.toggleSelected('apple'))
     expect([...result.current.selected]).toEqual(['onion'])
+  })
+})
+
+describe('The guidance dial (#206)', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('is Assisted until the user turns it', () => {
+    const { result } = renderHook(() => useExplore(), { wrapper })
+    expect(result.current.guidance).toBe('assisted')
+  })
+
+  it('keeps the position on the device', () => {
+    const first = renderHook(() => useExplore(), { wrapper })
+    act(() => first.result.current.setGuidance('hand-held'))
+    expect(first.result.current.guidance).toBe('hand-held')
+    first.unmount()
+    const second = renderHook(() => useExplore(), { wrapper })
+    expect(second.result.current.guidance).toBe('hand-held')
+  })
+
+  it('ignores a stored value that is not a mode', () => {
+    localStorage.setItem(GUIDANCE_KEY, JSON.stringify('hands-off'))
+    const { result } = renderHook(() => useExplore(), { wrapper })
+    expect(result.current.guidance).toBe('assisted')
   })
 })

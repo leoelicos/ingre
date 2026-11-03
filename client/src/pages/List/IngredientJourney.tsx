@@ -4,9 +4,13 @@ import { useId, useState } from 'react'
 import { Button } from 'react-aria-components'
 import { splitTitle } from '../../components/recipeTitle'
 import type { LibraryIngredient } from '../../types/library'
+import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import { bundledRelations } from '../../utils/suggest/relations'
 import type { Suggestion } from '../../utils/suggest/suggest'
+import { useExplore } from '../../utils/explore/ExploreContext'
+import { showsSuggestions } from '../../utils/guidance/guidance'
 import { ACTION_BUTTON } from './Filters'
+import { Tip } from './Tip'
 import { IngredientChoice, SuggestionNote } from './Suggestions'
 import type { RowControls } from './RecipeRows'
 
@@ -44,10 +48,13 @@ const NameList: FC<{
     </ul>
   )
 
+/** What goes with it: buttons that start using one, or plain names where nothing is suggested unasked. */
 const Complements: FC<{ items: readonly LibraryIngredient[] }> = ({
   items
 }) => {
   const t = useT()
+  const { guidance } = useExplore()
+  const pick = showsSuggestions(guidance)
   return items.length === 0 ? (
     <p className="m-0 text-sm text-text-secondary">{t('journey.noPairs')}</p>
   ) : (
@@ -57,7 +64,13 @@ const Complements: FC<{ items: readonly LibraryIngredient[] }> = ({
     >
       {items.map((item) => (
         <li key={item.id}>
-          <IngredientChoice item={item} />
+          {pick ? (
+            <IngredientChoice item={item} />
+          ) : (
+            <span className="text-sm text-text">
+              {capitaliseFirst(item.name)}
+            </span>
+          )}
         </li>
       ))}
     </ul>
@@ -153,15 +166,17 @@ export const IngredientDetails: FC<{
   const id = useId()
   return (
     <div className="flex flex-col gap-2">
-      <Button
-        aria-expanded={open}
-        aria-controls={id}
-        aria-label={t('journey.detailsLabel', { name: item.name })}
-        onPress={() => setOpen(!open)}
-        className={`${ACTION_BUTTON} self-start`}
-      >
-        {t('journey.details')}
-      </Button>
+      <Tip text={t('guidance.tipDetails')}>
+        <Button
+          aria-expanded={open}
+          aria-controls={id}
+          aria-label={t('journey.detailsLabel', { name: item.name })}
+          onPress={() => setOpen(!open)}
+          className={`${ACTION_BUTTON} self-start`}
+        >
+          {t('journey.details')}
+        </Button>
+      </Tip>
       <div id={id}>
         {open && (
           <Journey
