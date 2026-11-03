@@ -8,6 +8,7 @@ import {
   withAmount,
   withPortions
 } from '../balance/copies'
+import { track } from '../analytics/events'
 import { catalogue, library } from '../library/recipeLibrary'
 import type { Extra } from '../storage/shoppingState'
 import {
@@ -122,6 +123,7 @@ export const useChips = () => {
         )
         return
       }
+      track('ticket_added', { recipeId: recipe.id })
       updateCopies((previous) => [...previous, newCopy(recipe.id)])
     },
     setAmount,

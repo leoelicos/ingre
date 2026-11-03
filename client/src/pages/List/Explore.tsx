@@ -1,17 +1,23 @@
 import { translate, useT } from '../../i18n'
-import type { FC } from 'react'
+import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
-import { Button } from 'react-aria-components'
+import { Button, ToggleButton } from 'react-aria-components'
 import { AllergenTags } from '../../components/AllergenTags'
 import { Collapse } from '../../components/Collapse'
+import { splitTitle } from '../../components/recipeTitle'
 import { SEARCH_LABEL, SearchBox } from '../../components/SearchBox/SearchBox'
 import { IngreIconSearch } from '../../lib/icon/Icon'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
 import { capitaliseFirst } from '../../utils/capitaliseFirst'
+import {
+  EDGE_TONE_CLASSES,
+  TONE_CLASSES
+} from '../../components/SectionTone/badgeTone'
 import type { CopyEntry } from '../../utils/chips/chips'
-import { categoryLabel } from '../../utils/chips/chips'
 import type { RecipeCopy } from '../../utils/balance/copies'
+import { useSearchedEvent } from '../../utils/analytics/useSearchedEvent'
 import { useExplore } from '../../utils/explore/ExploreContext'
+import { flaggedIds, showsSuggestions } from '../../utils/guidance/guidance'
 import type {
   ExploreResults,
   ExploreSource
@@ -21,7 +27,14 @@ import {
   exploreResults,
   shownRecipes
 } from '../../utils/explore/exploreSearch'
-import { placeInShop } from '../../utils/shopping/sections'
+import type { ExploreSection } from '../../utils/explore/sections'
+import {
+  SECTION_ACCENT,
+  SECTION_TONE,
+  exploreSectionOf,
+  inSections,
+  sectionsOf
+} from '../../utils/explore/sections'
 import type { RecipeFilter } from '../../utils/filters/filters'
 import {
   NO_RECIPE_FILTER,
@@ -29,6 +42,8 @@ import {
   recipeMatches
 } from '../../utils/filters/filters'
 import { library } from '../../utils/library/recipeLibrary'
+import { unlockedRecipes } from '../../utils/profile/locks'
+import type { Personal } from '../../utils/profile/personal'
 import type { SavedState } from '../../utils/saved/useSaved'
 import {
   ActionsRow,
@@ -36,6 +51,10 @@ import {
   HiddenNote,
   RecipeFilterPanel
 } from './Filters'
+import { GuestFlag } from './GuestFlag'
+import { GuestsButton, GuestsPanel } from './Guests'
+import { GuidanceDial } from './GuidanceDial'
+import { IngredientDetails } from './IngredientJourney'
 import type { IngredientsState } from './Ingredients'
 import { NO_SAVED_HINT } from './recipeFilter'
 import { filterOptions, recipeFilterCount } from './Recipes'
@@ -45,6 +64,15 @@ import { OriginalDetails } from './RowDetails'
 import { HeaderRow, titleId, toggleId } from './Section'
 import { useFocusAfterRender } from './usePanel'
 import { copyLines, newCopy, usedLines } from '../../utils/balance/copies'
+import { catalogue } from '../../utils/library/recipeLibrary'
+import { bundledSuggestions } from '../../utils/suggest/suggest'
+import type { Suggestion } from '../../utils/suggest/suggest'
+import {
+  BrowseIngredients,
+  SuggestionNote,
+  UseToggle,
+  UsingBar
+} from './Suggestions'
 
 export const EXPLORE_ID = 'explore'
 export const HIDE_EXPLORE = translate('explore.hide')
@@ -62,6 +90,8 @@ export interface ExploreProps {
   /** null when signed out: no hearts */
   readonly saved: SavedState | null
   readonly savedOnly: boolean
+  /** behaviour, settings and locks (#224): browse order, and recipes never shown */
+  readonly personal: Personal
   readonly onSaved: (on: boolean) => void
 }
 
@@ -81,27 +111,31 @@ const GROUP_HEADING =
   'm-0 mb-2 text-sm font-semibold uppercase tracking-wide text-text-secondary'
 
 const RESULT =
-  'flex min-h-[44px] w-full flex-col items-start rounded-control bg-bg px-3 py-1 text-left text-text shadow-raised data-[pressed]:shadow-pressed data-[focus-visible]:focus-ring'
+  'flex min-h-[44px] w-full flex-col items-start rounded-control border-l-4 bg-bg px-3 py-1 text-left text-text shadow-raised data-[pressed]:shadow-pressed data-[focus-visible]:focus-ring'
 
 /** An ingredient result: adds it as an extra, or opens its chip when it is on the list. */
 const IngredientResult: FC<{
   item: LibraryIngredient
   ingredients: IngredientsState
-}> = ({ item, ingredients }) => {
+  controls: RowControls
+}> = ({ item, ingredients, controls }) => {
   const t = useT()
+  const { guidance } = useExplore()
   const onList = ingredients.list.hasChip(item.id)
   const name = capitaliseFirst(item.name)
-  const category = categoryLabel(placeInShop(item.category).section)
+  const section = exploreSectionOf(item)
+  const category = t(`exploreSection.${section}`)
   return (
     <li className="flex flex-col gap-1">
       <Button
+        data-section={section}
         onPress={() => ingredients.pick(item)}
         aria-label={
           onList
             ? t('explore.onListLabel', { name })
             : t('explore.add', { name: item.name })
         }
-        className={RESULT}
+        className={`${RESULT} ${SECTION_ACCENT[section]}`}
       >
         <span className="font-semibold">
           {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
@@ -110,16 +144,119 @@ const IngredientResult: FC<{
           {onList ? t('explore.categoryOnList', { category }) : category}
         </span>
       </Button>
+      <div className="flex items-stretch gap-2">
+        <Button
+          onPress={() => ingredients.pick(item)}
+          aria-label={
+            onList
+              ? t('explore.onListLabel', { name })
+              : t('explore.add', { name: item.name })
+          }
+          className={`${RESULT} flex-1`}
+        >
+          <span className="font-semibold">
+            {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
+          </span>
+          <span className="text-xs text-text-secondary">
+            {onList ? t('explore.categoryOnList', { category }) : category}
+          </span>
+        </Button>
+        {showsSuggestions(guidance) && <UseToggle item={item} />}
+      </div>
       <AllergenTags allergens={item.allergens} />
+      <GuestFlag tags={item.allergens} />
+      <IngredientDetails
+        item={item}
+        controls={controls}
+      />
     </li>
   )
 }
+
+/** One section's toggle: filled in its colour when on, outlined when off. */
+const SectionToggle: FC<{
+  section: ExploreSection
+  on: boolean
+  onChange: () => void
+}> = ({ section, on, onChange }) => {
+  const t = useT()
+  const tone = SECTION_TONE[section]
+  return (
+    <ToggleButton
+      isSelected={on}
+      onChange={onChange}
+      className={`inline-flex min-h-[44px] items-center rounded-pill border-2 px-3 text-sm font-semibold data-[focus-visible]:focus-ring ${
+        on ? TONE_CLASSES[tone] : EDGE_TONE_CLASSES[tone]
+      }`}
+    >
+      {t(`exploreSection.${section}`)}
+    </ToggleButton>
+  )
+}
+
+/** The sections the results fall in, to narrow them to; shown when there is more than one. */
+const SectionFilter: FC<{
+  sections: readonly ExploreSection[]
+  chosen: ReadonlySet<ExploreSection>
+  onToggle: (section: ExploreSection) => void
+}> = ({ sections, chosen, onToggle }) => {
+  const t = useT()
+  return (
+    sections.length > 1 && (
+      <div
+        role="group"
+        aria-label={t('explore.sectionFilter')}
+        className="mb-2 flex flex-wrap gap-2"
+      >
+        {sections.map((section) => (
+          <SectionToggle
+            key={section}
+            section={section}
+            on={chosen.has(section)}
+            onChange={() => onToggle(section)}
+          />
+        ))}
+      </div>
+    )
+  )
+}
+
+const toggled = (
+  chosen: ReadonlySet<ExploreSection>,
+  section: ExploreSection
+): Set<ExploreSection> =>
+  chosen.has(section)
+    ? new Set([...chosen].filter((s) => s !== section))
+    : new Set([...chosen, section])
 
 const IngredientGroup: FC<{
   title: string
   items: readonly LibraryIngredient[]
   ingredients: IngredientsState
-}> = ({ title, items, ingredients }) => (
+}> = ({ title, items, ingredients }) => {
+  const [chosen, setChosen] = useState<ReadonlySet<ExploreSection>>(new Set())
+  return (
+    <div>
+      <h3 className={GROUP_HEADING}>{title}</h3>
+      <SectionFilter
+        sections={sectionsOf(items)}
+        chosen={chosen}
+        onToggle={(section) => setChosen((now) => toggled(now, section))}
+      />
+      <ul className="m-0 flex list-none flex-col gap-2 p-1">
+        {inSections(items, chosen).map((item) => (
+          <IngredientResult
+            key={item.id}
+            item={item}
+            ingredients={ingredients}
+          />
+        ))}
+      </ul>
+    </div>
+  )
+}
+  controls: RowControls
+}> = ({ title, items, ingredients, controls }) => (
   <div>
     <h3 className={GROUP_HEADING}>{title}</h3>
     <ul className="m-0 flex list-none flex-col gap-2 p-1">
@@ -128,6 +265,7 @@ const IngredientGroup: FC<{
           key={item.id}
           item={item}
           ingredients={ingredients}
+          controls={controls}
         />
       ))}
     </ul>
@@ -141,6 +279,21 @@ export const listCopyOf = (
 ): RecipeCopy | null =>
   entries.find((entry) => entry.recipe.id === recipeId)?.copy ?? null
 
+/** What a suggestion adds to its row: a note, and the ingredients to outline (#204, #206). */
+interface Annotation {
+  readonly note: ReactNode
+  readonly flagged: ReadonlySet<string>
+}
+
+const NO_NOTES: ReadonlyMap<string, Annotation> = new Map()
+
+/** A row's note and outlines when it has them: nothing is passed for a row without (exactOptionalPropertyTypes). */
+const noteFor = (
+  notes: ReadonlyMap<string, Annotation>,
+  recipeId: string
+): { note?: ReactNode; flagged?: ReadonlySet<string> } =>
+  notes.get(recipeId) ?? {}
+
 const RecipeGroup: FC<{
   title: string
   recipes: readonly LibraryRecipe[]
@@ -148,7 +301,9 @@ const RecipeGroup: FC<{
   saved: SavedState | null
   /** the copies on the list: saving a listed recipe saves its customisations (#182) */
   entries: readonly CopyEntry[]
-}> = ({ title, recipes, controls, saved, entries }) => (
+  /** a note and outlines for some rows, by recipe id (#204) */
+  notes?: ReadonlyMap<string, Annotation>
+}> = ({ title, recipes, controls, saved, entries, notes = NO_NOTES }) => (
   <div>
     <h3 className={GROUP_HEADING}>{title}</h3>
     <RecipeRows
@@ -164,12 +319,79 @@ const RecipeGroup: FC<{
             saved={saved}
             listCopy={listCopyOf(entries, recipe.id)}
           />
-        )
+        ),
+        ...noteFor(notes, recipe.id)
       }))}
       controls={controls}
     />
   </div>
 )
+
+/**
+ * The ingredient-first loop (#204): the ingredients being cooked with, then up to three
+ * recipes that use them, each with what is missing, the extra cost and one "Add to list"
+ * button. Recipe content stays closed until "See recipe". Nothing shows until one is selected.
+ */
+const SuggestionsSection: FC<{
+  props: ExploreProps
+  controls: RowControls
+}> = ({ props, controls }) => {
+  const t = useT()
+  const { selected, guidance } = useExplore()
+  const [ack, setAck] = useState('')
+  const suggestions = bundledSuggestions(selected)
+  const using = catalogue.filter((item) => selected.has(item.id))
+  const add = (suggestion: Suggestion) => {
+    controls.onTogglePicked(suggestion.recipe)
+    setAck(
+      t('suggest.added', { title: splitTitle(suggestion.recipe.name).title })
+    )
+  }
+  const notes = new Map(
+    suggestions.map((suggestion) => [
+      suggestion.recipe.id,
+      {
+        note: (
+          <SuggestionNote
+            key={suggestion.recipe.id}
+            suggestion={suggestion}
+            title={splitTitle(suggestion.recipe.name).title}
+            picked={controls.pickedIds.has(suggestion.recipe.id)}
+            onAdd={() => add(suggestion)}
+            primary={guidance === 'hand-held'}
+          />
+        ),
+        flagged: flaggedIds(suggestion.missing, guidance)
+      }
+    ])
+  )
+  return (
+    <section
+      aria-label={t('suggest.title')}
+      className="flex flex-col gap-3"
+    >
+      <UsingBar items={using} />
+      <p
+        role="status"
+        className="m-0 text-sm font-semibold text-success"
+      >
+        {ack}
+      </p>
+      {suggestions.length === 0 ? (
+        <p className="m-0 text-text-secondary">{t('suggest.none')}</p>
+      ) : (
+        <RecipeGroup
+          title={t('suggest.title')}
+          recipes={suggestions.map((suggestion) => suggestion.recipe)}
+          controls={controls}
+          saved={props.saved}
+          entries={props.ingredients.list.entries}
+          notes={notes}
+        />
+      )}
+    </section>
+  )
+}
 
 /** Ingredients and recipes; side by side (ingredients left) once Explore is 768px wide. */
 const Groups: FC<{
@@ -187,6 +409,7 @@ const Groups: FC<{
             title={t('ingredients.title')}
             items={ingredients}
             ingredients={props.ingredients}
+            controls={controls}
           />
         )}
         {recipes.length > 0 && (
@@ -256,6 +479,18 @@ const Results: FC<{
 }
 
 const FILTER_ID = `${EXPLORE_ID}-filter`
+const GUESTS_ID = `${EXPLORE_ID}-guests`
+
+/** How many ingredients and recipes matched; a "no matches" screen counts as none (#222). */
+export const matchCounts = (
+  results: ExploreResults
+): { ingredients: number; recipes: number } =>
+  results.kind === 'matches'
+    ? {
+        ingredients: results.ingredients.length,
+        recipes: results.recipes.length
+      }
+    : { ingredients: 0, recipes: 0 }
 
 /** The savedIds Explore filters by: the server's, or none signed out. */
 export const savedIdsOf = (saved: SavedState | null): ReadonlySet<string> =>
@@ -267,9 +502,11 @@ export const savedIdsOf = (saved: SavedState | null): ReadonlySet<string> =>
  */
 const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   const t = useT()
-  const { query } = useExplore()
+  const { query, selected, guidance } = useExplore()
+  const proactive = showsSuggestions(guidance)
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set())
   const [filterOpen, setFilterOpen] = useState(props.savedOnly)
+  const [guestsOpen, setGuestsOpen] = useState(false)
   const [picked, setPicked] =
     useState<Pick<RecipeFilter, 'contains' | 'excludes'>>(NO_RECIPE_FILTER)
   const filter: RecipeFilter = { ...picked, savedOnly: props.savedOnly }
@@ -280,9 +517,18 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
       recipeMatches(originalIds(recipe), filter)
     ),
     savedOnly: props.savedOnly,
-    savedIds
+    savedIds,
+    personal: props.personal
   }
   const hidden = DEFAULT_SOURCE.recipes.length - shownRecipes(source).length
+  const results = exploreResults(query, source)
+  useSearchedEvent(query, matchCounts(results))
+  const allowed = unlockedRecipes(
+    DEFAULT_SOURCE.recipes,
+    DEFAULT_SOURCE.ingredients,
+    props.personal.locks
+  )
+  const hidden = allowed.length - shownRecipes(source).length
   const controls: RowControls = {
     ...props.rows,
     openIds,
@@ -303,7 +549,16 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           active={recipeFilterCount(filter)}
           onPress={() => setFilterOpen(!filterOpen)}
         />
+        <GuestsButton
+          panelId={GUESTS_ID}
+          open={guestsOpen}
+          onPress={() => setGuestsOpen(!guestsOpen)}
+        />
       </ActionsRow>
+      <GuestsPanel
+        id={GUESTS_ID}
+        open={guestsOpen}
+      />
       <RecipeFilterPanel
         id={FILTER_ID}
         open={filterOpen}
@@ -325,6 +580,14 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           }}
         />
       )}
+      <GuidanceDial />
+      {query.trim() === '' && proactive && <BrowseIngredients />}
+      {selected.size > 0 && proactive && (
+        <SuggestionsSection
+          props={props}
+          controls={controls}
+        />
+      )}
       {props.savedOnly && savedIds.size === 0 ? (
         <p
           className="m-0 text-text-secondary"
@@ -335,7 +598,7 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
       ) : (
         <Results
           query={query}
-          results={exploreResults(query, source)}
+          results={results}
           props={props}
           controls={controls}
         />
