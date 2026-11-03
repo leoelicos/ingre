@@ -244,6 +244,21 @@ describe('userApi', () => {
     expect(newUser['pro']).toBe(true)
   })
 
+  it('makeUserPro records the tier bought (#208)', async () => {
+    const user = await userApi.createUser(mockInput)
+    if (!user) return
+    expect(user['tier']).toBeNull()
+    const upgraded = await userApi.makeUserPro({
+      _id: user._id,
+      tier: 'LEADER'
+    })
+    expect(upgraded['tier']).toBe('LEADER')
+    expect(upgraded['pro']).toBe(true)
+    // the old flow, with no tier, keeps the tier it has
+    const again = await userApi.makeUserPro({ _id: user._id })
+    expect(again['tier']).toBe('LEADER')
+  })
+
   it('makeUserPro throws if findByIdAndUpdate returns null', async () => {
     await expect(
       userApi.makeUserPro({

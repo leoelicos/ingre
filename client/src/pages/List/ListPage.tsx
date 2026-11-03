@@ -9,13 +9,17 @@ import { useExplore } from '../../utils/explore/ExploreContext'
 import type { Split } from '../../utils/layout/split'
 import { SPLIT_COLUMNS, explorePlacement } from '../../utils/layout/split'
 import { useSplit } from '../../utils/layout/useSplit'
+import { useFlag } from '../../utils/flags/useFlag'
+import { usePersonal } from '../../utils/profile/personal'
 import { useSaved } from '../../utils/saved/useSaved'
+import { useMarkFirstEndToEnd } from '../../utils/tier/upsell'
 import type { ExploreProps } from './Explore'
 import {
   EXPLORE_TOGGLE_ID,
   Explore,
   ExploreColumn,
-  ExploreDrawer
+  ExploreDrawer,
+  savedIdsOf
 } from './Explore'
 import { Extra } from './Extra'
 import {
@@ -26,8 +30,11 @@ import {
 } from './Ingredients'
 import { LayoutToggle } from './LayoutToggle'
 import { Recipes } from './Recipes'
+import { useTabArrival } from './tabArrival'
 import { ScrollToTop } from './ScrollToTop'
+import { Bra } from '../../components/Bra'
 import { PageMain } from '../../components/SkipLink'
+import { AddFab } from './AddFab'
 
 /** "?saved=1" from the Saved account link or old Saved links: Explore's Saved filter (#181). */
 export const savedParam = (params: URLSearchParams): boolean =>
@@ -57,7 +64,9 @@ export const ListPage: FC = () => {
   const t = useT()
   useEffect(() => changeTitle(translate('list.title')), [])
   const explore = useExplore()
+  useTabArrival(explore)
   const list = useChips()
+  useMarkFirstEndToEnd(useFlag('tiers'), list.chips, list.pickedIds.size)
   const ingredients = useIngredients(list)
   const { split, options, drawer, choose } = useSplit()
   const [params, setParams] = useSearchParams()
@@ -65,6 +74,7 @@ export const ListPage: FC = () => {
   const loggedIn = useAuthContext()[0].loggedIn
   const savedState = useSaved(loggedIn)
   const saved = loggedIn ? savedState : null
+  const personal = usePersonal(list, savedIdsOf(saved))
   /* on load, Explore is expanded when nothing is selected (or Saved was asked for) */
   const [expandedOnLoad] = useState(
     () => list.entries.length === 0 || savedOnly
@@ -80,11 +90,12 @@ export const ListPage: FC = () => {
     },
     saved,
     savedOnly,
+    personal,
     onSaved: (on) => setParams(withSaved(params, on))
   }
   return (
     <div className="mx-auto flex w-full max-w-layout gap-6 px-gutter">
-      <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-24 pt-4">
+      <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-36 pt-4">
         <h1 className="sr-only">{t('list.title')}</h1>
         {placement === 'inline' && (
           <Explore
@@ -133,10 +144,13 @@ export const ListPage: FC = () => {
         >
           {[ingredients.message, saved?.error ?? ''].join(' ').trim()}
         </p>
-        <ScrollToTop
-          watchId={INGREDIENTS_ID}
-          headingId={INGREDIENTS_HEADING_ID}
-        />
+        <Bra>
+          <ScrollToTop
+            watchId={INGREDIENTS_ID}
+            headingId={INGREDIENTS_HEADING_ID}
+          />
+          <AddFab />
+        </Bra>
       </PageMain>
       {placement === 'drawer' && (
         <ExploreDrawer

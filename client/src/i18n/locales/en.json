@@ -86,6 +86,23 @@
     "onListLabel": "{{name}}, on your list",
     "onListName": "✓ {{name}}",
     "addName": "+ {{name}}",
+    "categoryOnList": "{{category}} · on your list",
+    "sectionFilter": "Filter ingredients by section"
+  },
+  "exploreSection": {
+    "vegetables": "Vegetables",
+    "fruit": "Fruit",
+    "meat": "Meat",
+    "seafood": "Seafood",
+    "dairy": "Dairy, eggs & fridge",
+    "deli": "Deli",
+    "bakery": "Bakery",
+    "pantry": "Pantry",
+    "frozen": "Frozen",
+    "other": "Other",
+    "onListMark": "✓",
+    "onListName": "{{name}}",
+    "addName": "Add {{name}}",
     "categoryOnList": "{{category}} · on your list"
   },
   "saved": {
@@ -165,12 +182,32 @@
     "logIn": "Log in"
   },
   "skipLink": "Skip to content",
+  "nav": {
+    "label": "Main",
+    "explore": "Explore",
+    "inventory": "Inventory",
+    "cook": "Cook",
+    "profile": "Profile"
+  },
+  "profile": {
+    "title": "Profile",
+    "account": "Account",
+    "signedOutHint": "Log in to keep recipes you love and find them on any device.",
+    "signedInHint": "You are logged in.",
+    "saved": "Saved recipes",
+    "savedCount_one": "{{count}} saved recipe",
+    "savedCount_other": "{{count}} saved recipes",
+    "savedNone": "No saved recipes yet. Open a recipe in Explore and tap its heart.",
+    "savedOpen": "Open saved recipes in Explore",
+    "savedLogin": "Saved recipes show here once you log in."
+  },
   "account": {
     "label": "Account",
     "logIn": "Log in",
     "signUp": "Sign up",
     "saved": "Saved",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "plans": "Plans"
   },
   "search": {
     "label": "Search ingredients and recipes"
@@ -212,6 +249,39 @@
     "starting": "Starting the Stripe checkout…",
     "checkout": "Checkout with Stripe"
   },
+  "plans": {
+    "title": "Plans",
+    "intro": "Everything in ingré stays available. Plans are optional extras you switch on.",
+    "notYet": "Plans open after your first shop: pick a recipe, then cross off every ingredient.",
+    "testMode": "Test mode: no real charges. Pay with the Stripe test card 4242 4242 4242 4242, any future expiry and any 3-digit CVC.",
+    "price": "{{price}} USD",
+    "adds": "Adds",
+    "includes": "Everything in {{tier}}",
+    "choose": "Choose {{tier}}",
+    "current": "Your plan"
+  },
+  "tiers": {
+    "names": {
+      "EXPLORER": "Explorer",
+      "MANAGER": "Manager",
+      "LEADER": "Leader"
+    },
+    "features": {
+      "suggestions": "Suggestions",
+      "capture": "Capture support",
+      "triage": "Triage",
+      "budget": "Budget",
+      "calendar": "Calendar",
+      "composedMenus": "Composed menus",
+      "guestProfiles": "Guest profiles",
+      "riskHandling": "Risk handling",
+      "preciseExecution": "Precise execution",
+      "multiDayPrep": "Multi-day prep",
+      "dietarySeparation": "Dietary separation",
+      "haccp": "HACCP",
+      "exactTechnique": "Exact technique"
+    }
+  },
   "success": {
     "paymentError": "Payment error",
     "tryAgain": "Try again?",
@@ -230,5 +300,115 @@
     "handwash": "Wash and dry your hands after handling raw chicken, before touching anything ready to eat.",
     "storage": "Keep chilled food at 5 °C or below and frozen food at −18 °C or below.",
     "capacity": "This is a big shop. Check the fridge has room before you buy."
+  },
+  "rag": {
+    "separator": ", ",
+    "partner": "Goes with {{names}}.",
+    "style": "Shares {{tags}} cooking with {{names}}.",
+    "match": "Matches {{terms}}."
+  },
+  "ideas": {
+    "title": "Ideas",
+    "intro": "Type what you have, such as carrots and flour. Ideas come from a hand-curated pairing list on this device: no AI service is called and nothing you type leaves it.",
+    "queryLabel": "What do you have?",
+    "queryPlaceholder": "carrots, flour, lemon",
+    "avoidLegend": "Avoid",
+    "listLabel": "Ideas",
+    "none": "Nothing in the pairing list matches yet. Try an ingredient such as tomato or garlic.",
+    "hint": "Ideas appear as you type.",
+    "count_one": "{{count}} idea",
+    "count_other": "{{count}} ideas"
+  },
+  "bra": {
+    "label": "Quick actions",
+    "add": "Add item"
+  },
+  "guests": {
+    "button": "Guests",
+    "buttonCount": "Guests ({{count}})",
+    "panel": "Guests at the table",
+    "hint": "Add a guest to flag what they can't have. Nothing is changed for you.",
+    "name": "Guest name",
+    "add": "Add guest",
+    "remove": "Remove {{name}}",
+    "allergensFor": "Allergens for {{name}}",
+    "cant": "{{name}} can't have: {{allergens}}"
+  },
+  "warRoom": {
+    "title": "War room",
+    "open": "War room",
+    "hint": "Type or say what you need. Generic names are fine: \"2 carrots, onion and garlic\".",
+    "field": "Add an item",
+    "matches": "Matches",
+    "add": "Add {{name}}",
+    "added": "{{names}} added",
+    "already": "{{names}} already on your list",
+    "noMatch": "No match for {{terms}}",
+    "speak": "Speak",
+    "stop": "Stop listening",
+    "captured": "Captured",
+    "capturedCount": "{{count}} captured",
+    "back": "Back to your list"
+  },
+  "suggest": {
+    "using": "Using",
+    "use": "Use",
+    "useLabel": "Use {{name}}",
+    "stopUsing": "Stop using {{name}}",
+    "title": "Suggestions",
+    "none": "No recipes use these yet. Try another ingredient.",
+    "missing": "Missing: {{items}}",
+    "nothingMissing": "You have everything",
+    "extraCost": "About {{cost}} more",
+    "money": "${{amount}}",
+    "listSeparator": ", ",
+    "add": "Add to list",
+    "addLabel": "Add {{title}} to your list",
+    "onList": "✓ On your list",
+    "added": "{{title}} added to your list",
+    "browse": "Browse ingredients"
+  },
+  "journey": {
+    "details": "Details",
+    "detailsLabel": "Details of {{name}}",
+    "about": "About {{name}}",
+    "section": "Shop section",
+    "goesWith": "Goes with",
+    "usedIn": "Used in",
+    "suggested": "Suggested recipes",
+    "noPairs": "Nothing pairs with it yet",
+    "noRecipes": "No recipe in the library uses it yet",
+    "noSuggestions": "No recipes to suggest yet"
+  },
+  "guidance": {
+    "title": "Guidance",
+    "self-directed": "Self-directed",
+    "guided": "Guided",
+    "assisted": "Assisted",
+    "hand-held": "Hand-held",
+    "tipUse": "Pick what you have and we'll suggest what to cook.",
+    "tipBrowse": "Browse every ingredient by shop section and pick what you have.",
+    "tipDetails": "See where it sits in the shop, what goes with it and which recipes use it."
+  },
+  "demo": {
+    "title": "Try the loop",
+    "intro": "Start from the ingredients you have. Get a suggestion. Add a ticket.",
+    "search": "Find an ingredient",
+    "placeholder": "carrot, flour…",
+    "none": "No ingredient matches.",
+    "add": "Add {{name}}",
+    "remove": "Remove {{name}}",
+    "picked": "Picked",
+    "suggestions": "Suggestions",
+    "missing": "Add {{items}}",
+    "complete": "You have everything",
+    "cost": "{{price}} to buy",
+    "addTicket": "Add ticket",
+    "ticketAdded": "{{title}} is on your tickets",
+    "pickedAck": "{{name}} picked",
+    "removedAck": "{{name}} removed",
+    "tickets": "Tickets",
+    "fab": "Add ticket for {{title}}",
+    "fabNone": "Add ticket"
   }
 }

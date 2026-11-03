@@ -6,6 +6,7 @@ import {
   formatItemCount,
   formatItemUnit,
   formatMass,
+  formatMoney,
   formatMeasure,
   formatNumber,
   formatQuantity,
@@ -149,5 +150,16 @@ describe('counted phrases', () => {
     expect(translate('explore.noMatches', { query: 'kale' })).toBe(
       'No matches for ‘kale’'
     )
+  })
+})
+
+describe('formatMoney (#204)', () => {
+  it('always shows dollars and cents', () => {
+    expect([14, 2.5, 0, 1234.5].map(formatMoney)).toEqual([
+      '$14.00',
+      '$2.50',
+      '$0.00',
+      '$1234.50'
+    ])
   })
 })
