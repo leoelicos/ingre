@@ -14,6 +14,7 @@ import {
   renderList,
   searchBox
 } from '../../../test/renderList'
+import { SETTINGS_KEY } from '../../../utils/profile/settings'
 import { HIDE_EXPLORE } from '../Explore'
 
 beforeEach(() => localStorage.clear())
@@ -364,5 +365,41 @@ describe('Scenario: Search bar (#181)', () => {
     const onList = explore().getByRole('button', { name: /^Banana / })
     expect(onList).not.toHaveAttribute('aria-label')
     expect(onList).toHaveAccessibleName('Banana Fruit & Veg · on your list')
+  })
+})
+
+describe('Explore and the profile (#224)', () => {
+  it('browses A to Z until the list says what the user likes', () => {
+    renderList()
+    expect(browseNames()[0]).toBe('Beef keema with peas')
+  })
+
+  it('puts recipes like the picked ones first', () => {
+    pick('egg-fried-rice')
+    renderList()
+    fireEvent.click(exploreHeader())
+    expect(browseNames()[0]).toBe('Egg fried rice')
+  })
+
+  it('lets a dislike override behaviour, so a favourite class sinks', () => {
+    pick('beef-keema')
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ dislikes: ['beef'] }))
+    renderList()
+    fireEvent.click(exploreHeader())
+    const names = browseNames()
+    expect(names.indexOf('Beef keema with peas')).toBeGreaterThan(
+      names.indexOf('Red lentil dahl')
+    )
+  })
+
+  it('never shows a locked recipe, and a lock beats a like', () => {
+    localStorage.setItem(
+      SETTINGS_KEY,
+      JSON.stringify({ diet: 'vegetarian', likes: ['beef', 'poultry'] })
+    )
+    renderList()
+    const names = browseNames()
+    expect(names).toContain('Red lentil dahl')
+    expect(names.join('|')).not.toMatch(/beef|chicken|pork|prawn/i)
   })
 })

@@ -29,6 +29,8 @@ import {
   recipeMatches
 } from '../../utils/filters/filters'
 import { library } from '../../utils/library/recipeLibrary'
+import { unlockedRecipes } from '../../utils/profile/locks'
+import type { Personal } from '../../utils/profile/personal'
 import type { SavedState } from '../../utils/saved/useSaved'
 import {
   ActionsRow,
@@ -62,6 +64,8 @@ export interface ExploreProps {
   /** null when signed out: no hearts */
   readonly saved: SavedState | null
   readonly savedOnly: boolean
+  /** behaviour, settings and locks (#224): browse order, and recipes never shown */
+  readonly personal: Personal
   readonly onSaved: (on: boolean) => void
 }
 
@@ -280,9 +284,15 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
       recipeMatches(originalIds(recipe), filter)
     ),
     savedOnly: props.savedOnly,
-    savedIds
+    savedIds,
+    personal: props.personal
   }
-  const hidden = DEFAULT_SOURCE.recipes.length - shownRecipes(source).length
+  const allowed = unlockedRecipes(
+    DEFAULT_SOURCE.recipes,
+    DEFAULT_SOURCE.ingredients,
+    props.personal.locks
+  )
+  const hidden = allowed.length - shownRecipes(source).length
   const controls: RowControls = {
     ...props.rows,
     openIds,

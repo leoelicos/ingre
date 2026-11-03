@@ -3,6 +3,9 @@ import Fuse from 'fuse.js'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
 import { catalogue, library, matchesSearch } from '../library/recipeLibrary'
 import { normaliseTerm } from '../library/searchTerms'
+import { unlockedRecipes } from '../profile/locks'
+import type { Personal } from '../profile/personal'
+import { rankByTaste } from '../profile/taste'
 
 /**
  * Ranking tiers: the name starts with the query, then a word in it does, then it contains it.
@@ -25,10 +28,6 @@ export const ranked = <T extends { readonly name: string }>(
     .map((item) => ({ item, tier: tierOf(item.name, query) }))
     .sort((a, b) => a.tier - b.tier || a.item.name.localeCompare(b.item.name))
     .map(({ item }) => item)
-
-export const alphabetical = <T extends { readonly name: string }>(
-  items: readonly T[]
-): T[] => [...items].sort((a, b) => a.name.localeCompare(b.name))
 
 /** An ingredient matches when its name holds every word of the query. */
 export const ingredientMatches = (
@@ -56,6 +55,8 @@ export interface ExploreSource {
   /** Saved filters the recipe results only */
   readonly savedOnly: boolean
   readonly savedIds: ReadonlySet<string>
+  /** what the user's behaviour and settings say (#224): browse order, and recipes locked out */
+  readonly personal: Personal
 }
 
 export type ExploreResults =
@@ -72,24 +73,31 @@ export type ExploreResults =
       readonly browse: readonly LibraryRecipe[]
     }
 
-export const DEFAULT_SOURCE: Omit<ExploreSource, 'savedOnly' | 'savedIds'> = {
+export const DEFAULT_SOURCE: Omit<
+  ExploreSource,
+  'savedOnly' | 'savedIds' | 'personal'
+> = {
   recipes: library,
   ingredients: catalogue
 }
 
-/** The recipes Explore may show: only hearted ones while Saved is on. */
+/** The recipes no allergen or diet lock rules out (#224), always, whatever else is on. */
+export const allowedRecipes = (source: ExploreSource): LibraryRecipe[] =>
+  unlockedRecipes(source.recipes, source.ingredients, source.personal.locks)
+
+/** The recipes Explore may show: only hearted ones while Saved is on, and never a locked one. */
 export const shownRecipes = (source: ExploreSource): LibraryRecipe[] =>
-  source.recipes.filter(
+  allowedRecipes(source).filter(
     (recipe) => !source.savedOnly || source.savedIds.has(recipe.id)
   )
 
-/** Blank: browse every recipe. Typed: ranked matches, or none plus close matches and browse. */
+/** Blank: browse every recipe, best match for the profile first (#224). Typed: ranked matches, or none plus close matches and browse. */
 export const exploreResults = (
   query: string,
   source: ExploreSource
 ): ExploreResults => {
   const recipes = shownRecipes(source)
-  const browse = alphabetical(recipes)
+  const browse = rankByTaste(recipes, source.personal.taste)
   if (normaliseTerm(query) === '') return { kind: 'browse', recipes: browse }
   const ingredients = ranked(
     source.ingredients.filter((item) => ingredientMatches(item, query)),
