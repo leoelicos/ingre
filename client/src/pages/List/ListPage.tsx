@@ -26,6 +26,7 @@ import {
 } from './Ingredients'
 import { LayoutToggle } from './LayoutToggle'
 import { Recipes } from './Recipes'
+import { Risks } from './Risks'
 import { ScrollToTop } from './ScrollToTop'
 import { PageMain } from '../../components/SkipLink'
 
@@ -117,6 +118,10 @@ export const ListPage: FC = () => {
             />
             <Extra
               state={ingredients}
+              collapsible={vertical}
+            />
+            <Risks
+              list={list}
               collapsible={vertical}
             />
           </div>
