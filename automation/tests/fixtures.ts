@@ -10,7 +10,23 @@ const isLocal = (url: string): boolean =>
  * Every test: Stripe.js comes from WireMock, and any other request that leaves
  * localhost fails the test (fonts are self-hosted, #176; no analytics in dev, #177).
  */
-export const test = base.extend<{ outsideRequests: string[] }>({
+export const test = base.extend<{
+  outsideRequests: string[]
+  firstRun: 'over' | 'fresh'
+}>({
+  /*
+   * Most tests are about the app, so the first run (#211) is already over. A test about the first
+   * run itself says `test.use({ firstRun: 'fresh' })`.
+   */
+  firstRun: ['over', { option: true }],
+  context: async ({ context, firstRun }, use) => {
+    if (firstRun === 'over')
+      await context.addInitScript(() => {
+        if (window.localStorage.getItem('ingre.firstRun') === null)
+          window.localStorage.setItem('ingre.firstRun', '"done"')
+      })
+    await use(context)
+  },
   outsideRequests: [
     async ({ context }, use) => {
       const outside: string[] = []

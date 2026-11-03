@@ -170,7 +170,8 @@
     "logIn": "Log in",
     "signUp": "Sign up",
     "saved": "Saved",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "setup": "Set-up"
   },
   "search": {
     "label": "Search ingredients and recipes"
@@ -263,5 +264,42 @@
     "tipUse": "Pick what you have and we'll suggest what to cook.",
     "tipBrowse": "Browse every ingredient by shop section and pick what you have.",
     "tipDetails": "See where it sits in the shop, what goes with it and which recipes use it."
+  },
+  "landing": {
+    "headline": "Make beautiful, organised ingredient lists in 2 minutes from authentic recipes that work for you.",
+    "cta": "Get started",
+    "carousel": "How ingré works",
+    "cardOf": "Card {{n}} of {{total}}",
+    "previous": "Previous",
+    "next": "Next",
+    "painTitle": "The problem",
+    "pain": "Shopping lists that ignore what you have. Recipes that don’t match your ingredients. Long pages full of ads, rare items and complicated words.",
+    "promiseTitle": "Start from the ingredient",
+    "promise": "Pick an ingredient. Get a short, relevant suggestion. Add a clean ticket in one tap.",
+    "pictureIngredient": "Ingredient",
+    "pictureSuggestion": "Suggestion",
+    "pictureTicket": "Ticket",
+    "planTitle": "Three questions, then Explore",
+    "plan": "Answer three quick questions, or skip them. Then you’re in Explore.",
+    "proof": "Carrots and flour make a carrot cake: add sugar, about $2. No ads, no jargon."
+  },
+  "tmd": {
+    "title": "About you",
+    "step": "Step {{step}} of {{total}}",
+    "guidanceQuestion": "How much help do you want?",
+    "guidanceWhy": "Why we ask: this sets how much Explore suggests and explains. Skip it and we use Assisted.",
+    "dietQuestion": "Do you follow a diet?",
+    "dietWhy": "Why we ask: so we can leave out food you don’t eat.",
+    "dietNone": "No set diet",
+    "dietPescatarian": "Pescatarian",
+    "dietVegetarian": "Vegetarian",
+    "dietVegan": "Vegan",
+    "avoidQuestion": "Is there anything you avoid or are allergic to?",
+    "avoidWhy": "Why we ask: so we can flag it. This is a reminder, not medical advice.",
+    "changeLater": "You can change these later: account menu, then Set-up.",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "skip": "Skip"
   }
 }

@@ -12,7 +12,12 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { IngreIconAccount } from '../../lib/icon/Icon'
 import type { AccountAction } from './accountItems'
-import { SAVED_PATH, accountItems, actionsFor } from './accountItems'
+import {
+  SAVED_PATH,
+  SETUP_PATH,
+  accountItems,
+  actionsFor
+} from './accountItems'
 
 export const ACCOUNT_LABEL = translate('account.label')
 
@@ -35,6 +40,7 @@ export const AccountMenu: FC<{ loggedIn: boolean }> = ({ loggedIn }) => {
     login: () => navigate('/login', { state: { from } }),
     signup: () => navigate('/signup', { state: { from } }),
     saved: () => navigate(SAVED_PATH),
+    setup: () => navigate(SETUP_PATH),
     logout: handleLogout
   }
   const onAction = (key: Key) =>
