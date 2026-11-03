@@ -2,6 +2,7 @@ import type { CountUnit } from '../../types/library'
 import {
   formatCount,
   formatCountUnit,
+  formatDay,
   formatFraction,
   formatItemCount,
   formatItemUnit,
@@ -149,5 +150,12 @@ describe('counted phrases', () => {
     expect(translate('explore.noMatches', { query: 'kale' })).toBe(
       'No matches for ‘kale’'
     )
+  })
+})
+
+describe('formatDay', () => {
+  it('shows the calendar day, not a shifted one', () => {
+    expect(formatDay('2026-11-05')).toBe('Thu, 5 Nov')
+    expect(formatDay('2026-12-31')).toBe('Thu, 31 Dec')
   })
 })
