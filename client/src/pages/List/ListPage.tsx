@@ -9,13 +9,15 @@ import { useExplore } from '../../utils/explore/ExploreContext'
 import type { Split } from '../../utils/layout/split'
 import { SPLIT_COLUMNS, explorePlacement } from '../../utils/layout/split'
 import { useSplit } from '../../utils/layout/useSplit'
+import { usePersonal } from '../../utils/profile/personal'
 import { useSaved } from '../../utils/saved/useSaved'
 import type { ExploreProps } from './Explore'
 import {
   EXPLORE_TOGGLE_ID,
   Explore,
   ExploreColumn,
-  ExploreDrawer
+  ExploreDrawer,
+  savedIdsOf
 } from './Explore'
 import { Extra } from './Extra'
 import {
@@ -67,6 +69,7 @@ export const ListPage: FC = () => {
   const loggedIn = useAuthContext()[0].loggedIn
   const savedState = useSaved(loggedIn)
   const saved = loggedIn ? savedState : null
+  const personal = usePersonal(list, savedIdsOf(saved))
   /* on load, Explore is expanded when nothing is selected (or Saved was asked for) */
   const [expandedOnLoad] = useState(
     () => list.entries.length === 0 || savedOnly
@@ -82,6 +85,7 @@ export const ListPage: FC = () => {
     },
     saved,
     savedOnly,
+    personal,
     onSaved: (on) => setParams(withSaved(params, on))
   }
   return (
