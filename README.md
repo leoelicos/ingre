@@ -11,3 +11,28 @@ _Recipes have traditionally been based on ingredients. We take the opposite appr
 - Frontend (Vite + React): [Vercel](https://ingre.vercel.app/), deployed from `main`, with a preview for each pull request.
 - Backend (Express + Apollo GraphQL): [Render](https://ingre-backend.onrender.com/graphql). It uses the free tier, so the first request after it has been idle can take around 30 seconds.
 - Database: MongoDB via Mongoose.
+
+## Native apps (#195)
+
+Phone only, matching the web app below 576px: Explore (open when the list is empty), then Ingredients, then Recipes with Extra underneath. No sheets. The catalogue is copied from `client/src/data` and is not edited in `ios/` or `android/`.
+
+```sh
+node scripts/copy-native-library.mjs
+```
+
+iOS: Swift 6 and SwiftUI, iOS 17. The wording and list rules live in `ios/IngreCore` (`swift test` in that folder). The app project is generated, not hand-edited:
+
+```sh
+brew install xcodegen
+cd ios && xcodegen generate
+open Ingre.xcodeproj
+```
+
+Android: Kotlin and Jetpack Compose, minSdk 26. `android/logic` is the same wording and list rules. From `android/`:
+
+```sh
+./gradlew :logic:test :app:assembleDebug
+```
+
+`npm test` is still only the web app.
+

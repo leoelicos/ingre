@@ -3,3 +3,9 @@ node_modules/
 settings.json
 mockData.js
 coverage
+ios/IngreCore/.build/
+android/.gradle/
+android/**/build/
+android/local.properties
+ios/Ingre/Resources/*.json
+android/app/src/main/assets/*.json
