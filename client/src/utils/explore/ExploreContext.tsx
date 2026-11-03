@@ -1,5 +1,11 @@
 import type { FC, ReactNode } from 'react'
 import { createContext, useContext, useState } from 'react'
+import type { Guidance } from '../guidance/guidance'
+import { DEFAULT_GUIDANCE, parseGuidance } from '../guidance/guidance'
+import { useStored } from '../storage/useStored'
+
+/** Where the dial's position is kept on this device. */
+export const GUIDANCE_KEY = 'ingre.explore.guidance'
 
 /** Explore's state (#181), shared by the header search, the drawer and the page. */
 export interface ExploreState {
@@ -18,7 +24,22 @@ export interface ExploreState {
   readonly focusPending: boolean
   readonly requestFocus: () => void
   readonly focusTaken: () => void
+  /** the ingredients being cooked with (#204): suggestions are built from these */
+  readonly selected: ReadonlySet<string>
+  readonly toggleSelected: (id: string) => void
+  /** the dial (#206): how much Explore does unasked; Assisted until the user turns it */
+  readonly guidance: Guidance
+  readonly setGuidance: (mode: Guidance) => void
 }
+
+/** The selection with an ingredient added, or taken out when it is already there. */
+export const toggled = (
+  selected: ReadonlySet<string>,
+  id: string
+): ReadonlySet<string> =>
+  new Set(
+    selected.has(id) ? [...selected].filter((x) => x !== id) : [...selected, id]
+  )
 
 const ExploreContext = createContext<ExploreState | null>(null)
 
@@ -26,6 +47,12 @@ export const useExploreState = (): ExploreState => {
   const [query, setQuery] = useState('')
   const [expanded, setExpanded] = useState<boolean | null>(null)
   const [focusPending, setFocusPending] = useState(false)
+  const [selected, setSelected] = useState<ReadonlySet<string>>(new Set())
+  const [guidance, updateGuidance] = useStored<Guidance>(
+    GUIDANCE_KEY,
+    parseGuidance,
+    DEFAULT_GUIDANCE
+  )
   return {
     query,
     setQuery,
@@ -34,7 +61,11 @@ export const useExploreState = (): ExploreState => {
     collapse: () => setExpanded(false),
     focusPending,
     requestFocus: () => setFocusPending(true),
-    focusTaken: () => setFocusPending(false)
+    focusTaken: () => setFocusPending(false),
+    selected,
+    toggleSelected: (id) => setSelected((current) => toggled(current, id)),
+    guidance,
+    setGuidance: (mode) => updateGuidance(() => mode)
   }
 }
 

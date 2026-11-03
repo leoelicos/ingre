@@ -9,13 +9,15 @@ import { useExplore } from '../../utils/explore/ExploreContext'
 import type { Split } from '../../utils/layout/split'
 import { SPLIT_COLUMNS, explorePlacement } from '../../utils/layout/split'
 import { useSplit } from '../../utils/layout/useSplit'
+import { usePersonal } from '../../utils/profile/personal'
 import { useSaved } from '../../utils/saved/useSaved'
 import type { ExploreProps } from './Explore'
 import {
   EXPLORE_TOGGLE_ID,
   Explore,
   ExploreColumn,
-  ExploreDrawer
+  ExploreDrawer,
+  savedIdsOf
 } from './Explore'
 import { Extra } from './Extra'
 import {
@@ -26,6 +28,7 @@ import {
 } from './Ingredients'
 import { LayoutToggle } from './LayoutToggle'
 import { Recipes } from './Recipes'
+import { useTabArrival } from './tabArrival'
 import { ScrollToTop } from './ScrollToTop'
 import { Bra } from '../../components/Bra'
 import { PageMain } from '../../components/SkipLink'
@@ -59,6 +62,7 @@ export const ListPage: FC = () => {
   const t = useT()
   useEffect(() => changeTitle(translate('list.title')), [])
   const explore = useExplore()
+  useTabArrival(explore)
   const list = useChips()
   const ingredients = useIngredients(list)
   const { split, options, drawer, choose } = useSplit()
@@ -67,6 +71,7 @@ export const ListPage: FC = () => {
   const loggedIn = useAuthContext()[0].loggedIn
   const savedState = useSaved(loggedIn)
   const saved = loggedIn ? savedState : null
+  const personal = usePersonal(list, savedIdsOf(saved))
   /* on load, Explore is expanded when nothing is selected (or Saved was asked for) */
   const [expandedOnLoad] = useState(
     () => list.entries.length === 0 || savedOnly
@@ -82,6 +87,7 @@ export const ListPage: FC = () => {
     },
     saved,
     savedOnly,
+    personal,
     onSaved: (on) => setParams(withSaved(params, on))
   }
   return (
