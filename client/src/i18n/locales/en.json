@@ -260,6 +260,23 @@
     "message": "Page Not Found",
     "goHome": "Go home"
   },
+  "rag": {
+    "separator": ", ",
+    "partner": "Goes with {{names}}.",
+    "style": "Shares {{tags}} cooking with {{names}}.",
+    "match": "Matches {{terms}}."
+  },
+  "ideas": {
+    "title": "Ideas",
+    "intro": "Type what you have, such as carrots and flour. Ideas come from a hand-curated pairing list on this device: no AI service is called and nothing you type leaves it.",
+    "queryLabel": "What do you have?",
+    "queryPlaceholder": "carrots, flour, lemon",
+    "avoidLegend": "Avoid",
+    "listLabel": "Ideas",
+    "none": "Nothing in the pairing list matches yet. Try an ingredient such as tomato or garlic.",
+    "hint": "Ideas appear as you type.",
+    "count_one": "{{count}} idea",
+    "count_other": "{{count}} ideas"
   "bra": {
     "label": "Quick actions",
     "add": "Add item"

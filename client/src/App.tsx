@@ -24,6 +24,7 @@ import { NoMatch } from './pages/Admin/NoMatch'
 import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
+import { IdeasPage } from './pages/Ideas/IdeasPage'
 import { ListPage } from './pages/List/ListPage'
 import { ProfilePage } from './pages/Profile/ProfilePage'
 import { WarRoom } from './pages/WarRoom/WarRoom'
@@ -173,6 +174,8 @@ export const Ingre: FC = () => {
                   element={<ListPage />}
                 />
                 <Route
+                  path="/ideas"
+                  element={<IdeasPage />}
                   path="/profile"
                   element={<ProfilePage />}
                   path={WAR_ROOM_PATH}
