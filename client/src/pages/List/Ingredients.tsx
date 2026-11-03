@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from 'react-aria-components'
 import type { LibraryIngredient } from '../../types/library'
 import { capitaliseFirst } from '../../utils/capitaliseFirst'
+import { HygieneNotes } from '../../components/HygieneNotes'
 import { focusById } from '../../utils/focus'
 import type { Chip } from '../../utils/chips/chips'
 import { groupChips } from '../../utils/chips/chips'
@@ -169,6 +170,7 @@ export const chipView = (
         </div>
         <TotalLine chip={chip} />
         <ChipAllergens chip={chip} />
+        <HygieneNotes chips={[chip]} />
         <CategoryField
           chip={chip}
           scope={scope}
@@ -261,6 +263,7 @@ export const Ingredients: FC<{
           filter={filter}
           onChange={setFilter}
         />
+        <HygieneNotes chips={list.chips} />
         {list.chips.length === 0 && (
           <p className="m-0 text-text-secondary">{NO_CHIPS_HINT}</p>
         )}

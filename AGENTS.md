@@ -24,7 +24,7 @@ package.json          root scripts (install/develop/build/seed), concurrently
 vercel.json           SPA rewrite to /index.html
 .github/workflows/ci.yml  the only CI workflow
 .cursor/              rules + atomised context notes (context/*.md)
-docs/                 TODO.md, TEST_MOCK_INVENTORY.md
+docs/                 TODO.md, TEST_MOCK_INVENTORY.md, HYGIENE.md
 MODERNIZATION.md      modernisation checklist (history)
 scripts/convert-catalogue.py  catalogue data conversion
 client/
@@ -98,6 +98,9 @@ Ingredient colours
 - No ingredient icons or three-letter code badges (removed #191: recipe rows show just their name).
   Chips and category tabs are coloured by supermarket section (produce = green), never colour alone.
   See `client/src/components/SectionTone/` (badgeTone.ts, tones.ts).
+Food safety (#213, `docs/HYGIENE.md`)
+- Core hygiene notes are mandatory in every tier: never gated by the guidance dial, a flag or a setting, never dismissible.
+  New raw catalogue items go in `RAW_IDS` (and `POULTRY_IDS`) in `utils/hygiene/hygiene.ts`.
 Accounts and header
 - No account needed this phase. Saved stays on the device.
 - Header shows only: logo, search, account icon. Log in / Sign up live in the account icon menu.

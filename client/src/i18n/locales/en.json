@@ -223,5 +223,12 @@
   "notFound": {
     "message": "Page Not Found",
     "goHome": "Go home"
+  },
+  "hygiene": {
+    "title": "Food safety",
+    "separate": "Keep raw meat and eggs apart from cooked and ready-to-eat food.",
+    "handwash": "Wash and dry your hands after handling raw chicken, before touching anything ready to eat.",
+    "storage": "Keep chilled food at 5 °C or below and frozen food at −18 °C or below.",
+    "capacity": "This is a big shop. Check the fridge has room before you buy."
   }
 }
