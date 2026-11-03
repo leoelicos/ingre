@@ -61,12 +61,14 @@ test.describe('seasonality (#218)', () => {
     await page
       .getByRole('button', { name: /Unlock why it is in season/ })
       .click()
-    await expect(page.getByRole('status')).toHaveText(
-      'Unlocked. This is a stub: you were not charged.'
-    )
+    await expect(
+      page.getByRole('region', { name: 'In season now' }).getByRole('status')
+    ).toHaveText('Unlocked. This is a stub: you were not charged.')
     await expect(page.getByText(/Why it is in season:/)).toBeVisible()
     expect(await stripeCalls(request)).toEqual([])
     await page.reload()
-    await expect(page.getByRole('status')).toBeVisible()
+    await expect(
+      page.getByRole('region', { name: 'In season now' }).getByRole('status')
+    ).toBeVisible()
   })
 })
