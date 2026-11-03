@@ -2,6 +2,8 @@ import { useT } from '../../i18n'
 import type { FC } from 'react'
 import type { CopyLine } from '../../utils/balance/copies'
 import { startSection } from '../../utils/chips/chips'
+import { useGuestList } from '../../utils/guests/GuestsContext'
+import { flaggedIngredientIds } from '../../utils/guests/guests'
 import { displayName } from '../../utils/shopping/shoppingList'
 import { edgeToneOf } from './Chips'
 
@@ -10,6 +12,9 @@ export const nameChipClass = (line: CopyLine): string =>
   `rounded-pill border px-3 py-1 text-sm font-semibold leading-tight ${edgeToneOf(
     startSection(line.item)
   )}`
+
+/** A guest's allergen (#209): an outline in the accent colour; the row's words say who and what. */
+export const GUEST_OUTLINE = 'outline outline-2 outline-offset-1 outline-accent'
 
 /**
  * A closed recipe row's ingredients: every one by name, as flat read-only chips (#191).
@@ -20,6 +25,7 @@ export const IngredientNames: FC<{
   title: string
 }> = ({ lines, title }) => {
   const t = useT()
+  const flagged = flaggedIngredientIds(lines, useGuestList())
   return (
     <ul
       aria-label={t('row.ingredientsIn', { title })}
@@ -30,7 +36,11 @@ export const IngredientNames: FC<{
         <li
           key={line.ingredientId}
           data-name-chip={line.ingredientId}
-          className={nameChipClass(line)}
+          data-guest-flag={flagged.has(line.ingredientId) ? 'true' : undefined}
+          className={[
+            nameChipClass(line),
+            ...(flagged.has(line.ingredientId) ? [GUEST_OUTLINE] : [])
+          ].join(' ')}
         >
           {displayName(line)}
         </li>

@@ -223,5 +223,16 @@
   "notFound": {
     "message": "Page Not Found",
     "goHome": "Go home"
+  },
+  "guests": {
+    "button": "Guests",
+    "buttonCount": "Guests ({{count}})",
+    "panel": "Guests at the table",
+    "hint": "Add a guest to flag what they can't have. Nothing is changed for you.",
+    "name": "Guest name",
+    "add": "Add guest",
+    "remove": "Remove {{name}}",
+    "allergensFor": "Allergens for {{name}}",
+    "cant": "{{name}} can't have: {{allergens}}"
   }
 }

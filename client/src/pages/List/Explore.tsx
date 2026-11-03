@@ -36,6 +36,8 @@ import {
   HiddenNote,
   RecipeFilterPanel
 } from './Filters'
+import { GuestFlag } from './GuestFlag'
+import { GuestsButton, GuestsPanel } from './Guests'
 import type { IngredientsState } from './Ingredients'
 import { NO_SAVED_HINT } from './recipeFilter'
 import { filterOptions, recipeFilterCount } from './Recipes'
@@ -111,6 +113,7 @@ const IngredientResult: FC<{
         </span>
       </Button>
       <AllergenTags allergens={item.allergens} />
+      <GuestFlag tags={item.allergens} />
     </li>
   )
 }
@@ -256,6 +259,7 @@ const Results: FC<{
 }
 
 const FILTER_ID = `${EXPLORE_ID}-filter`
+const GUESTS_ID = `${EXPLORE_ID}-guests`
 
 /** The savedIds Explore filters by: the server's, or none signed out. */
 export const savedIdsOf = (saved: SavedState | null): ReadonlySet<string> =>
@@ -270,6 +274,7 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   const { query } = useExplore()
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set())
   const [filterOpen, setFilterOpen] = useState(props.savedOnly)
+  const [guestsOpen, setGuestsOpen] = useState(false)
   const [picked, setPicked] =
     useState<Pick<RecipeFilter, 'contains' | 'excludes'>>(NO_RECIPE_FILTER)
   const filter: RecipeFilter = { ...picked, savedOnly: props.savedOnly }
@@ -303,7 +308,16 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           active={recipeFilterCount(filter)}
           onPress={() => setFilterOpen(!filterOpen)}
         />
+        <GuestsButton
+          panelId={GUESTS_ID}
+          open={guestsOpen}
+          onPress={() => setGuestsOpen(!guestsOpen)}
+        />
       </ActionsRow>
+      <GuestsPanel
+        id={GUESTS_ID}
+        open={guestsOpen}
+      />
       <RecipeFilterPanel
         id={FILTER_ID}
         open={filterOpen}
