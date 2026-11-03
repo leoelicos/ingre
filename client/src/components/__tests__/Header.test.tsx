@@ -10,7 +10,7 @@ import { Header, LOGO_TEXT } from '../Header'
 addFontAwesome()
 
 describe('Header (#164)', () => {
-  it('shows only the logo, the search and the account icon', () => {
+  it('shows only the logo, the search, the War room button and the account icon (#164, #207)', () => {
     render(
       <MockedProvider mocks={[]}>
         <MemoryRouter>
@@ -26,7 +26,9 @@ describe('Header (#164)', () => {
     const logo = header.getByRole('link', { name: LOGO_TEXT })
     expect(logo).toHaveAttribute('href', '/')
     expect(logo).toHaveClass('focus-visible:focus-ring')
-    expect(header.getAllByRole('link')).toEqual([logo])
+    const warRoom = header.getByRole('link', { name: 'War room' })
+    expect(warRoom).toHaveAttribute('href', '/war-room')
+    expect(header.getAllByRole('link')).toEqual([logo, warRoom])
     expect(header.getAllByRole('searchbox')).toHaveLength(1)
     expect(header.getAllByRole('button')).toEqual([
       header.getByRole('button', { name: 'Account' })
@@ -34,5 +36,24 @@ describe('Header (#164)', () => {
     expect(header.queryByRole('navigation')).toBeNull()
     for (const name of ['Recipes', 'Saved', 'Shopping list', 'Log in'])
       expect(header.queryByText(name)).toBeNull()
+  })
+
+  it('sticks to the top below the drawer width, so the search stays high (#228)', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <MemoryRouter>
+          <AuthProvider>
+            <ExploreProvider>
+              <Header />
+            </ExploreProvider>
+          </AuthProvider>
+        </MemoryRouter>
+      </MockedProvider>
+    )
+    expect(screen.getByRole('banner')).toHaveClass(
+      'sticky',
+      'top-0',
+      'min-[1328px]:static'
+    )
   })
 })

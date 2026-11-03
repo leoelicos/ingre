@@ -2,6 +2,8 @@ import { useT } from '../../i18n'
 import type { FC } from 'react'
 import type { CopyLine } from '../../utils/balance/copies'
 import { startSection } from '../../utils/chips/chips'
+import { useGuestList } from '../../utils/guests/GuestsContext'
+import { flaggedIngredientIds } from '../../utils/guests/guests'
 import { displayName } from '../../utils/shopping/shoppingList'
 import { edgeToneOf } from './Chips'
 
@@ -11,15 +13,26 @@ export const nameChipClass = (line: CopyLine): string =>
     startSection(line.item)
   )}`
 
+/** A guest's allergen (#209): an outline in the accent colour; the row's words say who and what. */
+export const GUEST_OUTLINE = 'outline outline-2 outline-offset-1 outline-accent'
+
 /**
  * A closed recipe row's ingredients: every one by name, as flat read-only chips (#191).
  * A plain list, not controls: no checkbox, amount or chevron, and nothing to focus.
  */
+const NONE: ReadonlySet<string> = new Set()
+
+/** An outline in the accent colour (3:1 on the page), drawn outside the chip; text says it too (#206). */
+const FLAGGED = 'outline outline-2 outline-offset-1 outline-accent'
+
 export const IngredientNames: FC<{
   lines: readonly CopyLine[]
   title: string
-}> = ({ lines, title }) => {
+  /** ingredient ids to outline (#206): the missing ones, as far as the dial goes */
+  flagged?: ReadonlySet<string> | undefined
+}> = ({ lines, title, flagged = NONE }) => {
   const t = useT()
+  const flagged = flaggedIngredientIds(lines, useGuestList())
   return (
     <ul
       aria-label={t('row.ingredientsIn', { title })}
@@ -30,7 +43,15 @@ export const IngredientNames: FC<{
         <li
           key={line.ingredientId}
           data-name-chip={line.ingredientId}
-          className={nameChipClass(line)}
+          data-guest-flag={flagged.has(line.ingredientId) ? 'true' : undefined}
+          className={[
+            nameChipClass(line),
+            ...(flagged.has(line.ingredientId) ? [GUEST_OUTLINE] : [])
+          data-flagged={String(flagged.has(line.ingredientId))}
+          className={[
+            nameChipClass(line),
+            ...(flagged.has(line.ingredientId) ? [FLAGGED] : [])
+          ].join(' ')}
         >
           {displayName(line)}
         </li>
