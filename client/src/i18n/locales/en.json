@@ -82,10 +82,9 @@
     "browse": "Browse recipes",
     "closeMatches": "Close matches",
     "noMatches": "No matches for ‘{{query}}’",
-    "add": "Add {{name}}",
-    "onListLabel": "{{name}}, on your list",
-    "onListName": "✓ {{name}}",
-    "addName": "+ {{name}}",
+    "onListMark": "✓",
+    "onListName": "{{name}}",
+    "addName": "Add {{name}}",
     "categoryOnList": "{{category}} · on your list"
   },
   "saved": {
@@ -253,5 +252,25 @@
     "noPairs": "Nothing pairs with it yet",
     "noRecipes": "No recipe in the library uses it yet",
     "noSuggestions": "No recipes to suggest yet"
+  "demo": {
+    "title": "Try the loop",
+    "intro": "Start from the ingredients you have. Get a suggestion. Add a ticket.",
+    "search": "Find an ingredient",
+    "placeholder": "carrot, flour…",
+    "none": "No ingredient matches.",
+    "add": "Add {{name}}",
+    "remove": "Remove {{name}}",
+    "picked": "Picked",
+    "suggestions": "Suggestions",
+    "missing": "Add {{items}}",
+    "complete": "You have everything",
+    "cost": "{{price}} to buy",
+    "addTicket": "Add ticket",
+    "ticketAdded": "{{title}} is on your tickets",
+    "pickedAck": "{{name}} picked",
+    "removedAck": "{{name}} removed",
+    "tickets": "Tickets",
+    "fab": "Add ticket for {{title}}",
+    "fabNone": "Add ticket"
   }
 }

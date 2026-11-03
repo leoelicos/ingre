@@ -23,6 +23,7 @@ import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
 import { ListPage } from './pages/List/ListPage'
+import { DemoPage } from './pages/Demo/DemoPage'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
@@ -146,6 +147,10 @@ export const Ingre: FC = () => {
                       <Success />
                     </PageMain>
                   }
+                />
+                <Route
+                  path="/demo"
+                  element={<DemoPage />}
                 />
                 <Route
                   path="*"
