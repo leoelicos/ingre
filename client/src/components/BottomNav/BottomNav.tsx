@@ -21,7 +21,7 @@ const TabLink: FC<{ tab: Tab; current: boolean }> = ({ tab, current }) => (
 )
 
 /** Height the page leaves free under its content, so the bar never covers the last row. */
-export const NAV_SPACE = 'h-[calc(4rem+env(safe-area-inset-bottom))]'
+export const NAV_SPACE = 'h-[calc(4.5rem+env(safe-area-inset-bottom))]'
 
 /**
  * The four tabs (#227): Explore, Inventory, Cook, Profile. One stable bar at the bottom of every

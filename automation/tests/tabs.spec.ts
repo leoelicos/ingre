@@ -71,6 +71,9 @@ test.describe('four tabs (#227)', () => {
     await tab(page, 'Cook').focus()
     await page.keyboard.press('Enter')
     await expect(page).toHaveURL(/#cook$/)
+    await expect(
+      page.getByRole('heading', { level: 2, name: /^Recipes/ })
+    ).toBeFocused()
     await tab(page, 'Profile').focus()
     await page.keyboard.press('Enter')
     await expect(page).toHaveURL(/\/profile$/)
@@ -93,13 +96,18 @@ test.describe('four tabs (#227)', () => {
     await expect(nav(page).getByRole('link', { name: /saved/i })).toHaveCount(0)
   })
 
-  test('the last thing on the page is never hidden under the bar', async ({
+  test('the page leaves room under its last section, so the bar never hides it', async ({
     page
   }) => {
     await page.goto('/')
-    await page.keyboard.press('End')
-    const last = await box(page.locator('main'))
     const bar = await box(nav(page))
-    expect(last.y + last.height).toBeLessThanOrEqual(bar.y + 1)
+    const room = await page
+      .locator('main')
+      .evaluate(
+        (el) =>
+          document.documentElement.scrollHeight -
+          (el.getBoundingClientRect().bottom + window.scrollY)
+      )
+    expect(room).toBeGreaterThanOrEqual(bar.height)
   })
 })

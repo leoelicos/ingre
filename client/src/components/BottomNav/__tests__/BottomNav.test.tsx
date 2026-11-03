@@ -32,7 +32,7 @@ describe('bottom navigation (#227)', () => {
     const { container } = renderNav('/')
     expect(screen.getByRole('navigation')).toHaveClass('fixed', 'bottom-0')
     expect(container.querySelector('[aria-hidden="true"]')).toHaveClass(
-      'h-[calc(4rem+env(safe-area-inset-bottom))]'
+      'h-[calc(4.5rem+env(safe-area-inset-bottom))]'
     )
   })
 
