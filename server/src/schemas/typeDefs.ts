@@ -1,12 +1,20 @@
 import { gql } from 'graphql-tag'
 
 export const typeDefs = gql`
+  # #208: Explorer, Manager and Leader are opt-in; everything stays available
+  enum Tier {
+    EXPLORER
+    MANAGER
+    LEADER
+  }
+
   type User {
     _id: ID!
     firstName: String!
     lastName: String!
     email: String!
     pro: Boolean!
+    tier: Tier
     savedRecipes: [Recipe!]!
     numSavedRecipes: Int!
   }
@@ -138,7 +146,7 @@ export const typeDefs = gql`
 
   # session
   type Query {
-    checkout: Checkout!
+    checkout(tier: Tier): Checkout!
   }
 
   type Mutation {
@@ -155,7 +163,7 @@ export const typeDefs = gql`
 
   type Mutation {
     addUser(input: UserInput!): Auth!
-    makeUserPro: User!
+    makeUserPro(tier: Tier): User!
   }
 `
 
