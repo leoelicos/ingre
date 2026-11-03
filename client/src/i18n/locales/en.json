@@ -262,7 +262,8 @@
   },
   "bra": {
     "label": "Quick actions",
-    "add": "Add item",
+    "add": "Add item"
+  },
   "guests": {
     "button": "Guests",
     "buttonCount": "Guests ({{count}})",
