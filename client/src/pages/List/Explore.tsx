@@ -39,6 +39,7 @@ import {
   HiddenNote,
   RecipeFilterPanel
 } from './Filters'
+import { IngredientDetails } from './IngredientJourney'
 import type { IngredientsState } from './Ingredients'
 import { NO_SAVED_HINT } from './recipeFilter'
 import { filterOptions, recipeFilterCount } from './Recipes'
@@ -101,7 +102,8 @@ const RESULT =
 const IngredientResult: FC<{
   item: LibraryIngredient
   ingredients: IngredientsState
-}> = ({ item, ingredients }) => {
+  controls: RowControls
+}> = ({ item, ingredients, controls }) => {
   const t = useT()
   const onList = ingredients.list.hasChip(item.id)
   const name = capitaliseFirst(item.name)
@@ -128,6 +130,10 @@ const IngredientResult: FC<{
         <UseToggle item={item} />
       </div>
       <AllergenTags allergens={item.allergens} />
+      <IngredientDetails
+        item={item}
+        controls={controls}
+      />
     </li>
   )
 }
@@ -136,7 +142,8 @@ const IngredientGroup: FC<{
   title: string
   items: readonly LibraryIngredient[]
   ingredients: IngredientsState
-}> = ({ title, items, ingredients }) => (
+  controls: RowControls
+}> = ({ title, items, ingredients, controls }) => (
   <div>
     <h3 className={GROUP_HEADING}>{title}</h3>
     <ul className="m-0 flex list-none flex-col gap-2 p-1">
@@ -145,6 +152,7 @@ const IngredientGroup: FC<{
           key={item.id}
           item={item}
           ingredients={ingredients}
+          controls={controls}
         />
       ))}
     </ul>
@@ -278,6 +286,7 @@ const Groups: FC<{
             title={t('ingredients.title')}
             items={ingredients}
             ingredients={props.ingredients}
+            controls={controls}
           />
         )}
         {recipes.length > 0 && (
