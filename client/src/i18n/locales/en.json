@@ -426,7 +426,8 @@
     "back": "Back",
     "next": "Next",
     "finish": "Finish",
-    "skip": "Skip",
+    "skip": "Skip"
+  },
   "demo": {
     "title": "Try the loop",
     "intro": "Start from the ingredients you have. Get a suggestion. Add a ticket.",
