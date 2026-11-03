@@ -7,6 +7,7 @@ import {
   EXTRAS_KEY,
   LAYOUT_KEY
 } from '../../storage/shoppingState'
+import { readEvents } from '../../analytics/events'
 import type { Chip } from '../chips'
 import { addOnce, catalogueExtra, copyEntries, useChips } from '../useChips'
 
@@ -40,6 +41,15 @@ describe('helpers', () => {
 })
 
 describe('useChips', () => {
+  it('logs ticket_added when a recipe is added to the list, not when it is removed (#222)', () => {
+    const { result } = renderHook(() => useChips())
+    act(() => result.current.togglePicked(dahl))
+    act(() => result.current.togglePicked(dahl))
+    expect(readEvents().map(({ name, props }) => ({ name, props }))).toEqual([
+      { name: 'ticket_added', props: { recipeId: 'dahl' } }
+    ])
+  })
+
   const chipOf = (chips: readonly Chip[], id: string) => {
     const found = chips.find((c) => c.id === id)
     if (found === undefined) throw new Error(`no chip ${id}`)

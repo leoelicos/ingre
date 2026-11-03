@@ -11,6 +11,7 @@ import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import type { CopyEntry } from '../../utils/chips/chips'
 import { categoryLabel } from '../../utils/chips/chips'
 import type { RecipeCopy } from '../../utils/balance/copies'
+import { useSearchedEvent } from '../../utils/analytics/useSearchedEvent'
 import { useExplore } from '../../utils/explore/ExploreContext'
 import type {
   ExploreResults,
@@ -257,6 +258,17 @@ const Results: FC<{
 
 const FILTER_ID = `${EXPLORE_ID}-filter`
 
+/** How many ingredients and recipes matched; a "no matches" screen counts as none (#222). */
+export const matchCounts = (
+  results: ExploreResults
+): { ingredients: number; recipes: number } =>
+  results.kind === 'matches'
+    ? {
+        ingredients: results.ingredients.length,
+        recipes: results.recipes.length
+      }
+    : { ingredients: 0, recipes: 0 }
+
 /** The savedIds Explore filters by: the server's, or none signed out. */
 export const savedIdsOf = (saved: SavedState | null): ReadonlySet<string> =>
   saved === null ? new Set() : saved.ids
@@ -283,6 +295,8 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
     savedIds
   }
   const hidden = DEFAULT_SOURCE.recipes.length - shownRecipes(source).length
+  const results = exploreResults(query, source)
+  useSearchedEvent(query, matchCounts(results))
   const controls: RowControls = {
     ...props.rows,
     openIds,
@@ -335,7 +349,7 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
       ) : (
         <Results
           query={query}
-          results={exploreResults(query, source)}
+          results={results}
           props={props}
           controls={controls}
         />
