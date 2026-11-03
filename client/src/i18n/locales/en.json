@@ -223,5 +223,26 @@
   "notFound": {
     "message": "Page Not Found",
     "goHome": "Go home"
+  },
+  "demo": {
+    "title": "Try the loop",
+    "intro": "Start from the ingredients you have. Get a suggestion. Add a ticket.",
+    "search": "Find an ingredient",
+    "placeholder": "carrot, flour…",
+    "none": "No ingredient matches.",
+    "add": "Add {{name}}",
+    "remove": "Remove {{name}}",
+    "picked": "Picked",
+    "suggestions": "Suggestions",
+    "missing": "Add {{items}}",
+    "complete": "You have everything",
+    "cost": "{{price}} to buy",
+    "addTicket": "Add ticket",
+    "ticketAdded": "{{title}} is on your tickets",
+    "pickedAck": "{{name}} picked",
+    "removedAck": "{{name}} removed",
+    "tickets": "Tickets",
+    "fab": "Add ticket for {{title}}",
+    "fabNone": "Add ticket"
   }
 }
