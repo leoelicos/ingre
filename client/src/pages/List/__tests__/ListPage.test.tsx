@@ -85,6 +85,8 @@ describe('Scenario: Chips from recipes, grouped by category', () => {
     // no count badge (#181): the count stays in the spoken label and in Used in
     expect(within(chip('onion')).queryByTestId('chip-count')).toBeNull()
     expect(toggleOf('onion')).toHaveAccessibleName(/in 2 recipes/)
+    // the spoken label contains what the chip shows, name then amount, with a space between (WCAG 2.5.3, #223)
+    expect(toggleOf('garlic').textContent).toMatch(/^Garlic\s\d/)
     fireEvent.click(pickFromExplore('Potato, cauliflower and chickpea curry'))
     expect(hasChipEl('potato')).toBe(0)
     expect(hasChipEl('onion')).toBe(1)
@@ -286,6 +288,11 @@ describe('Scenario: Add an extra', () => {
     expect(
       within(area).getByRole('button', { name: 'Butter, on your list' })
     ).toHaveTextContent('On your list')
+    // the visible name and note are separated, so the spoken label contains them (WCAG 2.5.3, #223)
+    expect(
+      within(area).getByRole('button', { name: 'Butter, on your list' })
+        .textContent
+    ).toBe('Butter On your list')
     expect(toggleOf('butter')).toHaveAccessibleName(/, in Extra$/)
   })
 
