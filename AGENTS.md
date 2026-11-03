@@ -98,6 +98,9 @@ Ingredient colours
 - No ingredient icons or three-letter code badges (removed #191: recipe rows show just their name).
   Chips and category tabs are coloured by supermarket section (produce = green), never colour alone.
   See `client/src/components/SectionTone/` (badgeTone.ts, tones.ts).
+Naming (#214, `docs/TERMINOLOGY.md`)
+- English first for home cooks, Australian English primary. One primary display name per ingredient; aliases are for
+  search only. Regional and specialist names get an optional tooltip. Don't settle cut-name debates.
 Accounts and header
 - No account needed this phase. Saved stays on the device.
 - Header shows only: logo, search, account icon. Log in / Sign up live in the account icon menu.
