@@ -1,0 +1,4 @@
+// #195: Debug builds talk to the live Render server, so journeys can be checked end to end.
+// Point INGRE_GRAPHQL_URL at http://localhost:3001/graphql to use a local server instead.
+#include "Shared.xcconfig"
+INGRE_GRAPHQL_URL = https:/$()/ingre-backend.onrender.com/graphql

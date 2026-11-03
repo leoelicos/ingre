@@ -1,0 +1,5 @@
+// #195: settings shared by every configuration. `//` starts a comment in xcconfig files,
+// so URLs are written with `/$()/` to keep their double slash.
+PRODUCT_BUNDLE_IDENTIFIER = app.ingre.ios
+INGRE_WEB_ORIGIN = https:/$()/ingre.vercel.app
+INGRE_CHECKOUT_BASE_URL = https:/$()/checkout.stripe.com/c/pay/
