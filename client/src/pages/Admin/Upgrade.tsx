@@ -2,9 +2,17 @@ import { useT } from '../../i18n'
 import type { FC } from 'react'
 import NotLoggedIn from '../../components/NotLoggedIn'
 import { PrimaryButton } from '../../components/PrimaryButton'
+import { Plans } from '../../components/Plans/Plans'
+import { useFlag } from '../../utils/flags/useFlag'
 import { useUpgrade } from './useUpgrade'
 
+/** With the tiers flag on (#208), /upgrade is the Plans page; otherwise the old PRO upgrade. */
 export const Upgrade: FC = () => {
+  const tiers = useFlag('tiers')
+  return tiers ? <Plans /> : <ProUpgrade />
+}
+
+const ProUpgrade: FC = () => {
   const t = useT()
   const {
     pro,

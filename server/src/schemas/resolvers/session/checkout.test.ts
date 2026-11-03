@@ -77,6 +77,47 @@ describe('checkout', () => {
     })
   })
 
+  it('buys the tier it is asked for: product, price and name (#208)', async () => {
+    mockStripePay.mockReturnValue({ id: 'mockstripeid' })
+    const tierCheckout = gql`
+      query TierCheckout($tier: Tier) {
+        checkout(tier: $tier) {
+          session
+        }
+      }
+    `
+    const bought = []
+    for (const tier of ['EXPLORER', 'MANAGER', 'LEADER']) {
+      const result = await testServer.executeOperation(
+        { query: tierCheckout, variables: { tier } },
+        { contextValue }
+      )
+      expect(singleResult(result).errors).toBeUndefined()
+      bought.push(mockStripePay.mock.calls.at(-1)?.[0])
+    }
+    expect(
+      bought.map(({ productName, productCost, productCurrency }) => [
+        productName,
+        productCost,
+        productCurrency
+      ])
+    ).toEqual([
+      ['ingré Explorer', 400, 'usd'],
+      ['ingré Manager', 800, 'usd'],
+      ['ingré Leader', 1600, 'usd']
+    ])
+  })
+
+  it('refuses a tier that does not exist', async () => {
+    const result = await testServer.executeOperation(
+      { query: 'query { checkout(tier: PLATINUM) { session } }' },
+      { contextValue }
+    )
+    const { errors } = singleResult(result)
+    expect(errors?.[0]?.message).toMatch(/Tier/)
+    expect(mockStripePay).not.toHaveBeenCalled()
+  })
+
   it('util function "getRootEndpointFromHeaders" extracts the right origin from the URL', async () => {
     expect(getRootEndpointFromHeaders({ headers: undefined })).toBe('')
     expect(getRootEndpointFromHeaders({ headers: { referer: '' } })).toBe('')

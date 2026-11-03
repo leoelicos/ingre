@@ -8,6 +8,11 @@
     <main>
       <h1>Pay ingré PRO</h1>
       <p>Session {{request.pathSegments.[2]}}</p>
+      <form aria-label="Test card">
+        <label>Card number <input id="card" autocomplete="off" /></label>
+        <label>Expiry <input id="expiry" autocomplete="off" /></label>
+        <label>CVC <input id="cvc" autocomplete="off" /></label>
+      </form>
       <a
         id="pay"
         href="{{regexExtract request.headers.Referer 'https?://[^/]+'}}/success?session_id={{request.pathSegments.[2]}}"

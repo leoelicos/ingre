@@ -24,6 +24,7 @@ package.json          root scripts (install/develop/build/seed), concurrently
 vercel.json           SPA rewrite to /index.html
 .github/workflows/ci.yml  the only CI workflow
 .cursor/              rules + atomised context notes (context/*.md)
+docs/                 TODO.md, TEST_MOCK_INVENTORY.md, TIERS.md (feature flags, tiers)
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, ANALYTICS.md
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, RAG.md (retrieval over curated profiles, #225)
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, ENGAGEMENT_LOOP.md

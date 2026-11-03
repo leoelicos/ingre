@@ -9,8 +9,10 @@ import { useExplore } from '../../utils/explore/ExploreContext'
 import type { Split } from '../../utils/layout/split'
 import { SPLIT_COLUMNS, explorePlacement } from '../../utils/layout/split'
 import { useSplit } from '../../utils/layout/useSplit'
+import { useFlag } from '../../utils/flags/useFlag'
 import { usePersonal } from '../../utils/profile/personal'
 import { useSaved } from '../../utils/saved/useSaved'
+import { useMarkFirstEndToEnd } from '../../utils/tier/upsell'
 import type { ExploreProps } from './Explore'
 import {
   EXPLORE_TOGGLE_ID,
@@ -64,6 +66,7 @@ export const ListPage: FC = () => {
   const explore = useExplore()
   useTabArrival(explore)
   const list = useChips()
+  useMarkFirstEndToEnd(useFlag('tiers'), list.chips, list.pickedIds.size)
   const ingredients = useIngredients(list)
   const { split, options, drawer, choose } = useSplit()
   const [params, setParams] = useSearchParams()
