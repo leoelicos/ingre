@@ -3,6 +3,8 @@ export type BadgeTone =
   | 'produce'
   | 'meat'
   | 'dairy'
+  | 'fruit'
+  | 'seafood'
   | 'deli'
   | 'bakery'
   | 'pantry'
@@ -13,6 +15,8 @@ export const BADGE_TONES: readonly BadgeTone[] = [
   'produce',
   'meat',
   'dairy',
+  'fruit',
+  'seafood',
   'deli',
   'bakery',
   'pantry',

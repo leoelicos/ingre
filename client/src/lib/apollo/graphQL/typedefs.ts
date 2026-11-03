@@ -65,6 +65,14 @@ export type Category = {
   name: string
 }
 
+/** #208: the tier a user has bought; mirrors the server's Tier enum. */
+export type Tier = 'EXPLORER' | 'MANAGER' | 'LEADER'
+
+export type TierProfile = {
+  _id: string
+  tier: Tier | null
+}
+
 export type Checkout = {
   session: string
 }

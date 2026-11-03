@@ -5,6 +5,8 @@ import { CHECKOUT, GET_USER } from '../../lib/apollo/graphQL/queries'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 import { loadCheckout, oneAtATime, runCheckout, sessionFrom } from './checkout'
 import type { CheckoutFailure, LoadCheckout } from './checkout'
+import { savePendingTier } from '../../utils/tier/pending'
+import type { Tier } from '../../utils/tier/tiers'
 
 export const useUpgrade = (load: LoadCheckout = loadCheckout) => {
   const [auth] = useAuthContext()
@@ -36,14 +38,22 @@ export const useUpgrade = (load: LoadCheckout = loadCheckout) => {
   }
 
   /** A new attempt: a new session and, after a failed load, a new Stripe.js. */
-  const attempt = (): Promise<CheckoutFailure> => {
+  const attempt = (tier: Tier | null): Promise<CheckoutFailure> => {
     setCheckoutFailed(false)
     setCheckoutStarting(true)
-    return runCheckout(() => getCheckout().then(sessionFrom), load).then(failed)
+    return runCheckout(() => fetchSession(tier), load).then(failed)
+  }
+
+  /** The new session: for a tier (#208) when one is chosen, else the old PRO checkout. */
+  const fetchSession = (tier: Tier | null) => {
+    if (tier === null) return getCheckout().then(sessionFrom)
+    savePendingTier(tier)
+    return getCheckout({ variables: { tier } }).then(sessionFrom)
   }
 
   /** Each press starts an attempt, unless one is already in flight (then it is a no-op). */
-  const startCheckout = (): Promise<CheckoutFailure> => oneCheckout.run(attempt)
+  const startCheckout = (tier: Tier | null = null): Promise<CheckoutFailure> =>
+    oneCheckout.run(() => attempt(tier))
 
   /**
    * Back from Stripe's checkout, the browser may restore this page as it was (back/forward

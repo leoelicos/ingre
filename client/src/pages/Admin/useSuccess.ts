@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 import { MAKE_USER_PRO } from '../../lib/apollo/graphQL/mutations'
 import { useAuthContext } from '../../utils/auth/AuthContext'
+import { clearPendingTier, readPendingTier } from '../../utils/tier/pending'
 
 export const useSuccess = () => {
   const [makeUserPro] = useMutation(MAKE_USER_PRO)
@@ -19,7 +20,9 @@ export const useSuccess = () => {
   useEffect(() => {
     async function saveOrder() {
       try {
-        await makeUserPro()
+        const tier = readPendingTier()
+        await makeUserPro(tier ? { variables: { tier } } : undefined)
+        clearPendingTier()
 
         setTimeout(() => {
           navigate('/upgrade')

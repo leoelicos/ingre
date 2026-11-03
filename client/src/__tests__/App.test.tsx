@@ -25,6 +25,19 @@ describe('App', () => {
     returning()
   })
 
+  it("opens the War room from the header, in the page's one main landmark (#207)", async () => {
+    openAt('/')
+    await userEvent
+      .setup()
+      .click(screen.getByRole('link', { name: 'War room' }))
+    expect(screen.getByRole('main')).toContainElement(
+      screen.getByRole('heading', { level: 1, name: 'War room' })
+    )
+    expect(
+      screen.getByRole('textbox', { name: 'Add an item' })
+    ).toBeInTheDocument()
+  })
+
   it('opens on the one page: the header, Explore, Ingredients and Recipes (#164, #179, #181)', () => {
     openAt('/')
     expect(screen.getByRole('link', { name: 'ingré' })).toHaveAttribute(

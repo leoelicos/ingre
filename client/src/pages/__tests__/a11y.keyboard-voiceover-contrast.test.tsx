@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthProvider } from '../../utils/auth/AuthContext'
 import { ExploreProvider } from '../../utils/explore/ExploreContext'
+import { GuestsProvider } from '../../utils/guests/GuestsContext'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
 import { ListPage } from '../List/ListPage'
@@ -16,12 +17,14 @@ const renderAt = (ui: React.ReactElement, path: string) =>
       <MemoryRouter initialEntries={[path]}>
         <AuthProvider>
           <ExploreProvider>
-            <Routes>
-              <Route
-                path="*"
-                element={ui}
-              />
-            </Routes>
+            <GuestsProvider>
+              <Routes>
+                <Route
+                  path="*"
+                  element={ui}
+                />
+              </Routes>
+            </GuestsProvider>
           </ExploreProvider>
         </AuthProvider>
       </MemoryRouter>

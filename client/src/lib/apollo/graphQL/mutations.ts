@@ -3,6 +3,7 @@ import type {
   Operation,
   RecipeVariables,
   SavedRecipe,
+  Tier,
   User,
   UserInput,
   UserProfile
@@ -23,11 +24,12 @@ export const ADD_USER: Operation<
   }
 `
 
-export const MAKE_USER_PRO: Operation<{
-  makeUserPro: Pick<User, '_id' | 'pro'>
-}> = gql`
-  mutation MakeUserPro {
-    makeUserPro {
+export const MAKE_USER_PRO: Operation<
+  { makeUserPro: Pick<User, '_id' | 'pro'> },
+  { tier?: Tier }
+> = gql`
+  mutation MakeUserPro($tier: Tier) {
+    makeUserPro(tier: $tier) {
       _id
       pro
     }
