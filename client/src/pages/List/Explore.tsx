@@ -3,6 +3,7 @@ import type { FC } from 'react'
 import { useState } from 'react'
 import { Button } from 'react-aria-components'
 import { AllergenTags } from '../../components/AllergenTags'
+import { InSeason } from '../../components/InSeason/InSeason'
 import { Collapse } from '../../components/Collapse'
 import { SEARCH_LABEL, SearchBox } from '../../components/SearchBox/SearchBox'
 import { IngreIconSearch } from '../../lib/icon/Icon'
@@ -12,6 +13,7 @@ import type { CopyEntry } from '../../utils/chips/chips'
 import { categoryLabel } from '../../utils/chips/chips'
 import type { RecipeCopy } from '../../utils/balance/copies'
 import { useExplore } from '../../utils/explore/ExploreContext'
+import { useFlag } from '../../utils/flags/useFlag'
 import type {
   ExploreResults,
   ExploreSource
@@ -265,6 +267,25 @@ export const savedIdsOf = (saved: SavedState | null): ReadonlySet<string> =>
  * The filter (#182: Saved, contains, excludes on the originals), then the Saved hint when
  * Saved is on but nothing is hearted, or the results.
  */
+/** Seasonality (#218), behind its flag, and only while nothing is typed in the search. */
+const SeasonalGroup: FC<{ props: ExploreProps; query: string }> = ({
+  props,
+  query
+}) => {
+  const seasonal = useFlag('seasonality')
+  const micropayments = useFlag('micropayments')
+  return seasonal && query.trim() === '' ? (
+    <InSeason
+      now={new Date()}
+      pickedIds={props.rows.pickedIds}
+      onTogglePicked={props.rows.onTogglePicked}
+      onList={props.ingredients.list.hasChip}
+      onAddIngredient={props.ingredients.pick}
+      micropayments={micropayments}
+    />
+  ) : null
+}
+
 const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   const t = useT()
   const { query } = useExplore()
@@ -296,6 +317,10 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   }
   return (
     <div className="flex flex-col gap-4">
+      <SeasonalGroup
+        props={props}
+        query={query}
+      />
       <ActionsRow label={t('explore.actions')}>
         <FilterButton
           panelId={FILTER_ID}

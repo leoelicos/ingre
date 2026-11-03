@@ -5,7 +5,7 @@ import { readStored, writeStored } from '../storage/storage'
  * Everything is off by default. `?flags=tiers` turns a flag on for this device
  * and it stays on; `?flags=` (empty) turns every flag off again.
  */
-export const FLAGS = ['tiers'] as const
+export const FLAGS = ['tiers', 'seasonality', 'micropayments'] as const
 export type Flag = (typeof FLAGS)[number]
 
 export const FLAGS_KEY = 'ingre.flags'

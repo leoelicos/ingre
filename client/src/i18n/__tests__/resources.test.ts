@@ -46,7 +46,7 @@ const usedKeys = (): string[] =>
   )
 
 /** Keys the code builds at run time: measure words by measure, tier names and features by id. */
-const DYNAMIC = /^(measure|tiers\.names|tiers\.features)\./
+const DYNAMIC = /^(measure|tiers\.names|tiers\.features|seasonality\.months)\./
 
 describe('English resources', () => {
   const keys = leafKeys(en)

@@ -25,6 +25,14 @@ describe('feature flags (#208)', () => {
     expect(isEnabled('tiers', resolveFlags('', memory()))).toBe(false)
   })
 
+  it('knows tiers, seasonality and the stubbed micropayments', () => {
+    expect(parseFlags(['tiers', 'seasonality', 'micropayments'])).toEqual([
+      'tiers',
+      'seasonality',
+      'micropayments'
+    ])
+  })
+
   it('parseFlags keeps the known flags and drops the rest', () => {
     expect(parseFlags(['tiers', 'nope', 3])).toEqual(['tiers'])
     expect(parseFlags('tiers')).toBeNull()

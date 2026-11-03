@@ -246,6 +246,37 @@
       "exactTechnique": "Exact technique"
     }
   },
+  "seasonality": {
+    "title": "In season now",
+    "when": "{{month}} in Sydney",
+    "hint": "A guide only. Every recipe stays in Explore.",
+    "ingredients": "Ingredients in season",
+    "recipes": "Recipes using something in season",
+    "uses": "In season: {{items}}",
+    "pickRecipe": "Pick {{name}}",
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "pick": {
+      "title": "Editor's pick",
+      "unlock": "Unlock why it is in season, 1 USD (stub, no charge)",
+      "unlocking": "Unlocking…",
+      "unlocked": "Unlocked. This is a stub: you were not charged.",
+      "failed": "We could not unlock this pick. You have not been charged.",
+      "why": "Why it is in season: {{items}}"
+    }
+  },
   "success": {
     "paymentError": "Payment error",
     "tryAgain": "Try again?",
