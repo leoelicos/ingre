@@ -15,12 +15,9 @@ import {
   useLocation
 } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
-<<<<<<< HEAD
 import { Header } from './components/Header'
 import { BottomNav } from './components/BottomNav/BottomNav'
-=======
 import { Header, WAR_ROOM_PATH } from './components/Header'
->>>>>>> origin/main
 import { PageMain, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
@@ -28,15 +25,9 @@ import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
 import { ListPage } from './pages/List/ListPage'
-<<<<<<< HEAD
 import { ProfilePage } from './pages/Profile/ProfilePage'
-=======
-<<<<<<< HEAD
 import { WarRoom } from './pages/WarRoom/WarRoom'
-=======
 import { DemoPage } from './pages/Demo/DemoPage'
->>>>>>> origin/main
->>>>>>> origin/main
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
@@ -110,7 +101,6 @@ export const Ingre: FC = () => {
         <AuthProvider>
           <StoreProvider>
             <ExploreProvider>
-<<<<<<< HEAD
               <GuestsProvider>
                 <SkipLink />
                 <Header />
@@ -175,7 +165,6 @@ export const Ingre: FC = () => {
                 </Routes>
                 <SiteAnalytics mode={APP_MODE} />
               </GuestsProvider>
-=======
               <SkipLink />
               <Header />
               <Routes>
@@ -184,17 +173,14 @@ export const Ingre: FC = () => {
                   element={<ListPage />}
                 />
                 <Route
-<<<<<<< HEAD
                   path="/profile"
                   element={<ProfilePage />}
-=======
                   path={WAR_ROOM_PATH}
                   element={
                     <PageMain>
                       <WarRoom />
                     </PageMain>
                   }
->>>>>>> origin/main
                 />
                 <Route
                   path="/saved"
@@ -256,7 +242,6 @@ export const Ingre: FC = () => {
               </Routes>
               <BottomNav />
               <SiteAnalytics mode={APP_MODE} />
->>>>>>> origin/main
             </ExploreProvider>
           </StoreProvider>
         </AuthProvider>

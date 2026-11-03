@@ -50,13 +50,10 @@ import {
   HiddenNote,
   RecipeFilterPanel
 } from './Filters'
-<<<<<<< HEAD
 import { GuestFlag } from './GuestFlag'
 import { GuestsButton, GuestsPanel } from './Guests'
-=======
 import { GuidanceDial } from './GuidanceDial'
 import { IngredientDetails } from './IngredientJourney'
->>>>>>> origin/main
 import type { IngredientsState } from './Ingredients'
 import { NO_SAVED_HINT } from './recipeFilter'
 import { filterOptions, recipeFilterCount } from './Recipes'
@@ -129,7 +126,6 @@ const IngredientResult: FC<{
   const category = t(`exploreSection.${section}`)
   return (
     <li className="flex flex-col gap-1">
-<<<<<<< HEAD
       <Button
         data-section={section}
         onPress={() => ingredients.pick(item)}
@@ -147,7 +143,6 @@ const IngredientResult: FC<{
           {onList ? t('explore.categoryOnList', { category }) : category}
         </span>
       </Button>
-=======
       <div className="flex items-stretch gap-2">
         <Button
           onPress={() => ingredients.pick(item)}
@@ -167,16 +162,12 @@ const IngredientResult: FC<{
         </Button>
         {showsSuggestions(guidance) && <UseToggle item={item} />}
       </div>
->>>>>>> origin/main
       <AllergenTags allergens={item.allergens} />
-<<<<<<< HEAD
       <GuestFlag tags={item.allergens} />
-=======
       <IngredientDetails
         item={item}
         controls={controls}
       />
->>>>>>> origin/main
     </li>
   )
 }
@@ -241,7 +232,6 @@ const IngredientGroup: FC<{
   title: string
   items: readonly LibraryIngredient[]
   ingredients: IngredientsState
-<<<<<<< HEAD
 }> = ({ title, items, ingredients }) => {
   const [chosen, setChosen] = useState<ReadonlySet<ExploreSection>>(new Set())
   return (
@@ -264,7 +254,6 @@ const IngredientGroup: FC<{
     </div>
   )
 }
-=======
   controls: RowControls
 }> = ({ title, items, ingredients, controls }) => (
   <div>
@@ -281,7 +270,6 @@ const IngredientGroup: FC<{
     </ul>
   </div>
 )
->>>>>>> origin/main
 
 /** The list's copy of a recipe, or null when it is not on the list. */
 export const listCopyOf = (

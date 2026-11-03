@@ -43,17 +43,14 @@ export const IngredientNames: FC<{
         <li
           key={line.ingredientId}
           data-name-chip={line.ingredientId}
-<<<<<<< HEAD
           data-guest-flag={flagged.has(line.ingredientId) ? 'true' : undefined}
           className={[
             nameChipClass(line),
             ...(flagged.has(line.ingredientId) ? [GUEST_OUTLINE] : [])
-=======
           data-flagged={String(flagged.has(line.ingredientId))}
           className={[
             nameChipClass(line),
             ...(flagged.has(line.ingredientId) ? [FLAGGED] : [])
->>>>>>> origin/main
           ].join(' ')}
         >
           {displayName(line)}

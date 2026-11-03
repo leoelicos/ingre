@@ -137,14 +137,11 @@ export const RecipeRow: FC<{
           flagged={row.flagged}
         />
       )}
-<<<<<<< HEAD
       <GuestFlag
         tags={linesAllergens(row.lines)}
         className="col-span-2 mx-4 mb-4 ml-14"
       />
-=======
       {row.note}
->>>>>>> origin/main
       <Collapse
         id={detailsId}
         open={open}
