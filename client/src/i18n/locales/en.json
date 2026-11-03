@@ -252,6 +252,7 @@
     "noPairs": "Nothing pairs with it yet",
     "noRecipes": "No recipe in the library uses it yet",
     "noSuggestions": "No recipes to suggest yet"
+  },
   "demo": {
     "title": "Try the loop",
     "intro": "Start from the ingredients you have. Get a suggestion. Add a ticket.",
