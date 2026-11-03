@@ -45,6 +45,8 @@ server/
   src/datasources/  per-model data access (+ stripe)
   src/utils/        auth, requireUser, ingredientDefaults
   seeds/            seed script
+  migrations/       Postgres SQL migrations (#217; not used by the API yet), see docs/POSTGRES_MIGRATION.md
+  scripts/pg.ts     Postgres migrate / backfill / verify CLI (never default-connects)
   eslint.config.mjs (ESLint 9 flat), jest.config.js
 ```
 Tests sit beside code (`*.test.ts`) or in `__tests__/` folders.
