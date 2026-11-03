@@ -28,6 +28,7 @@ import {
 } from './Ingredients'
 import { LayoutToggle } from './LayoutToggle'
 import { Recipes } from './Recipes'
+import { useTabArrival } from './tabArrival'
 import { ScrollToTop } from './ScrollToTop'
 import { PageMain } from '../../components/SkipLink'
 
@@ -59,6 +60,7 @@ export const ListPage: FC = () => {
   const t = useT()
   useEffect(() => changeTitle(translate('list.title')), [])
   const explore = useExplore()
+  useTabArrival(explore)
   const list = useChips()
   const ingredients = useIngredients(list)
   const { split, options, drawer, choose } = useSplit()

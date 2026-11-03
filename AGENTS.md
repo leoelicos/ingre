@@ -31,7 +31,7 @@ client/
   vite.config.mts, tailwind.config.js, postcss.config.js, jest.config.js, tsconfig.json
   .eslintrc.js (ESLint 8, legacy config), .prettierrc.json
   src/index.tsx, src/App.tsx    entry + routes + Apollo client setup
-  src/components/   Header, AccountMenu, HeaderSearch, SectionTone, Widgets, ...
+  src/components/   Header, BottomNav, AccountMenu, HeaderSearch, SectionTone, Widgets, ...
   src/pages/        Home, Recipe, Search, ShoppingList, TapOff, Admin (login/signup/upgrade/success/404)
   src/lib/apollo/graphQL   queries/mutations
   src/utils/        auth, idb, storage, shopping, state, library, profile
@@ -108,6 +108,7 @@ Naming (#214, `docs/TERMINOLOGY.md`)
   search only. Regional and specialist names get an optional tooltip. Don't settle cut-name debates.
 Accounts and header
 - No account needed this phase. Saved stays on the device.
+- Navigation is four tabs in one stable bottom bar (BottomNav): Explore, Inventory, Cook, Profile (#227). Saved recipes and other collections live under Profile, never as top-level tabs.
 - Header shows only: logo, search, account icon. Log in / Sign up live in the account icon menu.
 - Saved appears in the account icon menu after sign-in.
 Process

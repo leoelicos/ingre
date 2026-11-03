@@ -10,6 +10,12 @@
     font-size: 16px;
     line-height: 1.5;
   }
+  /* the bottom tabs (#227) must never cover the control that has focus. A margin on the focused
+     control, not scroll-padding on the page: padding also moved list popovers' options (they are
+     never focused), which closed the popover while it was being clicked. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus {
+    scroll-margin-bottom: 5rem;
+  }
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
