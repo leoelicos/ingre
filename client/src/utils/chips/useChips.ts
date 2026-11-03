@@ -74,6 +74,35 @@ const updateCopy = (
 ): RecipeCopy[] =>
   copies.map((copy) => (copy.recipeId === recipeId ? change(copy) : copy))
 
+/** A copy taken off the list by a swipe, and where it was, so Undo can put it back (#192). */
+export interface RemovedCopy {
+  readonly copy: RecipeCopy
+  readonly index: number
+}
+
+/** The copy of this recipe and its place, or null when it is not on the list. */
+export const removedCopy = (
+  copies: readonly RecipeCopy[],
+  recipeId: string
+): RemovedCopy | null => {
+  const index = copies.findIndex((copy) => copy.recipeId === recipeId)
+  const copy = copies[index]
+  return copy === undefined ? null : { copy, index }
+}
+
+/** The copies with this one back at its old place; unchanged when it is there already. */
+export const withCopyAt = (
+  copies: readonly RecipeCopy[],
+  removed: RemovedCopy
+): RecipeCopy[] =>
+  copies.some((copy) => copy.recipeId === removed.copy.recipeId)
+    ? [...copies]
+    : [
+        ...copies.slice(0, removed.index),
+        removed.copy,
+        ...copies.slice(removed.index)
+      ]
+
 const recipeById = (id: string): LibraryRecipe | null =>
   library.find((recipe) => recipe.id === id) ?? null
 
@@ -124,6 +153,17 @@ export const useChips = () => {
       }
       updateCopies((previous) => [...previous, newCopy(recipe.id)])
     },
+    /** Takes a recipe off the list, edits and all, and says what Undo needs (#192). */
+    removePicked: (recipeId: string): RemovedCopy | null => {
+      const removed = removedCopy(copies, recipeId)
+      updateCopies((previous) =>
+        previous.filter((copy) => copy.recipeId !== recipeId)
+      )
+      return removed
+    },
+    /** Puts a removed copy back where it was (#192: Undo). */
+    restore: (removed: RemovedCopy): void =>
+      updateCopies((previous) => withCopyAt(previous, removed)),
     setAmount,
     setPortions: (recipeId: string, portions: number): void =>
       updateCopies((previous) =>

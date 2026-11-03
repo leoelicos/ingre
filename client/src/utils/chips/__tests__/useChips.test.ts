@@ -8,7 +8,15 @@ import {
   LAYOUT_KEY
 } from '../../storage/shoppingState'
 import type { Chip } from '../chips'
-import { addOnce, catalogueExtra, copyEntries, useChips } from '../useChips'
+import type { RemovedCopy } from '../useChips'
+import {
+  addOnce,
+  catalogueExtra,
+  copyEntries,
+  removedCopy,
+  useChips,
+  withCopyAt
+} from '../useChips'
 
 const stored = (key: string): unknown =>
   JSON.parse(localStorage.getItem(key) ?? 'null')
@@ -22,6 +30,26 @@ const pork = recipeById('pork-chops-apple-onion')
 beforeEach(() => localStorage.clear())
 
 describe('helpers', () => {
+  it('finds a copy and its place, or null when it is not on the list (#192)', () => {
+    const copies = [newCopy('dahl'), newCopy('butter-chicken')]
+    expect(removedCopy(copies, 'butter-chicken')).toEqual({
+      copy: copies[1],
+      index: 1
+    })
+    expect(removedCopy(copies, 'nope')).toBeNull()
+  })
+
+  it('puts a copy back at its place, once (#192)', () => {
+    const [first, second, third] = [
+      newCopy('dahl'),
+      newCopy('butter-chicken'),
+      newCopy('pork-chops-apple-onion')
+    ]
+    const back = { copy: second, index: 1 }
+    expect(withCopyAt([first, third], back)).toEqual([first, second, third])
+    expect(withCopyAt([first, second], back)).toEqual([first, second])
+  })
+
   it('skips unknown recipes and labels the copies', () => {
     const entries = copyEntries([newCopy('nope'), newCopy('dahl')])
     expect(entries.map((e) => e.label)).toEqual(['Red lentil dahl'])
@@ -136,5 +164,27 @@ describe('useChips', () => {
     const again = renderHook(() => useChips()).result.current
     expect(ids(again.chips)).toEqual(order)
     expect(chipOf(again.chips, 'tomato').crossed).toBe(true)
+  })
+})
+
+describe('removing with undo (#192)', () => {
+  it('removes a picked copy and restores it; an unpicked one gives null', () => {
+    localStorage.setItem(
+      COPIES_KEY,
+      JSON.stringify([newCopy('dahl'), newCopy('butter-chicken')])
+    )
+    const { result } = renderHook(() => useChips())
+    const gone: (RemovedCopy | null)[] = []
+    act(() => {
+      gone.push(result.current.removePicked('nope'))
+      gone.push(result.current.removePicked('dahl'))
+    })
+    expect([...result.current.pickedIds]).toEqual(['butter-chicken'])
+    const [none, removed] = gone
+    expect(none).toBeNull()
+    if (removed === null || removed === undefined)
+      throw new Error('nothing removed')
+    act(() => result.current.restore(removed))
+    expect([...result.current.pickedIds]).toEqual(['dahl', 'butter-chicken'])
   })
 })

@@ -3,21 +3,18 @@ import { render, screen, within } from '@testing-library/react'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter } from 'react-router-dom'
 import { AuthProvider } from '../../utils/auth/AuthContext'
-import { ExploreProvider } from '../../utils/explore/ExploreContext'
 import { addFontAwesome } from '../../utils/addFontAwesome'
 import { Header, LOGO_TEXT } from '../Header'
 
 addFontAwesome()
 
-describe('Header (#164)', () => {
-  it('shows only the logo, the search and the account icon', () => {
+describe('Header (#164, #192)', () => {
+  it('shows only the logo and the account icon: search moved to the discovery sheet', () => {
     render(
       <MockedProvider mocks={[]}>
         <MemoryRouter>
           <AuthProvider>
-            <ExploreProvider>
-              <Header />
-            </ExploreProvider>
+            <Header />
           </AuthProvider>
         </MemoryRouter>
       </MockedProvider>
@@ -27,7 +24,8 @@ describe('Header (#164)', () => {
     expect(logo).toHaveAttribute('href', '/')
     expect(logo).toHaveClass('focus-visible:focus-ring')
     expect(header.getAllByRole('link')).toEqual([logo])
-    expect(header.getAllByRole('searchbox')).toHaveLength(1)
+    expect(header.queryByRole('searchbox')).toBeNull()
+    expect(header.queryByRole('search')).toBeNull()
     expect(header.getAllByRole('button')).toEqual([
       header.getByRole('button', { name: 'Account' })
     ])

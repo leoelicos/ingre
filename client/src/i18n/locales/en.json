@@ -75,8 +75,6 @@
   },
   "explore": {
     "title": "Explore",
-    "hide": "Hide Explore",
-    "drawer": "Explore drawer",
     "actions": "Explore actions",
     "filter": "Filter Explore",
     "browse": "Browse recipes",
@@ -102,24 +100,37 @@
     "sort": "Sort",
     "refresh": "Refresh",
     "filter": "Filter ingredients",
-    "empty": "Nothing on your list yet. Tick recipes in Explore, or add an ingredient with the plus in Extra.",
+    "empty": "Nothing on your list yet. Add recipes with + Recipe, or pantry items with + Pantry Item.",
     "refreshQuestion": "Reset every recipe to its original ingredients and 2 portions?",
     "summaryCrossed": "{{items}}, {{count}} crossed off",
     "usedIn": "Used in",
-    "added": "{{name}} added to Extra"
+    "added": "{{name}} added to Extra",
+    "alreadyExtra": "{{name}} is already in Extra"
   },
   "recipes": {
     "title": "Recipes",
     "actions": "Recipes actions",
     "filter": "Filter recipes",
-    "empty": "No recipes picked yet. Tick recipes in Explore and they show here.",
-    "picked": "{{recipes}} picked"
+    "empty": "No recipes picked yet. Add some with + Recipe and they show here.",
+    "picked": "{{recipes}} picked",
+    "removed": "Removed {{title}}",
+    "undo": "Undo",
+    "dismiss": "Dismiss"
   },
   "extra": {
     "title": "Extra",
     "actions": "Extra actions",
     "filter": "Filter extra",
-    "empty": "Nothing extra yet. Add staples and anything else with the plus."
+    "empty": "Nothing extra yet. Add staples and anything else below."
+  },
+  "fab": {
+    "recipe": "Recipe",
+    "pantry": "Pantry Item",
+    "recipeLabel": "Add a recipe",
+    "pantryLabel": "Add a pantry item"
+  },
+  "sheet": {
+    "close": "Close {{title}}"
   },
   "chip": {
     "details": "{{name}} details",
@@ -152,12 +163,6 @@
     "notes": "Notes",
     "customisations": "Customisations",
     "portions": "Portions"
-  },
-  "layout": {
-    "label": "Layout",
-    "vertical": "Vertical",
-    "split": "Ingredients {{ingredients}}%, Recipes {{recipes}}%",
-    "thirds": "Ingredients {{ingredients}}%, Recipes {{recipes}}%, Explore {{explore}}%"
   },
   "scrollToTop": "Scroll to top",
   "notLoggedIn": {

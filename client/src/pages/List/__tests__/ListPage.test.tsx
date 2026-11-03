@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, screen, within } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MOTION } from '../../../components/Collapse'
 import { saveMock, savedQuery } from '../../../test/savedMocks'
@@ -9,22 +9,29 @@ import {
   explore,
   groupOf,
   hasChipEl,
-  ingredientsHeader,
+  closeSheet,
+  extra,
+  fab,
+  ingredientsAtTop,
+  sheet,
   panel,
   pick,
   pickedIds,
   chevronOf,
   pickFromExplore,
+  pickInExplore,
   recipes,
-  recipesHeader,
   region,
   searchBox,
   renderList,
-  toggleOf
+  toggleOf,
+  chipBox
 } from '../../../test/renderList'
 import { savedParam, withSaved } from '../ListPage'
 import { toggled } from '../Recipes'
 import { isAbove } from '../ScrollToTop'
+import { NO_EXTRA_HINT } from '../Extra'
+import { disconnected, fire, resetObserver } from '../../../test/observer'
 
 beforeEach(() => localStorage.clear())
 
@@ -41,7 +48,7 @@ describe('list helpers', () => {
 })
 
 describe('Scenario: One page', () => {
-  it('shows Ingredients above Recipes, with no steps, Home control, recipe chips, modals or overlays', () => {
+  it('shows Recipes above Ingredients, with no steps, Home control, recipe chips, sheets or overlays (#192)', () => {
     renderList()
     expect(document.title).toContain('Shopping list')
     expect(
@@ -56,7 +63,7 @@ describe('Scenario: One page', () => {
       name: /^Recipes/
     })
     expect(
-      ingredients.compareDocumentPosition(recipesHeading) &
+      recipesHeading.compareDocumentPosition(ingredients) &
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Home' })).toBeNull()
@@ -73,8 +80,8 @@ describe('Scenario: One page', () => {
 describe('Scenario: Chips from recipes, grouped by category', () => {
   it('shows chips grouped by category; unpicking removes only chips no other pick needs', () => {
     renderList()
-    fireEvent.click(pickFromExplore('Red lentil dahl'))
-    fireEvent.click(pickFromExplore('Potato, cauliflower and chickpea curry'))
+    pickInExplore('Red lentil dahl')
+    pickInExplore('Potato, cauliflower and chickpea curry')
     expect(groupOf('onion')).toBe('Fruit & Veg')
     expect(groupOf('potato')).toBe('Fruit & Veg')
     expect(groupOf('butter')).toBe('Dairy')
@@ -85,7 +92,7 @@ describe('Scenario: Chips from recipes, grouped by category', () => {
     // no count badge (#181): the count stays in the spoken label and in Used in
     expect(within(chip('onion')).queryByTestId('chip-count')).toBeNull()
     expect(toggleOf('onion')).toHaveAccessibleName(/in 2 recipes/)
-    fireEvent.click(pickFromExplore('Potato, cauliflower and chickpea curry'))
+    pickInExplore('Potato, cauliflower and chickpea curry')
     expect(hasChipEl('potato')).toBe(0)
     expect(hasChipEl('onion')).toBe(1)
     expect(region('Ingredients')).toHaveTextContent(/\d+ items/)
@@ -98,15 +105,15 @@ describe('Scenario: Cross off stays in place', () => {
     renderList()
     const before = chipOrder()
     fireEvent.click(toggleOf('tomato'))
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('tomato')).toBeChecked()
     expect(toggleOf('tomato')).toHaveAccessibleName(/, crossed off$/)
     expect(
-      within(toggleOf('tomato')).getByText('Tomatoes').parentElement
+      within(chipBox('tomato')).getByText('Tomatoes').parentElement
     ).toHaveClass('line-through')
     expect(chipOrder()).toEqual(before)
     expect(region('Ingredients')).toHaveTextContent(/\d+ items, 1 crossed off/)
     fireEvent.click(toggleOf('tomato'))
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'false')
+    expect(toggleOf('tomato')).not.toBeChecked()
     expect(toggleOf('tomato')).not.toHaveAccessibleName(/crossed off/)
     expect(chipOrder()).toEqual(before)
     expect(screen.queryByText(/undo/i)).toBeNull()
@@ -184,7 +191,7 @@ describe('Scenario: Edit quantity', () => {
     await user.tab()
     expect(quantity).toHaveValue('2')
     expect(toggleOf('tomato')).toHaveAccessibleName(/^Tomatoes, 2\b/)
-    expect(within(toggleOf('tomato')).getByText(/^2\b/)).toBeInTheDocument()
+    expect(within(chipBox('tomato')).getByText(/^2\b/)).toBeInTheDocument()
     await user.clear(quantity)
     await user.type(quantity, '3')
     await user.tab()
@@ -259,45 +266,49 @@ describe('Scenario: Sort button', () => {
   })
 })
 
-describe('Scenario: Add an extra', () => {
-  it('opens category tabs inline below the plus; a Dairy row adds Butter', async () => {
+describe('Scenario: Add an extra (#192: the Extra sheet)', () => {
+  it('lists the catalogue by category under the extra chips; a Dairy row adds Butter and says so', async () => {
     const user = userEvent.setup()
     renderList()
-    const plus = screen.getByRole('button', { name: 'Add an ingredient' })
-    expect(plus).toHaveAttribute('aria-expanded', 'false')
-    await user.click(plus)
-    expect(plus).toHaveAttribute('aria-expanded', 'true')
-    const area = screen.getByRole('group', { name: 'Add an ingredient' })
-    expect(
-      plus.compareDocumentPosition(area) & Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy()
-    const tabs = within(area).getByRole('tablist', { name: 'Categories' })
+    const sheet = extra()
+    const tabs = sheet.getByRole('tablist', { name: 'Categories' })
     expect(within(tabs).getAllByRole('tab').length).toBeGreaterThan(1)
-    expect(within(area).queryByText('Used in')).toBeNull()
+    expect(sheet.getByText(NO_EXTRA_HINT)).toBeInTheDocument()
+    expect(sheet.queryByText('Used in')).toBeNull()
     await user.click(within(tabs).getByRole('tab', { name: 'Dairy' }))
-    await user.click(within(area).getByRole('button', { name: 'Butter' }))
+    await user.click(sheet.getByRole('button', { name: 'Butter' }))
     expect(hasChipEl('butter')).toBe(1)
     expect(hasChipEl('butter', 'extra')).toBe(1)
-    expect(groupOf('butter')).toBe('Dairy')
     expect(groupOf('butter', 'extra')).toBe('Dairy')
-    expect(screen.getByRole('status', { name: '' })).toHaveTextContent(
-      'Butter added to Extra'
+    expect(sheet.getByText('Butter added to Extra')).toHaveAttribute(
+      'role',
+      'status'
     )
     expect(
-      within(area).getByRole('button', { name: 'Butter, on your list' })
+      sheet.getByRole('button', { name: 'Butter, on your list' })
     ).toHaveTextContent('On your list')
+    await user.click(
+      sheet.getByRole('button', { name: 'Butter, on your list' })
+    )
+    expect(sheet.getByText('Butter is already in Extra')).toBeInTheDocument()
+    expect(hasChipEl('butter', 'extra')).toBe(1)
+    closeSheet()
+    expect(groupOf('butter')).toBe('Dairy')
     expect(toggleOf('butter')).toHaveAccessibleName(/, in Extra$/)
+    // the page's own status stays quiet while a sheet speaks
+    expect(
+      screen
+        .getAllByRole('status')
+        .some((el) => el.textContent === 'Butter is already in Extra')
+    ).toBe(true)
   })
 
-  it('0 in the Extra box asks; Yes takes the extra off and focus goes to the plus', async () => {
+  it('0 in the Extra box asks; Yes takes the extra off and focus goes to the close button', async () => {
     const user = userEvent.setup()
     renderList()
-    const plus = screen.getByRole('button', { name: 'Add an ingredient' })
-    await user.click(plus)
-    await user.click(screen.getByRole('tab', { name: 'Dairy' }))
-    await user.click(screen.getByRole('button', { name: 'Butter' }))
-    await user.keyboard('{Escape}')
-    await user.click(chevronOf('butter'))
+    await user.click(extra().getByRole('tab', { name: 'Dairy' }))
+    await user.click(extra().getByRole('button', { name: 'Butter' }))
+    await user.click(chevronOf('butter', 'extra'))
     const details = panel('Butter details')
     const box = within(details).getByRole('textbox', { name: /^Extra, / })
     await user.clear(box)
@@ -310,61 +321,68 @@ describe('Scenario: Add an extra', () => {
     )
     expect(hasChipEl('butter')).toBe(0)
     expect(hasChipEl('butter', 'extra')).toBe(0)
-    expect(plus).toHaveFocus()
+    expect(screen.getByRole('button', { name: 'Close Extra' })).toHaveFocus()
+  })
+
+  it('in Ingredients, 0 in the Extra box takes it off and focus goes to the Ingredients heading', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await user.click(extra().getByRole('tab', { name: 'Dairy' }))
+    await user.click(extra().getByRole('button', { name: 'Butter' }))
+    closeSheet()
+    await user.click(chevronOf('butter'))
+    const box = within(panel('Butter details')).getByRole('textbox', {
+      name: /^Extra, /
+    })
+    await user.clear(box)
+    await user.type(box, '0')
+    await user.tab()
+    await user.click(screen.getByRole('button', { name: 'Yes' }))
+    expect(hasChipEl('butter')).toBe(0)
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Ingredients' })
+    ).toHaveFocus()
   })
 })
 
 describe('Scenario: Add an existing ingredient', () => {
-  it('scrolls to the chip and opens its panel instead of adding a duplicate', async () => {
+  it('gives an ingredient already on the list an Extra amount, never a second chip', async () => {
     const user = userEvent.setup()
-    const scrolled: Element[] = []
-    Element.prototype.scrollIntoView = function () {
-      scrolled.push(this)
-    }
     pick('dahl')
     renderList()
-    await user.click(screen.getByRole('button', { name: 'Add an ingredient' }))
-    await user.click(screen.getByRole('tab', { name: 'Dairy' }))
+    await user.click(extra().getByRole('tab', { name: 'Dairy' }))
     await user.click(
-      screen.getByRole('button', { name: 'Butter, on your list' })
+      extra().getByRole('button', { name: 'Butter, on your list' })
     )
     expect(hasChipEl('butter')).toBe(1)
     // it gains an Extra source at 1 (#182, answer 8)
     expect(hasChipEl('butter', 'extra')).toBe(1)
-    const chevron = chevronOf('butter')
-    expect(chevron).toHaveAttribute('aria-expanded', 'true')
-    expect(panel('Butter details')).toBeVisible()
-    expect(scrolled).toEqual([chevron])
-    expect(chevron).toHaveFocus()
-    expect(
-      screen.getByRole('button', { name: 'Add an ingredient' })
-    ).toHaveAttribute('aria-expanded', 'false')
+    expect(extra().getByText('Butter added to Extra')).toBeInTheDocument()
   })
 })
 
-describe('Scenario: Close the plus area', () => {
-  it('closes on a click outside, stays open for clicks inside, and Escape returns focus to the plus', async () => {
+describe('Scenario: Sheets (#192)', () => {
+  it('Escape closes a sheet and focus goes back to the FAB', async () => {
     const user = userEvent.setup()
     renderList()
-    const plus = screen.getByRole('button', { name: 'Add an ingredient' })
-    await user.click(plus)
-    await user.click(screen.getByRole('tab', { name: 'Bakery' }))
-    expect(plus).toHaveAttribute('aria-expanded', 'true')
-    await user.click(screen.getByRole('heading', { level: 1, hidden: true }))
-    expect(plus).toHaveAttribute('aria-expanded', 'false')
-    expect(
-      screen.queryByRole('group', { name: 'Add an ingredient' })
-    ).toBeNull()
-    await user.click(plus)
-    await user.click(plus)
-    expect(plus).toHaveAttribute('aria-expanded', 'false')
-    await user.click(plus)
-    await user.keyboard('{ArrowRight}')
+    await user.click(fab())
+    expect(sheet('Explore')).toBeInTheDocument()
     await user.keyboard('{Escape}')
-    expect(plus).toHaveAttribute('aria-expanded', 'false')
-    expect(plus).toHaveFocus()
-    fireEvent.pointerDown(document.body)
-    expect(plus).toHaveAttribute('aria-expanded', 'false')
+    expect(sheet('Explore')).toBeNull()
+    await waitFor(() => expect(fab()).toHaveFocus())
+  })
+
+  it('the close button and a press on the dimmed page close it', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await user.click(fab())
+    await user.click(screen.getByRole('button', { name: 'Close Explore' }))
+    expect(sheet('Explore')).toBeNull()
+    await user.click(fab())
+    const dialog = screen.getByRole('dialog', { name: 'Explore' })
+    const overlay = dialog.parentElement?.parentElement ?? document.body
+    await user.click(overlay)
+    expect(sheet('Explore')).toBeNull()
   })
 })
 
@@ -372,6 +390,8 @@ describe('Scenario: Recipe rows', () => {
   it('one tap selects the row: pressed, bordered, ticked and announced; there is no Add button', () => {
     renderList()
     const row = pickFromExplore('Red lentil dahl')
+    const inExplore = () =>
+      explore().getByRole('button', { name: 'Red lentil dahl' })
     const item = row.closest('li')
     expect(row).toHaveAttribute('aria-pressed', 'false')
     expect(item).toHaveClass('shadow-raised')
@@ -381,18 +401,20 @@ describe('Scenario: Recipe rows', () => {
     expect(item).toHaveClass('shadow-pressed', 'border-primary')
     expect(within(row).getByTestId('row-check')).toHaveTextContent('✓')
     expect(pickedIds()).toEqual(['dahl'])
+    expect(within(item ?? document.body).getAllByRole('button')).toHaveLength(2)
+    closeSheet()
     expect(region('Recipes')).toHaveTextContent('1 recipe picked')
     expect(
       within(region('Recipes')).queryByRole('button', { name: /\bAdd\b/ })
     ).toBeNull()
-    expect(within(item ?? document.body).getAllByRole('button')).toHaveLength(2)
     // the Recipes section shows only picked recipes (#181)
     expect(
       recipes().getByRole('button', { name: 'Red lentil dahl' })
     ).toHaveAttribute('aria-pressed', 'true')
     expect(recipes().queryByRole('button', { name: 'Shaking beef' })).toBeNull()
-    fireEvent.click(row)
-    expect(row).toHaveAttribute('aria-pressed', 'false')
+    fireEvent.click(inExplore())
+    expect(inExplore()).toHaveAttribute('aria-pressed', 'false')
+    closeSheet()
     expect(recipes().getByText(/^No recipes picked yet/)).toBeInTheDocument()
   })
 })
@@ -447,7 +469,10 @@ describe('Scenario: Save visibility', () => {
     expect(
       screen.queryByRole('button', { name: /Save Red lentil dahl/ })
     ).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Pretend login' }))
+    // the page behind the sheet is hidden from assistive tech while it is open
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Pretend login', hidden: true })
+    )
     fireEvent.click(
       screen.getByRole('button', { name: 'Save Red lentil dahl' })
     )
@@ -457,27 +482,32 @@ describe('Scenario: Save visibility', () => {
   })
 })
 
-describe('Scenario: Collapsible sections', () => {
-  it('hides the chips and announces collapsed; the same for Recipes', async () => {
-    const user = userEvent.setup()
+describe('Scenario: No accordions (#192)', () => {
+  it('section headers are plain headings: nothing collapses, both sections always show', () => {
     pick('dahl')
     renderList()
-    expect(ingredientsHeader()).toHaveAttribute('aria-expanded', 'true')
-    await user.click(ingredientsHeader())
-    expect(ingredientsHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(chip('tomato')).not.toBeVisible()
-    expect(screen.queryByRole('button', { name: /^Tomatoes, / })).toBeNull()
-    await user.click(ingredientsHeader())
+    ;['Ingredients', 'Recipes'].forEach((name) => {
+      expect(
+        screen.getByRole('heading', { level: 2, name })
+      ).not.toHaveAttribute('aria-expanded')
+      expect(
+        screen.queryByRole('button', { name: new RegExp(`^${name}`) })
+      ).toBeNull()
+    })
     expect(chip('tomato')).toBeVisible()
-    await user.click(recipesHeader())
-    expect(recipesHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(
-      recipes().queryByRole('button', { name: 'Red lentil dahl' })
-    ).toBeNull()
-    await user.click(recipesHeader())
     expect(
       recipes().getByRole('button', { name: 'Red lentil dahl' })
     ).toBeVisible()
+  })
+
+  it('pins the Ingredients heading at the top, on the page background, over the list', () => {
+    renderList()
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Ingredients' })
+    ).toHaveClass('sticky', 'top-0', 'z-10', 'bg-bg')
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Recipes' })
+    ).not.toHaveClass('sticky')
   })
 })
 
@@ -486,14 +516,12 @@ describe('Scenario: Motion', () => {
     pick('dahl')
     renderList()
     fireEvent.click(chevronOf('tomato'))
-    fireEvent.click(screen.getByRole('button', { name: 'Add an ingredient' }))
     const parts = [
       ...document.querySelectorAll('[data-collapse]'),
-      chip('tomato').nextElementSibling,
-      document.getElementById('add-ingredient-area')
+      chip('tomato').nextElementSibling
     ]
-    // both sections, every recipe row, the chip panel and the plus area
-    expect(parts.length).toBeGreaterThan(4)
+    // the filters, every recipe row and the chip panel
+    expect(parts.length).toBeGreaterThan(3)
     parts.forEach((part) => {
       expect(part?.className).toContain(MOTION)
     })
@@ -501,51 +529,7 @@ describe('Scenario: Motion', () => {
 })
 
 describe('Scenario: Scroll to top', () => {
-  const original = window.IntersectionObserver
-  const ENTRY: IntersectionObserverEntry = {
-    isIntersecting: false,
-    boundingClientRect: new DOMRect(0, -500, 10, 10),
-    intersectionRatio: 0,
-    intersectionRect: new DOMRect(),
-    rootBounds: null,
-    target: document.body,
-    time: 0
-  }
-  let fire: (entry: Partial<IntersectionObserverEntry>) => void = () => {}
-  const disconnected: string[] = []
-  class FakeObserver {
-    readonly root = null
-    readonly rootMargin = ''
-    readonly scrollMargin = ''
-    readonly thresholds = []
-    constructor(callback: IntersectionObserverCallback) {
-      fire = (entry) =>
-        act(() =>
-          callback(
-            [
-              {
-                ...ENTRY,
-                ...entry
-              }
-            ],
-            this
-          )
-        )
-    }
-    observe() {}
-    unobserve() {}
-    disconnect() {
-      disconnected.push('yes')
-    }
-    takeRecords() {
-      return []
-    }
-  }
-  afterEach(() => {
-    window.IntersectionObserver = original
-  })
-
-  it('appears once the chips are scrolled past; brings them back and focuses the Ingredients heading', async () => {
+  it('appears once Recipes is scrolled past; brings it back and focuses the Recipes heading (#192)', async () => {
     const user = userEvent.setup()
     const scrolls: ScrollIntoViewOptions[] = []
     Element.prototype.scrollIntoView = function (
@@ -553,27 +537,31 @@ describe('Scenario: Scroll to top', () => {
     ) {
       if (typeof options === 'object') scrolls.push(options)
     }
-    window.IntersectionObserver = FakeObserver
     const { unmount } = renderList()
     expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
-    fire({ isIntersecting: false, boundingClientRect: new DOMRect(0, 900) })
+    fire('recipes', {
+      isIntersecting: false,
+      boundingClientRect: new DOMRect(0, 900)
+    })
     expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
-    fire({})
+    fire('recipes', {})
     await user.click(screen.getByRole('button', { name: 'Scroll to top' }))
     expect(scrolls).toEqual([{ block: 'start', behavior: 'smooth' }])
     expect(
-      screen.getByRole('heading', { level: 2, name: /^Ingredients/ })
+      screen.getByRole('heading', { level: 2, name: /^Recipes/ })
     ).toHaveFocus()
-    fire({ isIntersecting: true, boundingClientRect: new DOMRect(0, 0) })
+    fire('recipes', {
+      isIntersecting: true,
+      boundingClientRect: new DOMRect(0, 0)
+    })
     expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
     unmount()
-    expect(disconnected).toEqual(['yes'])
+    expect(disconnected).toEqual(expect.arrayContaining(['recipes']))
   })
 
-  it('hides again when a jump to the very top leaves the chips below the screen', () => {
-    window.IntersectionObserver = FakeObserver
+  it('hides again when a jump to the very top leaves Recipes below the screen', () => {
     renderList()
-    fire({})
+    fire('recipes', {})
     expect(
       screen.getByRole('button', { name: 'Scroll to top' })
     ).toBeInTheDocument()
@@ -589,6 +577,8 @@ describe('Scenario: Scroll to top', () => {
 
   it('never shows without IntersectionObserver', () => {
     renderList()
+    resetObserver()
+    renderList()
     expect(screen.queryByRole('button', { name: 'Scroll to top' })).toBeNull()
   })
 })
@@ -597,7 +587,7 @@ describe('Scenario: State kept', () => {
   it('keeps picks, crossed off chips, edits, extras and chip order after a refresh', async () => {
     const user = userEvent.setup()
     const first = renderList()
-    await user.click(pickFromExplore('Red lentil dahl'))
+    pickInExplore('Red lentil dahl')
     await user.click(toggleOf('tomato'))
     await user.click(chevronOf('butter'))
     const butter = within(panel('Butter details')).getByRole('textbox', {
@@ -609,13 +599,13 @@ describe('Scenario: State kept', () => {
     await user.click(
       within(panel('Butter details')).getByRole('radio', { name: 'Deli' })
     )
-    await user.click(screen.getByRole('button', { name: 'Add an ingredient' }))
-    await user.click(screen.getByRole('tab', { name: 'Bakery' }))
+    await user.click(extra().getByRole('tab', { name: 'Bakery' }))
     const [bread] = within(
-      screen.getByRole('tabpanel', { name: 'Bakery' })
+      extra().getByRole('tabpanel', { name: 'Bakery' })
     ).getAllByRole('button')
     if (bread === undefined) throw new Error('no bakery rows')
     await user.click(bread)
+    closeSheet()
     const order = chipOrder()
     first.unmount()
 
@@ -623,34 +613,34 @@ describe('Scenario: State kept', () => {
     expect(
       recipes().getByRole('button', { name: 'Red lentil dahl' })
     ).toHaveAttribute('aria-pressed', 'true')
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('tomato')).toBeChecked()
     expect(toggleOf('butter')).toHaveAccessibleName(/^Butter, 20 g, Deli, /)
     expect(chip('butter')).toHaveAttribute('data-category', 'Deli')
     expect(groupOf('butter')).toBe('Dairy')
     expect(chipOrder()).toEqual(order)
     expect(chipOrder()).toHaveLength(order.length)
-    // in Ingredients and in Extra
+    // in Ingredients, and in Extra
     expect(
       screen.getAllByRole('heading', { level: 3, name: 'Bakery' })
-    ).toHaveLength(2)
+    ).toHaveLength(1)
+    expect(
+      extra().getAllByRole('heading', { level: 3, name: 'Bakery' })
+    ).toHaveLength(1)
   })
 })
 
 describe('Scenario: Accessibility', () => {
-  it('reads name, quantity, category, crossed off state and recipe count; chevrons and headers expose aria-expanded', () => {
+  it('reads name, quantity, category, crossed off state and recipe count; chevrons expose aria-expanded', () => {
     pick('dahl', 'vegetable-curry')
     renderList()
     fireEvent.click(toggleOf('onion'))
     expect(toggleOf('onion')).toHaveAccessibleName(
       'Brown onion, 1 onion, Fruit & Veg, in 2 recipes, crossed off'
     )
-    expect(toggleOf('onion')).toHaveAttribute('aria-pressed', 'true')
+    expect(toggleOf('onion')).toBeChecked()
     ;[
-      ingredientsHeader(),
-      recipesHeader(),
       chevronOf('onion'),
-      recipes().getByRole('button', { name: 'Red lentil dahl details' }),
-      screen.getByRole('button', { name: 'Add an ingredient' })
+      recipes().getByRole('button', { name: 'Red lentil dahl details' })
     ].forEach((button) => {
       expect(button.tagName).toBe('BUTTON')
       expect(button).toHaveAttribute('aria-expanded')
@@ -658,15 +648,15 @@ describe('Scenario: Accessibility', () => {
     })
   })
 
-  it('works by keyboard: chips, chevrons, Sort, plus, tabs, rows and section headers', async () => {
+  it('works by keyboard: chips, chevrons, Sort, the FAB, the search box, tabs and rows', async () => {
     const user = userEvent.setup()
     pick('dahl')
     renderList()
     toggleOf('tomato').focus()
-    await user.keyboard('{Enter}')
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'true')
     await user.keyboard(' ')
-    expect(toggleOf('tomato')).toHaveAttribute('aria-pressed', 'false')
+    expect(toggleOf('tomato')).toBeChecked()
+    await user.keyboard(' ')
+    expect(toggleOf('tomato')).not.toBeChecked()
     await user.tab()
     const chevron = chevronOf('tomato')
     expect(chevron).toHaveFocus()
@@ -680,22 +670,24 @@ describe('Scenario: Accessibility', () => {
     ).toHaveFocus()
     screen.getByRole('button', { name: 'Sort' }).focus()
     await user.keyboard('{Enter}')
-    const plus = screen.getByRole('button', { name: 'Add an ingredient' })
-    plus.focus()
+    fab().focus()
     await user.keyboard('{Enter}')
-    expect(plus).toHaveAttribute('aria-expanded', 'true')
-    await user.tab()
-    expect(screen.getAllByRole('tab')[0]).toHaveFocus()
-    await user.keyboard('{Escape}')
-    expect(plus).toHaveFocus()
-    act(() => searchBox().focus())
+    expect(searchBox()).toHaveFocus()
     const row = pickFromExplore('Shaking beef')
-    row.focus()
+    act(() => row.focus())
     await user.keyboard('{Enter}')
     expect(row).toHaveAttribute('aria-pressed', 'true')
-    recipesHeader().focus()
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(fab()).toHaveFocus())
+    ingredientsAtTop(true)
+    expect(fab()).toHaveAccessibleName('Add a pantry item')
     await user.keyboard('{Enter}')
-    expect(recipesHeader()).toHaveAttribute('aria-expanded', 'false')
+    const tab = extra().getAllByRole('tab')[0]
+    act(() => tab?.focus())
+    await user.keyboard('{ArrowRight}')
+    expect(extra().getAllByRole('tab')[1]).toHaveFocus()
+    await user.keyboard('{Escape}')
+    expect(sheet('Extra')).toBeNull()
   })
 })
 
@@ -715,8 +707,14 @@ describe('Scenario: Neumorphic hierarchy', () => {
     )
     expect(noFill(section)).toEqual([])
     // the header lies flat on the raised section: one raised level at a time
-    expect(recipesHeader()).not.toHaveClass('shadow-raised')
-    expect(recipesHeader()).toHaveClass('data-[focus-visible]:focus-ring')
+    const recipesRow = screen.getByRole('heading', {
+      level: 2,
+      name: 'Recipes'
+    }).firstElementChild
+    expect(recipesRow).not.toHaveClass('shadow-raised')
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Recipes' })
+    ).toHaveClass('focus-visible:focus-ring')
     const row = recipes().getByRole('button', { name: 'Red lentil dahl' })
     const item = row.closest('li') ?? document.body
     expect(item).toHaveClass('shadow-recessed', 'border-primary')
@@ -735,7 +733,10 @@ describe('Scenario: Neumorphic hierarchy', () => {
     pick('dahl')
     renderList()
     expect(region('Ingredients')).not.toHaveClass('before:shadow-section')
-    expect(ingredientsHeader()).toHaveClass('shadow-raised', 'bg-bg')
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Ingredients' })
+        .firstElementChild
+    ).toHaveClass('shadow-raised', 'bg-bg')
   })
 
   it('chips are raised platforms with an ink edge, no fill or gradient, and flat parts', () => {
@@ -754,7 +755,7 @@ describe('Scenario: Neumorphic hierarchy', () => {
     ;[check, chevron].forEach((part) => {
       expect(part.className).not.toMatch(/shadow|bg-|gradient/)
     })
-    expect(toggleOf('tomato')).toHaveClass('data-[focus-visible]:focus-ring')
+    expect(chipBox('tomato')).toHaveClass('data-[focus-visible]:focus-ring')
     expect(chevron).toHaveClass('data-[focus-visible]:focus-ring')
     fireEvent.click(toggleOf('tomato'))
     expect(tomato).toHaveClass('shadow-chip-pressed')

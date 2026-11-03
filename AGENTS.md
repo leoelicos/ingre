@@ -31,10 +31,10 @@ client/
   vite.config.mts, tailwind.config.js, postcss.config.js, jest.config.js, tsconfig.json
   .eslintrc.js (ESLint 8, legacy config), .prettierrc.json
   src/index.tsx, src/App.tsx    entry + routes + Apollo client setup
-  src/components/   Header, AccountMenu, HeaderSearch, SectionTone, Widgets, ...
+  src/components/   Header, AccountMenu, SearchBox, Sheet (bottom sheet / centred modal, #192), SectionTone, ...
   src/pages/        Home, Recipe, Search, ShoppingList, TapOff, Admin (login/signup/upgrade/success/404)
   src/lib/apollo/graphQL   queries/mutations
-  src/utils/        auth, idb, storage, shopping, state, library
+  src/utils/        auth, idb, storage, shopping, state, library, media (the one 576px breakpoint), gestures (swipe)
   src/data/         ingredients.json, recipes.json
   src/styles/       theme.css (design tokens), segmented.css
 server/
@@ -100,7 +100,8 @@ Ingredient colours
   See `client/src/components/SectionTone/` (badgeTone.ts, tones.ts).
 Accounts and header
 - No account needed this phase. Saved stays on the device.
-- Header shows only: logo, search, account icon. Log in / Sign up live in the account icon menu.
+- Header shows only: logo and account icon (#192). Search sits at the top of the Explore sheet, opened
+  by the "+ Recipe" button. Log in / Sign up live in the account icon menu.
 - Saved appears in the account icon menu after sign-in.
 Process
 - One PR per batch of work. Automated checks only during the build; one review on the Vercel preview; the owner merges.

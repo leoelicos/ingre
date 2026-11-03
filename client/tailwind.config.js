@@ -5,6 +5,10 @@ module.exports = {
   darkMode: 'media',
   theme: {
     extend: {
+      /* #192: the one breakpoint. Desktop (two columns, centred modal) from 576px; mobile below */
+      screens: {
+        desk: '576px'
+      },
       colors: {
         bg: 'var(--color-bg)',
         surface: 'var(--color-surface)',
@@ -21,6 +25,8 @@ module.exports = {
         /* picked card / active chip background */
         'chip-active': 'var(--color-chip-active)',
         border: 'var(--color-border)',
+        /* dims the page behind the discovery sheet and modal (#192) */
+        scrim: 'var(--color-scrim)',
         success: 'var(--color-success)',
         /* ingredient badges (#154): one background + ink pair per shop section */
         'badge-produce': 'var(--color-badge-produce)',
@@ -68,6 +74,36 @@ module.exports = {
       },
       outlineWidth: {
         3: '3px'
+      },
+      /* #192: the bottom sheet slides up, the modal and the FAB label fade in */
+      keyframes: {
+        'sheet-in': {
+          from: { transform: 'translateY(100%)' },
+          to: { transform: 'translateY(0)' }
+        },
+        'sheet-out': {
+          from: { transform: 'translateY(0)' },
+          to: { transform: 'translateY(100%)' }
+        },
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' }
+        },
+        'fade-out': {
+          from: { opacity: '1' },
+          to: { opacity: '0' }
+        },
+        'label-in': {
+          from: { opacity: '0', transform: 'translateY(0.5rem)' },
+          to: { opacity: '1', transform: 'translateY(0)' }
+        }
+      },
+      animation: {
+        'sheet-in': 'sheet-in 200ms ease-out',
+        'sheet-out': 'sheet-out 200ms ease-in',
+        'fade-in': 'fade-in 200ms ease-out',
+        'fade-out': 'fade-out 200ms ease-in',
+        'label-in': 'label-in 200ms ease-out'
       }
     }
   },

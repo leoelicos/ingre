@@ -1,17 +1,15 @@
-import { translate, useT } from '../../i18n'
+import { useT } from '../../i18n'
 import type { FC } from 'react'
 import { useState } from 'react'
 import { Button } from 'react-aria-components'
 import { AllergenTags } from '../../components/AllergenTags'
-import { Collapse } from '../../components/Collapse'
-import { SEARCH_LABEL, SearchBox } from '../../components/SearchBox/SearchBox'
-import { IngreIconSearch } from '../../lib/icon/Icon'
+import { SearchBox } from '../../components/SearchBox/SearchBox'
+import { Sheet } from '../../components/Sheet'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
 import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import type { CopyEntry } from '../../utils/chips/chips'
 import { categoryLabel } from '../../utils/chips/chips'
 import type { RecipeCopy } from '../../utils/balance/copies'
-import { useExplore } from '../../utils/explore/ExploreContext'
 import type {
   ExploreResults,
   ExploreSource
@@ -42,12 +40,9 @@ import { filterOptions, recipeFilterCount } from './Recipes'
 import type { RowControls } from './RecipeRows'
 import { RecipeRows } from './RecipeRows'
 import { OriginalDetails } from './RowDetails'
-import { HeaderRow, titleId, toggleId } from './Section'
-import { useFocusAfterRender } from './usePanel'
 import { copyLines, newCopy, usedLines } from '../../utils/balance/copies'
 
 export const EXPLORE_ID = 'explore'
-export const HIDE_EXPLORE = translate('explore.hide')
 
 /** What Explore's rows share with the Recipes rows: picks. */
 export type ExploreRowControls = Pick<
@@ -83,7 +78,7 @@ const GROUP_HEADING =
 const RESULT =
   'flex min-h-[44px] w-full flex-col items-start rounded-control bg-bg px-3 py-1 text-left text-text shadow-raised data-[pressed]:shadow-pressed data-[focus-visible]:focus-ring'
 
-/** An ingredient result: adds it as an extra, or opens its chip when it is on the list. */
+/** An ingredient result: adds it to Extra (#192: the sheet stays open and says so). */
 const IngredientResult: FC<{
   item: LibraryIngredient
   ingredients: IngredientsState
@@ -95,7 +90,7 @@ const IngredientResult: FC<{
   return (
     <li className="flex flex-col gap-1">
       <Button
-        onPress={() => ingredients.pick(item)}
+        onPress={() => ingredients.add(item)}
         aria-label={
           onList
             ? t('explore.onListLabel', { name })
@@ -265,9 +260,11 @@ export const savedIdsOf = (saved: SavedState | null): ReadonlySet<string> =>
  * The filter (#182: Saved, contains, excludes on the originals), then the Saved hint when
  * Saved is on but nothing is hearted, or the results.
  */
-const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
+export const ExploreBody: FC<{ props: ExploreProps; query: string }> = ({
+  props,
+  query
+}) => {
   const t = useT()
-  const { query } = useExplore()
   const [openIds, setOpenIds] = useState<ReadonlySet<string>>(new Set())
   const [filterOpen, setFilterOpen] = useState(props.savedOnly)
   const [picked, setPicked] =
@@ -292,7 +289,10 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           new Set(ids.has(id) ? [...ids].filter((x) => x !== id) : [...ids, id])
       ),
     seeRecipe: true,
-    recessed: false
+    recessed: false,
+    carousel: false,
+    namesScroll: false,
+    swipe: null
   }
   return (
     <div className="flex flex-col gap-4">
@@ -344,153 +344,45 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   )
 }
 
-const HIDE_BUTTON =
-  'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pill bg-bg text-lg font-bold text-text shadow-raised data-[pressed]:shadow-pressed data-[focus-visible]:focus-ring'
-
-const EXPLORE_HEADING_ID = `${EXPLORE_ID}-heading`
-const EXPLORE_CONTENT_ID = `${EXPLORE_ID}-content`
-/** Explore's header row button, which expands and collapses it. */
-export const EXPLORE_TOGGLE_ID = toggleId(EXPLORE_HEADING_ID)
-
-/** Explore as the page shows it: expanded or collapsed, and where focus goes on collapse. */
-export type ExploreViewProps = ExploreProps & {
-  readonly expanded: boolean
-  /** the drawer's strip button in the drawer; otherwise the header row */
-  readonly collapseFocusId: string
-}
+export const EXPLORE_SHEET_ID = 'explore-sheet'
 
 /**
- * Explore (#181): an inline, labelled region with a neumorphic outline that pushes content
- * down (never an overlay). It is always on the page: clicking outside and Escape leave it as
- * it is; its X and its header row collapse it to the header row (or, in the drawer, the
- * strip), and the header row expands it again. Collapsed, its content stays mounted.
+ * Explore (#192): discovery off the page, in a bottom sheet on mobile and a centred modal from
+ * 576px, opened from "+ Recipe" (or the account menu's Saved link). The search bar sits at the
+ * top and has focus when it opens; results and the filter scroll under it.
  */
-export const Explore: FC<ExploreViewProps> = ({
-  expanded,
-  collapseFocusId,
-  ...props
-}) => {
-  const t = useT()
-  const explore = useExplore()
-  const focusAfterRender = useFocusAfterRender()
-  const collapse = () => {
-    explore.collapse()
-    focusAfterRender({ kind: 'first', ids: [collapseFocusId] })
+export const ExploreSheet: FC<
+  ExploreProps & {
+    isOpen: boolean
+    onClose: () => void
+    query: string
+    onQuery: (query: string) => void
   }
-  return (
-    <section
-      id={EXPLORE_ID}
-      aria-labelledby={titleId(EXPLORE_HEADING_ID)}
-      data-expanded={expanded}
-      className="flex min-w-0 flex-col gap-3 rounded-card bg-bg p-3 shadow-raised"
-    >
-      <div className="flex items-center gap-2">
-        <HeaderRow
-          headingId={EXPLORE_HEADING_ID}
-          title={t('explore.title')}
-          summary=""
-          toggle={{
-            open: expanded,
-            onToggle: expanded ? collapse : explore.show,
-            controls: EXPLORE_CONTENT_ID
-          }}
-        />
-        {expanded && (
-          <Button
-            aria-label={HIDE_EXPLORE}
-            aria-controls={EXPLORE_CONTENT_ID}
-            onPress={collapse}
-            className={HIDE_BUTTON}
-          >
-            <span aria-hidden="true">✕</span>
-          </Button>
-        )}
-      </div>
-      <Collapse
-        id={EXPLORE_CONTENT_ID}
-        open={expanded}
-      >
-        <ExploreBody props={props} />
-      </Collapse>
-    </section>
-  )
-}
-
-const RAIL_BUTTON =
-  'inline-flex h-11 w-11 items-center justify-center rounded-pill bg-bg text-text shadow-raised data-[pressed]:shadow-pressed data-[focus-visible]:focus-ring'
-
-/** The collapsed drawer's strip button. */
-export const RAIL_ID = `${EXPLORE_ID}-rail`
-const DRAWER_CONTENT_ID = `${EXPLORE_ID}-drawer-content`
-
-/**
- * From 1328px Explore is a push drawer column on the right (#181): it squeezes the layout and
- * never covers it, and the search bar lives in it. Collapsed, it is a narrow strip with a
- * search button that expands it and puts focus in the search box; the search bar and Explore
- * stay mounted (hidden) in the strip.
- */
-export const ExploreDrawer: FC<ExploreProps & { expanded: boolean }> = ({
-  expanded,
-  ...props
-}) => {
+> = ({ isOpen, onClose, query, onQuery, ...props }) => {
   const t = useT()
-  const explore = useExplore()
   return (
-    <aside
-      aria-label={t('explore.drawer')}
-      data-open={expanded}
-      className={`sticky top-0 flex max-h-screen shrink-0 flex-col gap-3 self-start overflow-y-auto pb-6 pt-4 transition-[width] duration-200 ease-out motion-reduce:duration-0 motion-reduce:transition-none ${
-        expanded ? 'w-[360px]' : 'w-14'
-      }`}
+    <Sheet
+      id={EXPLORE_SHEET_ID}
+      title={t('explore.title')}
+      isOpen={isOpen}
+      onClose={onClose}
+      status={props.ingredients.message}
+      top={
+        <SearchBox
+          value={query}
+          onChange={onQuery}
+        />
+      }
     >
-      {!expanded && (
-        <Button
-          id={RAIL_ID}
-          aria-label={SEARCH_LABEL}
-          aria-expanded={false}
-          aria-controls={DRAWER_CONTENT_ID}
-          onPress={() => {
-            explore.show()
-            explore.requestFocus()
-          }}
-          className={RAIL_BUTTON}
-        >
-          <IngreIconSearch />
-        </Button>
-      )}
       <div
-        id={DRAWER_CONTENT_ID}
-        hidden={!expanded}
-        className="flex flex-col gap-3"
+        id={EXPLORE_ID}
+        className="p-1.5"
       >
-        <SearchBox />
-        <Explore
-          {...props}
-          expanded={expanded}
-          collapseFocusId={RAIL_ID}
+        <ExploreBody
+          props={props}
+          query={query}
         />
       </div>
-    </aside>
+    </Sheet>
   )
 }
-
-/**
- * With 33/33/33 (from 1328px) Explore is the third equal column, after Ingredients and
- * Recipes, with the search bar above it. Collapsed, its header row stays in the column.
- */
-export const ExploreColumn: FC<ExploreProps & { expanded: boolean }> = ({
-  expanded,
-  ...props
-}) => (
-  <div
-    data-explore-column=""
-    className="flex min-w-0 flex-col gap-3"
-  >
-    <SearchBox />
-    <Explore
-      {...props}
-      expanded={expanded}
-      collapseFocusId={EXPLORE_TOGGLE_ID}
-    />
-  </div>
-)

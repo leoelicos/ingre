@@ -5,22 +5,20 @@ import {
   box,
   chevron,
   chip,
-  drawer,
+  closeSheet,
   explore,
-  exploreHeader,
+  openExtra,
   exploreRow,
-  hideX,
-  ingredientsRegion,
+  fab,
   openExplore,
   pageTop,
   panel,
   pickRows,
-  rail,
   recipesRegion,
   searchBox
 } from './page'
 
-/* #181 Search / Explore: one scenario per behaviour, on the phone and desktop projects. */
+/* #181 Search / Explore, in its sheet from #192: one scenario per behaviour, on the phone and desktop projects. */
 
 const RECIPE_COUNT = 14
 const group = (page: Page, name: string): Locator =>
@@ -72,72 +70,51 @@ test.describe('Explore (#181)', () => {
     await page.goto('/')
   })
 
-  test('search bar: placeholder "Search ingredients and recipes" and a max width', async ({
+  test('search bar: placeholder "Search ingredients and recipes", at the top of the sheet, focused', async ({
     page
   }) => {
-    await page.setViewportSize({ width: 1400, height: 800 })
+    await expect(page.getByRole('search')).toHaveCount(0)
     await openExplore(page)
     await expect(searchBox(page)).toHaveAttribute(
       'placeholder',
       'Search ingredients and recipes'
     )
-    expect(
-      await page
-        .getByRole('search')
-        .evaluate((el) => getComputedStyle(el).maxWidth)
-    ).toBe('576px')
-  })
-
-  test('opens on load when nothing is selected, as a labelled region with a neumorphic outline', async ({
-    page
-  }) => {
-    await expect(explore(page)).toBeVisible()
-    expect(
-      await explore(page).evaluate((el) => getComputedStyle(el).boxShadow)
-    ).not.toBe('none')
-  })
-
-  test('on load with something selected it starts collapsed, but is still on the page', async ({
-    page
-  }) => {
-    await pickRows(page, DAHL)
-    await page.reload()
-    await expect(row(page)).toBeVisible()
-    await expect(explore(page)).toBeVisible()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    await expect(exploreRow(page, DAHL)).toBeHidden()
-  })
-
-  test('expands on search focus by click or tap', async ({ page }) => {
-    await pickRows(page, DAHL)
-    await page.reload()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    if (await rail(page).isVisible()) await rail(page).click()
-    else await searchBox(page).click()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
     await expect(searchBox(page)).toBeFocused()
+    expect(await pageTop(page.getByRole('search'))).toBeLessThan(
+      await pageTop(
+        explore(page).getByRole('heading', { name: 'Browse recipes' })
+      )
+    )
   })
 
-  test('expands on search focus by keyboard', async ({ page }) => {
-    await pickRows(page, DAHL)
-    await page.reload()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    const wide = await rail(page).isVisible()
-    // the drawer strip is last on the page, the header search bar first
-    const target = wide ? rail(page) : searchBox(page)
-    for (let i = 0; i < 20; i++) {
-      await page.keyboard.press(wide ? 'Shift+Tab' : 'Tab')
-      if (await target.evaluate((el) => el === document.activeElement)) break
+  test('opens from "+ Recipe" by keyboard; Escape closes it and focus goes back to the FAB (#192)', async ({
+    page
+  }) => {
+    await fab(page).focus()
+    await page.keyboard.press('Enter')
+    await expect(explore(page)).toBeVisible()
+    await expect(searchBox(page)).toBeFocused()
+    await page.keyboard.press('Escape')
+    await expect(explore(page)).toHaveCount(0)
+    await expect(fab(page)).toBeFocused()
+  })
+
+  test('keeps focus inside while open (#192)', async ({ page }) => {
+    await openExplore(page)
+    for (let i = 0; i < 25; i++) {
+      await page.keyboard.press('Tab')
+      expect(
+        await explore(page).evaluate((el) =>
+          el.contains(document.activeElement)
+        )
+      ).toBe(true)
     }
-    await expect(target).toBeFocused()
-    if (await rail(page).isVisible()) await page.keyboard.press('Enter')
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
-    await expect(searchBox(page)).toBeFocused()
   })
 
   test('always populated: browse every recipe; typing shows matches; clearing restores browse', async ({
     page
   }) => {
+    await openExplore(page)
     const browse = group(page, 'Browse recipes')
     await expect(
       browse.getByRole('button', { name: /^See recipe: / })
@@ -159,9 +136,6 @@ test.describe('Explore (#181)', () => {
     await openExplore(page)
     await exploreRow(page, DAHL).click()
     await expect(exploreRow(page, DAHL)).toHaveAttribute('aria-pressed', 'true')
-    await expect(
-      recipesRegion(page).getByRole('button', { name: DAHL, exact: true })
-    ).toBeVisible()
     const see = explore(page).getByRole('button', {
       name: `See recipe: ${DAHL}`
     })
@@ -175,28 +149,28 @@ test.describe('Explore (#181)', () => {
     ).toBeVisible()
     expect(page.url()).toBe(url)
     expect(Math.abs((await pageTop(see)) - top)).toBeLessThan(2)
-  })
-
-  test('pushes content down; never an overlay', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 })
-    await openExplore(page)
-    const region = await explore(page).evaluate((el) => {
-      const r = el.getBoundingClientRect()
-      return {
-        bottom: r.bottom + window.scrollY,
-        position: getComputedStyle(el).position
-      }
-    })
-    expect(['static', 'relative']).toContain(region.position)
-    expect(await pageTop(ingredientsRegion(page))).toBeGreaterThanOrEqual(
-      region.bottom
-    )
+    await closeSheet(page)
     await expect(
-      page.locator('[aria-modal="true"], [role="dialog"]')
-    ).toHaveCount(0)
+      recipesRegion(page).getByRole('button', { name: DAHL, exact: true })
+    ).toBeVisible()
   })
 
-  test('clicking outside and Escape do not close it; Escape clears the text and restores browse', async ({
+  test('is a modal dialog over the dimmed page; a press on the dimmed page closes it (#192)', async ({
+    page
+  }) => {
+    await openExplore(page)
+    const scrim = await explore(page).evaluate((el) => {
+      const overlay = el.parentElement?.parentElement
+      return overlay === null || overlay === undefined
+        ? ''
+        : getComputedStyle(overlay).backgroundColor
+    })
+    expect(scrim).toMatch(/^rgba\(.*0\.\d+\)$/)
+    await page.mouse.click(5, 5)
+    await expect(explore(page)).toHaveCount(0)
+  })
+
+  test('Escape clears the text first and keeps it open; a second Escape closes it', async ({
     page
   }) => {
     await typeQuery(page, 'dahl')
@@ -206,104 +180,19 @@ test.describe('Explore (#181)', () => {
     await expect(
       explore(page).getByRole('heading', { name: 'Browse recipes' })
     ).toBeVisible()
-    await page.mouse.click(2, 300)
-    await recipesRegion(page)
-      .getByText(/No recipes picked yet/)
-      .click()
     await page.keyboard.press('Escape')
-    await expect(explore(page)).toBeVisible()
+    await expect(explore(page)).toHaveCount(0)
   })
 
-  test('its X collapses it to its header row, focused; the header row or search focus expands it', async ({
+  test('the ✕ closes it; the query is still there when it opens again', async ({
     page
   }) => {
-    await hideX(page).click()
-    await expect(explore(page)).toBeVisible()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    await expect(exploreHeader(page)).toBeFocused()
-    await expect(exploreRow(page, DAHL)).toBeHidden()
-    await expect(hideX(page)).toHaveCount(0)
-    await exploreHeader(page).click()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
-    await expect(exploreRow(page, DAHL)).toBeVisible()
-    await hideX(page).click()
-    await searchBox(page).click()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
-  })
-
-  test('it expands on typing', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 })
-    await searchBox(page).focus()
-    await hideX(page).click()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    await searchBox(page).pressSequentially('dahl')
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
+    await typeQuery(page, 'dahl')
+    await closeSheet(page)
+    await expect(fab(page)).toBeFocused()
+    await openExplore(page)
+    await expect(searchBox(page)).toHaveValue('dahl')
     expect(await rowNames(explore(page))).toEqual([DAHL])
-  })
-
-  test('collapsible: its header row hides and shows the results', async ({
-    page
-  }) => {
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'true')
-    await exploreHeader(page).click()
-    await expect(exploreHeader(page)).toHaveAttribute('aria-expanded', 'false')
-    await expect(exploreRow(page, DAHL)).toBeHidden()
-    await expect(explore(page)).toBeVisible()
-    await exploreHeader(page).click()
-    await expect(exploreRow(page, DAHL)).toBeVisible()
-  })
-
-  test('smaller screens: search bar at the top, Explore inline below it', async ({
-    page
-  }) => {
-    await page.setViewportSize({ width: 800, height: 900 })
-    const banner = page.getByRole('banner')
-    await expect(banner.getByRole('searchbox')).toBeVisible()
-    await expect(drawer(page)).toHaveCount(0)
-    expect(await pageTop(explore(page))).toBeGreaterThan(
-      (await box(banner)).height - 1
-    )
-    expect(await pageTop(explore(page))).toBeLessThan(
-      await pageTop(ingredientsRegion(page))
-    )
-  })
-
-  test('from 1328px: a push drawer column on the right holds the search bar and squeezes the layout', async ({
-    page
-  }) => {
-    await page.setViewportSize({ width: 1328, height: 800 })
-    await expect(page.getByRole('banner').getByRole('searchbox')).toHaveCount(0)
-    await expect(drawer(page).getByRole('searchbox')).toBeVisible()
-    await expect(
-      drawer(page).getByRole('region', { name: 'Explore' })
-    ).toBeVisible()
-    const open = await box(drawer(page))
-    const main = await box(page.getByRole('main'))
-    expect(open.width).toBeGreaterThan(340)
-    expect(open.width).toBeLessThan(380)
-    expect(open.x).toBeGreaterThanOrEqual(main.x + main.width)
-    await hideX(page).click()
-    await expect
-      .poll(async () => (await box(page.getByRole('main'))).width)
-      .toBeGreaterThan(main.width + 250)
-  })
-
-  test('from 1328px: the collapsed drawer leaves a strip whose search button expands it and focuses search', async ({
-    page
-  }) => {
-    await page.setViewportSize({ width: 1328, height: 800 })
-    await hideX(page).click()
-    await expect(rail(page)).toBeVisible()
-    await expect(rail(page)).toBeFocused()
-    await expect(rail(page)).toHaveAttribute('aria-expanded', 'false')
-    await expect
-      .poll(async () => (await box(drawer(page))).width)
-      .toBeLessThan(80)
-    // collapsed, Explore is still on the page (hidden in the strip), never removed
-    await expect(page.locator('#explore')).toHaveCount(1)
-    await rail(page).click()
-    await expect(explore(page)).toBeVisible()
-    await expect(searchBox(page)).toBeFocused()
   })
 
   test('ranking: starts with, then a word starts with, then contains; alphabetical in each tier', async ({
@@ -382,9 +271,9 @@ test.describe('Explore (#181)', () => {
     page
   }) => {
     await typeQuery(page, 'zzzqqq')
-    await expect(explore(page).getByRole('status')).toHaveText(
-      'No matches for ‘zzzqqq’'
-    )
+    await expect(
+      explore(page).getByText('No matches for ‘zzzqqq’')
+    ).toBeVisible()
     await expect(
       group(page, 'Browse recipes').getByRole('button', {
         name: /^See recipe: /
@@ -396,9 +285,9 @@ test.describe('Explore (#181)', () => {
     page
   }) => {
     await typeQuery(page, 'chiken')
-    await expect(explore(page).getByRole('status')).toHaveText(
-      'No matches for ‘chiken’'
-    )
+    await expect(
+      explore(page).getByText('No matches for ‘chiken’')
+    ).toBeVisible()
     const close = explore(page).getByRole('heading', { name: 'Close matches' })
     await expect(close).toBeVisible()
     const browse = explore(page).getByRole('heading', {
@@ -415,14 +304,19 @@ test.describe('Explore (#181)', () => {
   }) => {
     await typeQuery(page, 'banana')
     await explore(page).getByRole('button', { name: 'Add banana' }).click()
-    await expect(chip(page, 'banana')).toHaveCount(1)
-    await expect(chip(page, 'banana', 'extra')).toHaveCount(1)
+    await expect(
+      explore(page).getByText('Banana added to Extra')
+    ).toBeAttached()
     await expect(
       explore(page).getByRole('button', { name: 'Banana, on your list' })
     ).toBeVisible()
+    await closeSheet(page)
+    await expect(chip(page, 'banana')).toHaveCount(1)
+    await openExtra(page)
+    await expect(chip(page, 'banana', 'extra')).toHaveCount(1)
   })
 
-  test('an ingredient already on the list adds an Extra source at 1, then scrolls to its chip and opens it (#182, answer 8)', async ({
+  test('an ingredient already on the list adds an Extra source at 1 and stays in the sheet (#182, #192)', async ({
     page
   }) => {
     await pickRows(page, DAHL)
@@ -430,16 +324,19 @@ test.describe('Explore (#181)', () => {
     await explore(page)
       .getByRole('button', { name: 'Butter, on your list' })
       .click()
+    await expect(
+      explore(page).getByText('Butter added to Extra')
+    ).toBeAttached()
+    await explore(page)
+      .getByRole('button', { name: 'Butter, on your list' })
+      .click()
+    await expect(
+      explore(page).getByText('Butter is already in Extra')
+    ).toBeAttached()
+    await closeSheet(page)
     await expect(chip(page, 'butter')).toHaveCount(1)
-    await expect(chip(page, 'butter', 'extra')).toContainText('1 g')
-    await expect(chevron(page, 'butter')).toHaveAttribute(
-      'aria-expanded',
-      'true'
-    )
-    await expect(chip(page, 'butter')).toBeInViewport()
-    const details = panel(page, 'Butter')
-    await expect(details).toBeVisible()
-    await expect(details.getByText('Total: 16 g')).toBeVisible()
+    await chevron(page, 'butter').click()
+    await expect(panel(page, 'Butter').getByText('Total: 16 g')).toBeVisible()
   })
 
   test('ingredient results show their allergen tags', async ({ page }) => {
@@ -452,31 +349,45 @@ test.describe('Explore (#181)', () => {
     ).toHaveText(['milk'])
   })
 
-  test('motion: the drawer opens and closes in about 0.2 s', async ({
+  test('motion: the sheet slides up (phone) or fades in (desktop) over 0.2 s (#192)', async ({
     page
   }) => {
-    await page.setViewportSize({ width: 1328, height: 800 })
-    expect(
-      await drawer(page).evaluate(
-        (el) => getComputedStyle(el).transitionDuration
-      )
-    ).toBe('0.2s')
+    await openExplore(page)
+    const motion = await enteringMotion(page)
+    expect(motion.duration).toBe('0.2s')
+    expect(motion.name).toBe(
+      (page.viewportSize()?.width ?? 0) < 576 ? 'sheet-in' : 'fade-in'
+    )
   })
 })
 
-test.describe('Explore with reduced motion (#181)', () => {
+test.describe('Explore with reduced motion (#181, #192)', () => {
   test.use({ reducedMotion: 'reduce' })
 
-  test('the drawer opens and closes instantly', async ({ page }) => {
-    await page.setViewportSize({ width: 1328, height: 800 })
+  test('the sheet opens with no animation', async ({ page }) => {
     await page.goto('/')
-    expect(
-      await drawer(page).evaluate(
-        (el) => getComputedStyle(el).transitionDuration
-      )
-    ).toBe('0s')
+    await openExplore(page)
+    expect((await enteringMotion(page)).name).toBe('none')
   })
 })
 
-const row = (page: Page) =>
-  recipesRegion(page).getByRole('button', { name: DAHL, exact: true })
+/**
+ * The animation the sheet's panel runs while it enters. It is over in 0.2 s, so this asks a
+ * stand-in with the panel's classes, marked as entering, instead of racing the real one.
+ */
+const enteringMotion = (page: Page) =>
+  explore(page)
+    .locator('xpath=..')
+    .evaluate((el) => {
+      const probe = document.createElement('div')
+      probe.className = el.className
+      probe.setAttribute('data-entering', '')
+      document.body.append(probe)
+      const style = getComputedStyle(probe)
+      const motion = {
+        name: style.animationName,
+        duration: style.animationDuration
+      }
+      probe.remove()
+      return motion
+    })
