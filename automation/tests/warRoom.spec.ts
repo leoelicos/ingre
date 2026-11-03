@@ -14,6 +14,7 @@ test.describe('war room (#207)', () => {
       .getByRole('banner')
       .getByRole('link', { name: 'War room', exact: true })
       .click()
+    await expect(field(page)).toBeFocused()
   })
 
   test('opens from the menu bar with the field ready to type into', async ({
