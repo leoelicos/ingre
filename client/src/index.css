@@ -9,10 +9,13 @@
     font-family: 'Poppins', sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    /* the bottom tabs (#227) must never cover the control that has focus */
-    scroll-padding-bottom: 5rem;
-    /* and the sticky header (#228) */
-    scroll-padding-top: 5rem;
+  }
+  /* the bottom tabs (#227) and the sticky header (#228) must never cover the control that has
+     focus. A margin on the focused control, not scroll-padding on the page: padding also moved
+     list popovers' options (they are never focused), which closed the popover while it was being
+     clicked. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus {
+    scroll-margin-block: 5rem;
   }
   body {
     background-color: var(--color-bg);
