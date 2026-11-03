@@ -79,7 +79,7 @@ const ItemRow: FC<{
     }
     className={ROW}
   >
-    <span className="flex-1">{capitaliseFirst(item.name)}</span>
+    <span className="flex-1">{capitaliseFirst(item.name)}</span>{' '}
     {mark !== null && (
       <span className="text-xs font-semibold text-text-secondary">{mark}</span>
     )}

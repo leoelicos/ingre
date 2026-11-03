@@ -96,16 +96,16 @@ const IngredientResult: FC<{
     <li className="flex flex-col gap-1">
       <Button
         onPress={() => ingredients.pick(item)}
-        aria-label={
-          onList
-            ? t('explore.onListLabel', { name })
-            : t('explore.add', { name: item.name })
-        }
         className={RESULT}
       >
         <span className="font-semibold">
+          {onList && (
+            <>
+              <span aria-hidden="true">{t('explore.onListMark')}</span>{' '}
+            </>
+          )}
           {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
-        </span>
+        </span>{' '}
         <span className="text-xs text-text-secondary">
           {onList ? t('explore.categoryOnList', { category }) : category}
         </span>
