@@ -235,6 +235,7 @@ export const parseSectionColours = (
     Bakery: tone('Bakery'),
     Pantry: tone('Pantry'),
     Frozen: tone('Frozen'),
+    Household: tone('Household'),
     Other: tone('Other')
   }
 }

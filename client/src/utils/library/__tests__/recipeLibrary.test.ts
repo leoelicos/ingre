@@ -105,7 +105,9 @@ describe('recipe library data', () => {
       'deli',
       'fruit & veg',
       'herbs & spices',
+      'household',
       'international',
+      'kitchenware',
       'meat',
       'oils & vinegar',
       'pasta & rice',
@@ -117,7 +119,7 @@ describe('recipe library data', () => {
 
   it('merges the everyday extras with sized options and loose weights', () => {
     const byId = new Map(catalogue.map((i) => [i.id, i]))
-    expect(catalogue).toHaveLength(111)
+    expect(catalogue).toHaveLength(128)
 
     expect(byId.get('apple')?.pantry).toBe('Bench')
     expect(byId.get('apple')?.approxGrams).toBe(185)
