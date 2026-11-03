@@ -224,6 +224,27 @@
     "message": "Page Not Found",
     "goHome": "Go home"
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "empty": "Nothing on your list yet. Add a recipe or an ingredient to see what it adds up to.",
+    "summary": "{{cost}} · {{items}}",
+    "cost": "Estimated cost",
+    "about": "About {{cost}}",
+    "energy": "Energy",
+    "protein": "Protein",
+    "fat": "Fat",
+    "carbs": "Carbohydrate",
+    "kj": "{{amount}} kJ",
+    "grams": "{{amount}} g",
+    "macrosHeading": "What the list holds",
+    "macrosNote": "Everything on your list added together, not per serve.",
+    "spreadHeading": "Where the money goes in the shop",
+    "spreadItem": "{{cost}} · {{items}} · {{percent}}%",
+    "noPrice": "No price for: {{items}}",
+    "noMacros": "No nutrition for: {{items}}",
+    "indicative": "Prices and nutrition are rough, unverified estimates.",
+    "listSeparator": ", "
+  },
   "suggest": {
     "using": "Using",
     "use": "Use",

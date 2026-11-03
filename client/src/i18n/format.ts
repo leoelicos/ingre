@@ -8,6 +8,13 @@ import { locale, translate, translateOr } from './i18n'
 /** Two decimals at most: 37.5 -> 37.5, 1/3 -> 0.33. */
 export const rounded = (n: number): number => Math.round(n * 100) / 100
 
+/** One decimal place at most, no grouping: 12.34 -> "12.3", 20 -> "20" (#232 macros). */
+export const formatOneDecimal = (n: number): string =>
+  new Intl.NumberFormat(locale(), {
+    maximumFractionDigits: 1,
+    useGrouping: false
+  }).format(Math.round(n * 10) / 10 + 0)
+
 /** A plain decimal, two places at most and no grouping: 37.5 -> "37.5", 1250 -> "1250". */
 export const formatNumber = (n: number): string =>
   new Intl.NumberFormat(locale(), {

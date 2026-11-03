@@ -13,6 +13,7 @@ export {
   formatMoney,
   formatMeasure,
   formatNumber,
+  formatOneDecimal,
   formatQuantity,
   formatRecipeCount,
   pluralCount,

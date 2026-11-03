@@ -1,0 +1,671 @@
+{
+  "_note": "Approximate nutrition per 100 g (ml counts as 1 g) of the item as bought, raw or dry where that is how it is used (#232). Energy in kilojoules; protein, fat and carbohydrate in grams. UNVERIFIED rounded estimates from general food-composition knowledge (the style of Australian Food Composition Database values), to be checked by the PO or replaced from FSANZ's database before anyone relies on them for health decisions. Not medical advice.",
+  "per100g": {
+    "beef-mince": {
+      "kj": 1080,
+      "protein": 20,
+      "fat": 15,
+      "carbs": 0
+    },
+    "pork-mince": {
+      "kj": 1000,
+      "protein": 19,
+      "fat": 13,
+      "carbs": 0
+    },
+    "chicken-thigh": {
+      "kj": 800,
+      "protein": 19,
+      "fat": 9,
+      "carbs": 0
+    },
+    "egg": {
+      "kj": 600,
+      "protein": 12.5,
+      "fat": 9.5,
+      "carbs": 0.3
+    },
+    "butter": {
+      "kj": 3000,
+      "protein": 0.6,
+      "fat": 81,
+      "carbs": 0.1
+    },
+    "cream": {
+      "kj": 1480,
+      "protein": 2.2,
+      "fat": 35,
+      "carbs": 3
+    },
+    "natural-yoghurt": {
+      "kj": 300,
+      "protein": 4.8,
+      "fat": 3.3,
+      "carbs": 5.5
+    },
+    "haloumi": {
+      "kj": 1300,
+      "protein": 22,
+      "fat": 25,
+      "carbs": 2
+    },
+    "feta": {
+      "kj": 1100,
+      "protein": 17,
+      "fat": 21,
+      "carbs": 1.5
+    },
+    "parmesan": {
+      "kj": 1750,
+      "protein": 36,
+      "fat": 29,
+      "carbs": 0
+    },
+    "onion": {
+      "kj": 160,
+      "protein": 1.2,
+      "fat": 0.1,
+      "carbs": 7.5
+    },
+    "red-onion": {
+      "kj": 160,
+      "protein": 1.2,
+      "fat": 0.1,
+      "carbs": 7.5
+    },
+    "garlic": {
+      "kj": 570,
+      "protein": 6.4,
+      "fat": 0.5,
+      "carbs": 27
+    },
+    "ginger": {
+      "kj": 220,
+      "protein": 1.8,
+      "fat": 0.7,
+      "carbs": 12
+    },
+    "carrot": {
+      "kj": 150,
+      "protein": 0.9,
+      "fat": 0.2,
+      "carbs": 7
+    },
+    "celery": {
+      "kj": 60,
+      "protein": 0.6,
+      "fat": 0.1,
+      "carbs": 2
+    },
+    "spring-onion": {
+      "kj": 130,
+      "protein": 1.8,
+      "fat": 0.2,
+      "carbs": 5
+    },
+    "iceberg-lettuce": {
+      "kj": 50,
+      "protein": 0.9,
+      "fat": 0.1,
+      "carbs": 2
+    },
+    "tomato": {
+      "kj": 80,
+      "protein": 0.9,
+      "fat": 0.2,
+      "carbs": 3.5
+    },
+    "cucumber": {
+      "kj": 50,
+      "protein": 0.7,
+      "fat": 0.1,
+      "carbs": 2
+    },
+    "capsicum": {
+      "kj": 110,
+      "protein": 1,
+      "fat": 0.3,
+      "carbs": 5
+    },
+    "tinned-peas": {
+      "kj": 300,
+      "protein": 4.5,
+      "fat": 0.7,
+      "carbs": 10
+    },
+    "water-chestnuts": {
+      "kj": 190,
+      "protein": 1,
+      "fat": 0.1,
+      "carbs": 10
+    },
+    "spaghetti": {
+      "kj": 1500,
+      "protein": 13,
+      "fat": 1.5,
+      "carbs": 72
+    },
+    "jasmine-rice": {
+      "kj": 1520,
+      "protein": 7,
+      "fat": 0.6,
+      "carbs": 79
+    },
+    "basmati-rice": {
+      "kj": 1500,
+      "protein": 8,
+      "fat": 0.8,
+      "carbs": 78
+    },
+    "crushed-tomatoes": {
+      "kj": 90,
+      "protein": 1.2,
+      "fat": 0.2,
+      "carbs": 4
+    },
+    "tomato-paste": {
+      "kj": 300,
+      "protein": 4,
+      "fat": 0.5,
+      "carbs": 14
+    },
+    "kalamata-olives": {
+      "kj": 550,
+      "protein": 1.1,
+      "fat": 13,
+      "carbs": 1
+    },
+    "olive-oil": {
+      "kj": 3700,
+      "protein": 0,
+      "fat": 100,
+      "carbs": 0
+    },
+    "vegetable-oil": {
+      "kj": 3700,
+      "protein": 0,
+      "fat": 100,
+      "carbs": 0
+    },
+    "sesame-oil": {
+      "kj": 3700,
+      "protein": 0,
+      "fat": 100,
+      "carbs": 0
+    },
+    "red-wine-vinegar": {
+      "kj": 70,
+      "protein": 0.1,
+      "fat": 0,
+      "carbs": 0.3
+    },
+    "soy-sauce": {
+      "kj": 270,
+      "protein": 8,
+      "fat": 0.1,
+      "carbs": 5
+    },
+    "oyster-sauce": {
+      "kj": 450,
+      "protein": 1.5,
+      "fat": 0.1,
+      "carbs": 25
+    },
+    "garam-masala": {
+      "kj": 1250,
+      "protein": 14,
+      "fat": 15,
+      "carbs": 45
+    },
+    "ground-cumin": {
+      "kj": 1500,
+      "protein": 18,
+      "fat": 22,
+      "carbs": 34
+    },
+    "chilli-powder": {
+      "kj": 1300,
+      "protein": 13,
+      "fat": 14,
+      "carbs": 50
+    },
+    "dried-oregano": {
+      "kj": 1150,
+      "protein": 9,
+      "fat": 4,
+      "carbs": 50
+    },
+    "salt": {
+      "kj": 0,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0
+    },
+    "fresh-coriander": {
+      "kj": 100,
+      "protein": 2.1,
+      "fat": 0.5,
+      "carbs": 1.7
+    },
+    "potato": {
+      "kj": 320,
+      "protein": 2,
+      "fat": 0.1,
+      "carbs": 16
+    },
+    "cauliflower": {
+      "kj": 110,
+      "protein": 2,
+      "fat": 0.2,
+      "carbs": 3
+    },
+    "baby-spinach": {
+      "kj": 100,
+      "protein": 2.9,
+      "fat": 0.4,
+      "carbs": 1.4
+    },
+    "green-chilli": {
+      "kj": 150,
+      "protein": 2,
+      "fat": 0.2,
+      "carbs": 6
+    },
+    "red-lentils": {
+      "kj": 1450,
+      "protein": 24,
+      "fat": 1.5,
+      "carbs": 50
+    },
+    "coconut-milk": {
+      "kj": 800,
+      "protein": 1.5,
+      "fat": 20,
+      "carbs": 2
+    },
+    "chickpeas": {
+      "kj": 450,
+      "protein": 7,
+      "fat": 2.5,
+      "carbs": 12
+    },
+    "ground-almonds": {
+      "kj": 2500,
+      "protein": 21,
+      "fat": 53,
+      "carbs": 6
+    },
+    "cumin-seeds": {
+      "kj": 1500,
+      "protein": 18,
+      "fat": 22,
+      "carbs": 34
+    },
+    "ground-coriander": {
+      "kj": 1100,
+      "protein": 12,
+      "fat": 18,
+      "carbs": 55
+    },
+    "ground-turmeric": {
+      "kj": 1250,
+      "protein": 8,
+      "fat": 10,
+      "carbs": 65
+    },
+    "beef-rump": {
+      "kj": 700,
+      "protein": 21,
+      "fat": 5,
+      "carbs": 0
+    },
+    "pork-belly": {
+      "kj": 1500,
+      "protein": 13,
+      "fat": 32,
+      "carbs": 0
+    },
+    "cooked-prawns": {
+      "kj": 400,
+      "protein": 21,
+      "fat": 1,
+      "carbs": 0
+    },
+    "lemongrass": {
+      "kj": 430,
+      "protein": 1.8,
+      "fat": 0.5,
+      "carbs": 25
+    },
+    "red-chilli": {
+      "kj": 150,
+      "protein": 2,
+      "fat": 0.3,
+      "carbs": 6
+    },
+    "lime": {
+      "kj": 110,
+      "protein": 0.7,
+      "fat": 0.2,
+      "carbs": 6
+    },
+    "fresh-mint": {
+      "kj": 200,
+      "protein": 3.8,
+      "fat": 0.9,
+      "carbs": 8
+    },
+    "bean-sprouts": {
+      "kj": 130,
+      "protein": 3,
+      "fat": 0.2,
+      "carbs": 5
+    },
+    "fish-sauce": {
+      "kj": 150,
+      "protein": 5,
+      "fat": 0,
+      "carbs": 4
+    },
+    "hoisin-sauce": {
+      "kj": 920,
+      "protein": 3.3,
+      "fat": 2.5,
+      "carbs": 44
+    },
+    "rice-paper": {
+      "kj": 1440,
+      "protein": 1,
+      "fat": 0.3,
+      "carbs": 80
+    },
+    "rice-vermicelli": {
+      "kj": 1530,
+      "protein": 6,
+      "fat": 0.4,
+      "carbs": 83
+    },
+    "roasted-peanuts": {
+      "kj": 2400,
+      "protein": 25,
+      "fat": 50,
+      "carbs": 12
+    },
+    "white-sugar": {
+      "kj": 1700,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 100
+    },
+    "white-vinegar": {
+      "kj": 70,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0
+    },
+    "black-pepper": {
+      "kj": 1050,
+      "protein": 10,
+      "fat": 3,
+      "carbs": 64
+    },
+    "apple": {
+      "kj": 215,
+      "protein": 0.3,
+      "fat": 0.2,
+      "carbs": 11
+    },
+    "banana": {
+      "kj": 380,
+      "protein": 1.2,
+      "fat": 0.2,
+      "carbs": 20
+    },
+    "orange": {
+      "kj": 190,
+      "protein": 0.9,
+      "fat": 0.1,
+      "carbs": 9
+    },
+    "mandarin": {
+      "kj": 210,
+      "protein": 0.8,
+      "fat": 0.2,
+      "carbs": 10
+    },
+    "pear": {
+      "kj": 230,
+      "protein": 0.3,
+      "fat": 0.1,
+      "carbs": 12
+    },
+    "lemon": {
+      "kj": 110,
+      "protein": 0.9,
+      "fat": 0.3,
+      "carbs": 3
+    },
+    "avocado": {
+      "kj": 790,
+      "protein": 2,
+      "fat": 18,
+      "carbs": 1
+    },
+    "grapes": {
+      "kj": 290,
+      "protein": 0.6,
+      "fat": 0.1,
+      "carbs": 16
+    },
+    "strawberries": {
+      "kj": 150,
+      "protein": 0.7,
+      "fat": 0.3,
+      "carbs": 6
+    },
+    "blueberries": {
+      "kj": 250,
+      "protein": 0.7,
+      "fat": 0.3,
+      "carbs": 13
+    },
+    "kiwifruit": {
+      "kj": 240,
+      "protein": 1.1,
+      "fat": 0.5,
+      "carbs": 11
+    },
+    "watermelon": {
+      "kj": 130,
+      "protein": 0.6,
+      "fat": 0.1,
+      "carbs": 6
+    },
+    "broccoli": {
+      "kj": 140,
+      "protein": 3,
+      "fat": 0.4,
+      "carbs": 3
+    },
+    "zucchini": {
+      "kj": 70,
+      "protein": 1.2,
+      "fat": 0.3,
+      "carbs": 2
+    },
+    "sweet-potato": {
+      "kj": 350,
+      "protein": 1.5,
+      "fat": 0.1,
+      "carbs": 17
+    },
+    "pumpkin": {
+      "kj": 170,
+      "protein": 1.5,
+      "fat": 0.2,
+      "carbs": 6.5
+    },
+    "mushrooms": {
+      "kj": 110,
+      "protein": 2.5,
+      "fat": 0.3,
+      "carbs": 1.5
+    },
+    "corn": {
+      "kj": 420,
+      "protein": 3.3,
+      "fat": 1.3,
+      "carbs": 17
+    },
+    "salad-mix": {
+      "kj": 80,
+      "protein": 1.5,
+      "fat": 0.2,
+      "carbs": 2
+    },
+    "full-cream-milk": {
+      "kj": 285,
+      "protein": 3.3,
+      "fat": 3.8,
+      "carbs": 4.8
+    },
+    "light-milk": {
+      "kj": 200,
+      "protein": 3.5,
+      "fat": 1.5,
+      "carbs": 5
+    },
+    "cheddar": {
+      "kj": 1700,
+      "protein": 25,
+      "fat": 33,
+      "carbs": 0
+    },
+    "greek-yoghurt": {
+      "kj": 470,
+      "protein": 5,
+      "fat": 5,
+      "carbs": 4
+    },
+    "orange-juice": {
+      "kj": 190,
+      "protein": 0.6,
+      "fat": 0.1,
+      "carbs": 9
+    },
+    "sliced-ham": {
+      "kj": 500,
+      "protein": 18,
+      "fat": 4,
+      "carbs": 1
+    },
+    "hummus": {
+      "kj": 1000,
+      "protein": 6,
+      "fat": 20,
+      "carbs": 10
+    },
+    "chicken-breast": {
+      "kj": 480,
+      "protein": 22,
+      "fat": 2,
+      "carbs": 0
+    },
+    "sausages": {
+      "kj": 1200,
+      "protein": 12,
+      "fat": 22,
+      "carbs": 5
+    },
+    "bacon": {
+      "kj": 1200,
+      "protein": 17,
+      "fat": 20,
+      "carbs": 0.5
+    },
+    "white-bread": {
+      "kj": 1050,
+      "protein": 9,
+      "fat": 3,
+      "carbs": 45
+    },
+    "wholemeal-bread": {
+      "kj": 1000,
+      "protein": 10,
+      "fat": 3,
+      "carbs": 40
+    },
+    "bread-rolls": {
+      "kj": 1150,
+      "protein": 9,
+      "fat": 3,
+      "carbs": 48
+    },
+    "wraps": {
+      "kj": 1250,
+      "protein": 8,
+      "fat": 6,
+      "carbs": 50
+    },
+    "rolled-oats": {
+      "kj": 1600,
+      "protein": 13,
+      "fat": 7,
+      "carbs": 60
+    },
+    "breakfast-cereal": {
+      "kj": 1550,
+      "protein": 8,
+      "fat": 2,
+      "carbs": 76
+    },
+    "peanut-butter": {
+      "kj": 2600,
+      "protein": 25,
+      "fat": 50,
+      "carbs": 10
+    },
+    "honey": {
+      "kj": 1300,
+      "protein": 0.4,
+      "fat": 0,
+      "carbs": 75
+    },
+    "jam": {
+      "kj": 1000,
+      "protein": 0.4,
+      "fat": 0,
+      "carbs": 60
+    },
+    "coffee": {
+      "kj": 1000,
+      "protein": 14,
+      "fat": 0.5,
+      "carbs": 41
+    },
+    "tea-bags": {
+      "kj": 0,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0
+    },
+    "plain-flour": {
+      "kj": 1500,
+      "protein": 10,
+      "fat": 1.2,
+      "carbs": 73
+    },
+    "canned-tuna": {
+      "kj": 450,
+      "protein": 22,
+      "fat": 1,
+      "carbs": 0
+    },
+    "pork-loin-chop": {
+      "kj": 800,
+      "protein": 21,
+      "fat": 6,
+      "carbs": 0
+    }
+  }
+}

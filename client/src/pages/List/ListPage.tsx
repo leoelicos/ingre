@@ -17,6 +17,7 @@ import {
   ExploreColumn,
   ExploreDrawer
 } from './Explore'
+import { Dashboard } from './Dashboard'
 import { Extra } from './Extra'
 import {
   INGREDIENTS_HEADING_ID,
@@ -117,6 +118,10 @@ export const ListPage: FC = () => {
             />
             <Extra
               state={ingredients}
+              collapsible={vertical}
+            />
+            <Dashboard
+              list={list}
               collapsible={vertical}
             />
           </div>

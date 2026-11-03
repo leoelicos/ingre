@@ -9,6 +9,7 @@ import {
   formatMoney,
   formatMeasure,
   formatNumber,
+  formatOneDecimal,
   formatQuantity,
   formatRecipeCount,
   pluralCount,
@@ -160,6 +161,18 @@ describe('formatMoney (#204)', () => {
       '$2.50',
       '$0.00',
       '$1234.50'
+    ])
+  })
+})
+
+describe('formatOneDecimal (#232)', () => {
+  it('shows one decimal place at most', () => {
+    expect([12.34, 20, 0.04, 0.05, 1999.96].map(formatOneDecimal)).toEqual([
+      '12.3',
+      '20',
+      '0',
+      '0.1',
+      '2000'
     ])
   })
 })
