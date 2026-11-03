@@ -24,7 +24,7 @@ export const HygieneNotes: FC<{ chips: readonly Chip[] }> = ({ chips }) => {
       aria-label={t('hygiene.title')}
       className="flex flex-col gap-1 rounded-card border border-border bg-surface p-3 text-sm"
     >
-      <h4 className="m-0 font-semibold">{t('hygiene.title')}</h4>
+      <p className="m-0 font-semibold">{t('hygiene.title')}</p>
       <ul className="m-0 flex list-none flex-col gap-1 p-0">
         {notes.map((kind) => (
           <li key={kind}>{text[kind]}</li>
