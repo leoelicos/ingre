@@ -277,6 +277,7 @@
     "hint": "Ideas appear as you type.",
     "count_one": "{{count}} idea",
     "count_other": "{{count}} ideas"
+  },
   "bra": {
     "label": "Quick actions",
     "add": "Add item"
