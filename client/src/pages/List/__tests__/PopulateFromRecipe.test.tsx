@@ -94,6 +94,15 @@ describe('swipe right on an Explore row', () => {
     expect(pickedIds()).toEqual(['dahl'])
   })
 
+  it('the press that ends a swipe on the row button is not a tap', () => {
+    renderList()
+    swipe(rowOf(DAHL), 120)
+    fireEvent.click(explore().getByRole('button', { name: DAHL }), {
+      detail: 0
+    })
+    expect(pickedIds()).toEqual(['dahl'])
+  })
+
   it('a click that follows a swipe is swallowed; the keyboard still toggles afterwards', async () => {
     const user = userEvent.setup()
     renderList()
