@@ -24,7 +24,7 @@ package.json          root scripts (install/develop/build/seed), concurrently
 vercel.json           SPA rewrite to /index.html
 .github/workflows/ci.yml  the only CI workflow
 .cursor/              rules + atomised context notes (context/*.md)
-docs/                 TODO.md, TEST_MOCK_INVENTORY.md
+docs/                 TODO.md, TEST_MOCK_INVENTORY.md, DESIGN_PRINCIPLES.md
 MODERNIZATION.md      modernisation checklist (history)
 scripts/convert-catalogue.py  catalogue data conversion
 client/
@@ -94,6 +94,9 @@ Accessibility
 - Menus announce open/closed state, close on Escape, and support arrow keys.
 UI text
 - Plain, literal language. Say what happens ("Add to list", not "Let's go!").
+- Design principles (#212, `docs/DESIGN_PRINCIPLES.md`): plain translatable English with no culinary jargon by default,
+  one primary name per ingredient (aliases for search only), service animations of about 500 ms ease-out that become
+  instant under reduced motion, minimalist look, thumb-zone first.
 Ingredient colours
 - No ingredient icons or three-letter code badges (removed #191: recipe rows show just their name).
   Chips and category tabs are coloured by supermarket section (produce = green), never colour alone.
@@ -112,6 +115,6 @@ Process
 - [ ] All CI-equivalent checks above pass locally (tsc, lint 0 warnings, prettier, 100% coverage, build, server tests).
 - [ ] New UI has tests including a `jest-axe` check; keyboard path and accessible names tested.
 - [ ] Manually checked with keyboard only and VoiceOver; nothing relies on colour alone.
-- [ ] UI text is plain, literal, Australian English.
+- [ ] UI text is plain, literal, Australian English; motion and layout follow `docs/DESIGN_PRINCIPLES.md`.
 - [ ] No new paid service/dependency without Alana's sign-off; lockfile committed.
 - [ ] One PR for the batch, with a short description and preview link; owner merges.
