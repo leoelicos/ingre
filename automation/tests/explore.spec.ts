@@ -40,12 +40,17 @@ const rowNames = (scope: Locator) =>
     )
 const ingredientNames = (scope: Locator) =>
   scope
-    .getByRole('button', { name: /^Add |, on your list$/ })
+    .getByRole('button', { name: /^Add |on your list$/ })
     .evaluateAll((els) =>
       els.map((el) =>
-        (el.getAttribute('aria-label') ?? '')
+        (el.textContent ?? '')
+          .replace(/^✓?\s*/, '')
           .replace(/^Add /, '')
-          .replace(/, on your list$/, '')
+          .replace(
+            /(Fruit & Veg|Meat & Seafood|Dairy, Eggs & Fridge|Deli|Bakery|Pantry|Frozen|Other).*$/,
+            ''
+          )
+          .trim()
           .toLowerCase()
       )
     )
@@ -418,7 +423,7 @@ test.describe('Explore (#181)', () => {
     await expect(chip(page, 'banana')).toHaveCount(1)
     await expect(chip(page, 'banana', 'extra')).toHaveCount(1)
     await expect(
-      explore(page).getByRole('button', { name: 'Banana, on your list' })
+      explore(page).getByRole('button', { name: /^Banana .* on your list$/ })
     ).toBeVisible()
   })
 
@@ -428,7 +433,7 @@ test.describe('Explore (#181)', () => {
     await pickRows(page, DAHL)
     await typeQuery(page, 'butter')
     await explore(page)
-      .getByRole('button', { name: 'Butter, on your list' })
+      .getByRole('button', { name: /^Butter .* on your list$/ })
       .click()
     await expect(chip(page, 'butter')).toHaveCount(1)
     await expect(chip(page, 'butter', 'extra')).toContainText('1 g')
