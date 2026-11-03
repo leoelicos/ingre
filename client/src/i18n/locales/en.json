@@ -223,5 +223,9 @@
   "notFound": {
     "message": "Page Not Found",
     "goHome": "Go home"
+  },
+  "bra": {
+    "label": "Quick actions",
+    "add": "Add item"
   }
 }
