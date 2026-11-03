@@ -1,0 +1,1283 @@
+[
+  {
+    "id": "spaghetti-bolognese",
+    "name": "Spaghetti bolognese",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "spaghetti",
+        "name": "spaghetti",
+        "quantity": 100.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      },
+      {
+        "ingredientId": "beef-mince",
+        "name": "beef mince",
+        "quantity": 125.0,
+        "measure": "g",
+        "category": "meat"
+      },
+      {
+        "ingredientId": "onion",
+        "name": "brown onion",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "carrot",
+        "name": "carrot",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "celery",
+        "name": "celery",
+        "quantity": 0.25,
+        "measure": "stalk",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 0.5,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "crushed-tomatoes",
+        "name": "canned crushed tomatoes",
+        "quantity": 200.0,
+        "measure": "g",
+        "category": "canned food"
+      },
+      {
+        "ingredientId": "tomato-paste",
+        "name": "tomato paste",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "canned food"
+      },
+      {
+        "ingredientId": "olive-oil",
+        "name": "olive oil",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "parmesan",
+        "name": "parmesan",
+        "quantity": 12.5,
+        "measure": "g",
+        "category": "dairy & eggs"
+      }
+    ],
+    "instructions": "Finely dice the onion, carrot, celery and garlic and soften in olive oil.\nBrown the mince, then stir in tomato paste and crushed tomatoes; simmer 30 minutes.\nCook spaghetti, toss with sauce and serve with grated parmesan."
+  },
+  {
+    "id": "egg-fried-rice",
+    "name": "Egg fried rice",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "jasmine-rice",
+        "name": "jasmine rice",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      },
+      {
+        "ingredientId": "egg",
+        "name": "eggs",
+        "quantity": 1.5,
+        "measure": "whole",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "tinned-peas",
+        "name": "tinned peas",
+        "quantity": 40.0,
+        "measure": "g",
+        "category": "canned food"
+      },
+      {
+        "ingredientId": "carrot",
+        "name": "carrot",
+        "quantity": 0.5,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "spring-onion",
+        "name": "spring onions",
+        "quantity": 1.5,
+        "measure": "stalk",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 1.0,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "soy-sauce",
+        "name": "soy sauce",
+        "quantity": 1.0,
+        "measure": "tbsp",
+        "category": "sauces"
+      },
+      {
+        "ingredientId": "sesame-oil",
+        "name": "sesame oil",
+        "quantity": 0.5,
+        "measure": "tsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "vegetable-oil",
+        "name": "vegetable oil",
+        "quantity": 1.0,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      }
+    ],
+    "instructions": "Cook the jasmine rice, spread it on a tray and let it cool for 10 minutes (or use day-old cooked rice).\nScramble eggs in a hot wok with the vegetable oil, remove; stir-fry garlic, diced carrot and drained peas.\nAdd rice, soy sauce, sesame oil, egg and sliced spring onion; toss until hot."
+  },
+  {
+    "id": "butter-chicken",
+    "name": "Butter chicken",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "chicken-thigh",
+        "name": "chicken thigh fillets",
+        "quantity": 175.0,
+        "measure": "g",
+        "category": "meat"
+      },
+      {
+        "ingredientId": "natural-yoghurt",
+        "name": "natural yoghurt",
+        "quantity": 0.125,
+        "measure": "cup",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "garam-masala",
+        "name": "garam masala",
+        "quantity": 0.5,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "ground-cumin",
+        "name": "ground cumin",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "chilli-powder",
+        "name": "chilli powder",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "butter",
+        "name": "butter",
+        "quantity": 12.5,
+        "measure": "g",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "onion",
+        "name": "brown onion",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 0.75,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "ginger",
+        "name": "ginger",
+        "quantity": 0.25,
+        "measure": "tbsp",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "crushed-tomatoes",
+        "name": "canned crushed tomatoes",
+        "quantity": 100.0,
+        "measure": "g",
+        "category": "canned food"
+      },
+      {
+        "ingredientId": "cream",
+        "name": "thickened cream",
+        "quantity": 0.125,
+        "measure": "cup",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "basmati-rice",
+        "name": "basmati rice",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      }
+    ],
+    "instructions": "Marinate diced chicken in yoghurt and half the spices for 15 minutes.\nSear chicken in butter; remove. Soften onion, garlic and ginger, add remaining spices and tomatoes; simmer 10 minutes.\nMeanwhile, cook the basmati rice.\nBlend sauce if desired, return chicken, stir in cream and simmer until cooked. Serve with the rice."
+  },
+  {
+    "id": "greek-salad-haloumi",
+    "name": "Greek salad with haloumi",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "haloumi",
+        "name": "haloumi",
+        "quantity": 90.0,
+        "measure": "g",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "tomato",
+        "name": "tomatoes",
+        "quantity": 1.5,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "cucumber",
+        "name": "Lebanese cucumber",
+        "quantity": 1.0,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "red-onion",
+        "name": "red onion",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "capsicum",
+        "name": "green capsicum",
+        "quantity": 0.5,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "kalamata-olives",
+        "name": "kalamata olives",
+        "quantity": 0.25,
+        "measure": "cup",
+        "category": "canned food"
+      },
+      {
+        "ingredientId": "feta",
+        "name": "feta",
+        "quantity": 50.0,
+        "measure": "g",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "dried-oregano",
+        "name": "dried oregano",
+        "quantity": 0.5,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "olive-oil",
+        "name": "olive oil",
+        "quantity": 1.5,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "red-wine-vinegar",
+        "name": "red wine vinegar",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      }
+    ],
+    "instructions": "Chop tomato, cucumber, capsicum and onion; add olives and crumbled feta.\nDress with olive oil, vinegar and oregano.\nPan-fry sliced haloumi until golden and serve on top."
+  },
+  {
+    "id": "san-choy-bau",
+    "name": "San choy bau",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "pork-mince",
+        "name": "pork mince",
+        "quantity": 125.0,
+        "measure": "g",
+        "category": "meat"
+      },
+      {
+        "ingredientId": "iceberg-lettuce",
+        "name": "iceberg lettuce",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "water-chestnuts",
+        "name": "water chestnuts",
+        "quantity": 56.25,
+        "measure": "g",
+        "category": "international"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 0.5,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "ginger",
+        "name": "ginger",
+        "quantity": 0.25,
+        "measure": "tbsp",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "spring-onion",
+        "name": "spring onions",
+        "quantity": 0.75,
+        "measure": "stalk",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "oyster-sauce",
+        "name": "oyster sauce",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "sauces"
+      },
+      {
+        "ingredientId": "soy-sauce",
+        "name": "soy sauce",
+        "quantity": 0.25,
+        "measure": "tbsp",
+        "category": "sauces"
+      },
+      {
+        "ingredientId": "sesame-oil",
+        "name": "sesame oil",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "vegetable-oil",
+        "name": "vegetable oil",
+        "quantity": 0.25,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      }
+    ],
+    "instructions": "Stir-fry garlic and ginger, add pork mince and cook until browned.\nAdd diced water chestnuts, oyster sauce, soy sauce and sesame oil.\nSpoon into lettuce cups and top with spring onion."
+  },
+  {
+    "id": "chicken-korma",
+    "name": "Chicken korma",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "chicken-thigh",
+        "name": "chicken thigh fillets",
+        "quantity": 200.0,
+        "measure": "g",
+        "category": "meat"
+      },
+      {
+        "ingredientId": "onion",
+        "name": "brown onion",
+        "quantity": 0.5,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 1.0,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "ginger",
+        "name": "ginger",
+        "quantity": 5.0,
+        "measure": "g",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "natural-yoghurt",
+        "name": "natural yoghurt",
+        "quantity": 50.0,
+        "measure": "g",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "ground-almonds",
+        "name": "almond meal",
+        "quantity": 12.5,
+        "measure": "g",
+        "category": "baking"
+      },
+      {
+        "ingredientId": "cream",
+        "name": "thickened cream",
+        "quantity": 37.5,
+        "measure": "ml",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "garam-masala",
+        "name": "garam masala",
+        "quantity": 0.5,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "ground-coriander",
+        "name": "ground coriander",
+        "quantity": 0.5,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "ground-turmeric",
+        "name": "ground turmeric",
+        "quantity": 0.125,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "vegetable-oil",
+        "name": "vegetable oil",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "basmati-rice",
+        "name": "basmati rice",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      },
+      {
+        "ingredientId": "salt",
+        "name": "salt",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      }
+    ],
+    "instructions": "Fry the sliced onion in oil until soft and golden.\nAdd grated garlic and ginger, then the spices, and cook for a minute.\nAdd diced chicken and brown it.\nStir in the yoghurt and almond meal with a splash of water and simmer for 20 minutes, cooking the basmati rice meanwhile.\nStir through the cream, season, and serve with basmati rice."
+  },
+  {
+    "id": "dahl",
+    "name": "Red lentil dahl",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "red-lentils",
+        "name": "red lentils",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      },
+      {
+        "ingredientId": "onion",
+        "name": "brown onion",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 1.0,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "ginger",
+        "name": "ginger",
+        "quantity": 5.0,
+        "measure": "g",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "tomato",
+        "name": "tomatoes",
+        "quantity": 0.5,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "ground-turmeric",
+        "name": "ground turmeric",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "cumin-seeds",
+        "name": "cumin seeds",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "garam-masala",
+        "name": "garam masala",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "butter",
+        "name": "butter",
+        "quantity": 7.5,
+        "measure": "g",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "fresh-coriander",
+        "name": "fresh coriander",
+        "quantity": 0.25,
+        "measure": "bunch",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "basmati-rice",
+        "name": "basmati rice",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      },
+      {
+        "ingredientId": "salt",
+        "name": "salt",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      }
+    ],
+    "instructions": "Rinse the lentils and simmer with turmeric and 250 ml water for 20 minutes until soft; cook the basmati rice meanwhile.\nIn a separate pan, melt the butter and fry the cumin seeds until they crackle.\nAdd diced onion, garlic and ginger and cook until golden, then add chopped tomato.\nStir the onion mixture and garam masala into the lentils and season.\nServe with the rice and chopped coriander."
+  },
+  {
+    "id": "beef-keema",
+    "name": "Beef keema with peas",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "beef-mince",
+        "name": "beef mince",
+        "quantity": 125.0,
+        "measure": "g",
+        "category": "meat"
+      },
+      {
+        "ingredientId": "onion",
+        "name": "brown onion",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 0.75,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "ginger",
+        "name": "ginger",
+        "quantity": 5.0,
+        "measure": "g",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "green-chilli",
+        "name": "green chilli",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "crushed-tomatoes",
+        "name": "canned crushed tomatoes",
+        "quantity": 100.0,
+        "measure": "g",
+        "category": "canned food"
+      },
+      {
+        "ingredientId": "tinned-peas",
+        "name": "tinned peas",
+        "quantity": 50.0,
+        "measure": "g",
+        "category": "canned food"
+      },
+      {
+        "ingredientId": "ground-cumin",
+        "name": "ground cumin",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "ground-coriander",
+        "name": "ground coriander",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "garam-masala",
+        "name": "garam masala",
+        "quantity": 0.5,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "vegetable-oil",
+        "name": "vegetable oil",
+        "quantity": 0.25,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "fresh-coriander",
+        "name": "fresh coriander",
+        "quantity": 0.25,
+        "measure": "bunch",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "basmati-rice",
+        "name": "basmati rice",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      },
+      {
+        "ingredientId": "salt",
+        "name": "salt",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      }
+    ],
+    "instructions": "Fry the diced onion in oil until golden.\nAdd garlic, ginger and chilli, then the cumin and ground coriander.\nAdd the mince and brown it, breaking it up.\nStir in the tomatoes and simmer for 20 minutes, cooking the basmati rice meanwhile.\nAdd the peas and garam masala and cook for 5 minutes more.\nSeason, top with coriander and serve with rice."
+  },
+  {
+    "id": "vegetable-curry",
+    "name": "Potato, cauliflower and chickpea curry",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "potato",
+        "name": "potato",
+        "quantity": 0.5,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "cauliflower",
+        "name": "cauliflower",
+        "quantity": 0.125,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "chickpeas",
+        "name": "chickpeas",
+        "quantity": 100.0,
+        "measure": "g",
+        "category": "canned food"
+      },
+      {
+        "ingredientId": "onion",
+        "name": "brown onion",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 0.75,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "ginger",
+        "name": "ginger",
+        "quantity": 5.0,
+        "measure": "g",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "crushed-tomatoes",
+        "name": "canned crushed tomatoes",
+        "quantity": 100.0,
+        "measure": "g",
+        "category": "canned food"
+      },
+      {
+        "ingredientId": "coconut-milk",
+        "name": "coconut milk",
+        "quantity": 67.5,
+        "measure": "ml",
+        "category": "international"
+      },
+      {
+        "ingredientId": "baby-spinach",
+        "name": "baby spinach",
+        "quantity": 15.0,
+        "measure": "g",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "ground-turmeric",
+        "name": "ground turmeric",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "ground-cumin",
+        "name": "ground cumin",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "chilli-powder",
+        "name": "chilli powder",
+        "quantity": 0.125,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "garam-masala",
+        "name": "garam masala",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "vegetable-oil",
+        "name": "vegetable oil",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "basmati-rice",
+        "name": "basmati rice",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      },
+      {
+        "ingredientId": "salt",
+        "name": "salt",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      }
+    ],
+    "instructions": "Fry the diced onion in oil, then add garlic, ginger and the ground spices.\nAdd diced potato and cauliflower florets and stir to coat.\nAdd the tomatoes and coconut milk and simmer for 20 minutes until the potato is tender, cooking the basmati rice meanwhile.\nStir in the drained chickpeas, spinach and garam masala until the spinach wilts.\nSeason and serve with rice."
+  },
+  {
+    "id": "shaking-beef",
+    "name": "Shaking beef (b\u00f2 l\u00fac l\u1eafc)",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "beef-rump",
+        "name": "beef rump steak",
+        "quantity": 175.0,
+        "measure": "g",
+        "category": "meat"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 1.5,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "red-onion",
+        "name": "red onion",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "oyster-sauce",
+        "name": "oyster sauce",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "sauces"
+      },
+      {
+        "ingredientId": "soy-sauce",
+        "name": "soy sauce",
+        "quantity": 0.25,
+        "measure": "tbsp",
+        "category": "sauces"
+      },
+      {
+        "ingredientId": "fish-sauce",
+        "name": "fish sauce",
+        "quantity": 0.25,
+        "measure": "tbsp",
+        "category": "sauces"
+      },
+      {
+        "ingredientId": "white-sugar",
+        "name": "white sugar",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "baking"
+      },
+      {
+        "ingredientId": "black-pepper",
+        "name": "black pepper",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "butter",
+        "name": "butter",
+        "quantity": 5.0,
+        "measure": "g",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "vegetable-oil",
+        "name": "vegetable oil",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "iceberg-lettuce",
+        "name": "iceberg lettuce",
+        "quantity": 0.125,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "tomato",
+        "name": "tomatoes",
+        "quantity": 0.5,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "lime",
+        "name": "lime",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "jasmine-rice",
+        "name": "jasmine rice",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      },
+      {
+        "ingredientId": "salt",
+        "name": "salt",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      }
+    ],
+    "instructions": "Cut the beef into 3 cm cubes and marinate with half the garlic, oyster sauce, soy sauce, fish sauce, sugar and pepper for 15 minutes.\nCook the jasmine rice.\nArrange shredded lettuce, sliced tomato and thinly sliced red onion on a platter.\nHeat oil in a wok until smoking and sear the beef in batches, shaking the pan, for 2 to 3 minutes.\nAdd the butter and remaining garlic for the last 30 seconds.\nPile the beef over the salad and serve with rice and a lime, salt and pepper dipping mix."
+  },
+  {
+    "id": "lemongrass-chilli-chicken",
+    "name": "Lemongrass chilli chicken (g\u00e0 x\u00e0o s\u1ea3 \u1edbt)",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "chicken-thigh",
+        "name": "chicken thigh fillets",
+        "quantity": 200.0,
+        "measure": "g",
+        "category": "meat"
+      },
+      {
+        "ingredientId": "lemongrass",
+        "name": "lemongrass",
+        "quantity": 7.5,
+        "measure": "g",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 1.0,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "red-chilli",
+        "name": "red chilli",
+        "quantity": 0.5,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "onion",
+        "name": "brown onion",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "fish-sauce",
+        "name": "fish sauce",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "sauces"
+      },
+      {
+        "ingredientId": "white-sugar",
+        "name": "white sugar",
+        "quantity": 0.25,
+        "measure": "tbsp",
+        "category": "baking"
+      },
+      {
+        "ingredientId": "ground-turmeric",
+        "name": "ground turmeric",
+        "quantity": 0.125,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "vegetable-oil",
+        "name": "vegetable oil",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "fresh-coriander",
+        "name": "fresh coriander",
+        "quantity": 0.25,
+        "measure": "bunch",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "jasmine-rice",
+        "name": "jasmine rice",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      }
+    ],
+    "instructions": "Finely chop the white part of the lemongrass, the garlic and the chilli.\nToss bite-sized chicken pieces with half the lemongrass, the fish sauce, sugar and turmeric, and rest for 15 minutes.\nCook the jasmine rice.\nFry the remaining lemongrass, garlic and chilli in oil until fragrant.\nAdd the chicken and sliced onion and stir-fry until caramelised and cooked through.\nTop with coriander and serve with rice."
+  },
+  {
+    "id": "lemongrass-beef-noodle-salad",
+    "name": "Lemongrass beef noodle salad (b\u00fan b\u00f2 x\u00e0o)",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "beef-rump",
+        "name": "beef rump steak",
+        "quantity": 125.0,
+        "measure": "g",
+        "category": "meat"
+      },
+      {
+        "ingredientId": "lemongrass",
+        "name": "lemongrass",
+        "quantity": 5.0,
+        "measure": "g",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "garlic",
+        "name": "garlic",
+        "quantity": 0.75,
+        "measure": "clove",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "onion",
+        "name": "brown onion",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "rice-vermicelli",
+        "name": "rice vermicelli noodles",
+        "quantity": 62.5,
+        "measure": "g",
+        "category": "pasta & rice"
+      },
+      {
+        "ingredientId": "iceberg-lettuce",
+        "name": "iceberg lettuce",
+        "quantity": 0.125,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "cucumber",
+        "name": "Lebanese cucumber",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "carrot",
+        "name": "carrot",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "bean-sprouts",
+        "name": "bean sprouts",
+        "quantity": 37.5,
+        "measure": "g",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "fresh-mint",
+        "name": "fresh mint",
+        "quantity": 0.25,
+        "measure": "bunch",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "roasted-peanuts",
+        "name": "roasted unsalted peanuts",
+        "quantity": 12.5,
+        "measure": "g",
+        "category": "baking"
+      },
+      {
+        "ingredientId": "fish-sauce",
+        "name": "fish sauce",
+        "quantity": 1.0,
+        "measure": "tbsp",
+        "category": "sauces"
+      },
+      {
+        "ingredientId": "white-sugar",
+        "name": "white sugar",
+        "quantity": 0.75,
+        "measure": "tbsp",
+        "category": "baking"
+      },
+      {
+        "ingredientId": "lime",
+        "name": "lime",
+        "quantity": 0.5,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "red-chilli",
+        "name": "red chilli",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "white-vinegar",
+        "name": "white vinegar",
+        "quantity": 0.25,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "vegetable-oil",
+        "name": "vegetable oil",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      }
+    ],
+    "instructions": "Make the dressing (n\u01b0\u1edbc ch\u1ea5m) by stirring 2 tsp of the fish sauce, the sugar, lime juice, vinegar, sliced chilli, half the garlic and 3 tbsp water until the sugar dissolves.\nThinly slice the beef and marinate with chopped lemongrass, the remaining garlic and the remaining 1 tsp fish sauce for 15 minutes.\nCook the vermicelli, rinse in cold water and drain.\nShred the lettuce, julienne the carrot and cucumber, and pick the mint leaves.\nStir-fry the beef and sliced onion in hot oil for 2 to 3 minutes.\nBuild bowls of salad, noodles and beef, and top with crushed peanuts and dressing."
+  },
+  {
+    "id": "rice-paper-rolls",
+    "name": "Prawn and pork rice paper rolls (g\u1ecfi cu\u1ed1n)",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "cooked-prawns",
+        "name": "cooked prawns",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "seafood"
+      },
+      {
+        "ingredientId": "pork-belly",
+        "name": "pork belly slices",
+        "quantity": 75.0,
+        "measure": "g",
+        "category": "meat"
+      },
+      {
+        "ingredientId": "rice-paper",
+        "name": "rice paper sheets",
+        "quantity": 4.0,
+        "measure": "whole",
+        "category": "international"
+      },
+      {
+        "ingredientId": "rice-vermicelli",
+        "name": "rice vermicelli noodles",
+        "quantity": 25.0,
+        "measure": "g",
+        "category": "pasta & rice"
+      },
+      {
+        "ingredientId": "iceberg-lettuce",
+        "name": "iceberg lettuce",
+        "quantity": 0.125,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "fresh-mint",
+        "name": "fresh mint",
+        "quantity": 0.25,
+        "measure": "bunch",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "fresh-coriander",
+        "name": "fresh coriander",
+        "quantity": 0.25,
+        "measure": "bunch",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "cucumber",
+        "name": "Lebanese cucumber",
+        "quantity": 0.25,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "hoisin-sauce",
+        "name": "hoisin sauce",
+        "quantity": 1.0,
+        "measure": "tbsp",
+        "category": "sauces"
+      },
+      {
+        "ingredientId": "roasted-peanuts",
+        "name": "roasted unsalted peanuts",
+        "quantity": 7.5,
+        "measure": "g",
+        "category": "baking"
+      },
+      {
+        "ingredientId": "salt",
+        "name": "salt",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      }
+    ],
+    "instructions": "Simmer the pork belly in salted water for 20 minutes, cool, then slice thinly.\nCook the vermicelli, rinse in cold water and drain.\nPeel and halve the prawns lengthways, and cut the cucumber into sticks.\nDip a rice paper sheet in warm water for a few seconds and lay it flat.\nLayer lettuce, noodles, herbs, cucumber and pork, add 3 prawn halves, then fold in the sides and roll tightly.\nFor the dip, loosen the hoisin with a little warm water and top with crushed peanuts."
+  },
+  {
+    "id": "pork-chops-apple-onion",
+    "name": "Pork chops with apples and onion",
+    "portions": 1,
+    "ingredients": [
+      {
+        "ingredientId": "pork-loin-chop",
+        "name": "pork loin chops",
+        "quantity": 1.0,
+        "measure": "whole",
+        "category": "meat"
+      },
+      {
+        "ingredientId": "apple",
+        "name": "apples",
+        "quantity": 1.0,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "onion",
+        "name": "brown onion",
+        "quantity": 0.5,
+        "measure": "whole",
+        "category": "fruit & veg"
+      },
+      {
+        "ingredientId": "butter",
+        "name": "butter",
+        "quantity": 10.0,
+        "measure": "g",
+        "category": "dairy & eggs"
+      },
+      {
+        "ingredientId": "olive-oil",
+        "name": "olive oil",
+        "quantity": 0.5,
+        "measure": "tbsp",
+        "category": "oils & vinegar"
+      },
+      {
+        "ingredientId": "salt",
+        "name": "salt",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      },
+      {
+        "ingredientId": "black-pepper",
+        "name": "black pepper",
+        "quantity": 0.25,
+        "measure": "tsp",
+        "category": "herbs & spices"
+      }
+    ],
+    "instructions": "Take the chops out of the fridge 15 minutes early, pat them dry, snip the fat edge in a couple of spots so they sit flat, and season both sides with salt and pepper.\nCore the apples and cut them into thick wedges, skin on. Slice the onion into thin half-moons.\nHeat the oil in a large frying pan over medium-high heat and cook the chops for 3 to 4 minutes a side until golden and just cooked through. Move them to a plate to rest.\nTurn the heat down to medium, add the butter, then the onion, and cook for about 5 minutes until soft and starting to colour.\nAdd the apple wedges and cook, turning now and then, for 5 to 6 minutes until tender and caramelised at the edges but still holding their shape.\nSplash in a few tablespoons of water and scrape up the browned bits, then return the chops and any resting juices to the pan and warm through for a minute. Season to taste and serve with the apples and onion spooned over."
+  }
+]
