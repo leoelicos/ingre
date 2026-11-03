@@ -16,6 +16,7 @@ import {
 } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import { Header } from './components/Header'
+import { BottomNav } from './components/BottomNav/BottomNav'
 import { PageMain, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
@@ -23,6 +24,7 @@ import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
 import { ListPage } from './pages/List/ListPage'
+import { ProfilePage } from './pages/Profile/ProfilePage'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
@@ -103,6 +105,10 @@ export const Ingre: FC = () => {
                   element={<ListPage />}
                 />
                 <Route
+                  path="/profile"
+                  element={<ProfilePage />}
+                />
+                <Route
                   path="/saved"
                   element={<SavedRedirect />}
                 />
@@ -156,6 +162,7 @@ export const Ingre: FC = () => {
                   }
                 />
               </Routes>
+              <BottomNav />
               <SiteAnalytics mode={APP_MODE} />
             </ExploreProvider>
           </StoreProvider>

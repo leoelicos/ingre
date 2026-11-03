@@ -165,6 +165,25 @@
     "logIn": "Log in"
   },
   "skipLink": "Skip to content",
+  "nav": {
+    "label": "Main",
+    "explore": "Explore",
+    "inventory": "Inventory",
+    "cook": "Cook",
+    "profile": "Profile"
+  },
+  "profile": {
+    "title": "Profile",
+    "account": "Account",
+    "signedOutHint": "Log in to keep recipes you love and find them on any device.",
+    "signedInHint": "You are logged in.",
+    "saved": "Saved recipes",
+    "savedCount_one": "{{count}} saved recipe",
+    "savedCount_other": "{{count}} saved recipes",
+    "savedNone": "No saved recipes yet. Open a recipe in Explore and tap its heart.",
+    "savedOpen": "Open saved recipes in Explore",
+    "savedLogin": "Saved recipes show here once you log in."
+  },
   "account": {
     "label": "Account",
     "logIn": "Log in",

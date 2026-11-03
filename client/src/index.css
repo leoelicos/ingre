@@ -9,6 +9,8 @@
     font-family: 'Poppins', sans-serif;
     font-size: 16px;
     line-height: 1.5;
+    /* the bottom tabs (#227) must never cover the control that has focus */
+    scroll-padding-bottom: 5rem;
   }
   body {
     background-color: var(--color-bg);
