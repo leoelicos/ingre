@@ -8,6 +8,7 @@
     "Bakery": "bakery",
     "Pantry": "pantry",
     "Frozen": "frozen",
+    "Household": "neutral",
     "Other": "neutral"
   },
   "ingredients": [
@@ -2402,6 +2403,350 @@
       "approxGrams": 250,
       "pantry": "Fridge",
       "allergens": []
+    },
+    {
+      "id": "disposable-gloves",
+      "name": "disposable gloves",
+      "category": "household",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 100,
+            "unit": "count"
+          },
+          "label": "100-pack"
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "glove",
+        "other": "gloves"
+      }
+    },
+    {
+      "id": "kitchen-paper",
+      "name": "kitchen paper",
+      "category": "household",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 2,
+            "unit": "count"
+          },
+          "label": "2-pack"
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "roll",
+        "other": "rolls"
+      }
+    },
+    {
+      "id": "baking-paper",
+      "name": "baking paper",
+      "category": "household",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          },
+          "label": "1 roll"
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "roll",
+        "other": "rolls"
+      }
+    },
+    {
+      "id": "aluminium-foil",
+      "name": "aluminium foil",
+      "category": "household",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          },
+          "label": "1 roll"
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "roll",
+        "other": "rolls"
+      }
+    },
+    {
+      "id": "cling-wrap",
+      "name": "cling wrap",
+      "category": "household",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          },
+          "label": "1 roll"
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "roll",
+        "other": "rolls"
+      }
+    },
+    {
+      "id": "bin-liners",
+      "name": "bin liners",
+      "category": "household",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 30,
+            "unit": "count"
+          },
+          "label": "30-pack"
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "liner",
+        "other": "liners"
+      }
+    },
+    {
+      "id": "sponges",
+      "name": "sponges",
+      "category": "household",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 4,
+            "unit": "count"
+          },
+          "label": "4-pack"
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "sponge",
+        "other": "sponges"
+      }
+    },
+    {
+      "id": "tea-towels",
+      "name": "tea towels",
+      "category": "household",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 3,
+            "unit": "count"
+          },
+          "label": "3-pack"
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "tea towel",
+        "other": "tea towels"
+      }
+    },
+    {
+      "id": "dishwashing-liquid",
+      "name": "dishwashing liquid",
+      "category": "household",
+      "sold": [
+        {
+          "type": "bottle",
+          "size": {
+            "amount": 500,
+            "unit": "ml"
+          }
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": []
+    },
+    {
+      "id": "saucepan",
+      "name": "saucepan",
+      "category": "kitchenware",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "saucepan",
+        "other": "saucepans"
+      }
+    },
+    {
+      "id": "frying-pan",
+      "name": "frying pan",
+      "category": "kitchenware",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "frying pan",
+        "other": "frying pans"
+      }
+    },
+    {
+      "id": "chefs-knife",
+      "name": "chef's knife",
+      "category": "kitchenware",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "knife",
+        "other": "knives"
+      }
+    },
+    {
+      "id": "chopping-board",
+      "name": "chopping board",
+      "category": "kitchenware",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "chopping board",
+        "other": "chopping boards"
+      }
+    },
+    {
+      "id": "mixing-bowl",
+      "name": "mixing bowl",
+      "category": "kitchenware",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "mixing bowl",
+        "other": "mixing bowls"
+      }
+    },
+    {
+      "id": "wooden-spoon",
+      "name": "wooden spoon",
+      "category": "kitchenware",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "wooden spoon",
+        "other": "wooden spoons"
+      }
+    },
+    {
+      "id": "tongs",
+      "name": "tongs",
+      "category": "kitchenware",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "tongs",
+        "other": "tongs"
+      }
+    },
+    {
+      "id": "baking-tray",
+      "name": "baking tray",
+      "category": "kitchenware",
+      "sold": [
+        {
+          "type": "pack",
+          "size": {
+            "amount": 1,
+            "unit": "count"
+          }
+        }
+      ],
+      "pantry": "Cupboard",
+      "allergens": [],
+      "countUnit": {
+        "one": "baking tray",
+        "other": "baking trays"
+      }
     }
   ]
 }

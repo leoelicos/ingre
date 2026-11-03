@@ -243,6 +243,7 @@ describe('parseSectionColours', () => {
       Bakery: 'bakery',
       Pantry: 'pantry',
       Frozen: 'frozen',
+      Household: 'neutral',
       Other: 'neutral'
     }
   }
@@ -288,7 +289,7 @@ describe('parseSectionColours', () => {
       })
     ).toThrow(
       new LibraryDataError(
-        'catalogue.sectionColours.Seafood: "Seafood" is not a known section (expected one of Fruit & Veg, Meat & Seafood, Dairy, Eggs & Fridge, Deli, Bakery, Pantry, Frozen, Other)'
+        'catalogue.sectionColours.Seafood: "Seafood" is not a known section (expected one of Fruit & Veg, Meat & Seafood, Dairy, Eggs & Fridge, Deli, Bakery, Pantry, Frozen, Household, Other)'
       )
     )
   })

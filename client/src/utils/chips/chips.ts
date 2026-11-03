@@ -76,6 +76,7 @@ export const CATEGORY_LABELS: Readonly<Record<ShopSection, string>> = {
   Bakery: translate('section.bakery'),
   Pantry: translate('section.pantry'),
   Frozen: translate('section.frozen'),
+  Household: translate('section.household'),
   Other: translate('section.other')
 }
 

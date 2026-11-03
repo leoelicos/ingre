@@ -12,6 +12,7 @@ export type ShopSection =
   | 'Bakery'
   | 'Pantry'
   | 'Frozen'
+  | 'Household'
   | 'Other'
 
 export const SHOP_SECTIONS: readonly ShopSection[] = [
@@ -22,6 +23,7 @@ export const SHOP_SECTIONS: readonly ShopSection[] = [
   'Bakery',
   'Pantry',
   'Frozen',
+  'Household',
   'Other'
 ]
 
@@ -41,6 +43,8 @@ export type Aisle =
   | 'bakery'
   | 'breakfast & spreads'
   | 'tea & coffee'
+  | 'household'
+  | 'kitchenware'
 
 export const AISLES: readonly Aisle[] = [
   'fruit & veg',
@@ -57,7 +61,9 @@ export const AISLES: readonly Aisle[] = [
   'deli',
   'bakery',
   'breakfast & spreads',
-  'tea & coffee'
+  'tea & coffee',
+  'household',
+  'kitchenware'
 ]
 
 const AISLE_SECTION: Readonly<Record<Aisle, ShopSection>> = {
@@ -75,8 +81,13 @@ const AISLE_SECTION: Readonly<Record<Aisle, ShopSection>> = {
   deli: 'Deli',
   bakery: 'Bakery',
   'breakfast & spreads': 'Pantry',
-  'tea & coffee': 'Pantry'
+  'tea & coffee': 'Pantry',
+  household: 'Household',
+  kitchenware: 'Household'
 }
+
+/** Sections that keep their aisle as a quiet subsection. */
+const SUBSECTIONED: readonly ShopSection[] = ['Pantry', 'Household']
 
 /** Section for an aisle, plus the aisle as a subsection when the section groups several. */
 export const placeInShop = (
@@ -85,6 +96,12 @@ export const placeInShop = (
   const section = AISLE_SECTION[aisle]
   return {
     section,
-    subsection: section === 'Pantry' ? capitaliseFirst(aisle) : null
+    subsection: SUBSECTIONED.includes(section) ? capitaliseFirst(aisle) : null
   }
 }
+
+/** Aisles that are not food (#231): gloves, kitchen paper, a saucepan. Same list model as food. */
+export const NON_FOOD_AISLES: readonly Aisle[] = ['household', 'kitchenware']
+
+export const isNonFood = (aisle: Aisle): boolean =>
+  NON_FOOD_AISLES.includes(aisle)

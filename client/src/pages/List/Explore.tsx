@@ -21,7 +21,7 @@ import {
   exploreResults,
   shownRecipes
 } from '../../utils/explore/exploreSearch'
-import { placeInShop } from '../../utils/shopping/sections'
+import { isNonFood, placeInShop } from '../../utils/shopping/sections'
 import type { RecipeFilter } from '../../utils/filters/filters'
 import {
   NO_RECIPE_FILTER,
@@ -91,7 +91,10 @@ const IngredientResult: FC<{
   const t = useT()
   const onList = ingredients.list.hasChip(item.id)
   const name = capitaliseFirst(item.name)
-  const category = categoryLabel(placeInShop(item.category).section)
+  const section = categoryLabel(placeInShop(item.category).section)
+  const category = isNonFood(item.category)
+    ? t('explore.notFood', { category: section })
+    : section
   return (
     <li className="flex flex-col gap-1">
       <Button

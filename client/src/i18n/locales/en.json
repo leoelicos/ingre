@@ -32,6 +32,7 @@
     "bakery": "Bakery",
     "pantry": "Pantry",
     "frozen": "Frozen",
+    "household": "Household & kitchen",
     "other": "Other"
   },
   "status": {
@@ -86,7 +87,8 @@
     "onListLabel": "{{name}}, on your list",
     "onListName": "✓ {{name}}",
     "addName": "+ {{name}}",
-    "categoryOnList": "{{category}} · on your list"
+    "categoryOnList": "{{category}} · on your list",
+    "notFood": "{{category}} · not food"
   },
   "saved": {
     "filter": "Saved",
