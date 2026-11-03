@@ -99,7 +99,7 @@
     "bakery": "Bakery",
     "pantry": "Pantry",
     "frozen": "Frozen",
-    "other": "Other"
+    "other": "Other",
     "onListMark": "✓",
     "onListName": "{{name}}",
     "addName": "Add {{name}}",
