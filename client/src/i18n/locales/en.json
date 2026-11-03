@@ -262,6 +262,7 @@
     "tipUse": "Pick what you have and we'll suggest what to cook.",
     "tipBrowse": "Browse every ingredient by shop section and pick what you have.",
     "tipDetails": "See where it sits in the shop, what goes with it and which recipes use it."
+  },
   "demo": {
     "title": "Try the loop",
     "intro": "Start from the ingredients you have. Get a suggestion. Add a ticket.",
