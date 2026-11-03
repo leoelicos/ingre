@@ -6,6 +6,7 @@ import { Chevron, Collapse, MOTION } from '../../components/Collapse'
 import { splitTitle } from '../../components/recipeTitle'
 import type { LibraryRecipe } from '../../types/library'
 import type { CopyLine } from '../../utils/balance/copies'
+import { useSwipeRight } from '../../utils/gesture/swipe'
 import { IngredientNames } from './IngredientNames'
 
 /** What every row shares: picks, open rows, and what an open row shows. */
@@ -18,6 +19,8 @@ export interface RowControls {
   readonly seeRecipe: boolean
   /** Recipes' rows are recessed into the raised section; Explore's stay raised until picked */
   readonly recessed: boolean
+  /** Explore only (#229): a swipe right across a row picks it. */
+  readonly onSwipePick?: (recipe: LibraryRecipe) => void
 }
 
 /** A row: its recipe and what it shows open, the original in Explore or the copy in Recipes (#182). */
@@ -91,14 +94,23 @@ export const RecipeRow: FC<{
   const open = controls.openIds.has(recipe.id)
   const detailsId = `${id}-details`
   const shown = useShownOnce(open)
+  const { handlers, wasSwipe } = useSwipeRight(() =>
+    controls.onSwipePick?.(recipe)
+  )
   return (
     <li
       data-recipe={recipe.id}
-      className={rowClass(picked, controls.recessed)}
+      className={`${rowClass(picked, controls.recessed)}${
+        controls.onSwipePick === undefined ? '' : ' touch-pan-y'
+      }`}
+      {...handlers}
     >
       <ToggleButton
         isSelected={picked}
-        onChange={() => controls.onTogglePicked(recipe)}
+        onChange={() => {
+          if (wasSwipe()) return
+          controls.onTogglePicked(recipe)
+        }}
         aria-labelledby={`${id}-title`}
         className="flex min-h-[44px] items-start gap-3 rounded-l-card p-4 text-left data-[focus-visible]:focus-ring"
       >
