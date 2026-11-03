@@ -16,7 +16,7 @@ const Logo: FC = () => (
     className="flex min-h-[44px] shrink-0 items-center rounded-control no-underline focus-visible:focus-ring"
   >
     <IngreIconLogoEgg />
-    <span className="sr-only font-['Poppins'] text-4xl font-extrabold tracking-tighter text-brand sm:not-sr-only">
+    <span className="sr-only font-['Poppins'] text-[26px] font-normal tracking-[-0.03em] text-text sm:not-sr-only">
       {LOGO_TEXT}
     </span>
   </Link>
