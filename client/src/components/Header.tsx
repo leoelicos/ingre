@@ -24,14 +24,15 @@ const Logo: FC = () => (
 /**
  * One header everywhere (#164): the logo, search and the account menu. On the list page from
  * 1328px the search bar lives in the Explore drawer (or the 33/33/33 Explore column) instead
- * (#181); below that it stays here.
+ * (#181); below that it stays here. Below the drawer width the header sticks to the top (#228):
+ * the search stays high, where the keyboard never covers it or moves it.
  */
 export const Header: FC = () => {
   const [auth] = useAuthContext()
   const onList = useLocation().pathname === '/'
   const inDrawer = useMinWidth(DRAWER_MIN_WIDTH) && onList
   return (
-    <header className="ingre-navbar">
+    <header className="ingre-navbar sticky top-0 z-30 bg-bg min-[1328px]:static">
       <div className="ingre-page flex items-center gap-2 py-2 sm:gap-4 sm:py-3">
         <Logo />
         <div className="flex min-w-0 flex-1">{!inDrawer && <SearchBox />}</div>

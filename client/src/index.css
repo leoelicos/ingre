@@ -11,6 +11,8 @@
     line-height: 1.5;
     /* the bottom tabs (#227) must never cover the control that has focus */
     scroll-padding-bottom: 5rem;
+    /* and the sticky header (#228) */
+    scroll-padding-top: 5rem;
   }
   body {
     background-color: var(--color-bg);
@@ -221,6 +223,7 @@
   }
 }
 
+/* at least the screen, never capped to it: a capped #root ends the sticky header's range (#228) */
 #root {
-  height: 100vh !important;
+  min-height: 100vh;
 }

@@ -2,6 +2,11 @@ import '@testing-library/jest-dom'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, useLocation } from 'react-router-dom'
+import {
+  installViewport,
+  removeViewport,
+  setKeyboard
+} from '../../../test/keyboard'
 import { BottomNav } from '../BottomNav'
 
 const Where = () => {
@@ -74,5 +79,16 @@ describe('bottom navigation (#227)', () => {
     await user.click(nav().getByRole('link', { name: 'Profile' }))
     expect(screen.getByLabelText('where')).toHaveTextContent('/profile')
     expect(nav().getAllByRole('link')).toHaveLength(4)
+  })
+
+  it('steps aside while the keyboard is up, and comes back (#228)', () => {
+    installViewport()
+    renderNav('/')
+    expect(screen.getByRole('navigation', { name: 'Main' })).toBeVisible()
+    setKeyboard(true)
+    expect(screen.queryByRole('navigation', { name: 'Main' })).toBeNull()
+    setKeyboard(false)
+    expect(screen.getByRole('navigation', { name: 'Main' })).toBeVisible()
+    removeViewport()
   })
 })
