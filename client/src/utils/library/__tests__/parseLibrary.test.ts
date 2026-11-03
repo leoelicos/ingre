@@ -37,11 +37,24 @@ describe('bundled data', () => {
     expect(parseCatalogue(ingredientData).length).toBeGreaterThan(60)
     expect(parseRecipes(recipeData).length).toBeGreaterThan(10)
   })
+  it('gives the shipped aliases as plain names, never the same as the name (#239)', () => {
+    const aliased = parseCatalogue(ingredientData).filter((i) => i.aliases)
+    expect(aliased.length).toBeGreaterThan(20)
+    expect(aliased.flatMap((i) => i.aliases ?? [])).toContain('cilantro')
+  })
 })
 
 describe('parseIngredient', () => {
   it('keeps every valid field', () => {
     expect(parseIngredient(validIngredient)).toEqual(validIngredient)
+  })
+  it('keeps aliases (#239) and leaves them out when absent', () => {
+    const withAliases = {
+      ...validIngredient,
+      aliases: ['bulb', 'stinking rose']
+    }
+    expect(parseIngredient(withAliases)).toEqual(withAliases)
+    expect(parseIngredient(validIngredient)).not.toHaveProperty('aliases')
   })
   it('omits absent optional fields and non-true staple', () => {
     const { staple, approxGrams, measureGrams, ...rest } = validIngredient
@@ -123,6 +136,21 @@ describe('parseIngredient', () => {
       'bad approxGrams',
       { ...validIngredient, approxGrams: 'x' },
       'approxGrams'
+    ],
+    [
+      'an alias that is not text',
+      { ...validIngredient, aliases: [''] },
+      'aliases[0]'
+    ],
+    [
+      'an alias that repeats the name',
+      { ...validIngredient, aliases: ['Garlic'] },
+      'aliases that differ'
+    ],
+    [
+      'a repeated alias',
+      { ...validIngredient, aliases: ['bulb', 'bulb'] },
+      'aliases that differ'
     ],
     [
       'bad measureGrams',

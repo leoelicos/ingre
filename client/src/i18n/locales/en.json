@@ -86,6 +86,7 @@
     "onListLabel": "{{name}}, on your list",
     "onListName": "✓ {{name}}",
     "addName": "+ {{name}}",
+    "alsoCalled": "Also called {{alias}}",
     "categoryOnList": "{{category}} · on your list"
   },
   "saved": {

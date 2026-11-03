@@ -117,6 +117,15 @@ const parseCountUnit = (v: unknown, path: string): CountUnit => {
   }
 }
 
+/** Aliases (#239): non-empty, none repeated, none the same as the name (ignoring case). */
+const parseAliases = (v: unknown, name: string, path: string): string[] => {
+  const aliases = arr(v, path).map((a, i) => str(a, `${path}[${i}]`))
+  const seen = [name, ...aliases].map((a) => a.toLowerCase())
+  return new Set(seen).size === seen.length
+    ? aliases
+    : fail(path, 'aliases that differ from each other and from the name')
+}
+
 export const parseIngredient = (
   v: unknown,
   path = 'ingredient'
@@ -126,15 +135,19 @@ export const parseIngredient = (
     parseSold(s, `${path}.sold[${i}]`)
   )
   if (sold.length === 0) fail(`${path}.sold`, 'at least one option')
+  const name = str(r['name'], `${path}.name`)
   return {
     id: str(r['id'], `${path}.id`),
-    name: str(r['name'], `${path}.name`),
+    name,
     category: oneOf(AISLES, r['category'], `${path}.category`),
     sold,
     pantry: oneOf(HOME_LOCATIONS, r['pantry'], `${path}.pantry`),
     allergens: arr(r['allergens'], `${path}.allergens`).map((a, i) =>
       oneOf(FSANZ_ALLERGENS, a, `${path}.allergens[${i}]`)
     ),
+    ...(r['aliases'] === undefined
+      ? {}
+      : { aliases: parseAliases(r['aliases'], name, `${path}.aliases`) }),
     ...(r['staple'] === true ? { staple: true } : {}),
     ...(r['approxGrams'] === undefined
       ? {}
