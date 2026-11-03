@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
@@ -9,7 +9,13 @@ import { Header } from '../../Header'
 import { logIn } from '../../../test/providers'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { ACCOUNT_LABEL, AccountMenu } from '../AccountMenu'
-import { SAVED_PATH, accountItems, actionsFor } from '../accountItems'
+import { markFirstEndToEnd } from '../../../utils/tier/upsell'
+import {
+  PLANS_PATH,
+  SAVED_PATH,
+  accountItems,
+  actionsFor
+} from '../accountItems'
 
 addFontAwesome()
 
@@ -44,7 +50,10 @@ const itemNames = () =>
 const where = () => screen.getByTestId('where').textContent
 
 describe('AccountMenu (#164)', () => {
-  beforeEach(() => localStorage.clear())
+  beforeEach(() => {
+    localStorage.clear()
+    window.history.pushState({}, '', '/')
+  })
 
   it('is a labelled menu button, announced collapsed then expanded', async () => {
     const user = userEvent.setup()
@@ -115,8 +124,49 @@ describe('AccountMenu (#164)', () => {
     expect(localStorage.getItem('id_token')).toBeNull()
   })
 
+  it('has no Plans item by default, or until the first end-to-end, even with the tiers flag on', async () => {
+    const user = userEvent.setup()
+    renderMenu(true)
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Saved', 'Log out'])
+  })
+
+  it('with the tiers flag on, Plans appears after the first end-to-end, before Log out, and opens Plans', async () => {
+    const user = userEvent.setup()
+    window.history.pushState({}, '', '/?flags=tiers')
+    renderMenu(true)
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Saved', 'Log out'])
+    await user.keyboard('{Escape}')
+    act(() => markFirstEndToEnd())
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Saved', 'Plans', 'Log out'])
+    await user.click(screen.getByRole('menuitem', { name: 'Plans' }))
+    expect(where()).toBe(`${PLANS_PATH} null`)
+    window.history.pushState({}, '', '/')
+  })
+
+  it('Plans are one place only: after the flag is off, the first end-to-end shows nothing', async () => {
+    const user = userEvent.setup()
+    markFirstEndToEnd()
+    renderMenu(false)
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Log in', 'Sign up'])
+  })
+
   it('maps menu keys to actions; anything else is no action', () => {
     expect(accountItems(false).map((i) => i.id)).toEqual(['login', 'signup'])
+    expect(accountItems(true, true).map((i) => i.id)).toEqual([
+      'saved',
+      'plans',
+      'logout'
+    ])
+    expect(accountItems(false, true).map((i) => i.id)).toEqual([
+      'login',
+      'signup',
+      'plans'
+    ])
+    expect(actionsFor('plans')).toEqual(['plans'])
     expect(actionsFor('saved')).toEqual(['saved'])
     expect(actionsFor('nope')).toEqual([])
     expect(actionsFor(3)).toEqual([])

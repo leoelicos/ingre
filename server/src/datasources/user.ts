@@ -2,6 +2,7 @@ import { NotFoundError } from '../errors'
 import { User, UserMethods, UserSchema } from '../models/User'
 import { Types } from 'mongoose'
 import { UserInput } from '../schemas/types'
+import type { Tier } from '../utils/tiers'
 
 export class UserApi {
   public async findOneUserById({ id }: { id: Types.ObjectId }) {
@@ -123,10 +124,17 @@ export class UserApi {
     }
   }
 
-  public async makeUserPro({ _id }: { _id: Types.ObjectId }) {
+  /** `tier` is set only when one was bought (#208); the old flow keeps what it had. */
+  public async makeUserPro({
+    _id,
+    tier = null
+  }: {
+    _id: Types.ObjectId
+    tier?: Tier | null
+  }) {
     const user = await User.findByIdAndUpdate(
       _id,
-      { $set: { pro: true } },
+      { $set: tier ? { pro: true, tier } : { pro: true } },
       { new: true }
     ).select('-__v')
     if (!user) throw new NotFoundError('User not found')

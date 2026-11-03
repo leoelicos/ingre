@@ -77,6 +77,43 @@ describe('makeUserPro', () => {
     expect(data?.['makeUserPro']).toStrictEqual({ _id: mockUserId, pro: true })
   })
 
+  it('passes the tier bought to the data source (#208)', async () => {
+    mockMakeUserPro.mockReturnValueOnce({ ...mockProUser, tier: 'MANAGER' })
+    const result = await testServer.executeOperation(
+      {
+        query: gql`
+          mutation Tier($tier: Tier) {
+            makeUserPro(tier: $tier) {
+              pro
+              tier
+            }
+          }
+        `,
+        variables: { tier: 'MANAGER' }
+      },
+      { contextValue }
+    )
+    const { errors, data = {} } = singleResult(result)
+    expect(errors).toBeUndefined()
+    expect(data?.['makeUserPro']).toStrictEqual({ pro: true, tier: 'MANAGER' })
+    expect(mockMakeUserPro).toHaveBeenCalledWith({
+      _id: contextValue.user._id,
+      tier: 'MANAGER'
+    })
+  })
+
+  it('without a tier, asks for none (the old flow)', async () => {
+    mockMakeUserPro.mockReturnValueOnce(mockProUser)
+    await testServer.executeOperation(
+      { query: MAKE_USER_PRO },
+      { contextValue }
+    )
+    expect(mockMakeUserPro).toHaveBeenCalledWith({
+      _id: contextValue.user._id,
+      tier: null
+    })
+  })
+
   it('should throw an error if there was an error with makeUserPro', async () => {
     mockMakeUserPro.mockRejectedValueOnce(new Error('User not found'))
 

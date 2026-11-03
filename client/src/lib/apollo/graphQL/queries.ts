@@ -4,6 +4,8 @@ import type {
   Operation,
   Recipe,
   SavedRecipe,
+  Tier,
+  TierProfile,
   UserProfile
 } from './typedefs'
 
@@ -107,10 +109,21 @@ export const GET_RECIPE: Operation<{ getRecipe: Recipe }, { id: string }> = gql`
   }
 `
 
-export const CHECKOUT: Operation<{ checkout: Checkout }> = gql`
-  query Checkout {
-    checkout {
+/** `tier` buys that tier (#208); without it, the old PRO checkout. */
+export const CHECKOUT: Operation<{ checkout: Checkout }, { tier?: Tier }> = gql`
+  query Checkout($tier: Tier) {
+    checkout(tier: $tier) {
       session
+    }
+  }
+`
+
+/** The tier the signed-in user has bought, if any (#208). */
+export const GET_TIER: Operation<{ getUser: TierProfile }> = gql`
+  query GetTier {
+    getUser {
+      _id
+      tier
     }
   }
 `

@@ -12,7 +12,14 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { IngreIconAccount } from '../../lib/icon/Icon'
 import type { AccountAction } from './accountItems'
-import { SAVED_PATH, accountItems, actionsFor } from './accountItems'
+import { useFlag } from '../../utils/flags/useFlag'
+import { showUpsell, useFirstEndToEnd } from '../../utils/tier/upsell'
+import {
+  PLANS_PATH,
+  SAVED_PATH,
+  accountItems,
+  actionsFor
+} from './accountItems'
 
 export const ACCOUNT_LABEL = translate('account.label')
 
@@ -31,10 +38,14 @@ export const AccountMenu: FC<{ loggedIn: boolean }> = ({ loggedIn }) => {
   const location = useLocation()
   const { handleLogout } = useAuth()
   const from = location.pathname + location.search
+  const flag = useFlag('tiers')
+  const firstEndToEnd = useFirstEndToEnd()
+  const plans = showUpsell({ flag, firstEndToEnd })
   const run: Record<AccountAction, () => void> = {
     login: () => navigate('/login', { state: { from } }),
     signup: () => navigate('/signup', { state: { from } }),
     saved: () => navigate(SAVED_PATH),
+    plans: () => navigate(PLANS_PATH),
     logout: handleLogout
   }
   const onAction = (key: Key) =>
@@ -56,7 +67,7 @@ export const AccountMenu: FC<{ loggedIn: boolean }> = ({ loggedIn }) => {
           className="outline-none"
           onAction={onAction}
         >
-          {accountItems(loggedIn).map((item) => (
+          {accountItems(loggedIn, plans).map((item) => (
             <MenuItem
               key={item.id}
               id={item.id}

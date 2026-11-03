@@ -3,10 +3,18 @@ import { screen, waitFor } from '@testing-library/react'
 import type { MockedResponse } from '@apollo/client/testing'
 import { MAKE_USER_PRO } from '../../../lib/apollo/graphQL/mutations'
 import { logIn, renderWithProviders } from '../../../test/providers'
+import { PENDING_TIER_KEY, readPendingTier } from '../../../utils/tier/pending'
 import { Success } from '../Success'
 
 const madePro: MockedResponse = {
   request: { query: MAKE_USER_PRO },
+  result: {
+    data: { makeUserPro: { __typename: 'User', _id: 'u1', pro: true } }
+  }
+}
+
+const madeManager: MockedResponse = {
+  request: { query: MAKE_USER_PRO, variables: { tier: 'MANAGER' } },
   result: {
     data: { makeUserPro: { __typename: 'User', _id: 'u1', pro: true } }
   }
@@ -56,6 +64,15 @@ describe('Success', () => {
     expect(screen.getByTestId('location')).toHaveTextContent('/upgrade')
     expect(screen.getByText('Upgrade page')).toBeInTheDocument()
     jest.useRealTimers()
+  })
+
+  it('records the tier that was bought, then forgets it', async () => {
+    logIn(false)
+    sessionStorage.setItem(PENDING_TIER_KEY, '"MANAGER"')
+    renderSuccess('/success?session_id=cs_1', [madeManager])
+    await waitFor(() => {
+      expect(readPendingTier()).toBeNull()
+    })
   })
 
   it('logs a failed upgrade and stays put', async () => {
