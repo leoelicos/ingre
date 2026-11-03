@@ -16,18 +16,25 @@ import {
 } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import { Header } from './components/Header'
+import { BottomNav } from './components/BottomNav/BottomNav'
+import { Header, WAR_ROOM_PATH } from './components/Header'
 import { PageMain, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
 import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
+import { IdeasPage } from './pages/Ideas/IdeasPage'
 import { ListPage } from './pages/List/ListPage'
+import { ProfilePage } from './pages/Profile/ProfilePage'
+import { WarRoom } from './pages/WarRoom/WarRoom'
+import { DemoPage } from './pages/Demo/DemoPage'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
 import { ExploreProvider } from './utils/explore/ExploreContext'
+import { GuestsProvider } from './utils/guests/GuestsContext'
 import { changeTitle } from './utils/changeTitle'
 import { StoreProvider } from './utils/state/GlobalState'
 
@@ -95,12 +102,88 @@ export const Ingre: FC = () => {
         <AuthProvider>
           <StoreProvider>
             <ExploreProvider>
+              <GuestsProvider>
+                <SkipLink />
+                <Header />
+                <Routes>
+                  <Route
+                    path="/"
+                    element={<ListPage />}
+                  />
+                  <Route
+                    path="/saved"
+                    element={<SavedRedirect />}
+                  />
+                  <Route
+                    path="/ingredients"
+                    element={<WorkspaceRedirect />}
+                  />
+                  <Route
+                    path="/tapoff"
+                    element={<WorkspaceRedirect />}
+                  />
+                  {/* admin */}
+                  <Route
+                    path="/login"
+                    element={
+                      <PageMain>
+                        <Login />
+                      </PageMain>
+                    }
+                  />
+                  <Route
+                    path="/signup"
+                    element={
+                      <PageMain>
+                        <Signup />
+                      </PageMain>
+                    }
+                  />
+                  <Route
+                    path="/upgrade"
+                    element={
+                      <PageMain>
+                        <Upgrade />
+                      </PageMain>
+                    }
+                  />
+                  <Route
+                    path="/success"
+                    element={
+                      <PageMain>
+                        <Success />
+                      </PageMain>
+                    }
+                  />
+                  <Route
+                    path="*"
+                    element={
+                      <PageMain>
+                        <NoMatch />
+                      </PageMain>
+                    }
+                  />
+                </Routes>
+                <SiteAnalytics mode={APP_MODE} />
+              </GuestsProvider>
               <SkipLink />
               <Header />
               <Routes>
                 <Route
                   path="/"
                   element={<ListPage />}
+                />
+                <Route
+                  path="/ideas"
+                  element={<IdeasPage />}
+                  path="/profile"
+                  element={<ProfilePage />}
+                  path={WAR_ROOM_PATH}
+                  element={
+                    <PageMain>
+                      <WarRoom />
+                    </PageMain>
+                  }
                 />
                 <Route
                   path="/saved"
@@ -148,6 +231,10 @@ export const Ingre: FC = () => {
                   }
                 />
                 <Route
+                  path="/demo"
+                  element={<DemoPage />}
+                />
+                <Route
                   path="*"
                   element={
                     <PageMain>
@@ -156,6 +243,7 @@ export const Ingre: FC = () => {
                   }
                 />
               </Routes>
+              <BottomNav />
               <SiteAnalytics mode={APP_MODE} />
             </ExploreProvider>
           </StoreProvider>

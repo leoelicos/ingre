@@ -10,6 +10,7 @@ export {
   formatItemCount,
   formatItemUnit,
   formatMass,
+  formatMoney,
   formatMeasure,
   formatNumber,
   formatQuantity,

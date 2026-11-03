@@ -6,6 +6,7 @@ import { Header } from '../components/Header'
 import { ListPage } from '../pages/List/ListPage'
 import { AuthProvider, useAuthContext } from '../utils/auth/AuthContext'
 import { ExploreProvider } from '../utils/explore/ExploreContext'
+import { GuestsProvider } from '../utils/guests/GuestsContext'
 import { StoreProvider } from '../utils/state/GlobalState'
 import { newCopy } from '../utils/balance/copies'
 import type { RecipeCopy } from '../utils/balance/copies'
@@ -45,19 +46,21 @@ export const renderList = (path = '/', mocks: readonly MockedResponse[] = []) =>
         <AuthProvider>
           <StoreProvider>
             <ExploreProvider>
-              <Header />
-              <PretendLogin />
-              <Routes>
-                <Route
-                  path="/"
-                  element={<ListPage />}
-                />
-                <Route
-                  path="*"
-                  element={<p>Elsewhere</p>}
-                />
-              </Routes>
-              <Where />
+              <GuestsProvider>
+                <Header />
+                <PretendLogin />
+                <Routes>
+                  <Route
+                    path="/"
+                    element={<ListPage />}
+                  />
+                  <Route
+                    path="*"
+                    element={<p>Elsewhere</p>}
+                  />
+                </Routes>
+                <Where />
+              </GuestsProvider>
             </ExploreProvider>
           </StoreProvider>
         </AuthProvider>

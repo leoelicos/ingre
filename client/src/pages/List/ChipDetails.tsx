@@ -10,6 +10,7 @@ import {
   Radio,
   RadioGroup
 } from 'react-aria-components'
+import { GuestFlag } from './GuestFlag'
 import { AllergenTags } from '../../components/AllergenTags'
 import type { Chip, Source } from '../../utils/chips/chips'
 import { categoryLabel, needsSort } from '../../utils/chips/chips'
@@ -263,5 +264,8 @@ export const TotalLine: FC<{ chip: Chip }> = ({ chip }) => (
 
 /** Allergens of a chip's item; nothing for free text. */
 export const ChipAllergens: FC<{ chip: Chip }> = ({ chip }) => (
-  <AllergenTags allergens={chip.item?.allergens ?? []} />
+  <>
+    <AllergenTags allergens={chip.item?.allergens ?? []} />
+    <GuestFlag tags={chip.item?.allergens ?? []} />
+  </>
 )
