@@ -1,0 +1,948 @@
+{
+  "_note": "Hand-curated retrieval corpus for #225: one profile per catalogue ingredient (class, style tags, classic partners). Free local search only; no model or embedding API reads or writes this. Partners are symmetrised when loaded, so list a pairing once.",
+  "profiles": [
+    {
+      "id": "beef-mince",
+      "classes": ["red-meat", "mince"],
+      "style": ["italian", "comfort"],
+      "goesWith": [
+        "onion",
+        "garlic",
+        "tomato-paste",
+        "crushed-tomatoes",
+        "spaghetti",
+        "carrot",
+        "celery"
+      ]
+    },
+    {
+      "id": "pork-mince",
+      "classes": ["pork", "mince"],
+      "style": ["asian", "dumpling"],
+      "goesWith": [
+        "ginger",
+        "spring-onion",
+        "soy-sauce",
+        "garlic",
+        "sesame-oil"
+      ]
+    },
+    {
+      "id": "chicken-thigh",
+      "classes": ["poultry"],
+      "style": ["roast", "curry", "stir-fry"],
+      "goesWith": [
+        "garlic",
+        "lemon",
+        "ginger",
+        "soy-sauce",
+        "garam-masala",
+        "coconut-milk"
+      ]
+    },
+    {
+      "id": "egg",
+      "classes": ["egg"],
+      "style": ["breakfast", "baking"],
+      "goesWith": [
+        "butter",
+        "bacon",
+        "baby-spinach",
+        "plain-flour",
+        "white-bread",
+        "cheddar"
+      ]
+    },
+    {
+      "id": "butter",
+      "classes": ["dairy-fat"],
+      "style": ["baking", "breakfast"],
+      "goesWith": ["plain-flour", "egg", "white-sugar", "white-bread", "garlic"]
+    },
+    {
+      "id": "cream",
+      "classes": ["dairy-fat"],
+      "style": ["baking", "comfort"],
+      "goesWith": ["butter", "parmesan", "garlic", "mushrooms", "bacon"]
+    },
+    {
+      "id": "natural-yoghurt",
+      "classes": ["dairy-fresh"],
+      "style": ["indian", "breakfast"],
+      "goesWith": [
+        "cucumber",
+        "fresh-mint",
+        "honey",
+        "garam-masala",
+        "blueberries"
+      ]
+    },
+    {
+      "id": "haloumi",
+      "classes": ["cheese"],
+      "style": ["grill", "salad"],
+      "goesWith": ["lemon", "tomato", "fresh-mint", "watermelon", "salad-mix"]
+    },
+    {
+      "id": "feta",
+      "classes": ["cheese"],
+      "style": ["salad", "fresh"],
+      "goesWith": [
+        "cucumber",
+        "tomato",
+        "kalamata-olives",
+        "red-onion",
+        "watermelon"
+      ]
+    },
+    {
+      "id": "parmesan",
+      "classes": ["cheese"],
+      "style": ["italian", "comfort"],
+      "goesWith": ["spaghetti", "butter", "cream", "garlic", "mushrooms"]
+    },
+    {
+      "id": "onion",
+      "classes": ["allium", "aromatic"],
+      "style": ["italian", "indian", "comfort"],
+      "goesWith": [
+        "garlic",
+        "carrot",
+        "celery",
+        "tomato-paste",
+        "beef-mince",
+        "red-lentils"
+      ]
+    },
+    {
+      "id": "red-onion",
+      "classes": ["allium", "aromatic"],
+      "style": ["salad", "fresh"],
+      "goesWith": ["tomato", "feta", "kalamata-olives", "avocado", "lime"]
+    },
+    {
+      "id": "garlic",
+      "classes": ["allium", "aromatic"],
+      "style": ["italian", "indian", "asian"],
+      "goesWith": [
+        "onion",
+        "ginger",
+        "olive-oil",
+        "chilli-powder",
+        "tomato-paste",
+        "butter"
+      ]
+    },
+    {
+      "id": "ginger",
+      "classes": ["aromatic", "root"],
+      "style": ["indian", "asian"],
+      "goesWith": [
+        "garlic",
+        "spring-onion",
+        "soy-sauce",
+        "garam-masala",
+        "lemongrass",
+        "honey"
+      ]
+    },
+    {
+      "id": "carrot",
+      "classes": ["root", "vegetable"],
+      "style": ["roast", "comfort", "salad"],
+      "goesWith": [
+        "celery",
+        "onion",
+        "butter",
+        "white-sugar",
+        "plain-flour",
+        "cumin-seeds"
+      ]
+    },
+    {
+      "id": "celery",
+      "classes": ["aromatic", "stalk"],
+      "style": ["italian", "comfort"],
+      "goesWith": ["carrot", "onion", "tomato-paste", "beef-mince"]
+    },
+    {
+      "id": "spring-onion",
+      "classes": ["allium", "aromatic"],
+      "style": ["asian", "fresh"],
+      "goesWith": ["ginger", "soy-sauce", "sesame-oil", "egg", "rice-paper"]
+    },
+    {
+      "id": "iceberg-lettuce",
+      "classes": ["leafy-green"],
+      "style": ["salad", "fresh"],
+      "goesWith": ["cucumber", "tomato", "avocado", "wraps"]
+    },
+    {
+      "id": "tomato",
+      "classes": ["nightshade", "fruit-vegetable"],
+      "style": ["salad", "italian", "fresh"],
+      "goesWith": [
+        "cucumber",
+        "red-onion",
+        "feta",
+        "olive-oil",
+        "dried-oregano",
+        "fresh-mint"
+      ]
+    },
+    {
+      "id": "cucumber",
+      "classes": ["gourd", "vegetable"],
+      "style": ["salad", "fresh"],
+      "goesWith": [
+        "tomato",
+        "natural-yoghurt",
+        "fresh-mint",
+        "feta",
+        "white-vinegar"
+      ]
+    },
+    {
+      "id": "capsicum",
+      "classes": ["nightshade", "fruit-vegetable"],
+      "style": ["stir-fry", "salad"],
+      "goesWith": ["onion", "garlic", "tomato", "chicken-breast", "zucchini"]
+    },
+    {
+      "id": "tinned-peas",
+      "classes": ["legume", "vegetable"],
+      "style": ["comfort"],
+      "goesWith": ["butter", "potato", "mushrooms", "fresh-mint"]
+    },
+    {
+      "id": "water-chestnuts",
+      "classes": ["vegetable", "crunch"],
+      "style": ["stir-fry", "asian"],
+      "goesWith": ["soy-sauce", "ginger", "pork-mince", "oyster-sauce"]
+    },
+    {
+      "id": "spaghetti",
+      "classes": ["pasta"],
+      "style": ["italian", "comfort"],
+      "goesWith": [
+        "crushed-tomatoes",
+        "beef-mince",
+        "parmesan",
+        "garlic",
+        "olive-oil",
+        "mushrooms"
+      ]
+    },
+    {
+      "id": "jasmine-rice",
+      "classes": ["rice", "grain"],
+      "style": ["thai", "asian"],
+      "goesWith": [
+        "fish-sauce",
+        "coconut-milk",
+        "red-chilli",
+        "lemongrass",
+        "chicken-thigh"
+      ]
+    },
+    {
+      "id": "basmati-rice",
+      "classes": ["rice", "grain"],
+      "style": ["indian"],
+      "goesWith": [
+        "garam-masala",
+        "red-lentils",
+        "chickpeas",
+        "natural-yoghurt",
+        "cumin-seeds"
+      ]
+    },
+    {
+      "id": "crushed-tomatoes",
+      "classes": ["tinned", "tomato"],
+      "style": ["italian", "comfort"],
+      "goesWith": [
+        "garlic",
+        "onion",
+        "dried-oregano",
+        "spaghetti",
+        "beef-mince"
+      ]
+    },
+    {
+      "id": "tomato-paste",
+      "classes": ["tinned", "tomato", "umami"],
+      "style": ["italian", "comfort"],
+      "goesWith": ["onion", "garlic", "beef-mince", "celery", "carrot"]
+    },
+    {
+      "id": "kalamata-olives",
+      "classes": ["preserved"],
+      "style": ["salad", "italian"],
+      "goesWith": ["feta", "tomato", "red-onion", "olive-oil", "dried-oregano"]
+    },
+    {
+      "id": "olive-oil",
+      "classes": ["oil"],
+      "style": ["italian", "everyday"],
+      "goesWith": [
+        "garlic",
+        "tomato",
+        "dried-oregano",
+        "red-wine-vinegar",
+        "lemon"
+      ]
+    },
+    {
+      "id": "vegetable-oil",
+      "classes": ["oil"],
+      "style": ["frying", "everyday"],
+      "goesWith": ["onion", "garlic", "ginger", "cumin-seeds"]
+    },
+    {
+      "id": "sesame-oil",
+      "classes": ["oil"],
+      "style": ["asian"],
+      "goesWith": ["soy-sauce", "ginger", "spring-onion", "garlic"]
+    },
+    {
+      "id": "red-wine-vinegar",
+      "classes": ["vinegar"],
+      "style": ["italian", "salad"],
+      "goesWith": ["olive-oil", "tomato", "red-onion", "dried-oregano"]
+    },
+    {
+      "id": "soy-sauce",
+      "classes": ["sauce", "umami"],
+      "style": ["asian"],
+      "goesWith": ["ginger", "garlic", "sesame-oil", "spring-onion", "honey"]
+    },
+    {
+      "id": "oyster-sauce",
+      "classes": ["sauce", "umami"],
+      "style": ["chinese", "stir-fry"],
+      "goesWith": ["garlic", "ginger", "broccoli", "soy-sauce"]
+    },
+    {
+      "id": "garam-masala",
+      "classes": ["spice-ground"],
+      "style": ["indian", "curry"],
+      "goesWith": [
+        "onion",
+        "garlic",
+        "ginger",
+        "red-lentils",
+        "chicken-thigh",
+        "coconut-milk"
+      ]
+    },
+    {
+      "id": "ground-cumin",
+      "classes": ["spice-ground"],
+      "style": ["indian", "curry"],
+      "goesWith": [
+        "ground-coriander",
+        "ground-turmeric",
+        "chickpeas",
+        "sweet-potato",
+        "pumpkin"
+      ]
+    },
+    {
+      "id": "chilli-powder",
+      "classes": ["spice-ground", "chilli"],
+      "style": ["indian", "spicy"],
+      "goesWith": ["garlic", "onion", "corn", "ground-cumin"]
+    },
+    {
+      "id": "dried-oregano",
+      "classes": ["herb-dried"],
+      "style": ["italian"],
+      "goesWith": ["tomato", "crushed-tomatoes", "olive-oil", "feta", "garlic"]
+    },
+    {
+      "id": "salt",
+      "classes": ["seasoning"],
+      "style": ["everyday"],
+      "goesWith": ["black-pepper", "butter", "egg", "potato"]
+    },
+    {
+      "id": "fresh-coriander",
+      "classes": ["herb-fresh"],
+      "style": ["asian", "indian", "fresh"],
+      "goesWith": [
+        "lime",
+        "red-chilli",
+        "ginger",
+        "ground-coriander",
+        "avocado"
+      ]
+    },
+    {
+      "id": "potato",
+      "classes": ["root", "vegetable", "starch"],
+      "style": ["roast", "comfort", "curry"],
+      "goesWith": [
+        "butter",
+        "cauliflower",
+        "chickpeas",
+        "cumin-seeds",
+        "ground-turmeric",
+        "cheddar"
+      ]
+    },
+    {
+      "id": "cauliflower",
+      "classes": ["brassica", "vegetable"],
+      "style": ["curry", "roast"],
+      "goesWith": [
+        "potato",
+        "chickpeas",
+        "ground-turmeric",
+        "cumin-seeds",
+        "parmesan"
+      ]
+    },
+    {
+      "id": "baby-spinach",
+      "classes": ["leafy-green"],
+      "style": ["salad", "quick"],
+      "goesWith": ["egg", "feta", "garlic", "lemon", "chickpeas"]
+    },
+    {
+      "id": "green-chilli",
+      "classes": ["chilli"],
+      "style": ["indian", "thai", "spicy"],
+      "goesWith": ["ginger", "garlic", "fresh-coriander", "lime"]
+    },
+    {
+      "id": "red-lentils",
+      "classes": ["legume"],
+      "style": ["indian", "curry", "comfort"],
+      "goesWith": [
+        "onion",
+        "garlic",
+        "ground-turmeric",
+        "cumin-seeds",
+        "basmati-rice",
+        "tomato"
+      ]
+    },
+    {
+      "id": "coconut-milk",
+      "classes": ["tinned", "creamy"],
+      "style": ["thai", "indian", "curry"],
+      "goesWith": [
+        "lemongrass",
+        "red-chilli",
+        "ginger",
+        "garam-masala",
+        "jasmine-rice",
+        "sweet-potato"
+      ]
+    },
+    {
+      "id": "chickpeas",
+      "classes": ["legume"],
+      "style": ["indian", "mediterranean", "curry"],
+      "goesWith": [
+        "ground-cumin",
+        "ground-turmeric",
+        "cauliflower",
+        "potato",
+        "hummus",
+        "lemon"
+      ]
+    },
+    {
+      "id": "ground-almonds",
+      "classes": ["nut"],
+      "style": ["baking"],
+      "goesWith": ["butter", "white-sugar", "egg", "honey"]
+    },
+    {
+      "id": "cumin-seeds",
+      "classes": ["spice-whole"],
+      "style": ["indian", "curry"],
+      "goesWith": ["ground-turmeric", "onion", "potato", "carrot"]
+    },
+    {
+      "id": "ground-coriander",
+      "classes": ["spice-ground"],
+      "style": ["indian", "curry"],
+      "goesWith": ["ground-cumin", "ground-turmeric", "onion", "garlic"]
+    },
+    {
+      "id": "ground-turmeric",
+      "classes": ["spice-ground"],
+      "style": ["indian", "curry"],
+      "goesWith": [
+        "cumin-seeds",
+        "red-lentils",
+        "potato",
+        "cauliflower",
+        "ginger"
+      ]
+    },
+    {
+      "id": "beef-rump",
+      "classes": ["red-meat", "steak"],
+      "style": ["grill"],
+      "goesWith": ["garlic", "butter", "black-pepper", "mushrooms", "potato"]
+    },
+    {
+      "id": "pork-belly",
+      "classes": ["pork"],
+      "style": ["roast", "asian"],
+      "goesWith": [
+        "hoisin-sauce",
+        "soy-sauce",
+        "ginger",
+        "garlic",
+        "white-sugar"
+      ]
+    },
+    {
+      "id": "cooked-prawns",
+      "classes": ["shellfish"],
+      "style": ["vietnamese", "fresh"],
+      "goesWith": ["rice-paper", "fresh-mint", "lime", "avocado", "garlic"]
+    },
+    {
+      "id": "lemongrass",
+      "classes": ["aromatic", "stalk"],
+      "style": ["thai", "vietnamese"],
+      "goesWith": ["red-chilli", "lime", "ginger", "fish-sauce", "coconut-milk"]
+    },
+    {
+      "id": "red-chilli",
+      "classes": ["chilli"],
+      "style": ["thai", "asian", "spicy"],
+      "goesWith": [
+        "lime",
+        "lemongrass",
+        "fish-sauce",
+        "garlic",
+        "fresh-coriander"
+      ]
+    },
+    {
+      "id": "lime",
+      "classes": ["citrus"],
+      "style": ["thai", "vietnamese", "fresh"],
+      "goesWith": [
+        "red-chilli",
+        "fish-sauce",
+        "fresh-coriander",
+        "avocado",
+        "fresh-mint"
+      ]
+    },
+    {
+      "id": "fresh-mint",
+      "classes": ["herb-fresh"],
+      "style": ["vietnamese", "fresh"],
+      "goesWith": [
+        "lime",
+        "cucumber",
+        "natural-yoghurt",
+        "bean-sprouts",
+        "cooked-prawns",
+        "watermelon"
+      ]
+    },
+    {
+      "id": "bean-sprouts",
+      "classes": ["vegetable", "crunch"],
+      "style": ["asian", "fresh"],
+      "goesWith": [
+        "fish-sauce",
+        "lime",
+        "fresh-mint",
+        "rice-vermicelli",
+        "red-chilli"
+      ]
+    },
+    {
+      "id": "fish-sauce",
+      "classes": ["sauce", "umami"],
+      "style": ["thai", "vietnamese"],
+      "goesWith": ["lime", "white-sugar", "red-chilli", "garlic", "lemongrass"]
+    },
+    {
+      "id": "hoisin-sauce",
+      "classes": ["sauce", "sweet"],
+      "style": ["chinese", "vietnamese"],
+      "goesWith": ["roasted-peanuts", "pork-belly", "rice-paper", "garlic"]
+    },
+    {
+      "id": "rice-paper",
+      "classes": ["wrapper"],
+      "style": ["vietnamese", "fresh"],
+      "goesWith": [
+        "cooked-prawns",
+        "fresh-mint",
+        "rice-vermicelli",
+        "bean-sprouts",
+        "hoisin-sauce",
+        "roasted-peanuts"
+      ]
+    },
+    {
+      "id": "rice-vermicelli",
+      "classes": ["noodle"],
+      "style": ["vietnamese", "fresh"],
+      "goesWith": [
+        "fresh-mint",
+        "bean-sprouts",
+        "fish-sauce",
+        "lime",
+        "cooked-prawns",
+        "rice-paper"
+      ]
+    },
+    {
+      "id": "roasted-peanuts",
+      "classes": ["nut"],
+      "style": ["asian", "snack"],
+      "goesWith": ["hoisin-sauce", "lime", "fresh-coriander", "rice-paper"]
+    },
+    {
+      "id": "white-sugar",
+      "classes": ["sweetener"],
+      "style": ["baking"],
+      "goesWith": ["butter", "egg", "plain-flour", "lime", "fish-sauce"]
+    },
+    {
+      "id": "white-vinegar",
+      "classes": ["vinegar"],
+      "style": ["pickle", "salad"],
+      "goesWith": ["white-sugar", "cucumber", "carrot"]
+    },
+    {
+      "id": "black-pepper",
+      "classes": ["spice-ground"],
+      "style": ["everyday"],
+      "goesWith": ["salt", "egg", "butter", "parmesan", "beef-rump"]
+    },
+    {
+      "id": "apple",
+      "classes": ["pome", "fruit"],
+      "style": ["baking", "snack"],
+      "goesWith": [
+        "pork-loin-chop",
+        "cheddar",
+        "rolled-oats",
+        "honey",
+        "butter"
+      ]
+    },
+    {
+      "id": "banana",
+      "classes": ["fruit"],
+      "style": ["breakfast", "baking"],
+      "goesWith": ["rolled-oats", "peanut-butter", "honey", "natural-yoghurt"]
+    },
+    {
+      "id": "orange",
+      "classes": ["citrus", "fruit"],
+      "style": ["breakfast", "snack"],
+      "goesWith": ["honey", "natural-yoghurt"]
+    },
+    {
+      "id": "mandarin",
+      "classes": ["citrus", "fruit"],
+      "style": ["snack"],
+      "goesWith": ["greek-yoghurt"]
+    },
+    {
+      "id": "pear",
+      "classes": ["pome", "fruit"],
+      "style": ["baking", "snack"],
+      "goesWith": ["cheddar", "honey", "rolled-oats"]
+    },
+    {
+      "id": "lemon",
+      "classes": ["citrus"],
+      "style": ["mediterranean", "fresh"],
+      "goesWith": ["olive-oil", "garlic", "chicken-breast", "honey", "haloumi"]
+    },
+    {
+      "id": "avocado",
+      "classes": ["fruit-vegetable", "creamy"],
+      "style": ["breakfast", "salad"],
+      "goesWith": ["lime", "wholemeal-bread", "egg", "tomato", "red-onion"]
+    },
+    {
+      "id": "grapes",
+      "classes": ["fruit"],
+      "style": ["snack"],
+      "goesWith": ["cheddar", "feta"]
+    },
+    {
+      "id": "strawberries",
+      "classes": ["berry", "fruit"],
+      "style": ["breakfast", "dessert"],
+      "goesWith": ["greek-yoghurt", "white-sugar", "cream"]
+    },
+    {
+      "id": "blueberries",
+      "classes": ["berry", "fruit"],
+      "style": ["breakfast", "baking"],
+      "goesWith": ["greek-yoghurt", "rolled-oats", "honey", "plain-flour"]
+    },
+    {
+      "id": "kiwifruit",
+      "classes": ["fruit"],
+      "style": ["breakfast", "snack"],
+      "goesWith": ["greek-yoghurt", "banana"]
+    },
+    {
+      "id": "watermelon",
+      "classes": ["melon", "fruit"],
+      "style": ["salad", "fresh", "summer"],
+      "goesWith": ["feta", "fresh-mint", "lime", "haloumi"]
+    },
+    {
+      "id": "broccoli",
+      "classes": ["brassica", "vegetable"],
+      "style": ["stir-fry", "quick"],
+      "goesWith": ["garlic", "oyster-sauce", "soy-sauce", "parmesan", "lemon"]
+    },
+    {
+      "id": "zucchini",
+      "classes": ["gourd", "vegetable"],
+      "style": ["quick", "grill"],
+      "goesWith": ["garlic", "olive-oil", "lemon", "feta", "tomato"]
+    },
+    {
+      "id": "sweet-potato",
+      "classes": ["root", "vegetable", "starch"],
+      "style": ["roast", "curry"],
+      "goesWith": [
+        "coconut-milk",
+        "chickpeas",
+        "ground-cumin",
+        "honey",
+        "red-chilli"
+      ]
+    },
+    {
+      "id": "pumpkin",
+      "classes": ["gourd", "vegetable"],
+      "style": ["roast"],
+      "goesWith": ["butter", "garlic", "ground-cumin", "feta", "coconut-milk"]
+    },
+    {
+      "id": "mushrooms",
+      "classes": ["fungus"],
+      "style": ["comfort", "italian"],
+      "goesWith": ["garlic", "butter", "cream", "parmesan", "spaghetti"]
+    },
+    {
+      "id": "corn",
+      "classes": ["vegetable", "starch"],
+      "style": ["barbecue", "salad"],
+      "goesWith": ["butter", "lime", "capsicum", "chilli-powder"]
+    },
+    {
+      "id": "salad-mix",
+      "classes": ["leafy-green"],
+      "style": ["salad", "fresh"],
+      "goesWith": ["tomato", "cucumber", "avocado", "feta", "olive-oil"]
+    },
+    {
+      "id": "full-cream-milk",
+      "classes": ["dairy-fresh"],
+      "style": ["breakfast", "baking"],
+      "goesWith": [
+        "rolled-oats",
+        "breakfast-cereal",
+        "coffee",
+        "tea-bags",
+        "plain-flour"
+      ]
+    },
+    {
+      "id": "light-milk",
+      "classes": ["dairy-fresh"],
+      "style": ["breakfast"],
+      "goesWith": ["rolled-oats", "breakfast-cereal", "coffee", "tea-bags"]
+    },
+    {
+      "id": "cheddar",
+      "classes": ["cheese"],
+      "style": ["comfort"],
+      "goesWith": [
+        "white-bread",
+        "bacon",
+        "potato",
+        "egg",
+        "sliced-ham",
+        "tomato"
+      ]
+    },
+    {
+      "id": "greek-yoghurt",
+      "classes": ["dairy-fresh"],
+      "style": ["breakfast", "fresh"],
+      "goesWith": ["honey", "blueberries", "strawberries", "cucumber", "garlic"]
+    },
+    {
+      "id": "orange-juice",
+      "classes": ["beverage", "citrus"],
+      "style": ["breakfast"],
+      "goesWith": ["orange"]
+    },
+    {
+      "id": "sliced-ham",
+      "classes": ["pork", "cured"],
+      "style": ["sandwich"],
+      "goesWith": [
+        "bread-rolls",
+        "cheddar",
+        "iceberg-lettuce",
+        "wholemeal-bread"
+      ]
+    },
+    {
+      "id": "hummus",
+      "classes": ["legume", "spread"],
+      "style": ["mediterranean", "snack"],
+      "goesWith": ["wraps", "wholemeal-bread", "cucumber", "chicken-breast"]
+    },
+    {
+      "id": "chicken-breast",
+      "classes": ["poultry"],
+      "style": ["grill", "salad", "quick"],
+      "goesWith": [
+        "lemon",
+        "garlic",
+        "olive-oil",
+        "avocado",
+        "wraps",
+        "salad-mix"
+      ]
+    },
+    {
+      "id": "sausages",
+      "classes": ["pork", "processed"],
+      "style": ["barbecue", "comfort"],
+      "goesWith": ["bread-rolls", "onion", "potato", "tomato"]
+    },
+    {
+      "id": "bacon",
+      "classes": ["pork", "cured"],
+      "style": ["breakfast", "comfort"],
+      "goesWith": ["egg", "white-bread", "cream", "mushrooms", "cheddar"]
+    },
+    {
+      "id": "white-bread",
+      "classes": ["bread"],
+      "style": ["breakfast", "sandwich"],
+      "goesWith": ["butter", "egg", "cheddar", "bacon", "jam", "peanut-butter"]
+    },
+    {
+      "id": "wholemeal-bread",
+      "classes": ["bread"],
+      "style": ["breakfast", "sandwich"],
+      "goesWith": ["avocado", "egg", "hummus", "peanut-butter", "sliced-ham"]
+    },
+    {
+      "id": "bread-rolls",
+      "classes": ["bread"],
+      "style": ["sandwich"],
+      "goesWith": [
+        "sausages",
+        "bacon",
+        "cheddar",
+        "sliced-ham",
+        "iceberg-lettuce"
+      ]
+    },
+    {
+      "id": "wraps",
+      "classes": ["bread", "wrapper"],
+      "style": ["quick", "lunch"],
+      "goesWith": [
+        "chicken-breast",
+        "hummus",
+        "iceberg-lettuce",
+        "salad-mix",
+        "avocado"
+      ]
+    },
+    {
+      "id": "rolled-oats",
+      "classes": ["grain"],
+      "style": ["breakfast", "baking"],
+      "goesWith": [
+        "honey",
+        "full-cream-milk",
+        "blueberries",
+        "banana",
+        "peanut-butter"
+      ]
+    },
+    {
+      "id": "breakfast-cereal",
+      "classes": ["grain"],
+      "style": ["breakfast"],
+      "goesWith": ["full-cream-milk", "light-milk", "banana", "strawberries"]
+    },
+    {
+      "id": "peanut-butter",
+      "classes": ["nut", "spread"],
+      "style": ["breakfast", "snack"],
+      "goesWith": ["white-bread", "banana", "jam", "honey", "rolled-oats"]
+    },
+    {
+      "id": "honey",
+      "classes": ["sweetener"],
+      "style": ["breakfast", "baking"],
+      "goesWith": [
+        "natural-yoghurt",
+        "greek-yoghurt",
+        "rolled-oats",
+        "ginger",
+        "lemon"
+      ]
+    },
+    {
+      "id": "jam",
+      "classes": ["sweet", "spread"],
+      "style": ["breakfast"],
+      "goesWith": ["white-bread", "butter", "peanut-butter"]
+    },
+    {
+      "id": "coffee",
+      "classes": ["beverage"],
+      "style": ["breakfast"],
+      "goesWith": ["full-cream-milk", "light-milk", "white-sugar"]
+    },
+    {
+      "id": "tea-bags",
+      "classes": ["beverage"],
+      "style": ["breakfast"],
+      "goesWith": ["full-cream-milk", "honey", "lemon"]
+    },
+    {
+      "id": "plain-flour",
+      "classes": ["flour"],
+      "style": ["baking"],
+      "goesWith": ["butter", "egg", "white-sugar", "full-cream-milk"]
+    },
+    {
+      "id": "canned-tuna",
+      "classes": ["fish", "tinned"],
+      "style": ["quick", "salad"],
+      "goesWith": ["lemon", "avocado", "salad-mix", "wraps", "tomato"]
+    },
+    {
+      "id": "pork-loin-chop",
+      "classes": ["pork"],
+      "style": ["grill", "roast"],
+      "goesWith": ["apple", "garlic", "butter", "potato"]
+    }
+  ]
+}

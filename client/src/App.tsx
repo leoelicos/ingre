@@ -22,6 +22,7 @@ import { NoMatch } from './pages/Admin/NoMatch'
 import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
+import { IdeasPage } from './pages/Ideas/IdeasPage'
 import { ListPage } from './pages/List/ListPage'
 import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
@@ -101,6 +102,10 @@ export const Ingre: FC = () => {
                 <Route
                   path="/"
                   element={<ListPage />}
+                />
+                <Route
+                  path="/ideas"
+                  element={<IdeasPage />}
                 />
                 <Route
                   path="/saved"

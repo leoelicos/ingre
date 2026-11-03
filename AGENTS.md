@@ -24,7 +24,7 @@ package.json          root scripts (install/develop/build/seed), concurrently
 vercel.json           SPA rewrite to /index.html
 .github/workflows/ci.yml  the only CI workflow
 .cursor/              rules + atomised context notes (context/*.md)
-docs/                 TODO.md, TEST_MOCK_INVENTORY.md
+docs/                 TODO.md, TEST_MOCK_INVENTORY.md, RAG.md (retrieval over curated profiles, #225)
 MODERNIZATION.md      modernisation checklist (history)
 scripts/convert-catalogue.py  catalogue data conversion
 client/
@@ -34,7 +34,7 @@ client/
   src/components/   Header, AccountMenu, HeaderSearch, SectionTone, Widgets, ...
   src/pages/        Home, Recipe, Search, ShoppingList, TapOff, Admin (login/signup/upgrade/success/404)
   src/lib/apollo/graphQL   queries/mutations
-  src/utils/        auth, idb, storage, shopping, state, library
+  src/utils/        auth, idb, storage, shopping, state, library, rag (local retrieval, #225)
   src/data/         ingredients.json, recipes.json
   src/styles/       theme.css (design tokens), segmented.css
 server/
