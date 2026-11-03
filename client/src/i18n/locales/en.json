@@ -86,6 +86,23 @@
     "onListLabel": "{{name}}, on your list",
     "onListName": "✓ {{name}}",
     "addName": "+ {{name}}",
+    "categoryOnList": "{{category}} · on your list",
+    "sectionFilter": "Filter ingredients by section"
+  },
+  "exploreSection": {
+    "vegetables": "Vegetables",
+    "fruit": "Fruit",
+    "meat": "Meat",
+    "seafood": "Seafood",
+    "dairy": "Dairy, eggs & fridge",
+    "deli": "Deli",
+    "bakery": "Bakery",
+    "pantry": "Pantry",
+    "frozen": "Frozen",
+    "other": "Other",
+    "onListMark": "✓",
+    "onListName": "{{name}}",
+    "addName": "Add {{name}}",
     "categoryOnList": "{{category}} · on your list"
   },
   "saved": {
@@ -165,6 +182,25 @@
     "logIn": "Log in"
   },
   "skipLink": "Skip to content",
+  "nav": {
+    "label": "Main",
+    "explore": "Explore",
+    "inventory": "Inventory",
+    "cook": "Cook",
+    "profile": "Profile"
+  },
+  "profile": {
+    "title": "Profile",
+    "account": "Account",
+    "signedOutHint": "Log in to keep recipes you love and find them on any device.",
+    "signedInHint": "You are logged in.",
+    "saved": "Saved recipes",
+    "savedCount_one": "{{count}} saved recipe",
+    "savedCount_other": "{{count}} saved recipes",
+    "savedNone": "No saved recipes yet. Open a recipe in Explore and tap its heart.",
+    "savedOpen": "Open saved recipes in Explore",
+    "savedLogin": "Saved recipes show here once you log in."
+  },
   "account": {
     "label": "Account",
     "logIn": "Log in",
@@ -223,5 +259,97 @@
   "notFound": {
     "message": "Page Not Found",
     "goHome": "Go home"
+  },
+  "bra": {
+    "label": "Quick actions",
+    "add": "Add item"
+  },
+  "guests": {
+    "button": "Guests",
+    "buttonCount": "Guests ({{count}})",
+    "panel": "Guests at the table",
+    "hint": "Add a guest to flag what they can't have. Nothing is changed for you.",
+    "name": "Guest name",
+    "add": "Add guest",
+    "remove": "Remove {{name}}",
+    "allergensFor": "Allergens for {{name}}",
+    "cant": "{{name}} can't have: {{allergens}}"
+  },
+  "warRoom": {
+    "title": "War room",
+    "open": "War room",
+    "hint": "Type or say what you need. Generic names are fine: \"2 carrots, onion and garlic\".",
+    "field": "Add an item",
+    "matches": "Matches",
+    "add": "Add {{name}}",
+    "added": "{{names}} added",
+    "already": "{{names}} already on your list",
+    "noMatch": "No match for {{terms}}",
+    "speak": "Speak",
+    "stop": "Stop listening",
+    "captured": "Captured",
+    "capturedCount": "{{count}} captured",
+    "back": "Back to your list"
+  },
+  "suggest": {
+    "using": "Using",
+    "use": "Use",
+    "useLabel": "Use {{name}}",
+    "stopUsing": "Stop using {{name}}",
+    "title": "Suggestions",
+    "none": "No recipes use these yet. Try another ingredient.",
+    "missing": "Missing: {{items}}",
+    "nothingMissing": "You have everything",
+    "extraCost": "About {{cost}} more",
+    "money": "${{amount}}",
+    "listSeparator": ", ",
+    "add": "Add to list",
+    "addLabel": "Add {{title}} to your list",
+    "onList": "✓ On your list",
+    "added": "{{title}} added to your list",
+    "browse": "Browse ingredients"
+  },
+  "journey": {
+    "details": "Details",
+    "detailsLabel": "Details of {{name}}",
+    "about": "About {{name}}",
+    "section": "Shop section",
+    "goesWith": "Goes with",
+    "usedIn": "Used in",
+    "suggested": "Suggested recipes",
+    "noPairs": "Nothing pairs with it yet",
+    "noRecipes": "No recipe in the library uses it yet",
+    "noSuggestions": "No recipes to suggest yet"
+  },
+  "guidance": {
+    "title": "Guidance",
+    "self-directed": "Self-directed",
+    "guided": "Guided",
+    "assisted": "Assisted",
+    "hand-held": "Hand-held",
+    "tipUse": "Pick what you have and we'll suggest what to cook.",
+    "tipBrowse": "Browse every ingredient by shop section and pick what you have.",
+    "tipDetails": "See where it sits in the shop, what goes with it and which recipes use it."
+  },
+  "demo": {
+    "title": "Try the loop",
+    "intro": "Start from the ingredients you have. Get a suggestion. Add a ticket.",
+    "search": "Find an ingredient",
+    "placeholder": "carrot, flour…",
+    "none": "No ingredient matches.",
+    "add": "Add {{name}}",
+    "remove": "Remove {{name}}",
+    "picked": "Picked",
+    "suggestions": "Suggestions",
+    "missing": "Add {{items}}",
+    "complete": "You have everything",
+    "cost": "{{price}} to buy",
+    "addTicket": "Add ticket",
+    "ticketAdded": "{{title}} is on your tickets",
+    "pickedAck": "{{name}} picked",
+    "removedAck": "{{name}} removed",
+    "tickets": "Tickets",
+    "fab": "Add ticket for {{title}}",
+    "fabNone": "Add ticket"
   }
 }

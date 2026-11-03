@@ -5,6 +5,7 @@ import { axe, toHaveNoViolations } from 'jest-axe'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthProvider } from '../../utils/auth/AuthContext'
 import { ExploreProvider } from '../../utils/explore/ExploreContext'
+import { GuestsProvider } from '../../utils/guests/GuestsContext'
 import { Header } from '../../components/Header'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
@@ -23,12 +24,14 @@ const renderScreen = (ui: React.ReactElement, path = '/') =>
       <MemoryRouter initialEntries={[path]}>
         <AuthProvider>
           <ExploreProvider>
-            <Routes>
-              <Route
-                path="*"
-                element={ui}
-              />
-            </Routes>
+            <GuestsProvider>
+              <Routes>
+                <Route
+                  path="*"
+                  element={ui}
+                />
+              </Routes>
+            </GuestsProvider>
           </ExploreProvider>
         </AuthProvider>
       </MemoryRouter>
