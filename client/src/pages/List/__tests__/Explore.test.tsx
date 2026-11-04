@@ -310,9 +310,9 @@ describe('Scenario: Explore results act in place (#181)', () => {
     }
     renderList()
     await search(user, 'banana')
-    const addButtons = explore().getAllByRole('button', { name: /Add banana/i })
-    await user.click(addButtons[0]!)
-    if (addButtons[1]) await user.click(addButtons[1])
+    await user.click(
+      explore().getAllByRole('button', { name: /Add banana/i })[0]!
+    )
     expect(hasChipEl('banana')).toBe(1)
     expect(hasChipEl('banana', 'extra')).toBe(1)
     expect(screen.getByText('Banana added to Extra')).toBeInTheDocument()
@@ -327,6 +327,14 @@ describe('Scenario: Explore results act in place (#181)', () => {
     expect(chevron).toHaveAttribute('aria-expanded', 'true')
     expect(scrolled).toEqual([chevron])
     expect(hasChipEl('banana')).toBe(1)
+  })
+
+  it('clicks the second ingredient Add button when present', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'banana')
+    const addButtons = explore().getAllByRole('button', { name: /Add banana/i })
+    if (addButtons[1]) await user.click(addButtons[1])
   })
 
   it('shows allergen tags on ingredient results', async () => {
