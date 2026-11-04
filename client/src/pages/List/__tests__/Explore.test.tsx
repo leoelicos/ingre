@@ -329,14 +329,6 @@ describe('Scenario: Explore results act in place (#181)', () => {
     expect(hasChipEl('banana')).toBe(1)
   })
 
-  it('clicks the second ingredient Add button when present', async () => {
-    const user = userEvent.setup()
-    renderList()
-    await search(user, 'banana')
-    const addButtons = explore().getAllByRole('button', { name: /Add banana/i })
-    if (addButtons[1]) await user.click(addButtons[1])
-  })
-
   it('shows allergen tags on ingredient results', async () => {
     const user = userEvent.setup()
     renderList()

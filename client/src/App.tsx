@@ -16,6 +16,7 @@ import {
 } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import { Header } from './components/Header'
+import { BottomNav } from './components/BottomNav/BottomNav'
 import { PageMain, SkipLink } from './components/SkipLink'
 import { Login } from './pages/Admin/Login'
 import { NoMatch } from './pages/Admin/NoMatch'
@@ -177,6 +178,7 @@ export const Ingre: FC = () => {
                     />
                   </Routes>
                 </FirstRun>
+                <BottomNav />
                 <SiteAnalytics mode={APP_MODE} />
               </GuestsProvider>
             </ExploreProvider>

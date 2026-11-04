@@ -133,25 +133,7 @@ const IngredientResult: FC<{
           {onList ? t('explore.categoryOnList', { category }) : category}
         </span>
       </Button>
-      <div className="flex items-stretch gap-2">
-        <Button
-          onPress={() => ingredients.pick(item)}
-          aria-label={
-            onList
-              ? t('explore.onListLabel', { name })
-              : t('explore.add', { name: item.name })
-          }
-          className={`${RESULT} flex-1`}
-        >
-          <span className="font-semibold">
-            {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
-          </span>
-          <span className="text-xs text-text-secondary">
-            {onList ? t('explore.categoryOnList', { category }) : category}
-          </span>
-        </Button>
-        {showsSuggestions(guidance) && <UseToggle item={item} />}
-      </div>
+      {showsSuggestions(guidance) && <UseToggle item={item} />}
       <AllergenTags allergens={item.allergens} />
       <GuestFlag tags={item.allergens} />
       <IngredientDetails
