@@ -1,13 +1,8 @@
 import type { FC } from 'react'
-import { useState } from 'react'
-import { Button } from 'react-aria-components'
+import { Button } from '../../lib/aria'
 import { Chevron, Collapse } from '../Collapse'
-
-export interface FaqItem {
-  id: string
-  question: string
-  answer: string
-}
+import { useFaqAccordion } from '../../hooks/useFaqAccordion'
+import type { FaqItem } from './types'
 
 export interface FaqAccordionProps {
   title?: string
@@ -15,13 +10,13 @@ export interface FaqAccordionProps {
   items: FaqItem[]
 }
 
-/** Collapsed FAQ accordions, one open at a time. */
+/** Collapsed FAQ accordions, one open at a time. Presentation only. */
 export const FaqAccordion: FC<FaqAccordionProps> = ({
   title = 'Questions about this recipe',
   subtitle,
   items
 }) => {
-  const [openId, setOpenId] = useState<string | null>(null)
+  const { toggle, isOpen } = useFaqAccordion()
   return (
     <section aria-label={title} className="flex flex-col gap-3">
       <div>
@@ -30,11 +25,11 @@ export const FaqAccordion: FC<FaqAccordionProps> = ({
       </div>
       <ul className="m-0 list-none divide-y divide-border p-0">
         {items.map((item) => {
-          const open = openId === item.id
+          const open = isOpen(item.id)
           return (
             <li key={item.id}>
               <Button
-                onPress={() => setOpenId(open ? null : item.id)}
+                onPress={() => toggle(item.id)}
                 aria-expanded={open}
                 aria-controls={`faq-${item.id}`}
                 className="flex w-full items-center justify-between py-3 text-left font-medium text-text data-[focus-visible]:focus-ring"

@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
-import { Button } from 'react-aria-components'
+import { Button } from '../../lib/aria'
 import { Chevron, Collapse } from '../Collapse'
 
 export interface SourcesAndCtaProps {

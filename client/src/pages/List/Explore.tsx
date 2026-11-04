@@ -6,7 +6,7 @@ import { SourcesAndCta } from "../../components/SourcesAndCta/SourcesAndCta"
 import { translate, useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
-import { Button, ToggleButton } from 'react-aria-components'
+import { Button, ToggleButton } from '../../lib/aria'
 import { AllergenTags } from '../../components/AllergenTags'
 import { Collapse } from '../../components/Collapse'
 import { splitTitle } from '../../components/recipeTitle'
@@ -68,6 +68,7 @@ import { RecipeRows } from './RecipeRows'
 import { OriginalDetails } from './RowDetails'
 import { HeaderRow, titleId, toggleId } from './Section'
 import { useFocusAfterRender } from './usePanel'
+import { computeExploreData } from '../../hooks/useExploreResults'
 import { copyLines, newCopy, usedLines } from '../../utils/balance/copies'
 import { catalogue } from '../../utils/library/recipeLibrary'
 import { bundledSuggestions } from '../../utils/suggest/suggest'
@@ -238,7 +239,8 @@ const IngredientGroup: FC<{
   title: string
   items: readonly LibraryIngredient[]
   ingredients: IngredientsState
-}> = ({ title, items, ingredients }) => {
+  controls: RowControls
+}> = ({ title, items, ingredients, controls }) => {
   const [chosen, setChosen] = useState<ReadonlySet<ExploreSection>>(new Set())
   return (
     <div>
@@ -254,28 +256,13 @@ const IngredientGroup: FC<{
             key={item.id}
             item={item}
             ingredients={ingredients}
+            controls={controls}
           />
         ))}
       </ul>
     </div>
   )
 }
-  controls: RowControls
-}> = ({ title, items, ingredients, controls }) => (
-  <div>
-    <h3 className={GROUP_HEADING}>{title}</h3>
-    <ul className="m-0 flex list-none flex-col gap-2 p-1">
-      {items.map((item) => (
-        <IngredientResult
-          key={item.id}
-          item={item}
-          ingredients={ingredients}
-          controls={controls}
-        />
-      ))}
-    </ul>
-  </div>
-)
 
 /** The list's copy of a recipe, or null when it is not on the list. */
 export const listCopyOf = (
@@ -515,25 +502,8 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   const [picked, setPicked] =
     useState<Pick<RecipeFilter, 'contains' | 'excludes'>>(NO_RECIPE_FILTER)
   const filter: RecipeFilter = { ...picked, savedOnly: props.savedOnly }
-  const savedIds = savedIdsOf(props.saved)
-  const source: ExploreSource = {
-    ...DEFAULT_SOURCE,
-    recipes: DEFAULT_SOURCE.recipes.filter((recipe) =>
-      recipeMatches(originalIds(recipe), filter)
-    ),
-    savedOnly: props.savedOnly,
-    savedIds,
-    personal: props.personal
-  }
-  const hidden = DEFAULT_SOURCE.recipes.length - shownRecipes(source).length
-  const results = exploreResults(query, source)
-  useSearchedEvent(query, matchCounts(results))
-  const allowed = unlockedRecipes(
-    DEFAULT_SOURCE.recipes,
-    DEFAULT_SOURCE.ingredients,
-    props.personal.locks
-  )
-  const hidden = allowed.length - shownRecipes(source).length
+  const { results, hidden, counts } = computeExploreData(query, { savedOnly: props.savedOnly, personal: props.personal }, filter, props.saved)
+  useSearchedEvent(query, counts)
   const controls: RowControls = {
     ...props.rows,
     openIds,
@@ -618,7 +588,7 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           controls={controls}
         />
       )}
-      {props.savedOnly && savedIds.size === 0 ? (
+      {props.savedOnly && (props.saved?.ids.size ?? 0) === 0 ? (
         <p
           className="m-0 text-text-secondary"
           role="status"
@@ -633,6 +603,7 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           controls={controls}
         />
       )}
+      </div>
     </div>
   )
 }

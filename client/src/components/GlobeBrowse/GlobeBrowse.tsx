@@ -1,13 +1,7 @@
 import type { FC } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import createGlobe from 'cobe'
-
-export interface CountryPin {
-  id: string
-  name: string
-  location: [number, number] // [lat, lng]
-  recipes?: number
-}
+import { createGlobeAdapter } from '../../lib/globe'
+import type { CountryPin } from './types'
 
 export interface GlobeBrowseProps {
   pins?: CountryPin[]
@@ -22,7 +16,7 @@ const DEFAULT_PINS: CountryPin[] = [
   { id: 'czechia', name: 'Czechia', location: [49.8, 15.5], recipes: 2 }
 ]
 
-/** Interactive globe for browsing recipes by country. Uses lightweight cobe (~5KB). */
+/** Interactive globe for browsing recipes by country. Uses lightweight cobe via adapter. */
 export const GlobeBrowse: FC<GlobeBrowseProps> = ({
   pins = DEFAULT_PINS,
   onSelect
@@ -35,7 +29,7 @@ export const GlobeBrowse: FC<GlobeBrowseProps> = ({
     if (!canvas) return
 
     let phi = 0
-    const globe = createGlobe(canvas, {
+    const globe = createGlobeAdapter(canvas, {
       devicePixelRatio: Math.min(window.devicePixelRatio, 2),
       width: 600,
       height: 600,
@@ -61,6 +55,11 @@ export const GlobeBrowse: FC<GlobeBrowseProps> = ({
     return () => globe.destroy()
   }, [pins])
 
+  const handleSelect = (pin: CountryPin) => {
+    setSelected(pin)
+    onSelect?.(pin)
+  }
+
   return (
     <div className="relative flex flex-col items-center gap-3">
       <div className="relative">
@@ -80,10 +79,7 @@ export const GlobeBrowse: FC<GlobeBrowseProps> = ({
               <li key={p.id}>
                 <button
                   type="button"
-                  onClick={() => {
-                    setSelected(p)
-                    onSelect?.(p)
-                  }}
+                  onClick={() => handleSelect(p)}
                   className="text-left hover:underline"
                 >
                   ■ {p.name}
