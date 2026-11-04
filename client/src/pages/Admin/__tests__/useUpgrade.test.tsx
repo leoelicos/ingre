@@ -19,19 +19,20 @@ const checkoutSession = (session: string): MockedResponse => ({
 /** The user query fails (so not pro), then one CHECKOUT result per press. */
 const wrapperFor =
   (sessions: string[]) =>
-  ({ children }: { children: ReactNode }) => (
-    <MockedProvider
-      mocks={[
-        { request: { query: GET_USER }, error: new Error('offline') },
-        ...sessions.map(checkoutSession)
-      ]}
-      addTypename={false}
-    >
-      <MemoryRouter>
-        <AuthProvider>{children}</AuthProvider>
-      </MemoryRouter>
-    </MockedProvider>
-  )
+  ({ children }: { children: ReactNode }) =>
+    (
+      <MockedProvider
+        mocks={[
+          { request: { query: GET_USER }, error: new Error('offline') },
+          ...sessions.map(checkoutSession)
+        ]}
+        addTypename={false}
+      >
+        <MemoryRouter>
+          <AuthProvider>{children}</AuthProvider>
+        </MemoryRouter>
+      </MockedProvider>
+    )
 
 /** Stripe navigates away on success, so its promise never settles. */
 const navigatingStripe = (): CheckoutRedirect => ({

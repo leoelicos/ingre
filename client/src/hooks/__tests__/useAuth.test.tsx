@@ -19,20 +19,21 @@ const loginMock: MockedResponse = {
 
 const wrapper =
   (mocks: MockedResponse[] = [], initial = '/login') =>
-  ({ children }: { children: React.ReactNode }) => (
-    <MockedProvider mocks={mocks}>
-      <AuthProvider>
-        <MemoryRouter initialEntries={[initial]}>
-          <Routes>
-            <Route
-              path="*"
-              element={children}
-            />
-          </Routes>
-        </MemoryRouter>
-      </AuthProvider>
-    </MockedProvider>
-  )
+  ({ children }: { children: React.ReactNode }) =>
+    (
+      <MockedProvider mocks={mocks}>
+        <AuthProvider>
+          <MemoryRouter initialEntries={[initial]}>
+            <Routes>
+              <Route
+                path="*"
+                element={children}
+              />
+            </Routes>
+          </MemoryRouter>
+        </AuthProvider>
+      </MockedProvider>
+    )
 
 describe('useAuth', () => {
   it('returns login and logout functions', () => {

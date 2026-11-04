@@ -100,7 +100,7 @@ export const itemUnit = (
 ): BaseUnit =>
   item === null
     ? 'count'
-    : (item.sold.find((option) => option.size !== null)?.size?.unit ?? 'g')
+    : item.sold.find((option) => option.size !== null)?.size?.unit ?? 'g'
 
 /** The recipe measure for an item's unit (#182): counted items are "whole". */
 export const unitMeasure = (unit: BaseUnit): string =>

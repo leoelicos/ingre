@@ -70,10 +70,10 @@ export const pluralise = (phrase: string): string =>
       (SINGULARS[word] !== undefined || looksPlural(word)
         ? word
         : /(s|x|ch|sh)$/.test(word)
-          ? `${word}es`
-          : /[^aeiou]y$/.test(word)
-            ? `${word.slice(0, -1)}ies`
-            : `${word}s`)
+        ? `${word}es`
+        : /[^aeiou]y$/.test(word)
+        ? `${word.slice(0, -1)}ies`
+        : `${word}s`)
   )
 
 /** Singular for catalogue names given in the plural: eggs -> egg, tomatoes -> tomato. */

@@ -30,8 +30,8 @@ const partnersOf = (id: string, raw: readonly RawProfile[]): string[] =>
         profile.id === id
           ? profile.goesWith
           : profile.goesWith.includes(id)
-            ? [profile.id]
-            : []
+          ? [profile.id]
+          : []
       )
     )
   ).sort()

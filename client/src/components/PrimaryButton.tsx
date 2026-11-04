@@ -41,8 +41,8 @@ export const PrimaryButton = ({
       {...(ariaDisabledOnly
         ? {}
         : isDisabled !== undefined
-          ? { isDisabled }
-          : {})}
+        ? { isDisabled }
+        : {})}
       {...(ariaLabel !== undefined ? { 'aria-label': ariaLabel } : {})}
       {...(showAriaDisabled ? { 'aria-disabled': DISABLED_ARIA } : {})}
       className={({ isFocusVisible }) =>

@@ -45,8 +45,8 @@
     "doc": "docs"
   },
   "lint-staged": {
-    "client/src/**/*.{ts,tsx,css}": "prettier --write",
-    "automation/**/*.{ts,mjs,json,md}": "prettier --write",
-    "server/**/*.{ts,js}": "prettier --write"
+    "client/src/**/*.{ts,tsx,css}": "cd client && npx prettier --write",
+    "automation/**/*.{ts,mjs,json,md}": "cd automation && npx prettier --write",
+    "server/**/*.{ts,js}": "npx prettier --write"
   }
 }

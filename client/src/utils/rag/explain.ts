@@ -10,8 +10,8 @@ export const sentence = (reason: Reason): string =>
   reason.kind === 'partner'
     ? translate('rag.partner', { names: list(reason.with) })
     : reason.kind === 'style'
-      ? translate('rag.style', {
-          tags: list(reason.tags),
-          names: list(reason.with)
-        })
-      : translate('rag.match', { terms: list(reason.terms) })
+    ? translate('rag.style', {
+        tags: list(reason.tags),
+        names: list(reason.with)
+      })
+    : translate('rag.match', { terms: list(reason.terms) })
