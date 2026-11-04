@@ -1,3 +1,4 @@
+import { GlobeBrowse } from "../../components/GlobeBrowse/GlobeBrowse"
 import { PageIntro } from "../../components/PageIntro/PageIntro"
 import { FaqAccordion } from "../../components/FaqAccordion/FaqAccordion"
 import { KeepReading } from "../../components/KeepReading/KeepReading"
@@ -557,12 +558,13 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
       <PageIntro
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Explore" }]}
         title="Explore recipes"
-        description="Browse by ingredients, sections, or (soon) by country on the globe."
+        description="Browse by ingredients, sections, or spin the globe to find recipes by country."
         descriptors={[
-          { icon: "🌍", text: "Country browse coming soon" },
+          { icon: "🌍", text: "Spin to explore by country" },
           { icon: "⏱️", text: "Quick filters" }
         ]}
       />
+      <GlobeBrowse onSelect={(pin) => console.log("Selected country", pin)} />
       <FaqAccordion items={demoFaqs} />
       <KeepReading items={demoRelated} />
       <SourcesAndCta
