@@ -32,30 +32,31 @@ export const IngredientNames: FC<{
   flagged?: ReadonlySet<string> | undefined
 }> = ({ lines, title, flagged = NONE }) => {
   const t = useT()
-  const flagged = flaggedIngredientIds(lines, useGuestList())
+  const guestFlagged = flaggedIngredientIds(lines, useGuestList())
   return (
     <ul
       aria-label={t('row.ingredientsIn', { title })}
       data-testid="ingredient-names"
       className="col-span-2 m-0 flex list-none flex-wrap gap-2 pb-4 pl-14 pr-4 pt-0"
     >
-      {lines.map((line) => (
-        <li
-          key={line.ingredientId}
-          data-name-chip={line.ingredientId}
-          data-guest-flag={flagged.has(line.ingredientId) ? 'true' : undefined}
-          className={[
-            nameChipClass(line),
-            ...(flagged.has(line.ingredientId) ? [GUEST_OUTLINE] : [])
-          data-flagged={String(flagged.has(line.ingredientId))}
-          className={[
-            nameChipClass(line),
-            ...(flagged.has(line.ingredientId) ? [FLAGGED] : [])
-          ].join(' ')}
-        >
-          {displayName(line)}
-        </li>
-      ))}
+      {lines.map((line) => {
+        const isMissing = flagged.has(line.ingredientId)
+        const isGuest = guestFlagged.has(line.ingredientId)
+        return (
+          <li
+            key={line.ingredientId}
+            data-name-chip={line.ingredientId}
+            data-guest-flag={isGuest ? 'true' : undefined}
+            data-flagged={String(isMissing)}
+            className={[
+              nameChipClass(line),
+              ...(isMissing || isGuest ? [FLAGGED] : [])
+            ].join(' ')}
+          >
+            {displayName(line)}
+          </li>
+        )
+      })}
     </ul>
   )
 }

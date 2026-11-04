@@ -23,15 +23,8 @@ import type { RecipeCopy } from '../../utils/balance/copies'
 import { useSearchedEvent } from '../../utils/analytics/useSearchedEvent'
 import { useExplore } from '../../utils/explore/ExploreContext'
 import { flaggedIds, showsSuggestions } from '../../utils/guidance/guidance'
-import type {
-  ExploreResults,
-  ExploreSource
-} from '../../utils/explore/exploreSearch'
-import {
-  DEFAULT_SOURCE,
-  exploreResults,
-  shownRecipes
-} from '../../utils/explore/exploreSearch'
+import type { ExploreResults } from '../../utils/explore/exploreSearch'
+import { DEFAULT_SOURCE } from '../../utils/explore/exploreSearch'
 import type { ExploreSection } from '../../utils/explore/sections'
 import {
   SECTION_ACCENT,
@@ -44,10 +37,8 @@ import type { RecipeFilter } from '../../utils/filters/filters'
 import {
   NO_RECIPE_FILTER,
   recipeFilterOn,
-  recipeMatches
 } from '../../utils/filters/filters'
 import { library } from '../../utils/library/recipeLibrary'
-import { unlockedRecipes } from '../../utils/profile/locks'
 import type { Personal } from '../../utils/profile/personal'
 import type { SavedState } from '../../utils/saved/useSaved'
 import {
