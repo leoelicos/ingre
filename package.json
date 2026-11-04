@@ -13,7 +13,8 @@
     "test:unit": "npm --prefix client test -- --coverage --coverageThreshold='{\"global\":{\"branches\":100,\"functions\":100,\"lines\":100,\"statements\":100}}' && npm --prefix server test",
     "test:e2e": "npm --prefix automation test",
     "codegen": "graphql-codegen --config codegen.ts",
-    "build:catalogue": "node scripts/build-recipes-db.mjs && node scripts/copy-recipes-db.mjs"
+    "build:catalogue": "node scripts/build-recipes-db.mjs && node scripts/copy-recipes-db.mjs",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,8 @@
     "@graphql-codegen/typescript-operations": "^6.2.0",
     "concurrently": "^7.3.0",
     "graphql": "^16.14.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "sql.js": "^1.15.2"
   },
   "engines": {
@@ -39,5 +42,10 @@
   },
   "directories": {
     "doc": "docs"
+  },
+  "lint-staged": {
+    "client/src/**/*.{ts,tsx,css}": "prettier --write",
+    "automation/**/*.{ts,mjs,json,md}": "prettier --write",
+    "server/**/*.{ts,js}": "prettier --write"
   }
 }
