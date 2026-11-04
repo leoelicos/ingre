@@ -626,7 +626,7 @@ describe('Feature: Recipe copies (#182)', () => {
       removed: [],
       changed: []
     })
-  }, 15000)
+  }, 8000)
 })
 
 describe('Feature: Recipe filters (#182)', () => {
