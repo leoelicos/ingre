@@ -17,9 +17,38 @@ import {
 import { SEARCH_SETTLE_MS } from '../../../utils/analytics/useSearchedEvent'
 import { readEvents } from '../../../utils/analytics/events'
 import { SETTINGS_KEY } from '../../../utils/profile/settings'
-import { HIDE_EXPLORE } from '../Explore'
+import { HIDE_EXPLORE, originalIds, matchCounts } from '../Explore'
+import { library } from '../../../utils/library/recipeLibrary'
 
 beforeEach(() => localStorage.clear())
+
+describe('pure helpers', () => {
+  it('originalIds returns the ingredient ids of a recipe', () => {
+    const recipe = library[0]
+    if (recipe === undefined) throw new Error('no recipes')
+    const ids = originalIds(recipe)
+    expect(ids.size).toBe(recipe.ingredients.length)
+    expect(ids.has(recipe.ingredients[0]?.ingredientId ?? '')).toBe(true)
+  })
+
+  it('matchCounts returns zero for non-matches and the lengths for matches', () => {
+    expect(
+      matchCounts({
+        kind: 'none',
+        ingredients: [],
+        recipes: [],
+        browse: []
+      })
+    ).toEqual({ ingredients: 0, recipes: 0 })
+    expect(
+      matchCounts({
+        kind: 'matches',
+        ingredients: [],
+        recipes: []
+      })
+    ).toEqual({ ingredients: 0, recipes: 0 })
+  })
+})
 
 type User = ReturnType<typeof userEvent.setup>
 /** Puts the whole query in at once: typing key by key re-renders every result per key, slow on CI. */
@@ -281,9 +310,9 @@ describe('Scenario: Explore results act in place (#181)', () => {
     }
     renderList()
     await search(user, 'banana')
-    await user.click(
-      explore().getAllByRole('button', { name: /Add banana/i })[0]!
-    )
+    const addButtons = explore().getAllByRole('button', { name: /Add banana/i })
+    await user.click(addButtons[0]!)
+    if (addButtons[1]) await user.click(addButtons[1])
     expect(hasChipEl('banana')).toBe(1)
     expect(hasChipEl('banana', 'extra')).toBe(1)
     expect(screen.getByText('Banana added to Extra')).toBeInTheDocument()
