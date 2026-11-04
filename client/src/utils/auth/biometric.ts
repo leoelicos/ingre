@@ -3,8 +3,7 @@
 export type BiometricPlatform = 'web' | 'ios' | 'android' | 'unknown'
 
 export type BiometricResult =
-  | { ok: true }
-  | { ok: false; reason: 'unavailable' | 'cancelled' | 'failed' }
+  { ok: true } | { ok: false; reason: 'unavailable' | 'cancelled' | 'failed' }
 
 export function detectPlatform(
   userAgent = '',

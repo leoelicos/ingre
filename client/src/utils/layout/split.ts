@@ -43,8 +43,8 @@ export const effectiveSplit = (preferred: Split, widths: Widths): Split =>
   !widths.split
     ? 'vertical'
     : splitOptions(widths).includes(preferred)
-    ? preferred
-    : '50/50'
+      ? preferred
+      : '50/50'
 
 /** Where Explore sits: inline below the search bar, the drawer on the right, or a third column. */
 export type ExplorePlacement = 'inline' | 'drawer' | 'column'

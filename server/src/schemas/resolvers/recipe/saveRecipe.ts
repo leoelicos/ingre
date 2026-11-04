@@ -55,28 +55,22 @@ export const toCustomisationDocs = ({
   changed,
   portions
 }: CustomisationsInput): CustomisationDoc[] => [
-  ...added.map(
-    ({ ingredientId, to }): CustomisationDoc => ({
-      kind: 'AddedIngredient',
-      ingredientId,
-      to
-    })
-  ),
-  ...removed.map(
-    ({ ingredientId, from }): CustomisationDoc => ({
-      kind: 'RemovedIngredient',
-      ingredientId,
-      from
-    })
-  ),
-  ...changed.map(
-    ({ ingredientId, from, to }): CustomisationDoc => ({
-      kind: 'ChangedIngredient',
-      ingredientId,
-      from,
-      to
-    })
-  ),
+  ...added.map(({ ingredientId, to }): CustomisationDoc => ({
+    kind: 'AddedIngredient',
+    ingredientId,
+    to
+  })),
+  ...removed.map(({ ingredientId, from }): CustomisationDoc => ({
+    kind: 'RemovedIngredient',
+    ingredientId,
+    from
+  })),
+  ...changed.map(({ ingredientId, from, to }): CustomisationDoc => ({
+    kind: 'ChangedIngredient',
+    ingredientId,
+    from,
+    to
+  })),
   ...(portions ? [{ kind: 'PortionsChange' as const, ...portions }] : [])
 ]
 

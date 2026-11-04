@@ -25,8 +25,8 @@ const hueOf = (button: Locator): Promise<number> =>
       max === r
         ? ((g - b) / d) % 6
         : max === g
-        ? (b - r) / d + 2
-        : (r - g) / d + 4
+          ? (b - r) / d + 2
+          : (r - g) / d + 4
     return (Math.round(h * 60) + 360) % 360
   })
 

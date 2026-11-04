@@ -38,9 +38,7 @@ test.describe('layout (#181)', () => {
         async () =>
           (await pageTop(recipesRegion(page))) -
           (await pageTop(ingredientsRegion(page))) -
-          (
-            await box(ingredientsRegion(page))
-          ).height
+          (await box(ingredientsRegion(page))).height
       )
       .toBeGreaterThan(-1)
   })

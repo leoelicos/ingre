@@ -29,8 +29,8 @@ export const formatFraction = (n: number): string => {
   return glyph === undefined
     ? formatNumber(value)
     : whole === 0
-    ? glyph
-    : `${formatNumber(whole)}${glyph}`
+      ? glyph
+      : `${formatNumber(whole)}${glyph}`
 }
 
 /**

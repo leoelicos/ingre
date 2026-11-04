@@ -35,6 +35,7 @@
     "graphql": "^16.14.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
+    "prettier": "^3.9.10",
     "sql.js": "^1.15.2"
   },
   "engines": {

@@ -102,19 +102,18 @@ const throwsOnceLink = () => {
 
 const wrapper =
   (mocks: MockedResponse[], link?: ApolloLink) =>
-  ({ children }: { children: React.ReactNode }) =>
-    (
-      <MockedProvider
-        mocks={mocks}
-        {...(link === undefined ? {} : { link })}
+  ({ children }: { children: React.ReactNode }) => (
+    <MockedProvider
+      mocks={mocks}
+      {...(link === undefined ? {} : { link })}
+    >
+      <MemoryRouter
+        initialEntries={[{ pathname: '/signup', state: { from: '/' } }]}
       >
-        <MemoryRouter
-          initialEntries={[{ pathname: '/signup', state: { from: '/' } }]}
-        >
-          <AuthProvider>{children}</AuthProvider>
-        </MemoryRouter>
-      </MockedProvider>
-    )
+        <AuthProvider>{children}</AuthProvider>
+      </MemoryRouter>
+    </MockedProvider>
+  )
 
 const fill = (current: ReturnType<typeof useSignup>, email = 'ada@b.c') => {
   current.onFirstNameChange({ target: { value: 'Ada' } })

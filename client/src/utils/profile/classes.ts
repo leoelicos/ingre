@@ -1,13 +1,7 @@
 /* Ingredient classes for the customer profile (#224): broad groups and the finer classes in them. */
 
 export type Group =
-  | 'vegetables'
-  | 'fruit'
-  | 'proteins'
-  | 'dairy'
-  | 'carbs'
-  | 'flavour'
-  | 'treats'
+  'vegetables' | 'fruit' | 'proteins' | 'dairy' | 'carbs' | 'flavour' | 'treats'
 export const GROUPS: readonly Group[] = [
   'vegetables',
   'fruit',

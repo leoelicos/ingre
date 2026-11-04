@@ -106,7 +106,7 @@ export const sourceAmount = (
   const base = toBase(source.quantity, source.measure, item)
   return base === null
     ? source.quantity
-    : convert(base, unit, item) ?? source.quantity
+    : (convert(base, unit, item) ?? source.quantity)
 }
 
 /** The chip's total: every recipe need plus Extra, never rounded (#182). */
@@ -133,17 +133,15 @@ const recipeSourcesFor = (
   entries.flatMap((entry) =>
     entry.lines
       .filter((line) => line.ingredientId === id)
-      .map(
-        (line): RecipeSource => ({
-          kind: 'recipe',
-          recipeId: entry.recipe.id,
-          label: entry.label,
-          quantity: line.quantity,
-          measure: line.measure,
-          removed: line.quantity === 0,
-          customised: isCustomisedIn(entry.copy, id)
-        })
-      )
+      .map((line): RecipeSource => ({
+        kind: 'recipe',
+        recipeId: entry.recipe.id,
+        label: entry.label,
+        quantity: line.quantity,
+        measure: line.measure,
+        removed: line.quantity === 0,
+        customised: isCustomisedIn(entry.copy, id)
+      }))
   )
 
 /** An item on the list before edits and layout: what it is and where its amounts come from. */

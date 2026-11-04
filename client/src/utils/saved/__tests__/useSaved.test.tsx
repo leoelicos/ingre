@@ -26,8 +26,9 @@ const input = saveInput(dahl, newCopy('dahl'), catalogue)
 
 const wrapper =
   (mocks: readonly MockedResponse[]) =>
-  ({ children }: { children: ReactNode }) =>
+  ({ children }: { children: ReactNode }) => (
     <MockedProvider mocks={mocks}>{children}</MockedProvider>
+  )
 
 describe('Feature: Saving (#182, F4)', () => {
   it('reads library ids, ignoring recipes from elsewhere', () => {
