@@ -50,7 +50,7 @@ export const SourcesAndCta: FC<SourcesAndCtaProps> = ({
         <h2 className="m-0 text-xl font-semibold">{ctaTitle}</h2>
         <p className="mt-2 mb-4 text-sm opacity-90">{ctaDescription}</p>
         <Button
-          onPress={onCta}
+          onPress={onCta ?? (() => {})}
           className="w-full rounded-control bg-bg py-3 font-semibold text-text data-[focus-visible]:focus-ring"
         >
           {ctaLabel}

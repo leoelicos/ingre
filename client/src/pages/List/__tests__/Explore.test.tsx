@@ -51,7 +51,6 @@ const ingredientResults = () =>
     .getAllByRole('button')
     .filter((button) => button.hasAttribute('data-section'))
     .map((button) => button.getAttribute('aria-label'))
-    .map((button) => button.textContent)
 const browseNames = () => groupNames('Browse recipes')
 const signIn = () =>
   fireEvent.click(screen.getByRole('button', { name: 'Pretend login' }))

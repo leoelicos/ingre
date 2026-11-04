@@ -1,8 +1,3 @@
-import { GlobeBrowse } from "../../components/GlobeBrowse/GlobeBrowse"
-import { PageIntro } from "../../components/PageIntro/PageIntro"
-import { FaqAccordion } from "../../components/FaqAccordion/FaqAccordion"
-import { KeepReading } from "../../components/KeepReading/KeepReading"
-import { SourcesAndCta } from "../../components/SourcesAndCta/SourcesAndCta"
 import { translate, useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
@@ -506,33 +501,8 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
     seeRecipe: true,
     recessed: false
   }
-  const demoFaqs = [
-    { id: "1", question: "How long does this take?", answer: "About 30 minutes including prep." },
-    { id: "2", question: "Can I substitute ingredients?", answer: "Yes, many recipes allow simple swaps." }
-  ]
-  const demoRelated = [
-    { id: "r1", title: "Similar recipe 1", description: "Another dish from the same region." },
-    { id: "r2", title: "Similar recipe 2", description: "Uses the same key ingredients." }
-  ]
   return (
-    <div className="flex flex-col gap-6">
-      <PageIntro
-        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Explore" }]}
-        title="Explore recipes"
-        description="Browse by ingredients, sections, or spin the globe to find recipes by country."
-        descriptors={[
-          { icon: "🌍", text: "Spin to explore by country" },
-          { icon: "⏱️", text: "Quick filters" }
-        ]}
-      />
-      <GlobeBrowse onSelect={(pin) => console.log("Selected country", pin)} />
-      <FaqAccordion items={demoFaqs} />
-      <KeepReading items={demoRelated} />
-      <SourcesAndCta
-        sourcesContent={<p>Sample curation notes: adapted from public sources, reviewed for accuracy.</p>}
-        onCta={() => alert("CTA pressed")}
-      />
-      <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <ActionsRow label={t('explore.actions')}>
         <FilterButton
           panelId={FILTER_ID}
@@ -594,7 +564,6 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           controls={controls}
         />
       )}
-      </div>
     </div>
   )
 }
