@@ -73,7 +73,9 @@ export const GlobeBrowse: FC<GlobeBrowseProps> = ({
         {/* Overlay card like the mockup */}
         <div className="absolute left-2 top-2 w-44 rounded-control bg-bg/90 p-3 text-sm shadow-raised">
           <div className="font-semibold">Recently explored</div>
-          <div className="text-xs text-text-secondary">Your latest countries</div>
+          <div className="text-xs text-text-secondary">
+            Your latest countries
+          </div>
           <ul className="mt-2 list-none p-0">
             {pins.slice(0, 5).map((p) => (
               <li key={p.id}>

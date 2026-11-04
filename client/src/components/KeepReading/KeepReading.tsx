@@ -17,7 +17,10 @@ export const KeepReading: FC<KeepReadingProps> = ({
   title = 'Keep reading',
   items
 }) => (
-  <section aria-label={title} className="flex flex-col gap-3">
+  <section
+    aria-label={title}
+    className="flex flex-col gap-3"
+  >
     <h2 className="m-0 text-xl font-semibold text-text">{title}</h2>
     <ul className="m-0 list-none flex flex-col gap-2 p-0">
       {items.map((item) => (
@@ -27,7 +30,9 @@ export const KeepReading: FC<KeepReadingProps> = ({
             className="block rounded-control border border-border bg-bg p-4 text-text shadow-raised data-[focus-visible]:focus-ring hover:bg-bg-hover"
           >
             <span className="block font-semibold">{item.title}</span>
-            <span className="mt-1 block text-sm text-text-secondary">{item.description}</span>
+            <span className="mt-1 block text-sm text-text-secondary">
+              {item.description}
+            </span>
           </a>
         </li>
       ))}

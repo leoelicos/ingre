@@ -1,5 +1,8 @@
 import type { LibraryRecipe } from '../types/library'
-import type { ExploreSource, ExploreResults } from '../utils/explore/exploreSearch'
+import type {
+  ExploreSource,
+  ExploreResults
+} from '../utils/explore/exploreSearch'
 import {
   DEFAULT_SOURCE,
   exploreResults,

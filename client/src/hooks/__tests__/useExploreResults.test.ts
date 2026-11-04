@@ -13,7 +13,12 @@ describe('computeExploreData', () => {
   })
 
   it('returns match counts of zero for non-matching query', () => {
-    const data = computeExploreData('zzzznonexistent', props, NO_RECIPE_FILTER, null)
+    const data = computeExploreData(
+      'zzzznonexistent',
+      props,
+      NO_RECIPE_FILTER,
+      null
+    )
     expect(data.counts.ingredients).toBe(0)
     expect(data.counts.recipes).toBe(0)
   })

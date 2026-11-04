@@ -33,17 +33,29 @@ export const SourcesAndCta: FC<SourcesAndCtaProps> = ({
           aria-controls="sources-content"
           className="flex w-full items-center gap-3 text-left data-[focus-visible]:focus-ring"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded bg-bg-secondary" aria-hidden="true">
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded bg-bg-secondary"
+            aria-hidden="true"
+          >
             📖
           </span>
           <span className="flex-1">
-            <span className="block font-semibold text-text">{sourcesTitle}</span>
-            <span className="block text-sm text-text-secondary">{sourcesSubtitle}</span>
+            <span className="block font-semibold text-text">
+              {sourcesTitle}
+            </span>
+            <span className="block text-sm text-text-secondary">
+              {sourcesSubtitle}
+            </span>
           </span>
           <Chevron open={open} />
         </Button>
-        <Collapse id="sources-content" open={open}>
-          <div className="pt-3 text-sm text-text-secondary">{sourcesContent}</div>
+        <Collapse
+          id="sources-content"
+          open={open}
+        >
+          <div className="pt-3 text-sm text-text-secondary">
+            {sourcesContent}
+          </div>
         </Collapse>
       </div>
       <div className="rounded-control bg-text p-6 text-bg">

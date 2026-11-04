@@ -1,8 +1,14 @@
-import { authenticateBiometric, biometricAvailable, detectPlatform } from '../biometric'
+import {
+  authenticateBiometric,
+  biometricAvailable,
+  detectPlatform
+} from '../biometric'
 
 describe('biometric', () => {
   it('detects ios, android and web', () => {
-    expect(detectPlatform('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)')).toBe('ios')
+    expect(
+      detectPlatform('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)')
+    ).toBe('ios')
     expect(detectPlatform('Mozilla/5.0 (Linux; Android 14)')).toBe('android')
     expect(detectPlatform('Mozilla/5.0 (Macintosh)')).toBe('web')
   })

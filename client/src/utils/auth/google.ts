@@ -2,7 +2,11 @@
 
 export type GooglePlatform = 'web' | 'ios' | 'android'
 
-export function googleAuthUrl(platform: GooglePlatform, clientId: string, redirect: string): string {
+export function googleAuthUrl(
+  platform: GooglePlatform,
+  clientId: string,
+  redirect: string
+): string {
   const base = 'https://accounts.google.com/o/oauth2/v2/auth'
   const params = new URLSearchParams({
     client_id: clientId,

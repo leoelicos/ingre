@@ -29,10 +29,7 @@ import {
   sectionsOf
 } from '../../utils/explore/sections'
 import type { RecipeFilter } from '../../utils/filters/filters'
-import {
-  NO_RECIPE_FILTER,
-  recipeFilterOn,
-} from '../../utils/filters/filters'
+import { NO_RECIPE_FILTER, recipeFilterOn } from '../../utils/filters/filters'
 import { library } from '../../utils/library/recipeLibrary'
 import type { Personal } from '../../utils/profile/personal'
 import type { SavedState } from '../../utils/saved/useSaved'
@@ -488,7 +485,12 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   const [picked, setPicked] =
     useState<Pick<RecipeFilter, 'contains' | 'excludes'>>(NO_RECIPE_FILTER)
   const filter: RecipeFilter = { ...picked, savedOnly: props.savedOnly }
-  const { results, hidden, counts } = computeExploreData(query, { savedOnly: props.savedOnly, personal: props.personal }, filter, props.saved)
+  const { results, hidden, counts } = computeExploreData(
+    query,
+    { savedOnly: props.savedOnly, personal: props.personal },
+    filter,
+    props.saved
+  )
   useSearchedEvent(query, counts)
   const controls: RowControls = {
     ...props.rows,

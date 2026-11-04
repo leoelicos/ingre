@@ -18,7 +18,10 @@ export const FaqAccordion: FC<FaqAccordionProps> = ({
 }) => {
   const { toggle, isOpen } = useFaqAccordion()
   return (
-    <section aria-label={title} className="flex flex-col gap-3">
+    <section
+      aria-label={title}
+      className="flex flex-col gap-3"
+    >
       <div>
         <h2 className="m-0 text-xl font-semibold text-text">{title}</h2>
         {subtitle && <p className="m-0 mt-1 text-text-secondary">{subtitle}</p>}
@@ -37,7 +40,10 @@ export const FaqAccordion: FC<FaqAccordionProps> = ({
                 {item.question}
                 <Chevron open={open} />
               </Button>
-              <Collapse id={`faq-${item.id}`} open={open}>
+              <Collapse
+                id={`faq-${item.id}`}
+                open={open}
+              >
                 <p className="m-0 pb-3 text-text-secondary">{item.answer}</p>
               </Collapse>
             </li>

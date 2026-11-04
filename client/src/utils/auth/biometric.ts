@@ -6,14 +6,20 @@ export type BiometricResult =
   | { ok: true }
   | { ok: false; reason: 'unavailable' | 'cancelled' | 'failed' }
 
-export function detectPlatform(userAgent = '', capacitor = false): BiometricPlatform {
+export function detectPlatform(
+  userAgent = '',
+  capacitor = false
+): BiometricPlatform {
   if (/iPhone|iPad|iPod/i.test(userAgent)) return 'ios'
   if (/Android/i.test(userAgent)) return 'android'
   if (capacitor) return 'unknown'
   return 'web'
 }
 
-export function biometricAvailable(platform: BiometricPlatform, hasWebAuthn: boolean): boolean {
+export function biometricAvailable(
+  platform: BiometricPlatform,
+  hasWebAuthn: boolean
+): boolean {
   if (platform === 'ios' || platform === 'android') return true
   if (platform === 'web') return hasWebAuthn
   return false
@@ -30,7 +36,9 @@ export async function authenticateBiometric(input: {
   }
   try {
     const ok =
-      input.platform === 'web' ? await input.webCheck() : await input.nativeCheck()
+      input.platform === 'web'
+        ? await input.webCheck()
+        : await input.nativeCheck()
     return ok ? { ok: true } : { ok: false, reason: 'failed' }
   } catch {
     return { ok: false, reason: 'cancelled' }
