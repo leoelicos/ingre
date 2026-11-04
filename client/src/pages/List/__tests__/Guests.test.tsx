@@ -140,7 +140,7 @@ describe('Flags', () => {
     await user.click(searchBox())
     await user.paste('butter')
     const item = explore()
-      .getAllByRole('button', { name: 'Add butter' })[0]
+      .getAllByRole('button', { name: 'Add butter' })[0]!
       .closest('li')
     expect(
       within(item ?? document.body).getByTestId('guest-flag')

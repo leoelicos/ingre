@@ -282,14 +282,14 @@ describe('Scenario: Explore results act in place (#181)', () => {
     renderList()
     await search(user, 'banana')
     await user.click(
-      explore().getAllByRole('button', { name: /Add banana/i })[0]
+      explore().getAllByRole('button', { name: /Add banana/i })[0]!
     )
     expect(hasChipEl('banana')).toBe(1)
     expect(hasChipEl('banana', 'extra')).toBe(1)
     expect(screen.getByText('Banana added to Extra')).toBeInTheDocument()
     const onList = explore().getAllByRole('button', {
       name: /banana.*on your list/i
-    })[0]
+    })[0]!
     expect(onList).toHaveTextContent('on your list')
     await user.click(onList)
     const chevron = within(chip('banana')).getByRole('button', {
@@ -305,7 +305,7 @@ describe('Scenario: Explore results act in place (#181)', () => {
     renderList()
     await search(user, 'butter')
     const item = explore()
-      .getAllByRole('button', { name: /Add butter/i })[0]
+      .getAllByRole('button', { name: /Add butter/i })[0]!
       .closest('li')
     expect(
       within(item ?? document.body).getByRole('list', { name: 'Allergens' })
@@ -363,13 +363,13 @@ describe('Scenario: Search bar (#181)', () => {
     const user = userEvent.setup()
     renderList()
     await search(user, 'banana')
-    const add = explore().getAllByRole('button', { name: /Add banana/i })[0]
+    const add = explore().getAllByRole('button', { name: /Add banana/i })[0]!
     expect(add).toHaveAttribute('aria-label')
     expect(add).toHaveAccessibleName('Add banana')
     await user.click(add)
     const onList = explore().getAllByRole('button', {
       name: /banana.*on your list/i
-    })[0]
+    })[0]!
     expect(onList).toHaveAccessibleName(/banana.*on your list/i)
   })
 })
@@ -439,7 +439,7 @@ describe('Explore sections (#226)', () => {
       await user.clear(searchBox())
       await search(user, name)
       return explore()
-        .getAllByRole('button', { name: `Add ${name}` })[0]
+        .getAllByRole('button', { name: `Add ${name}` })[0]!
         .getAttribute('data-section')
     }
     expect(await sectionOf('banana')).toBe('fruit')
