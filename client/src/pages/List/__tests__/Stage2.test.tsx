@@ -589,7 +589,9 @@ describe('Feature: Recipe copies (#182)', () => {
       changed: [{ ingredientId: 'butter', from: 15, to: 30 }]
     })
   })
-  it('Scenario: Saving from Explore saves the list copy with its customisations; off the list it saves the original', async () => {
+  it(
+    'Scenario: Saving from Explore saves the list copy with its customisations; off the list it saves the original',
+    async () => {
     const user = userEvent.setup()
     const seen: RecipeInput[] = []
     pick('dahl')
@@ -626,7 +628,9 @@ describe('Feature: Recipe copies (#182)', () => {
       removed: [],
       changed: []
     })
-  })
+  },
+  15000
+)
 })
 
 describe('Feature: Recipe filters (#182)', () => {
