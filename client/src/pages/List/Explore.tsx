@@ -114,6 +114,7 @@ const IngredientResult: FC<{
   const name = capitaliseFirst(item.name)
   const section = exploreSectionOf(item)
   const category = t(`exploreSection.${section}`)
+  console.log('[IngredientResult] render', { id: item.id, name: item.name, onList, section })
   return (
     <li className="flex flex-col gap-1">
       <Button
