@@ -18,12 +18,7 @@ test.describe('four tabs (#227)', () => {
     console.log('[tabs] navigated to /', await page.url())
     const links = nav(page).getByRole('link')
     console.log('[tabs] link count', await links.count())
-    await expect(links).toHaveText([
-      'Explore',
-      'Inventory',
-      'Cook',
-      'Profile'
-    ])
+    await expect(links).toHaveText(['Explore', 'Inventory', 'Cook', 'Profile'])
     console.log('[tabs] text assertion passed')
     await expect(tab(page, 'Explore')).toHaveAttribute('aria-current', 'page')
     await expect(tab(page, 'Cook')).not.toHaveAttribute('aria-current', /.*/)
@@ -64,7 +59,8 @@ test.describe('four tabs (#227)', () => {
     await expect(tab(page, 'Cook')).toHaveAttribute('aria-current', 'page')
     const recipes = page.getByRole('heading', { level: 2, name: /^Recipes/ })
     console.log('[tabs] Recipes heading count', await recipes.count())
-    if ((await recipes.count()) === 0) console.error('[tabs] no Recipes heading')
+    if ((await recipes.count()) === 0)
+      console.error('[tabs] no Recipes heading')
     await expect(recipes).toBeFocused()
     await expect(
       page.getByRole('region', { name: 'Recipes', exact: true })
@@ -72,9 +68,13 @@ test.describe('four tabs (#227)', () => {
     await tab(page, 'Inventory').click()
     console.log('[tabs] after Inventory click', await page.url())
     await expect(tab(page, 'Inventory')).toHaveAttribute('aria-current', 'page')
-    const ingredients = page.getByRole('heading', { level: 2, name: /^Ingredients/ })
+    const ingredients = page.getByRole('heading', {
+      level: 2,
+      name: /^Ingredients/
+    })
     console.log('[tabs] Ingredients heading count', await ingredients.count())
-    if ((await ingredients.count()) === 0) console.error('[tabs] no Ingredients heading')
+    if ((await ingredients.count()) === 0)
+      console.error('[tabs] no Ingredients heading')
     await expect(ingredients).toBeFocused()
   })
 
