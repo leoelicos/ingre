@@ -127,15 +127,15 @@ const IngredientResult: FC<{
         onPress={() => ingredients.pick(item)}
         aria-label={
           onList
-            ? t('explore.onListLabel', { name })
-            : t('explore.add', { name })
+            ? t('explore.onListLabel', { name: item.name })
+            : t('explore.add', { name: item.name })
         }
         className={`${RESULT} ${SECTION_ACCENT[section]}`}
       >
         <span className="font-semibold">
           {onList
-            ? t('explore.onListName', { name })
-            : t('explore.add', { name })}
+            ? t('explore.onListName', { name: item.name })
+            : t('explore.add', { name: item.name })}
         </span>
         <span className="text-xs text-text-secondary">
           {onList ? t('explore.categoryOnList', { category }) : category}

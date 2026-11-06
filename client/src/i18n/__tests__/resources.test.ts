@@ -47,7 +47,7 @@ const usedKeys = (): string[] =>
 
 /** Keys the code builds at run time: measure words by measure, the dial's modes by mode (#206), explore sections, account options, and tier names/features. */
 const DYNAMIC =
-  /^(measure\.|guidance\.(self-directed|guided|assisted|hand-held)$|exploreSection\.|account\.(biometric|google|plans)|tiers\.(names|features)\.)/
+  /^(measure\.|guidance\.(self-directed|guided|assisted|hand-held)$|exploreSection\.|explore\.addName|account\.(biometric|google|plans)|tiers\.(names|features)\.)/
 
 describe('English resources', () => {
   const keys = leafKeys(en)
