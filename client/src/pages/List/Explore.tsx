@@ -128,12 +128,14 @@ const IngredientResult: FC<{
         aria-label={
           onList
             ? t('explore.onListLabel', { name })
-            : t('explore.add', { name: item.name })
+            : t('explore.add', { name })
         }
         className={`${RESULT} ${SECTION_ACCENT[section]}`}
       >
         <span className="font-semibold">
-          {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
+          {onList
+            ? t('explore.onListName', { name })
+            : t('explore.add', { name })}
         </span>
         <span className="text-xs text-text-secondary">
           {onList ? t('explore.categoryOnList', { category }) : category}
