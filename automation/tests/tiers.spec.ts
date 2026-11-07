@@ -42,7 +42,7 @@ test.describe('tiers behind the flag (#208)', () => {
     await page.goto('/')
     await pickRows(page, DAHL)
     await crossOffEverything(page)
-    expect(await menuItems(page)).toEqual(['Saved', 'Log out'])
+    expect(await menuItems(page)).toEqual(['Saved', 'Set-up', 'Log out'])
     await page.goto('/upgrade')
     await expect(page.getByText('Why upgrade?')).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Plans' })).toHaveCount(0)
@@ -55,7 +55,7 @@ test.describe('tiers behind the flag (#208)', () => {
     // a whole journey: sign-up, a shop, then checkout
     test.setTimeout(90_000)
     await page.goto('/?flags=tiers')
-    expect(await menuItems(page)).toEqual(['Saved', 'Log out'])
+    expect(await menuItems(page)).toEqual(['Saved', 'Set-up', 'Log out'])
     // before the first end-to-end, Plans says when it opens
     await page.goto('/upgrade')
     await expect(
@@ -65,9 +65,9 @@ test.describe('tiers behind the flag (#208)', () => {
 
     await page.goto('/')
     await pickRows(page, DAHL)
-    expect(await menuItems(page)).toEqual(['Saved', 'Log out'])
+    expect(await menuItems(page)).toEqual(['Saved', 'Set-up', 'Log out'])
     await crossOffEverything(page)
-    expect(await menuItems(page)).toEqual(['Saved', 'Plans', 'Log out'])
+    expect(await menuItems(page)).toEqual(['Saved', 'Set-up', 'Plans', 'Log out'])
 
     await accountMenu(page, 'Plans')
     await expect(page).toHaveURL('/upgrade')
@@ -121,6 +121,6 @@ test.describe('tiers behind the flag (#208)', () => {
     await crossOffEverything(page)
     expect(await menuItems(page)).toContain('Plans')
     await page.goto('/?flags=')
-    expect(await menuItems(page)).toEqual(['Saved', 'Log out'])
+    expect(await menuItems(page)).toEqual(['Saved', 'Set-up', 'Log out'])
   })
 })
