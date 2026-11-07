@@ -2,7 +2,11 @@ import { googleAuthUrl, startGoogleAuth } from '../google'
 
 describe('google auth', () => {
   it('builds a desktop authorize URL', () => {
-    const url = googleAuthUrl('web', 'client-id', 'https://ingre.app/auth/google')
+    const url = googleAuthUrl(
+      'web',
+      'client-id',
+      'https://ingre.app/auth/google'
+    )
     expect(url).toContain('accounts.google.com')
     expect(url).toContain('client_id=client-id')
     expect(url).toContain('scope=openid+email+profile')
@@ -10,8 +14,12 @@ describe('google auth', () => {
   })
 
   it('marks native platforms', () => {
-    expect(googleAuthUrl('ios', 'id', 'https://app/cb')).toContain('platform=ios')
-    expect(googleAuthUrl('android', 'id', 'https://app/cb')).toContain('platform=android')
+    expect(googleAuthUrl('ios', 'id', 'https://app/cb')).toContain(
+      'platform=ios'
+    )
+    expect(googleAuthUrl('android', 'id', 'https://app/cb')).toContain(
+      'platform=android'
+    )
   })
 
   it('opens the URL and returns it', () => {

@@ -40,13 +40,19 @@ test.describe('axe: no violations along the core loop (#223)', () => {
       })
 
       test('searching ingredients and recipes', async ({ page }) => {
+        console.log('[a11y] searching for carrot')
         await searchBox(page).fill('carrot')
-        await expect(
-          explore(page)
-            .getByRole('button', { name: /^Add carrot/i })
-            .first()
-        ).toBeVisible()
-        expect(await violations(page)).toEqual([])
+        console.log('[a11y] filled search, waiting for Add carrot')
+        const add = explore(page)
+          .getByRole('button', { name: /^Add carrot/i })
+          .first()
+        const count = await add.count()
+        console.log('[a11y] Add carrot button count', count)
+        if (count === 0) console.error('[a11y] no Add carrot button found')
+        await expect(add).toBeVisible()
+        const v = await violations(page)
+        if (v.length) console.error('[a11y] violations', v)
+        expect(v).toEqual([])
       })
 
       test('a picked recipe with its chips and an open chip panel', async ({
@@ -127,6 +133,7 @@ test.describe('keyboard operability (#223)', () => {
   test('every control in the tab order shows a focus ring of at least 3px', async ({
     page
   }) => {
+    console.log('[a11y] focus ring test')
     await page.goto('/')
     const seen: string[] = []
     for (let i = 0; i < 12; i += 1) {
@@ -141,11 +148,15 @@ test.describe('keyboard operability (#223)', () => {
           style: style.outlineStyle
         }
       })
+      console.log('[a11y] focus', i, ring)
       if (ring === null) break
       seen.push(ring.name)
+      if (ring.style === 'none' || ring.width < 3)
+        console.error('[a11y] bad focus ring', ring)
       expect(ring.style, `${ring.name} has an outline`).not.toBe('none')
       expect(ring.width, `${ring.name} outline width`).toBeGreaterThanOrEqual(3)
     }
+    console.log('[a11y] focus ring seen', seen)
     expect(seen.length).toBeGreaterThan(3)
   })
 })

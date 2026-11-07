@@ -35,6 +35,8 @@ export const BottomNav: FC = () => {
   const { pathname, hash } = useLocation()
   const current = activeTabs(pathname, hash)
   const keyboard = useKeyboardOpen()
+  console.log('[BottomNav] render', { pathname, hash, current, keyboard })
+  if (keyboard) console.error('[BottomNav] hidden because keyboard open')
   return (
     <>
       <div

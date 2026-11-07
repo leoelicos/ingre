@@ -1,14 +1,13 @@
 import { translate, useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
-import { Button, ToggleButton } from 'react-aria-components'
+import { Button, ToggleButton } from '../../lib/aria'
 import { AllergenTags } from '../../components/AllergenTags'
 import { Collapse } from '../../components/Collapse'
 import { splitTitle } from '../../components/recipeTitle'
 import { SEARCH_LABEL, SearchBox } from '../../components/SearchBox/SearchBox'
 import { IngreIconSearch } from '../../lib/icon/Icon'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
-import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import {
   EDGE_TONE_CLASSES,
   TONE_CLASSES
@@ -18,15 +17,8 @@ import type { RecipeCopy } from '../../utils/balance/copies'
 import { useSearchedEvent } from '../../utils/analytics/useSearchedEvent'
 import { useExplore } from '../../utils/explore/ExploreContext'
 import { flaggedIds, showsSuggestions } from '../../utils/guidance/guidance'
-import type {
-  ExploreResults,
-  ExploreSource
-} from '../../utils/explore/exploreSearch'
-import {
-  DEFAULT_SOURCE,
-  exploreResults,
-  shownRecipes
-} from '../../utils/explore/exploreSearch'
+import type { ExploreResults } from '../../utils/explore/exploreSearch'
+import { DEFAULT_SOURCE } from '../../utils/explore/exploreSearch'
 import type { ExploreSection } from '../../utils/explore/sections'
 import {
   SECTION_ACCENT,
@@ -36,13 +28,8 @@ import {
   sectionsOf
 } from '../../utils/explore/sections'
 import type { RecipeFilter } from '../../utils/filters/filters'
-import {
-  NO_RECIPE_FILTER,
-  recipeFilterOn,
-  recipeMatches
-} from '../../utils/filters/filters'
+import { NO_RECIPE_FILTER, recipeFilterOn } from '../../utils/filters/filters'
 import { library } from '../../utils/library/recipeLibrary'
-import { unlockedRecipes } from '../../utils/profile/locks'
 import type { Personal } from '../../utils/profile/personal'
 import type { SavedState } from '../../utils/saved/useSaved'
 import {
@@ -63,6 +50,7 @@ import { RecipeRows } from './RecipeRows'
 import { OriginalDetails } from './RowDetails'
 import { HeaderRow, titleId, toggleId } from './Section'
 import { useFocusAfterRender } from './usePanel'
+import { computeExploreData } from '../../hooks/useExploreResults'
 import { copyLines, newCopy, usedLines } from '../../utils/balance/copies'
 import { catalogue } from '../../utils/library/recipeLibrary'
 import { bundledSuggestions } from '../../utils/suggest/suggest'
@@ -122,9 +110,14 @@ const IngredientResult: FC<{
   const t = useT()
   const { guidance } = useExplore()
   const onList = ingredients.list.hasChip(item.id)
-  const name = capitaliseFirst(item.name)
   const section = exploreSectionOf(item)
   const category = t(`exploreSection.${section}`)
+  console.log('[IngredientResult] render', {
+    id: item.id,
+    name: item.name,
+    onList,
+    section
+  })
   return (
     <li className="flex flex-col gap-1">
       <Button
@@ -132,37 +125,21 @@ const IngredientResult: FC<{
         onPress={() => ingredients.pick(item)}
         aria-label={
           onList
-            ? t('explore.onListLabel', { name })
+            ? t('explore.onListLabel', { name: item.name })
             : t('explore.add', { name: item.name })
         }
         className={`${RESULT} ${SECTION_ACCENT[section]}`}
       >
         <span className="font-semibold">
-          {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
+          {onList
+            ? t('explore.onListName', { name: item.name })
+            : t('explore.add', { name: item.name })}
         </span>
         <span className="text-xs text-text-secondary">
           {onList ? t('explore.categoryOnList', { category }) : category}
         </span>
       </Button>
-      <div className="flex items-stretch gap-2">
-        <Button
-          onPress={() => ingredients.pick(item)}
-          aria-label={
-            onList
-              ? t('explore.onListLabel', { name })
-              : t('explore.add', { name: item.name })
-          }
-          className={`${RESULT} flex-1`}
-        >
-          <span className="font-semibold">
-            {t(onList ? 'explore.onListName' : 'explore.addName', { name })}
-          </span>
-          <span className="text-xs text-text-secondary">
-            {onList ? t('explore.categoryOnList', { category }) : category}
-          </span>
-        </Button>
-        {showsSuggestions(guidance) && <UseToggle item={item} />}
-      </div>
+      {showsSuggestions(guidance) && <UseToggle item={item} />}
       <AllergenTags allergens={item.allergens} />
       <GuestFlag tags={item.allergens} />
       <IngredientDetails
@@ -233,7 +210,8 @@ const IngredientGroup: FC<{
   title: string
   items: readonly LibraryIngredient[]
   ingredients: IngredientsState
-}> = ({ title, items, ingredients }) => {
+  controls: RowControls
+}> = ({ title, items, ingredients, controls }) => {
   const [chosen, setChosen] = useState<ReadonlySet<ExploreSection>>(new Set())
   return (
     <div>
@@ -249,28 +227,13 @@ const IngredientGroup: FC<{
             key={item.id}
             item={item}
             ingredients={ingredients}
+            controls={controls}
           />
         ))}
       </ul>
     </div>
   )
 }
-  controls: RowControls
-}> = ({ title, items, ingredients, controls }) => (
-  <div>
-    <h3 className={GROUP_HEADING}>{title}</h3>
-    <ul className="m-0 flex list-none flex-col gap-2 p-1">
-      {items.map((item) => (
-        <IngredientResult
-          key={item.id}
-          item={item}
-          ingredients={ingredients}
-          controls={controls}
-        />
-      ))}
-    </ul>
-  </div>
-)
 
 /** The list's copy of a recipe, or null when it is not on the list. */
 export const listCopyOf = (
@@ -510,25 +473,13 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
   const [picked, setPicked] =
     useState<Pick<RecipeFilter, 'contains' | 'excludes'>>(NO_RECIPE_FILTER)
   const filter: RecipeFilter = { ...picked, savedOnly: props.savedOnly }
-  const savedIds = savedIdsOf(props.saved)
-  const source: ExploreSource = {
-    ...DEFAULT_SOURCE,
-    recipes: DEFAULT_SOURCE.recipes.filter((recipe) =>
-      recipeMatches(originalIds(recipe), filter)
-    ),
-    savedOnly: props.savedOnly,
-    savedIds,
-    personal: props.personal
-  }
-  const hidden = DEFAULT_SOURCE.recipes.length - shownRecipes(source).length
-  const results = exploreResults(query, source)
-  useSearchedEvent(query, matchCounts(results))
-  const allowed = unlockedRecipes(
-    DEFAULT_SOURCE.recipes,
-    DEFAULT_SOURCE.ingredients,
-    props.personal.locks
+  const { results, hidden, counts } = computeExploreData(
+    query,
+    { savedOnly: props.savedOnly, personal: props.personal },
+    filter,
+    props.saved
   )
-  const hidden = allowed.length - shownRecipes(source).length
+  useSearchedEvent(query, counts)
   const controls: RowControls = {
     ...props.rows,
     openIds,
@@ -588,7 +539,7 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           controls={controls}
         />
       )}
-      {props.savedOnly && savedIds.size === 0 ? (
+      {props.savedOnly && (props.saved?.ids.size ?? 0) === 0 ? (
         <p
           className="m-0 text-text-secondary"
           role="status"
