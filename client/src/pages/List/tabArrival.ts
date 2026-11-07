@@ -28,7 +28,8 @@ export const arriveAt = (hash: string, explore: ExploreState): void => {
     .filter(([key]) => key === hash)
     .forEach(([, { sectionId, headingId }]) => {
       scrollToStartOf(sectionId)
-      focusById(headingId)
+      // Focus after the next paint so the heading is in the DOM
+      requestAnimationFrame(() => focusById(headingId))
     })
 }
 
