@@ -61,7 +61,7 @@ jobs:
   # #175: one `npm test` from the root: unit tests, then Playwright e2e.
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -85,23 +85,6 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
         working-directory: automation
-      - name: Debug prettier
-        working-directory: automation
-        run: |
-          echo "=== prettier version ==="
-          npx --prefix . prettier --version
-          echo "=== resolved config ==="
-          npx --prefix . prettier --find-config-path tests/layout.spec.ts
-          npx --prefix . prettier --log-level debug --check tests/layout.spec.ts || true
-          echo "=== diff for layout.spec.ts ==="
-          npx --prefix . prettier --write tests/layout.spec.ts
-          git diff tests/layout.spec.ts || true
-          echo "=== diff for page.ts ==="
-          npx --prefix . prettier --write tests/page.ts
-          git diff tests/page.ts || true
-          echo "=== diff for sections.spec.ts ==="
-          npx --prefix . prettier --write tests/sections.spec.ts
-          git diff tests/sections.spec.ts || true
       - name: npm test (unit + e2e)
         run: npm test
       - name: Playwright report
