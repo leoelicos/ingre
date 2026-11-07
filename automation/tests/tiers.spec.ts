@@ -67,7 +67,12 @@ test.describe('tiers behind the flag (#208)', () => {
     await pickRows(page, DAHL)
     expect(await menuItems(page)).toEqual(['Saved', 'Set-up', 'Log out'])
     await crossOffEverything(page)
-    expect(await menuItems(page)).toEqual(['Saved', 'Set-up', 'Plans', 'Log out'])
+    expect(await menuItems(page)).toEqual([
+      'Saved',
+      'Set-up',
+      'Plans',
+      'Log out'
+    ])
 
     await accountMenu(page, 'Plans')
     await expect(page).toHaveURL('/upgrade')
