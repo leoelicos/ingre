@@ -1,6 +1,7 @@
 import { translate, useT } from '../../i18n'
 import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
+import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import { Button, ToggleButton } from '../../lib/aria'
 import { AllergenTags } from '../../components/AllergenTags'
 import { Collapse } from '../../components/Collapse'
@@ -125,20 +126,20 @@ const IngredientResult: FC<{
         onPress={() => ingredients.pick(item)}
         aria-label={
           onList
-            ? t('explore.onListLabel', { name: item.name })
+            ? t('explore.onListLabel', { name: capitaliseFirst(item.name) })
             : t('explore.add', { name: item.name })
         }
         className={`${RESULT} ${SECTION_ACCENT[section]}`}
       >
         <span className="font-semibold">
           {onList
-            ? t('explore.onListName', { name: item.name })
+            ? t('explore.onListName', { name: capitaliseFirst(item.name) })
             : t('explore.add', { name: item.name })}
         </span>
-        <span className="text-xs text-text-secondary">
-          {onList ? t('explore.categoryOnList', { category }) : category}
-        </span>
       </Button>
+      <span className="px-3 text-xs text-text-secondary">
+        {onList ? t('explore.categoryOnList', { category }) : category}
+      </span>
       {showsSuggestions(guidance) && <UseToggle item={item} />}
       <AllergenTags allergens={item.allergens} />
       <GuestFlag tags={item.allergens} />

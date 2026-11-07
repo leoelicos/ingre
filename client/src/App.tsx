@@ -25,6 +25,9 @@ import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
 import { ListPage } from './pages/List/ListPage'
 import { WarRoom } from './pages/WarRoom/WarRoom'
+import { DemoPage } from './pages/Demo/DemoPage'
+import { IdeasPage } from './pages/Ideas/IdeasPage'
+import { ProfilePage } from './pages/Profile/ProfilePage'
 
 import { FirstRun } from './pages/Welcome/FirstRun'
 import { Setup } from './pages/Welcome/Setup'
@@ -122,6 +125,18 @@ export const Ingre: FC = () => {
                           <WarRoom />
                         </PageMain>
                       }
+                    />
+                    <Route
+                      path="/demo"
+                      element={<DemoPage />}
+                    />
+                    <Route
+                      path="/ideas"
+                      element={<IdeasPage />}
+                    />
+                    <Route
+                      path="/profile"
+                      element={<ProfilePage />}
                     />
                     <Route
                       path="/saved"

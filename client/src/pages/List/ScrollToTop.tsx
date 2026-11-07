@@ -60,7 +60,7 @@ export const ScrollToTop: FC<{ watchId: string; headingId: string }> = ({
         scrollToStartOf(watchId)
         focusById(headingId)
       }}
-      className="fixed bottom-20 right-4 z-10 inline-flex h-12 w-12 items-center justify-center rounded-pill bg-primary text-xl text-on-primary shadow-raised data-[focus-visible]:focus-ring"
+      className="fixed bottom-[calc(9.5rem+env(safe-area-inset-bottom))] right-4 z-10 inline-flex h-12 w-12 items-center justify-center rounded-pill bg-primary text-xl text-on-primary shadow-raised data-[focus-visible]:focus-ring"
     >
       <span aria-hidden="true">↑</span>
     </Button>

@@ -1,6 +1,7 @@
 import { useT } from '../i18n'
 import type { FC, ReactNode } from 'react'
 import { useKeyboardOpen } from '../utils/layout/keyboard'
+import { ABOVE_NAV } from './BottomNav/BottomNav'
 
 /**
  * The bottom-right area (#210): a column of round buttons fixed to the corner nearest a thumb,
@@ -15,7 +16,7 @@ export const Bra: FC<{ children: ReactNode }> = ({ children }) => {
       role="group"
       aria-label={t('bra.label')}
       data-bra=""
-      className="fixed bottom-4 right-4 z-10 flex touch-pan-y flex-col items-end gap-3"
+      className={`fixed ${ABOVE_NAV} right-4 z-10 flex touch-pan-y flex-col items-end gap-3`}
     >
       {children}
     </div>

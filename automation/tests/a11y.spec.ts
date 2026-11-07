@@ -141,7 +141,9 @@ test.describe('keyboard operability (#223)', () => {
       const ring = await page.evaluate(() => {
         const el = document.activeElement
         if (el === null || el === document.body) return null
-        const style = getComputedStyle(el)
+        /* a React Aria slider focuses a visually hidden input and draws the ring on its thumb */
+        const ringed = el.closest('[data-focus-visible]') ?? el
+        const style = getComputedStyle(ringed)
         return {
           name: el.getAttribute('aria-label') ?? el.textContent ?? el.tagName,
           width: Number.parseFloat(style.outlineWidth),

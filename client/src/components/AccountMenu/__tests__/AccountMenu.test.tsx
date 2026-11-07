@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
@@ -9,7 +9,9 @@ import { Header } from '../../Header'
 import { logIn } from '../../../test/providers'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { ACCOUNT_LABEL, AccountMenu } from '../AccountMenu'
+import { markFirstEndToEnd } from '../../../utils/tier/upsell'
 import {
+  PLANS_PATH,
   SAVED_PATH,
   SETUP_PATH,
   accountItems,
@@ -128,7 +130,44 @@ describe('AccountMenu (#164)', () => {
     expect(where()).toBe(`${SETUP_PATH} null`)
   })
 
+  it('with the tiers flag on, Plans appears after the first end-to-end, before Log out, and opens Plans (#208)', async () => {
+    const user = userEvent.setup()
+    window.history.pushState({}, '', '/?flags=tiers')
+    renderMenu(true)
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Saved', 'Set-up', 'Log out'])
+    await user.keyboard('{Escape}')
+    act(() => markFirstEndToEnd())
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Saved', 'Set-up', 'Plans', 'Log out'])
+    await user.click(screen.getByRole('menuitem', { name: 'Plans' }))
+    expect(where()).toBe(`${PLANS_PATH} null`)
+    window.history.pushState({}, '', '/?flags=')
+    window.history.pushState({}, '', '/')
+  })
+
+  it('without the tiers flag, the first end-to-end shows no Plans (#208)', async () => {
+    const user = userEvent.setup()
+    markFirstEndToEnd()
+    renderMenu(false)
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Log in', 'Sign up', 'Set-up'])
+  })
+
   it('maps menu keys to actions; anything else is no action', () => {
+    expect(accountItems(true, true).map((i) => i.id)).toEqual([
+      'saved',
+      'setup',
+      'plans',
+      'logout'
+    ])
+    expect(accountItems(false, true).map((i) => i.id)).toEqual([
+      'login',
+      'signup',
+      'setup',
+      'plans'
+    ])
+    expect(actionsFor('plans')).toEqual(['plans'])
     expect(accountItems(false).map((i) => i.id)).toEqual([
       'login',
       'signup',

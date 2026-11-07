@@ -319,7 +319,7 @@ describe('Scenario: Explore results act in place (#181)', () => {
     const onList = explore().getAllByRole('button', {
       name: /banana.*on your list/i
     })[0]!
-    expect(onList).toHaveTextContent('on your list')
+    expect(onList.closest('li')).toHaveTextContent('on your list')
     await user.click(onList)
     const chevron = within(chip('banana')).getByRole('button', {
       name: 'Banana details'
