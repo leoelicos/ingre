@@ -8,7 +8,6 @@ import { splitTitle } from '../../components/recipeTitle'
 import { SEARCH_LABEL, SearchBox } from '../../components/SearchBox/SearchBox'
 import { IngreIconSearch } from '../../lib/icon/Icon'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
-import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import {
   EDGE_TONE_CLASSES,
   TONE_CLASSES
@@ -111,7 +110,6 @@ const IngredientResult: FC<{
   const t = useT()
   const { guidance } = useExplore()
   const onList = ingredients.list.hasChip(item.id)
-  const name = capitaliseFirst(item.name)
   const section = exploreSectionOf(item)
   const category = t(`exploreSection.${section}`)
   console.log('[IngredientResult] render', {
