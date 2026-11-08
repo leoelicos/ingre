@@ -20,3 +20,50 @@ jobs:
       - name: Unit tests
         run: swift test
         working-directory: ios/IngreCore
+
+  ios-simulator:
+    # Standard GitHub-hosted macOS runner (not a larger runner).
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Copy the catalogue
+        run: node scripts/copy-native-library.mjs
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate the Xcode project
+        run: xcodegen generate
+        working-directory: ios
+      - name: Pick the first available iPhone simulator
+        id: simulator
+        run: |
+          UDID=$(xcrun simctl list devices available --json | node -e '
+            let s = ""
+            process.stdin.on("data", (d) => (s += d))
+            process.stdin.on("end", () => {
+              const devices = Object.values(JSON.parse(s).devices).flat()
+              const phone = devices.find((d) => d.isAvailable && d.name.startsWith("iPhone"))
+              if (!phone) process.exit(1)
+              console.log(phone.udid)
+            })
+          ')
+          echo "Using simulator $UDID"
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+      - name: UI tests on the simulator
+        run: >-
+          xcodebuild test
+          -project Ingre.xcodeproj
+          -scheme Ingre
+          -destination "id=${{ steps.simulator.outputs.udid }}"
+          -resultBundlePath TestResults.xcresult
+          CODE_SIGNING_ALLOWED=NO
+        working-directory: ios
+      - name: Upload the test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results
+          path: ios/TestResults.xcresult
+          if-no-files-found: warn

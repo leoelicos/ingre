@@ -9,7 +9,18 @@ final class PhoneUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Ingredients"].exists)
         XCTAssertTrue(app.staticTexts["Recipes"].exists)
         XCTAssertTrue(app.staticTexts["Extra"].exists)
-        XCTAssertTrue(app.staticTexts["Search ingredients and recipes"].exists)
+        // The search field can surface as a text field or as static text, depending on the iOS version.
+        let searchName = "Search ingredients and recipes"
+        let search = app.descendants(matching: .any).matching(
+            NSPredicate(
+                format: "(elementType == %d OR elementType == %d) AND (identifier == %@ OR label == %@)",
+                XCUIElement.ElementType.staticText.rawValue,
+                XCUIElement.ElementType.textField.rawValue,
+                searchName,
+                searchName
+            )
+        ).firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
         XCTAssertEqual(app.otherElements["badge"].exists, false)
         XCTAssertEqual(app.otherElements["key-preview"].exists, false)
     }
