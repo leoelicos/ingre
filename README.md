@@ -20,7 +20,7 @@ Phone only, matching the web app below 576px: Explore (open when the list is emp
 node scripts/copy-native-library.mjs
 ```
 
-iOS: Swift 6 and SwiftUI, iOS 17. The wording and list rules live in `ios/IngreCore` (`swift test` in that folder). The app project is generated, not hand-edited:
+iOS: Swift 6 and SwiftUI, iOS 26. The wording and list rules live in `ios/IngreCore` (`swift test` in that folder). The app project is generated, not hand-edited:
 
 ```sh
 brew install xcodegen

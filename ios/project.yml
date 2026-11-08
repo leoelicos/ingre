@@ -2,7 +2,7 @@ name: Ingre
 options:
   bundleIdPrefix: app.ingre
   deploymentTarget:
-    iOS: "17.0"
+    iOS: "26.0"
 packages:
   IngreCore:
     path: IngreCore
