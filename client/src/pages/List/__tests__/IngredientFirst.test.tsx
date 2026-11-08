@@ -79,7 +79,9 @@ describe('Scenario: browse ingredients, select one or more (#204)', () => {
     await user.paste('apples')
     const use = explore().getByRole('button', { name: 'Use apples' })
     expect(use).toHaveAttribute('aria-pressed', 'false')
-    expect(explore().getByRole('button', { name: 'Add apples' })).toBeVisible()
+    expect(
+      explore().getAllByRole('button', { name: 'Add apples' })[0]
+    ).toBeVisible()
     await user.click(use)
     expect(use).toHaveAttribute('aria-pressed', 'true')
     expect(suggestions().getByText(CHOPS)).toBeVisible()

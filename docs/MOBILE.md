@@ -13,7 +13,6 @@ npx cap open ios       # requires macOS + Xcode
 npx cap open android   # requires Android Studio
 ```
 
-
 ## Debug APK from CI (easiest for testing)
 
 On every pull request (and on manual workflow runs) the Android workflow builds a debug APK and uploads it as an artifact.
@@ -37,25 +36,25 @@ GitHub Actions workflows:
 
 #### Android
 
-| Secret | Description |
-|--------|-------------|
-| `ANDROID_KEYSTORE_BASE64` | Base64-encoded `.keystore` or `.jks` file |
-| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
-| `ANDROID_KEY_ALIAS` | Key alias |
-| `ANDROID_KEY_PASSWORD` | Key password |
+| Secret                             | Description                                                         |
+| ---------------------------------- | ------------------------------------------------------------------- |
+| `ANDROID_KEYSTORE_BASE64`          | Base64-encoded `.keystore` or `.jks` file                           |
+| `ANDROID_KEYSTORE_PASSWORD`        | Keystore password                                                   |
+| `ANDROID_KEY_ALIAS`                | Key alias                                                           |
+| `ANDROID_KEY_PASSWORD`             | Key password                                                        |
 | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | JSON key for a Google Play service account with release permissions |
 
 #### iOS
 
-| Secret | Description |
-|--------|-------------|
-| `IOS_BUILD_CERTIFICATE_BASE64` | Base64-encoded `.p12` distribution certificate |
-| `IOS_P12_PASSWORD` | Password for the `.p12` |
+| Secret                         | Description                                            |
+| ------------------------------ | ------------------------------------------------------ |
+| `IOS_BUILD_CERTIFICATE_BASE64` | Base64-encoded `.p12` distribution certificate         |
+| `IOS_P12_PASSWORD`             | Password for the `.p12`                                |
 | `IOS_PROVISION_PROFILE_BASE64` | Base64-encoded `.mobileprovision` distribution profile |
-| `IOS_KEYCHAIN_PASSWORD` | Temporary keychain password (any strong random string) |
-| `APPLE_TEAM_ID` | Your Apple Developer Team ID |
-| `APPLE_ID` | Apple ID email used for altool |
-| `APPLE_APP_SPECIFIC_PASSWORD` | App-specific password for the Apple ID |
+| `IOS_KEYCHAIN_PASSWORD`        | Temporary keychain password (any strong random string) |
+| `APPLE_TEAM_ID`                | Your Apple Developer Team ID                           |
+| `APPLE_ID`                     | Apple ID email used for altool                         |
+| `APPLE_APP_SPECIFIC_PASSWORD`  | App-specific password for the Apple ID                 |
 
 ### App identifiers
 

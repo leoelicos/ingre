@@ -423,7 +423,10 @@ test.describe('Explore (#181)', () => {
     await expect(chip(page, 'banana')).toHaveCount(1)
     await expect(chip(page, 'banana', 'extra')).toHaveCount(1)
     await expect(
-      explore(page).getByRole('button', { name: /^Banana .* on your list$/ })
+      explore(page).getByRole('button', {
+        name: 'Banana, on your list',
+        exact: true
+      })
     ).toBeVisible()
   })
 
@@ -433,7 +436,10 @@ test.describe('Explore (#181)', () => {
     await pickRows(page, DAHL)
     await typeQuery(page, 'butter')
     await explore(page)
-      .getByRole('button', { name: /^Butter .* on your list$/ })
+      .getByRole('button', {
+        name: 'Butter, on your list',
+        exact: true
+      })
       .click()
     await expect(chip(page, 'butter')).toHaveCount(1)
     await expect(chip(page, 'butter', 'extra')).toContainText('1 g')

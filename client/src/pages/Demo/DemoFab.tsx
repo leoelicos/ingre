@@ -1,6 +1,7 @@
 import type { FC } from 'react'
 import { Button } from 'react-aria-components'
 import { useT } from '../../i18n'
+import { ABOVE_NAV } from '../../components/BottomNav/BottomNav'
 import type { DemoSuggestion, Ticket } from '../../utils/demo/demo'
 
 interface Props {
@@ -24,7 +25,7 @@ export const DemoFab: FC<Props> = ({ suggestions, tickets, onAdd }) => {
   const next = nextOne(suggestions, tickets)
   const first = next[0]
   return (
-    <div className="fixed bottom-4 right-4 z-10">
+    <div className={`fixed ${ABOVE_NAV} right-4 z-10`}>
       <Button
         onPress={() => next.forEach(onAdd)}
         isDisabled={first === undefined}

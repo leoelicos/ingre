@@ -8,7 +8,7 @@ test.describe('bottom-right area (#210)', () => {
     await page.goto('/')
   })
 
-  test('the add button sits in the bottom-right corner of the screen', async ({
+  test('the add button sits in the bottom-right corner, above the tabs', async ({
     page
   }) => {
     const add = page.getByRole('button', { name: 'Add item', exact: true })
@@ -17,7 +17,12 @@ test.describe('bottom-right area (#210)', () => {
     const viewport = page.viewportSize()
     if (box === null || viewport === null) throw new Error('no box')
     expect(box.x + box.width).toBeGreaterThan(viewport.width - 40)
-    expect(box.y + box.height).toBeGreaterThan(viewport.height - 40)
+    /* just above the bottom tabs (#227), which never cover it */
+    const navTop =
+      (await page.getByRole('navigation', { name: 'Main' }).boundingBox())?.y ??
+      0
+    expect(box.y + box.height).toBeLessThanOrEqual(navTop)
+    expect(box.y + box.height).toBeGreaterThan(navTop - 40)
     expect(box.width).toBeGreaterThanOrEqual(44)
   })
 

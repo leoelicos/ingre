@@ -12,7 +12,10 @@ export type SessionUser = {
   _id: string
 }
 
-export function userFromGoogle(identity: GoogleIdentity, existing: SessionUser | null): SessionUser {
+export function userFromGoogle(
+  identity: GoogleIdentity,
+  existing: SessionUser | null
+): SessionUser {
   if (existing) return existing
   return {
     email: identity.email,

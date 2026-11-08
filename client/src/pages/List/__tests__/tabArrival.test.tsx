@@ -7,6 +7,8 @@ import { BottomNav } from '../../../components/BottomNav/BottomNav'
 import { Header } from '../../../components/Header'
 import { AuthProvider } from '../../../utils/auth/AuthContext'
 import { ExploreProvider } from '../../../utils/explore/ExploreContext'
+import { GuestsProvider } from '../../../utils/guests/GuestsContext'
+
 import { StoreProvider } from '../../../utils/state/GlobalState'
 import { ListPage } from '../ListPage'
 import { ARRIVALS } from '../tabArrival'
@@ -21,18 +23,20 @@ const renderApp = (path: string) =>
         <AuthProvider>
           <StoreProvider>
             <ExploreProvider>
-              <Header />
-              <Routes>
-                <Route
-                  path="/"
-                  element={<ListPage />}
-                />
-                <Route
-                  path="*"
-                  element={<p>Elsewhere</p>}
-                />
-              </Routes>
-              <BottomNav />
+              <GuestsProvider>
+                <Header />
+                <Routes>
+                  <Route
+                    path="/"
+                    element={<ListPage />}
+                  />
+                  <Route
+                    path="*"
+                    element={<p>Elsewhere</p>}
+                  />
+                </Routes>
+                <BottomNav />
+              </GuestsProvider>
             </ExploreProvider>
           </StoreProvider>
         </AuthProvider>
