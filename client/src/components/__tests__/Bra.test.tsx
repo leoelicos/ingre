@@ -24,7 +24,12 @@ describe('Bra (#210)', () => {
       </Bra>
     )
     const group = screen.getByRole('group', { name: 'Quick actions' })
-    expect(group).toHaveClass('fixed', 'bottom-4', 'right-4', 'touch-pan-y')
+    expect(group).toHaveClass(
+      'fixed',
+      'bottom-[calc(5.5rem+env(safe-area-inset-bottom))]',
+      'right-4',
+      'touch-pan-y'
+    )
     expect(group).toContainElement(screen.getByRole('button', { name: 'One' }))
     expect(await axe(container)).toHaveNoViolations()
   })

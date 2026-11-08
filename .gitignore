@@ -3,3 +3,5 @@ node_modules/
 settings.json
 mockData.js
 coverage
+ios/IngreCore/.build/
+ios/Ingre/Resources/*.json

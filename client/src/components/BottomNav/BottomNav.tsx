@@ -24,6 +24,9 @@ const TabLink: FC<{ tab: Tab; current: boolean }> = ({ tab, current }) => (
 /** Height the page leaves free under its content, so the bar never covers the last row. */
 export const NAV_SPACE = 'h-[calc(4.5rem+env(safe-area-inset-bottom))]'
 
+/** Where the bottom-right buttons sit: just above the bar, so the bar never covers them. */
+export const ABOVE_NAV = 'bottom-[calc(5.5rem+env(safe-area-inset-bottom))]'
+
 /**
  * The four tabs (#227): Explore, Inventory, Cook, Profile. One stable bar at the bottom of every
  * page, same order and place everywhere. Explore, Inventory and Cook take you to that part of the
@@ -35,6 +38,8 @@ export const BottomNav: FC = () => {
   const { pathname, hash } = useLocation()
   const current = activeTabs(pathname, hash)
   const keyboard = useKeyboardOpen()
+  console.log('[BottomNav] render', { pathname, hash, current, keyboard })
+  if (keyboard) console.error('[BottomNav] hidden because keyboard open')
   return (
     <>
       <div

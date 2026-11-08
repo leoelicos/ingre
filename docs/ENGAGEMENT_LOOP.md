@@ -13,6 +13,7 @@ scroll -> tap an ingredient -> read a suggestion -> act -> loop (suggestions upd
 5. **Loop.** The suggestions update straight away with what was just added, in the same place, so the next tap is already in view.
 
 ## Rules
+
 - **Creation is a high-value action inside the loop, not the only exit.** Adding a ticket never navigates away, never opens a blocking dialog, and always leaves the next suggestions on screen.
 - **No dead ends.** Every state offers a next tap: an empty search still shows browse, a finished suggestion still shows the next.
 - **Every act updates the suggestions.** Picking, adding, removing and customising all feed the same ranking, so what is shown reflects what is on the list.
@@ -21,21 +22,24 @@ scroll -> tap an ingredient -> read a suggestion -> act -> loop (suggestions upd
 - **Guidance changes how much the loop does for you, not whether it exists** (the dial, #206).
 
 ## Status in the code
-| Step | Where | Status |
-| --- | --- | --- |
-| Scroll, tap | Explore results and chips | on main |
-| Suggestion with missing and cost | PR #243 (#204) | open |
-| Ingredient journey | PR #244 (#205) | open |
-| Dial changes how proactive it is | PR #246 (#206) | open |
-| Add keeps the next suggestions in view | PR #243 | open |
-| `/demo` shows the whole loop with no backend | PR #242 (#216) | open |
-| Swipe a suggestion to act | not built | open question below |
-| Measuring time in the loop | analytics events (#222) | with the analytics worker |
+
+| Step                                         | Where                     | Status                    |
+| -------------------------------------------- | ------------------------- | ------------------------- |
+| Scroll, tap                                  | Explore results and chips | on main                   |
+| Suggestion with missing and cost             | PR #243 (#204)            | open                      |
+| Ingredient journey                           | PR #244 (#205)            | open                      |
+| Dial changes how proactive it is             | PR #246 (#206)            | open                      |
+| Add keeps the next suggestions in view       | PR #243                   | open                      |
+| `/demo` shows the whole loop with no backend | PR #242 (#216)            | open                      |
+| Swipe a suggestion to act                    | not built                 | open question below       |
+| Measuring time in the loop                   | analytics events (#222)   | with the analytics worker |
 
 ## Open question
+
 "Swipe/read suggestion" and "act (add/customise/swipe)" mention swiping. A swipe gesture is not specified (direction, what each direction does, keyboard and screen-reader equivalent). Until it is, every action is a button, which is the accessible equivalent a swipe would need anyway.
 
 ## Checklist for a change
+
 1. Does acting leave the person where they were, with updated suggestions in view?
 2. Is there always a next tap?
 3. Is the acknowledgement in place and quiet?
