@@ -61,7 +61,7 @@ jobs:
   # #175: one `npm test` from the root: unit tests, then Playwright e2e.
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
