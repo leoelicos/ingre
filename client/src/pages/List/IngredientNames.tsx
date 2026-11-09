@@ -1,5 +1,6 @@
 import { useT } from '../../i18n'
 import type { FC } from 'react'
+import { IngredientPicture } from '../../components/IngredientPicture'
 import type { CopyLine } from '../../utils/balance/copies'
 import { startSection } from '../../utils/chips/chips'
 import { useGuestList } from '../../utils/guests/GuestsContext'
@@ -53,7 +54,10 @@ export const IngredientNames: FC<{
               ...(isMissing || isGuest ? [FLAGGED] : [])
             ].join(' ')}
           >
-            {displayName(line)}
+            <span className="inline-flex items-center gap-1">
+              {line.item !== null && <IngredientPicture id={line.item.id} />}
+              {displayName(line)}
+            </span>
           </li>
         )
       })}
