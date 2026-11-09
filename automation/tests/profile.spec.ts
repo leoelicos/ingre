@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect, test } from './fixtures'
 import { explore, openExplore, pickRows } from './page'
+import { FIRST_A_TO_Z } from './library'
 
 /* #224 Customer profiling: Explore ranks recipes against what the user selects, buys and keeps. */
 
@@ -44,7 +45,7 @@ test.describe('customer profile (#224)', () => {
     await page.goto('/')
     await openExplore(page)
     const before = await browseNames(page)
-    expect(before[0]).toBe(KEEMA)
+    expect(before[0]).toBe(FIRST_A_TO_Z)
     expect(before).toEqual([...before].sort((a, b) => a.localeCompare(b)))
     await pickRows(page, EGG_RICE)
     /* ticking a row does not reshuffle the rows under your finger */
