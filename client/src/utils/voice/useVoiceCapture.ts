@@ -69,7 +69,7 @@ export const browserSetup = (): VoiceSetup => {
 
 export const useVoiceCapture = (
   onHeard: (text: string) => void,
-  setup: () => VoiceSetup = browserSetup
+  setup: () => VoiceSetup
 ) => {
   const [voice] = useState(setup)
   const [state, dispatch] = useReducer(
@@ -123,7 +123,6 @@ export const useVoiceCapture = (
   const stop = (): void => session.current?.stop()
   return {
     state,
-    available: engine !== null,
     active: isActive(state),
     /** megabytes the first press will download (on-device model only) */
     firstUseMegabytes:

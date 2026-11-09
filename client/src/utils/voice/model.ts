@@ -74,17 +74,34 @@ const textOf = (output: unknown): string =>
     .join(' ')
     .trim()
 
-/** Loads transformers.js and the model; only ever runs inside the worker. */
-export const loadModel: LoadModel = async (model, progress) => {
-  const { pipeline, env } = await import('@huggingface/transformers')
-  /* the app's own server answers every path with index.html, so never look there for models */
-  env.allowLocalModels = false
-  const recognise = await pipeline('automatic-speech-recognition', model.id, {
-    dtype: { ...model.dtype },
-    progress_callback: progressTracker(progress)
-  })
-  return async (audio) => textOf(await recognise(audio, { ...model.options }))
+/** The two parts of transformers.js the model needs. */
+export interface Toolkit {
+  readonly env: { allowLocalModels: boolean }
+  readonly pipeline: (
+    task: 'automatic-speech-recognition',
+    model: string,
+    options: {
+      dtype: Record<string, 'q8'>
+      progress_callback: (info: ProgressInfo) => void
+    }
+  ) => Promise<
+    (audio: Float32Array, options: Record<string, string>) => Promise<unknown>
+  >
 }
+
+/** Loads the model with transformers.js, which `toolkit` imports only when first needed. */
+export const modelLoader =
+  (toolkit: () => Promise<Toolkit>): LoadModel =>
+  async (model, progress) => {
+    const { pipeline, env } = await toolkit()
+    /* the app's own server answers every path with index.html, so never look there for models */
+    env.allowLocalModels = false
+    const recognise = await pipeline('automatic-speech-recognition', model.id, {
+      dtype: { ...model.dtype },
+      progress_callback: progressTracker(progress)
+    })
+    return async (audio) => textOf(await recognise(audio, { ...model.options }))
+  }
 
 export type Request =
   | { readonly id: number; readonly type: 'load'; readonly lang: string }
@@ -105,10 +122,7 @@ export type Reply =
   | { readonly id: number; readonly type: 'error'; readonly message: string }
 
 /** The worker's message handler: one load per model, shared by every request. */
-export const serve = (
-  post: (reply: Reply) => void,
-  load: LoadModel = loadModel
-) => {
+export const serve = (post: (reply: Reply) => void, load: LoadModel) => {
   const loaded = new Map<string, Promise<Recognise>>()
   return async (request: Request): Promise<void> => {
     const { id, lang } = request

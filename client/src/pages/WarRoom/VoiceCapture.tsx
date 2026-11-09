@@ -3,8 +3,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import type { FC } from 'react'
 import { useEffect, useRef } from 'react'
 import { Button } from 'react-aria-components'
+import type { Translate } from '../../i18n'
 import { useT } from '../../i18n'
-import type { VoiceState } from '../../utils/voice/state'
+import type { Phase, VoiceState } from '../../utils/voice/state'
+import type { EngineKind, VoiceError } from '../../utils/voice/types'
 import type { VoiceSetup } from '../../utils/voice/useVoiceCapture'
 import {
   browserSetup,
@@ -16,19 +18,54 @@ export const HOLD_MS = 600
 
 const megabytes = (bytes: number): string => (bytes / 1_000_000).toFixed(0)
 
+/* literal keys, one per state, so the i18n checks can see every one is used */
+const errorText = (t: Translate, error: VoiceError): string => {
+  switch (error) {
+    case 'denied':
+      return t('warRoom.voice.denied')
+    case 'unavailable':
+      return t('warRoom.voice.unavailable')
+    case 'noSpeech':
+      return t('warRoom.voice.noSpeech')
+    case 'failed':
+      return t('warRoom.voice.failed')
+  }
+}
+
+const phaseText = (t: Translate, phase: Phase): string => {
+  switch (phase) {
+    case 'starting':
+      return t('warRoom.voice.starting')
+    case 'listening':
+      return t('warRoom.voice.listening')
+    case 'transcribing':
+      return t('warRoom.voice.transcribing')
+    default:
+      return ''
+  }
+}
+
+const engineText = (t: Translate, engine: EngineKind): string => {
+  switch (engine) {
+    case 'native':
+      return t('warRoom.voice.native')
+    case 'webSpeech':
+      return t('warRoom.voice.webSpeech')
+    case 'onDevice':
+      return t('warRoom.voice.onDevice')
+  }
+}
+
 /** The one line that says what the microphone is doing, for eyes and screen readers. */
 const useStatus = (state: VoiceState): string => {
   const t = useT()
-  if (state.phase === 'error' && state.error !== null)
-    return t(`warRoom.voice.${state.error}`)
+  if (state.error !== null) return errorText(t, state.error)
   if (state.download !== null)
     return t('warRoom.voice.downloading', {
       loaded: megabytes(state.download.loaded),
       total: megabytes(state.download.total)
     })
-  return state.phase === 'idle' || state.phase === 'error'
-    ? ''
-    : t(`warRoom.voice.${state.phase}`)
+  return phaseText(t, state.phase)
 }
 
 /** Alt+R starts or stops from anywhere on the page; Escape stops. */
@@ -70,8 +107,14 @@ export const VoiceCapture: FC<{
   /* a press that started listening: if it is held, letting go stops; if tapped, it stays on */
   const press = useRef<{ startedAt: number } | null>(null)
   const heldStop = useRef(false)
-  if (!voice.available) return null
+  /* React Aria does not pass aria-keyshortcuts through, so it is set on the element */
+  const button = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    button.current?.setAttribute('aria-keyshortcuts', 'Alt+R')
+  })
   const { state } = voice
+  const { engine } = state
+  if (engine === null) return null
   const level = state.level
   return (
     <section
@@ -82,7 +125,7 @@ export const VoiceCapture: FC<{
         aria-pressed={voice.active}
         aria-labelledby="war-room-talk"
         aria-describedby="war-room-talk-help"
-        aria-keyshortcuts="Alt+R"
+        ref={button}
         onPressStart={() => {
           heldStop.current = false
           if (voice.active) {
@@ -173,7 +216,7 @@ export const VoiceCapture: FC<{
       >
         {[
           t('warRoom.talkHelp'),
-          state.engine === null ? '' : t(`warRoom.voice.${state.engine}`),
+          engineText(t, engine),
           voice.firstUseMegabytes > 0
             ? t('warRoom.firstUse', { size: voice.firstUseMegabytes })
             : ''

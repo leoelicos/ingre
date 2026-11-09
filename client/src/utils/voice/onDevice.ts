@@ -102,9 +102,19 @@ export const decodeTo16k = async (audio: Blob): Promise<Float32Array> => {
   return buffer.getChannelData(0)
 }
 
+/** The parts of a Worker the transcriber uses. */
+export interface WorkerLike {
+  addEventListener(
+    type: 'message',
+    listener: (event: MessageEvent<Reply>) => void
+  ): void
+  addEventListener(type: 'error', listener: () => void): void
+  postMessage(message: Request): void
+}
+
 /** Talks to the model's worker, which is only created on first use. */
-export const workerTranscriber = (make: () => Worker): Transcriber => {
-  let worker: Worker | null = null
+export const workerTranscriber = (make: () => WorkerLike): Transcriber => {
+  let worker: WorkerLike | null = null
   let next = 0
   const waiting = new Map<
     number,
@@ -119,7 +129,7 @@ export const workerTranscriber = (make: () => Worker): Transcriber => {
     waiting.clear()
     worker = null
   }
-  const ready = (): Worker => {
+  const ready = (): WorkerLike => {
     if (worker !== null) return worker
     const created = make()
     created.addEventListener('message', ({ data }: MessageEvent<Reply>) => {

@@ -45,12 +45,22 @@ export const nativeError = (reason: unknown): VoiceError =>
     ? 'denied'
     : 'failed'
 
-/** The plugin, loaded only when the button is first pressed in the app. */
-export const loadNativeSpeech = async (): Promise<NativeSpeech> =>
-  (await import('@capacitor-community/speech-recognition')).SpeechRecognition
+/**
+ * The plugin, loaded only when the button is first pressed in the app. It comes wrapped: a
+ * Capacitor plugin is a proxy that answers every property, `then` included, so a promise that
+ * resolved to it directly would try to "await" the plugin and never settle.
+ */
+export const loadNativeSpeech = async (): Promise<{
+  readonly speech: NativeSpeech
+}> => ({
+  speech: (await import('@capacitor-community/speech-recognition'))
+    .SpeechRecognition
+})
 
 export const nativeEngine =
-  (load: () => Promise<NativeSpeech> = loadNativeSpeech): Engine =>
+  (
+    load: () => Promise<{ readonly speech: NativeSpeech }> = loadNativeSpeech
+  ): Engine =>
   (lang, listener) => {
     let plugin: NativeSpeech | null = null
     let userStopped = false
@@ -91,7 +101,6 @@ export const nativeEngine =
     /* one utterance is over: hand it on, then listen again unless the button said stop */
     const settled = (speech: NativeSpeech): void => {
       settling = null
-      if (over) return
       const phrase = heard
       heard = ''
       if (phrase !== '') listener.final(phrase)
@@ -111,7 +120,7 @@ export const nativeEngine =
     }
 
     const begin = async (): Promise<void> => {
-      const speech = await load()
+      const { speech } = await load()
       plugin = speech
       if (over) return
       if (!(await speech.available()).available) return fail('unavailable')

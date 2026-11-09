@@ -10,6 +10,7 @@ import { focusById } from '../../utils/focus'
 import { useChips } from '../../utils/chips/useChips'
 import type { Capture } from '../../utils/warroom/capture'
 import { autofill, captureOf, splitQuantity } from '../../utils/warroom/capture'
+import { captureSpoken } from '../../utils/warroom/spoken'
 import { VoiceCapture } from './VoiceCapture'
 
 /** What the War room put on the list this visit, newest first. */
@@ -187,7 +188,7 @@ export const WarRoom: FC = () => {
         items={autofill(term)}
         onPick={(item) => pick(item, quantity)}
       />
-      <VoiceCapture onHeard={(heard) => take(captureOf(heard))} />
+      <VoiceCapture onHeard={(heard) => take(captureSpoken(heard))} />
       <CapturedList captured={captured} />
       <Link
         to="/"
