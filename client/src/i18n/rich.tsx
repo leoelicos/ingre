@@ -1,8 +1,8 @@
 /*
  * Messages with markup in them: "No account? <link>Sign up</link>", "<token/>".
  * The tags sit inside the message, so each locale orders the words and the link itself
- * (Japanese puts the link first: "<link>新規登録</link>はこちら"). Only the tags the
- * caller renders are recognised; text is never parsed as HTML.
+ * ("アカウントをお持ちでない方は<link>新規登録</link>"). Only the tags the caller renders
+ * become elements; any other tag is kept as its plain text, and nothing is parsed as HTML.
  */
 import { Fragment } from 'react'
 import type { FC, ReactNode } from 'react'
@@ -14,7 +14,8 @@ export type Renderers = Readonly<
   Record<string, (children: string) => ReactNode>
 >
 
-const TAG = /<([a-z]+)>(.*?)<\/\1>|<([a-z]+)\/>/g
+/** A paired tag with its text, <link>…</link>, or a self-closing one, <token/>. */
+const TAG = /<([a-z]+)(?:>(.*?)<\/\1>|\/>)/g
 
 /** A message's text and tags, in its own order; a tag with no renderer stays as its text. */
 export const richParts = (
@@ -24,9 +25,8 @@ export const richParts = (
   const parts: ReactNode[] = []
   let last = 0
   for (const match of message.matchAll(TAG)) {
-    const [whole, paired, inner, single] = match
-    const name = paired ?? single ?? ''
-    const render = renderers[name]
+    const [whole, name, inner] = match
+    const render = renderers[String(name)]
     parts.push(message.slice(last, match.index))
     parts.push(render === undefined ? inner ?? '' : render(inner ?? ''))
     last = match.index + whole.length
