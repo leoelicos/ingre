@@ -86,7 +86,7 @@ final class CatalogueTests: XCTestCase {
         let ingredients = parseIngredients(try String(contentsOf: root.appendingPathComponent("ingredients.json"), encoding: .utf8))
         let recipes = parseRecipes(try String(contentsOf: root.appendingPathComponent("recipes.json"), encoding: .utf8))
         XCTAssertEqual(ingredients.count, 111)
-        XCTAssertEqual(recipes.count, 14)
+        XCTAssertEqual(recipes.count, 30)
         let dahl = try XCTUnwrap(recipes.first { $0.id == "dahl" })
         let names = Dictionary(uniqueKeysWithValues: ingredients.map { ($0.id, $0.name) })
         let picked = pickCatalogue(ListMemory(), dahl, names)
