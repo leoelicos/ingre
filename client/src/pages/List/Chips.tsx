@@ -13,6 +13,7 @@ import {
   TONE_CLASSES,
   sectionTone
 } from '../../components/SectionTone/badgeTone'
+import { IngredientPicture } from '../../components/IngredientPicture'
 import type { BadgeTone } from '../../components/SectionTone/tones'
 import type { Chip, ChipGroup } from '../../utils/chips/chips'
 import { categoryLabel } from '../../utils/chips/chips'
@@ -97,7 +98,10 @@ const ChipToggle: FC<{ chip: Chip; view: ChipView; warning: string }> = ({
           chip.crossed ? 'line-through' : ''
         }`}
       >
-        <span className="font-semibold">{displayName(chip)}</span>{' '}
+        <span className="inline-flex items-center gap-1 font-semibold">
+          {chip.item !== null && <IngredientPicture id={chip.item.id} />}
+          {displayName(chip)}
+        </span>{' '}
         <span className="text-xs">{amount}</span>
       </span>
     </ToggleButton>
