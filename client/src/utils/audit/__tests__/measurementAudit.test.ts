@@ -18,7 +18,7 @@ import {
 const item = (over: Partial<LibraryIngredient>): LibraryIngredient => ({
   id: 'thing',
   name: 'thing',
-  category: 'pantry',
+  category: 'baking',
   sold: [],
   pantry: 'Cupboard',
   allergens: [],
