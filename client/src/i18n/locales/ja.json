@@ -181,10 +181,10 @@
     "explore": "さがす",
     "inventory": "在庫",
     "cook": "料理",
-    "profile": "プロフィール"
+    "profile": "マイページ"
   },
   "profile": {
-    "title": "プロフィール",
+    "title": "マイページ",
     "account": "アカウント",
     "signedOutHint": "ログインすると、お気に入りのレシピを保存して、どの端末からでも見られます。",
     "signedInHint": "ログインしています。",

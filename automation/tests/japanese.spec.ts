@@ -41,7 +41,7 @@ test.describe('Japanese (ja)', () => {
         'さがす',
         '在庫',
         '料理',
-        'プロフィール'
+        'マイページ'
       ])
       await expect(
         page.getByRole('searchbox', { name: '食材とレシピを検索' })
@@ -92,7 +92,7 @@ test.describe('Japanese (ja)', () => {
   }) => {
     await page.goto('/profile')
     await expect(
-      page.getByRole('heading', { level: 1, name: 'プロフィール' })
+      page.getByRole('heading', { level: 1, name: 'マイページ' })
     ).toBeVisible()
     await expect(page.getByRole('radio', { name: '日本語' })).toBeChecked()
     expect(await overflows(page)).toBe(false)

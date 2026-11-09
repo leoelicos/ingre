@@ -85,6 +85,9 @@ describe('switching to Japanese', () => {
       void i18n.changeLanguage('fr')
     })
     expect(locale()).toBe('en')
+    const replaced = jest.replaceProperty(i18n, 'language', 'fr')
+    expect(locale()).toBe('en')
+    replaced.restore()
   })
 
   it('writes spoons and cups before the number, as Japanese recipes do', () => {

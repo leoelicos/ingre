@@ -28,9 +28,9 @@ describe('switching the app to Japanese', () => {
 
     expect(document.documentElement.lang).toBe('ja')
     expect(localStorage.getItem(LOCALE_KEY)).toBe('ja')
-    expect(document.title).toBe('プロフィール')
+    expect(document.title).toBe('マイページ')
     expect(
-      screen.getByRole('heading', { level: 1, name: 'プロフィール' })
+      screen.getByRole('heading', { level: 1, name: 'マイページ' })
     ).toBeInTheDocument()
     const tabs = within(screen.getByRole('navigation', { name: 'メイン' }))
     expect(tabs.getByRole('link', { name: 'さがす' })).toBeInTheDocument()
