@@ -26,6 +26,7 @@ import type { ChipView } from './Chips'
 import { ChipList, edgeToneOf } from './Chips'
 import { ChipAllergens, SourceFields, sourceMeasure } from './ChipDetails'
 import { chipChevronId, rowScope, sourceFieldId } from './chipText'
+import { MeasurementCheck } from './MeasurementAudit'
 import { PlusArea, PlusButton } from './PlusArea'
 import { Method, Notes, ROW_HEADING } from './RecipeRows'
 import { useFocusAfterRender, usePanel } from './usePanel'
@@ -107,6 +108,10 @@ export const OriginalDetails: FC<{
           ))}
         </ul>
       </div>
+      <MeasurementCheck
+        recipe={recipe}
+        title={title}
+      />
       <Method recipe={recipe} />
       <Notes notes={recipeNotes(lines)} />
     </>

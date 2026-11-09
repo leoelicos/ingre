@@ -13,7 +13,9 @@ export {
   formatMoney,
   formatMeasure,
   formatNumber,
+  formatPercent,
   formatQuantity,
+  formatQuantityNumber,
   formatRecipeCount,
   pluralCount,
   rounded
