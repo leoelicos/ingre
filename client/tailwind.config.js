@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  /* dark mode follows the device (#165); the tokens in theme.css switch, classes stay the same */
+  /* dark mode follows the device (#165) or the Preferences pick; the tokens in theme.css switch, classes stay the same */
   darkMode: 'media',
   theme: {
     extend: {
@@ -22,6 +22,8 @@ module.exports = {
         'chip-active': 'var(--color-chip-active)',
         border: 'var(--color-border)',
         success: 'var(--color-success)',
+        /* form errors: always with words and an icon, never colour alone */
+        error: 'var(--color-error)',
         /* ingredient badges (#154): one background + ink pair per shop section */
         'badge-produce': 'var(--color-badge-produce)',
         'badge-produce-ink': 'var(--color-badge-produce-ink)',

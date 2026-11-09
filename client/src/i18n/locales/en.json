@@ -452,5 +452,35 @@
     "tickets": "Tickets",
     "fab": "Add ticket for {{title}}",
     "fabNone": "Add ticket"
+  },
+  "preferences": {
+    "title": "Preferences",
+    "intro": "Saved on this device. Change any of them and press Save preferences.",
+    "appearance": "Appearance",
+    "theme": "Colour theme",
+    "themeSystem": "Match my device",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "textSize": {
+      "label": "Text size",
+      "hint": "A whole number from {{min}} to {{max}}. {{standard}} is the standard size.",
+      "unit": "%",
+      "required": "Enter a text size",
+      "whole": "Enter the text size as a whole number, like 125",
+      "range": "Enter a text size from {{min}} to {{max}}"
+    },
+    "recipes": "Recipes",
+    "diet": "Diet",
+    "dietHint": "Explore hides recipes that do not fit.",
+    "dietNone": "No diet",
+    "dietPescatarian": "Pescatarian",
+    "dietVegetarian": "Vegetarian",
+    "dietVegan": "Vegan",
+    "allergens": "Allergens to avoid",
+    "allergensHint": "Explore hides recipes that contain any you tick.",
+    "errorPrefix": "Error:",
+    "summaryTitle": "There is a problem",
+    "save": "Save preferences",
+    "saved": "Preferences saved."
   }
 }

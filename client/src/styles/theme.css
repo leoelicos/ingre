@@ -28,6 +28,9 @@
   --color-allergen: var(
     --palette-amber
   ); /* allergen warnings (.recipe-allergens) */
+  --color-error: var(
+    --palette-amber
+  ); /* form errors: always with words, never colour alone */
 
   /* text */
   --color-text: var(--palette-ink);
@@ -111,12 +114,14 @@
 }
 
 /*
- * Dark mode (#165): follows the device setting. Only the values change; every
+ * Dark mode (#165): follows the device setting unless the reader picked Light or Dark in
+ * Profile > Preferences, which sets data-theme on <html>. Only the values change; every
  * component keeps using the same tokens, so nothing else needs a dark variant.
  * Text >= 4.5:1 and icons/outlines >= 3:1 on bg and surface (badgeContrast test).
+ * The forced-dark block below repeats these values; a test keeps the two identical.
  */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     /* palette */
     --palette-night: #141815;
     --palette-charcoal: #202622;
@@ -138,6 +143,7 @@
     --color-brand: var(--palette-mint);
     --color-success: var(--palette-mint);
     --color-allergen: var(--palette-gold);
+    --color-error: var(--palette-gold);
 
     /* text */
     --color-text: var(--palette-paper);
@@ -195,6 +201,88 @@
 
     color-scheme: dark;
   }
+}
+
+/* Dark picked in Preferences, whatever the device says: the same values as above. */
+:root[data-theme='dark'] {
+  /* palette */
+  --palette-night: #141815;
+  --palette-charcoal: #202622;
+  --palette-mint: #74c995;
+  --palette-salmon: #ff8a73;
+  --palette-paper: #f2ede7;
+  --palette-ash: #bdb5ae;
+  --palette-gold: #f5b041;
+
+  /* surfaces */
+  --color-bg: var(--palette-night);
+  --color-surface: var(--palette-charcoal);
+  --color-highlight: #1a1f1b;
+
+  /* brand */
+  --color-primary: var(--palette-mint);
+  --color-on-primary: #0f1a13;
+  --color-accent: var(--palette-salmon);
+  --color-brand: var(--palette-mint);
+  --color-success: var(--palette-mint);
+  --color-allergen: var(--palette-gold);
+  --color-error: var(--palette-gold);
+
+  /* text */
+  --color-text: var(--palette-paper);
+  --color-text-secondary: var(--palette-ash);
+  --color-text-strong: #ffffff;
+  --color-placeholder: #a8a09a;
+  --color-added-pill: #8fdcae;
+
+  /* lines */
+  --color-border: #8a827c;
+
+  /* meal tints */
+  --color-tint-dinner: #1f3a2a;
+  --color-tint-dinner-ink: #4f8f66;
+  --color-chip-active: var(--color-tint-dinner);
+
+  /* section colours: dark background + light ink per shop section; ink on bg >= 8:1 */
+  --color-badge-produce: #1e3b29;
+  --color-badge-produce-ink: #a6e0bb;
+  --color-badge-meat: #4a1530;
+  --color-badge-meat-ink: #ffc2d9;
+  --color-badge-dairy: #3a3d0e;
+  --color-badge-dairy-ink: #e4e68a;
+  --color-badge-fruit: #4f2a05;
+  --color-badge-fruit-ink: #ffc994;
+  --color-badge-seafood: #12325a;
+  --color-badge-seafood-ink: #a9d0fb;
+  --color-badge-deli: #3a2e26;
+  --color-badge-deli-ink: #e6d3c4;
+  --color-badge-bakery: #3f3210;
+  --color-badge-bakery-ink: #f0d999;
+  --color-badge-pantry: #36234a;
+  --color-badge-pantry-ink: #dcc3f2;
+  --color-badge-frozen: #103c44;
+  --color-badge-frozen-ink: #a3e3ee;
+  --color-badge-neutral: #34312f;
+  --color-badge-neutral-ink: #dcd7d3;
+
+  --color-inverse-text: var(--palette-night);
+
+  /* elevation */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-raised: 5px 5px 12px rgba(0, 0, 0, 0.6),
+    -4px -4px 10px rgba(255, 255, 255, 0.06);
+  --shadow-pressed: inset 4px 4px 9px rgba(0, 0, 0, 0.65),
+    inset -3px -3px 8px rgba(255, 255, 255, 0.06);
+  --shadow-section: 8px 8px 20px rgba(0, 0, 0, 0.55),
+    -6px -6px 16px rgba(255, 255, 255, 0.05);
+  --shadow-recessed: inset 3px 3px 6px rgba(0, 0, 0, 0.6),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.06);
+  --shadow-chip: 2px 2px 4px rgba(0, 0, 0, 0.6),
+    -1px -1px 3px rgba(255, 255, 255, 0.08);
+  --shadow-chip-pressed: inset 2px 2px 3px rgba(0, 0, 0, 0.6),
+    inset -1px -1px 2px rgba(255, 255, 255, 0.06);
+
+  color-scheme: dark;
 }
 
 html body {
