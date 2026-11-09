@@ -123,7 +123,6 @@ export const VoiceCapture: FC<{
     >
       <Button
         aria-pressed={voice.active}
-        aria-labelledby="war-room-talk"
         aria-describedby="war-room-talk-help"
         ref={button}
         onPressStart={() => {
@@ -174,19 +173,15 @@ export const VoiceCapture: FC<{
           aria-hidden="true"
           className="text-5xl"
         />
-        <span
-          id="war-room-talk"
-          className="text-2xl font-bold"
-        >
-          {t('warRoom.talk')}
-        </span>
-        <span
-          aria-hidden="true"
-          className="text-sm font-semibold"
-        >
-          {t(voice.active ? 'warRoom.talkActive' : 'warRoom.talkIdle')}
-        </span>
+        <span className="text-2xl font-bold">{t('warRoom.talk')}</span>
       </Button>
+      {/* what a press does now; screen readers hear the state from aria-pressed and the status line */}
+      <p
+        aria-hidden="true"
+        className="m-0 text-sm font-semibold text-text-secondary"
+      >
+        {t(voice.active ? 'warRoom.talkActive' : 'warRoom.talkIdle')}
+      </p>
       {level !== null && (
         <div
           aria-hidden="true"
