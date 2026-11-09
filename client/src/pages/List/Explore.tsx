@@ -42,6 +42,7 @@ import {
 import { GuestFlag } from './GuestFlag'
 import { GuestsButton, GuestsPanel } from './Guests'
 import { GuidanceDial } from './GuidanceDial'
+import { IngredientPicture } from '../../components/IngredientPicture'
 import { IngredientDetails } from './IngredientJourney'
 import type { IngredientsState } from './Ingredients'
 import { NO_SAVED_HINT } from './recipeFilter'
@@ -131,7 +132,8 @@ const IngredientResult: FC<{
         }
         className={`${RESULT} ${SECTION_ACCENT[section]}`}
       >
-        <span className="font-semibold">
+        <span className="inline-flex items-center gap-2 font-semibold">
+          <IngredientPicture id={item.id} />
           {onList
             ? t('explore.onListName', { name: capitaliseFirst(item.name) })
             : t('explore.add', { name: item.name })}
