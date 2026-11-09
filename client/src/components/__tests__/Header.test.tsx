@@ -56,4 +56,23 @@ describe('Header (#164)', () => {
       'min-[1328px]:static'
     )
   })
+
+  it('reaches up behind the Android status bar and clears it with the top inset (#296)', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <MemoryRouter>
+          <AuthProvider>
+            <ExploreProvider>
+              <Header />
+            </ExploreProvider>
+          </AuthProvider>
+        </MemoryRouter>
+      </MockedProvider>
+    )
+    expect(screen.getByRole('banner')).toHaveClass(
+      '-mt-[var(--safe-top)]',
+      'pt-[var(--safe-top)]',
+      'bg-bg'
+    )
+  })
 })
