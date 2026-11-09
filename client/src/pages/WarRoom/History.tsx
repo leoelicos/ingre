@@ -155,21 +155,21 @@ export const History: FC<{
                             : item.name
                       })}
                       onPress={() => onAgain(shown)}
-                      className={`${CHIP} min-w-0 flex-1 justify-between gap-2 shadow-none`}
+                      className={`${CHIP} min-w-0 flex-1 justify-start shadow-none`}
                     >
                       <span className="truncate">
                         {capitaliseFirst(item.name)}
                         {entry.quantity > 1 && (
-                          <span className="ml-2 tabular-nums text-text-secondary">{`×${entry.quantity}`}</span>
+                          <span className="tabular-nums text-text-secondary">{` ×${entry.quantity}`}</span>
                         )}
                       </span>
-                      <time
-                        dateTime={new Date(entry.at).toISOString()}
-                        className="shrink-0 text-xs font-normal tabular-nums text-text-secondary"
-                      >
-                        {time}
-                      </time>
                     </Button>
+                    <time
+                      dateTime={new Date(entry.at).toISOString()}
+                      className="shrink-0 text-xs tabular-nums text-text-secondary"
+                    >
+                      {time}
+                    </time>
                     <Button
                       id={removeId(entry)}
                       aria-label={t('warRoomEntry.removeEntry', {
