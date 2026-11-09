@@ -1028,6 +1028,976 @@
         "Add the apple wedges and cook, turning now and then, for 5 to 6 minutes until tender and caramelised at the edges but still holding their shape.",
         "Splash in a few tablespoons of water and scrape up the browned bits, then return the chops and any resting juices to the pan and warm through for a minute. Season to taste and serve with the apples and onion spooned over."
       ]
+    },
+    {
+      "id": "spaghetti-garlic-chilli",
+      "name": "Spaghetti with garlic, chilli and parmesan",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "spaghetti",
+          "quantity": 100.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 2.0,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "red-chilli",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "olive-oil",
+          "quantity": 2.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "parmesan",
+          "quantity": 15.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "baby-spinach",
+          "quantity": 20.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "black-pepper",
+          "quantity": 0.25,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Cook the spaghetti in well-salted boiling water until just tender, about 10 minutes. Keep a cup of the cooking water before draining.",
+        "Meanwhile, warm the olive oil in a large frying pan over low heat and gently cook the thinly sliced garlic and chilli for 2 to 3 minutes, until the garlic is pale gold.",
+        "Add the drained spaghetti, the spinach and a splash of the cooking water, and toss until the spinach wilts and the pasta is glossy.",
+        "Take off the heat, toss through most of the grated parmesan, season with salt and pepper and serve with the rest of the parmesan on top."
+      ]
+    },
+    {
+      "id": "tuna-tomato-spaghetti",
+      "name": "Tuna, tomato and olive spaghetti",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "spaghetti",
+          "quantity": 100.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "canned-tuna",
+          "quantity": 95.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "crushed-tomatoes",
+          "quantity": 150.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 1.0,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "kalamata-olives",
+          "quantity": 20.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "dried-oregano",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "olive-oil",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "parmesan",
+          "quantity": 10.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "black-pepper",
+          "quantity": 0.25,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Cook the spaghetti in salted boiling water until just tender, about 10 minutes.",
+        "Meanwhile, fry the sliced garlic in the olive oil for a minute, then add the tomatoes and oregano and simmer for 8 minutes.",
+        "Stir in the drained tuna and the halved olives and warm through.",
+        "Toss the drained spaghetti through the sauce, season with pepper and serve with grated parmesan."
+      ]
+    },
+    {
+      "id": "creamy-mushroom-spaghetti",
+      "name": "Creamy mushroom and spinach spaghetti",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "spaghetti",
+          "quantity": 100.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "mushrooms",
+          "quantity": 120.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 1.0,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "butter",
+          "quantity": 10.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "cream",
+          "quantity": 60.0,
+          "measure": "ml"
+        },
+        {
+          "ingredientId": "baby-spinach",
+          "quantity": 30.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "parmesan",
+          "quantity": 15.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "black-pepper",
+          "quantity": 0.25,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Cook the spaghetti in salted boiling water until just tender, about 10 minutes.",
+        "Meanwhile, melt the butter in a frying pan and cook the sliced mushrooms over high heat for 5 minutes until browned, adding the crushed garlic for the last minute.",
+        "Pour in the cream, simmer for 2 minutes, then stir in the spinach until it wilts.",
+        "Toss the drained spaghetti and most of the parmesan through the sauce, loosening with a little pasta water. Season and serve with the rest of the parmesan."
+      ]
+    },
+    {
+      "id": "beef-broccoli-stir-fry",
+      "name": "Beef and broccoli stir-fry",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "beef-rump",
+          "quantity": 125.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "broccoli",
+          "quantity": 120.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 1.0,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "ginger",
+          "quantity": 5.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "oyster-sauce",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "soy-sauce",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "white-sugar",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "jasmine-rice",
+          "quantity": 75.0,
+          "measure": "g"
+        }
+      ],
+      "method": [
+        "Cook the jasmine rice.",
+        "Slice the beef thinly across the grain and cut the broccoli into small florets.",
+        "Heat half the oil in a wok until smoking and sear the beef for 1 to 2 minutes; set aside.",
+        "Add the rest of the oil and stir-fry the broccoli with a splash of water for 3 minutes, then add the garlic and ginger for 30 seconds.",
+        "Return the beef with the oyster sauce, soy sauce and sugar and toss for a minute until glossy. Serve with the rice."
+      ]
+    },
+    {
+      "id": "honey-soy-chicken",
+      "name": "Honey soy chicken with rice",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "chicken-thigh",
+          "quantity": 150.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "honey",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "soy-sauce",
+          "quantity": 1.5,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 1.0,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "ginger",
+          "quantity": 5.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "sesame-oil",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 0.5,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "spring-onion",
+          "quantity": 1.0,
+          "measure": "stalk"
+        },
+        {
+          "ingredientId": "jasmine-rice",
+          "quantity": 75.0,
+          "measure": "g"
+        }
+      ],
+      "method": [
+        "Cook the jasmine rice.",
+        "Cut the chicken into bite-sized pieces and brown it in the vegetable oil in a frying pan over medium-high heat for 6 to 8 minutes, until cooked through.",
+        "Mix the honey, soy sauce, crushed garlic, grated ginger and sesame oil, pour over the chicken and bubble for 2 minutes until sticky.",
+        "Serve over the rice, scattered with sliced spring onion."
+      ]
+    },
+    {
+      "id": "spiced-chicken-wraps",
+      "name": "Spiced chicken wraps with corn and avocado",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "chicken-breast",
+          "quantity": 150.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "wraps",
+          "quantity": 2.0,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "corn",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "avocado",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "tomato",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "red-onion",
+          "quantity": 0.125,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "lime",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "ground-cumin",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "chilli-powder",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "olive-oil",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "salad-mix",
+          "quantity": 20.0,
+          "measure": "g"
+        }
+      ],
+      "method": [
+        "Rub the chicken with the cumin, chilli powder, a pinch of salt and half the oil, then cook in a hot frying pan for 5 to 6 minutes each side until cooked through. Rest, then slice.",
+        "Meanwhile, char the corn cob in the same pan or over a flame for 5 minutes, then cut off the kernels.",
+        "Mix the corn with diced tomato, finely chopped red onion, the rest of the oil and half the lime juice.",
+        "Mash the avocado with the remaining lime juice and a pinch of salt.",
+        "Warm the wraps, spread with avocado and fill with salad leaves, chicken and the corn salsa."
+      ]
+    },
+    {
+      "id": "beef-chilli-rice",
+      "name": "Beef chilli with rice",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "beef-mince",
+          "quantity": 125.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 1.0,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "capsicum",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "crushed-tomatoes",
+          "quantity": 200.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "tomato-paste",
+          "quantity": 0.5,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "chilli-powder",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "ground-cumin",
+          "quantity": 1.0,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 0.5,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "jasmine-rice",
+          "quantity": 75.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "cheddar",
+          "quantity": 20.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "natural-yoghurt",
+          "quantity": 30.0,
+          "measure": "g"
+        }
+      ],
+      "method": [
+        "Fry the diced onion and capsicum in the oil for 5 minutes, then add the garlic, chilli powder and cumin for a minute.",
+        "Add the mince and brown it, breaking it up, for 5 minutes.",
+        "Stir in the tomato paste and crushed tomatoes and simmer for 20 minutes, until thick, cooking the rice meanwhile.",
+        "Season and serve over the rice with grated cheddar and a spoonful of yoghurt."
+      ]
+    },
+    {
+      "id": "shakshuka",
+      "name": "Shakshuka (eggs in spiced tomato)",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "egg",
+          "quantity": 2.0,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "crushed-tomatoes",
+          "quantity": 200.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "capsicum",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 0.25,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 1.0,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "ground-cumin",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "chilli-powder",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "olive-oil",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "feta",
+          "quantity": 20.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "fresh-coriander",
+          "quantity": 0.125,
+          "measure": "bunch"
+        },
+        {
+          "ingredientId": "bread-rolls",
+          "quantity": 1.0,
+          "measure": "whole"
+        }
+      ],
+      "method": [
+        "Fry the sliced onion and capsicum in the olive oil in a small frying pan for 8 minutes until soft.",
+        "Add the garlic, cumin and chilli powder for a minute, then the tomatoes, and simmer for 10 minutes until thick. Season.",
+        "Make two hollows, crack in the eggs, cover and cook on low for 6 to 8 minutes until the whites are set.",
+        "Scatter with crumbled feta and chopped coriander and serve with the bread roll."
+      ]
+    },
+    {
+      "id": "chicken-shawarma-wraps",
+      "name": "Chicken shawarma wraps with garlic yoghurt",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "chicken-thigh",
+          "quantity": 150.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "wraps",
+          "quantity": 2.0,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 1.0,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "ground-cumin",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "ground-coriander",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "ground-turmeric",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "lemon",
+          "quantity": 0.25,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "olive-oil",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "greek-yoghurt",
+          "quantity": 50.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "tomato",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "cucumber",
+          "quantity": 0.25,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "iceberg-lettuce",
+          "quantity": 0.125,
+          "measure": "whole"
+        }
+      ],
+      "method": [
+        "Mix the oil, the spices, half the garlic and half the lemon juice; toss the chicken in it and leave for 10 minutes.",
+        "Cook the chicken in a hot frying pan for 5 to 6 minutes each side until cooked through, then rest and slice.",
+        "Stir the rest of the garlic and lemon juice into the yoghurt with a pinch of salt.",
+        "Warm the wraps and fill with shredded lettuce, sliced tomato and cucumber, the chicken and the garlic yoghurt."
+      ]
+    },
+    {
+      "id": "pork-larb-lettuce-cups",
+      "name": "Thai pork larb in lettuce cups",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "pork-mince",
+          "quantity": 125.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "lime",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "fish-sauce",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "white-sugar",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "red-chilli",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "red-onion",
+          "quantity": 0.25,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "fresh-mint",
+          "quantity": 0.25,
+          "measure": "bunch"
+        },
+        {
+          "ingredientId": "fresh-coriander",
+          "quantity": 0.125,
+          "measure": "bunch"
+        },
+        {
+          "ingredientId": "iceberg-lettuce",
+          "quantity": 0.25,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 0.5,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "jasmine-rice",
+          "quantity": 60.0,
+          "measure": "g"
+        }
+      ],
+      "method": [
+        "Cook the jasmine rice.",
+        "Fry the pork mince in the oil over high heat for 5 to 6 minutes, breaking it up, until cooked and lightly browned.",
+        "Take off the heat and stir in the lime juice, fish sauce, sugar, sliced chilli and thinly sliced red onion.",
+        "Toss through the mint and coriander leaves and spoon into lettuce cups. Serve with the rice."
+      ]
+    },
+    {
+      "id": "chicken-coconut-soup",
+      "name": "Thai chicken and coconut soup",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "chicken-thigh",
+          "quantity": 120.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "coconut-milk",
+          "quantity": 150.0,
+          "measure": "ml"
+        },
+        {
+          "ingredientId": "lemongrass",
+          "quantity": 5.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "ginger",
+          "quantity": 5.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "mushrooms",
+          "quantity": 50.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "fish-sauce",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "lime",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "red-chilli",
+          "quantity": 0.25,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "white-sugar",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "fresh-coriander",
+          "quantity": 0.125,
+          "measure": "bunch"
+        }
+      ],
+      "method": [
+        "Bring the coconut milk and 200 ml water to a simmer with the lemongrass and sliced ginger for 5 minutes.",
+        "Add the thinly sliced chicken and sliced mushrooms and simmer gently for 8 to 10 minutes until the chicken is cooked through.",
+        "Season with the fish sauce, sugar and lime juice, tasting as you go.",
+        "Serve in a bowl topped with sliced chilli and coriander."
+      ]
+    },
+    {
+      "id": "greek-lemon-chicken-potatoes",
+      "name": "Greek lemon chicken with potatoes",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "chicken-thigh",
+          "quantity": 150.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "potato",
+          "quantity": 1.0,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "lemon",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "garlic",
+          "quantity": 1.0,
+          "measure": "clove"
+        },
+        {
+          "ingredientId": "dried-oregano",
+          "quantity": 0.5,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "olive-oil",
+          "quantity": 1.5,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "salad-mix",
+          "quantity": 40.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "feta",
+          "quantity": 20.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "black-pepper",
+          "quantity": 0.25,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Cut the potato into 2 cm cubes and boil for 8 minutes until just tender; drain.",
+        "Meanwhile, toss the chicken with half the oil, the oregano, crushed garlic, half the lemon juice, salt and pepper.",
+        "Cook the chicken in a large frying pan for 5 to 6 minutes each side until cooked through; set aside to rest.",
+        "Fry the potatoes in the rest of the oil in the same pan for 8 to 10 minutes until golden, then squeeze over the remaining lemon.",
+        "Serve the chicken and potatoes with the salad leaves and crumbled feta."
+      ]
+    },
+    {
+      "id": "sausages-mash-peas",
+      "name": "Sausages with mash and peas",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "sausages",
+          "quantity": 150.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "potato",
+          "quantity": 1.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "butter",
+          "quantity": 10.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "full-cream-milk",
+          "quantity": 40.0,
+          "measure": "ml"
+        },
+        {
+          "ingredientId": "tinned-peas",
+          "quantity": 60.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "onion",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "vegetable-oil",
+          "quantity": 0.5,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "black-pepper",
+          "quantity": 0.25,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Boil the peeled, chopped potato for 15 minutes until soft.",
+        "Meanwhile, cook the sausages in the oil in a frying pan over medium heat for 12 to 15 minutes, turning, until cooked through. Add the sliced onion for the last 8 minutes to soften and brown.",
+        "Drain the potato and mash it with the butter, milk, salt and pepper.",
+        "Warm the drained peas and serve with the mash, sausages and onions."
+      ]
+    },
+    {
+      "id": "big-breakfast",
+      "name": "Bacon, eggs, mushrooms and toast",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "bacon",
+          "quantity": 60.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "egg",
+          "quantity": 2.0,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "mushrooms",
+          "quantity": 80.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "tomato",
+          "quantity": 1.0,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "wholemeal-bread",
+          "quantity": 70.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "butter",
+          "quantity": 10.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "baby-spinach",
+          "quantity": 30.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "black-pepper",
+          "quantity": 0.25,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Fry the bacon in a large frying pan for 4 to 5 minutes until crisp; keep warm.",
+        "In the bacon fat, cook the sliced mushrooms and the halved tomato, cut side down, for 5 minutes. Add the spinach for the last minute to wilt.",
+        "Fry the eggs in half the butter to your liking while the bread toasts.",
+        "Butter the toast and serve with everything, seasoned with pepper."
+      ]
+    },
+    {
+      "id": "chicken-avocado-corn-salad",
+      "name": "Chicken, avocado and corn salad",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "chicken-breast",
+          "quantity": 120.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "corn",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "avocado",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "salad-mix",
+          "quantity": 50.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "tomato",
+          "quantity": 0.5,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "cucumber",
+          "quantity": 0.25,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "lemon",
+          "quantity": 0.25,
+          "measure": "whole"
+        },
+        {
+          "ingredientId": "olive-oil",
+          "quantity": 1.0,
+          "measure": "tbsp"
+        },
+        {
+          "ingredientId": "salt",
+          "quantity": 0.25,
+          "measure": "tsp"
+        },
+        {
+          "ingredientId": "black-pepper",
+          "quantity": 0.25,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Season the chicken and cook it in half the oil in a frying pan for 5 to 6 minutes each side until cooked through; rest and slice.",
+        "Cook the corn cob in the same pan for 5 minutes, turning, until charred in spots, then cut off the kernels.",
+        "Toss the salad leaves, diced tomato and cucumber with the rest of the oil, the lemon juice, salt and pepper.",
+        "Top with the corn, sliced avocado and chicken."
+      ]
+    },
+    {
+      "id": "blueberry-honey-porridge",
+      "name": "Porridge with blueberries and honey",
+      "portions": 1,
+      "ingredients": [
+        {
+          "ingredientId": "rolled-oats",
+          "quantity": 50.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "full-cream-milk",
+          "quantity": 1.0,
+          "measure": "cup"
+        },
+        {
+          "ingredientId": "blueberries",
+          "quantity": 50.0,
+          "measure": "g"
+        },
+        {
+          "ingredientId": "honey",
+          "quantity": 1.0,
+          "measure": "tsp"
+        }
+      ],
+      "method": [
+        "Stir the oats and milk in a small saucepan over medium heat for 5 minutes, until thick and creamy.",
+        "Pour into a bowl and top with the blueberries.",
+        "Drizzle with honey and serve."
+      ]
     }
   ]
 }
