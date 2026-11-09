@@ -97,6 +97,7 @@ export const Signup: FC = () => {
             <Link
               to="/login"
               state={{ from }}
+              className="inline-flex min-h-[44px] items-center focus-visible:focus-ring"
             >
               {t('auth.logInQuestion')}
             </Link>
@@ -162,7 +163,7 @@ export const Signup: FC = () => {
         <Link
           to="/login"
           state={{ from }}
-          className="focus-visible:focus-ring"
+          className="inline-flex min-h-[44px] items-center focus-visible:focus-ring"
         >
           {t('auth.logIn')}
         </Link>

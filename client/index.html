@@ -18,6 +18,19 @@
       name="viewport"
       content="width=device-width, initial-scale=1"
     />
+    <script>
+      /* Android app only (#296): draw under the status bar so the page can clear it with the
+         top safe-area inset (--safe-top in src/index.css). Web and iOS keep the viewport as is. */
+      ;(function () {
+        var cap = window.Capacitor
+        if (!cap || typeof cap.getPlatform !== 'function') return
+        if (cap.getPlatform() !== 'android') return
+        var meta = document.querySelector('meta[name=viewport]')
+        if (meta && meta.content.indexOf('viewport-fit=cover') === -1) {
+          meta.content += ', viewport-fit=cover'
+        }
+      })()
+    </script>
     <meta
       name="theme-color"
       content="#000000"
