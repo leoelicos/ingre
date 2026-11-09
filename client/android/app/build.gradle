@@ -18,12 +18,18 @@ android {
         }
     }
     signingConfigs {
-        // One shared debug key, committed, so every debug APK (any machine or CI run) updates the installed app in place (#296). See ../README.md.
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+        // One shared debug key so every debug APK updates the installed app in place (#296).
+        // It is not in the repo: CI writes it to app/debug.keystore from the
+        // ANDROID_DEBUG_KEYSTORE_BASE64 secret. Without that file (a local build), Gradle keeps
+        // its default ~/.android/debug.keystore. See ../README.md.
+        def sharedDebugKeystore = file('debug.keystore')
+        if (sharedDebugKeystore.exists()) {
+            debug {
+                storeFile sharedDebugKeystore
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
         }
     }
     buildTypes {
