@@ -1,33 +1,41 @@
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
-import { Button, Input, Label, TextField } from 'react-aria-components'
+import { Button } from 'react-aria-components'
 import { Link } from 'react-router-dom'
 import { translate, useT } from '../../i18n'
 import type { LibraryIngredient } from '../../types/library'
 import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import { changeTitle } from '../../utils/changeTitle'
-import { focusById } from '../../utils/focus'
+import { focusById, focusFirstOf } from '../../utils/focus'
 import { useChips } from '../../utils/chips/useChips'
+import { catalogue } from '../../utils/library/recipeLibrary'
 import { useVoice } from '../../utils/voice/speech'
 import type { Capture } from '../../utils/warroom/capture'
-import { autofill, captureOf, splitQuantity } from '../../utils/warroom/capture'
-
-/** What the War room put on the list this visit, newest first. */
-interface Captured {
-  readonly item: LibraryIngredient
-  readonly quantity: number
-}
+import { captureOf } from '../../utils/warroom/capture'
+import type { HistoryEntry } from '../../utils/warroom/history'
+import {
+  byDay,
+  frequentItemIds,
+  recentItemIds
+} from '../../utils/warroom/history'
+import { nextPrompt } from '../../utils/warroom/prompts'
+import { useHistory } from '../../utils/warroom/useHistory'
+import { EntryField, FIELD_ID } from './EntryField'
+import type { Shown } from './History'
+import { HISTORY_HEADING_ID, History, removeId } from './History'
+import { promptKeys, QuickChips } from './QuickChips'
 
 const NAMES = (items: readonly LibraryIngredient[]): string =>
   items.map(({ name }) => capitaliseFirst(name)).join(', ')
 
-const FIELD_ID = 'war-room-field'
-
-const MATCH =
-  'flex min-h-[44px] w-full items-center rounded-control bg-bg px-3 text-left text-sm font-semibold text-text shadow-chip data-[focus-visible]:focus-ring data-[pressed]:shadow-chip-pressed'
-
 const COMMAND =
   'inline-flex min-h-[44px] items-center justify-center rounded-control bg-primary px-4 text-sm font-semibold text-on-primary data-[focus-visible]:focus-ring data-[pressed]:shadow-pressed'
+
+const UNDO =
+  'inline-flex min-h-[44px] items-center justify-center rounded-pill border-2 border-current px-4 text-sm font-semibold text-primary data-[focus-visible]:focus-ring data-[pressed]:opacity-80'
+
+/** Chips per row of one-tap adds: a thumb's reach, not a catalogue. */
+const QUICK = 6
 
 /** The same ingredient said twice in one go counts once. */
 const distinct = (captures: readonly Capture[]): Capture[] =>
@@ -55,76 +63,98 @@ const sentence = (
     .filter((part) => part !== '')
     .join('. ')
 
-const Matches: FC<{
-  items: readonly LibraryIngredient[]
-  onPick: (item: LibraryIngredient) => void
-}> = ({ items, onPick }) => {
-  const t = useT()
-  return items.length === 0 ? null : (
-    <ul
-      aria-label={t('warRoom.matches')}
-      className="m-0 grid list-none grid-cols-2 gap-1 p-0 sm:grid-cols-3"
-    >
-      {items.map((item) => (
-        <li key={item.id}>
-          <Button
-            aria-label={t('warRoom.add', { name: item.name })}
-            onPress={() => onPick(item)}
-            className={MATCH}
-          >
-            {capitaliseFirst(item.name)}
-          </Button>
-        </li>
-      ))}
-    </ul>
-  )
+/** The last add, so Undo can take exactly that off again. */
+interface Batch {
+  readonly items: readonly LibraryIngredient[]
+  readonly entryIds: ReadonlySet<string>
 }
 
-const CapturedList: FC<{ captured: readonly Captured[] }> = ({ captured }) => {
+const byId = new Map(catalogue.map((item) => [item.id, item]))
+
+/** Catalogue items for ids, skipping any the catalogue no longer has. */
+const itemsOf = (ids: readonly string[]): LibraryIngredient[] =>
+  ids.flatMap((id) => {
+    const item = byId.get(id)
+    return item === undefined ? [] : [item]
+  })
+
+const shownOf = (entries: readonly HistoryEntry[]): Shown[] =>
+  entries.flatMap((entry) => {
+    const item = byId.get(entry.itemId)
+    return item === undefined ? [] : [{ entry, item }]
+  })
+
+/** True when a key press is meant for a field, not for a page shortcut. */
+const typing = (target: EventTarget | null): boolean =>
+  target instanceof HTMLElement &&
+  (target.isContentEditable ||
+    ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+
+/** "/" from anywhere on the page goes to the field. */
+const useSlashToType = (): void =>
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent): void => {
+      if (
+        event.key !== '/' ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        typing(event.target)
+      )
+        return
+      event.preventDefault()
+      focusById(FIELD_ID)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [])
+
+const SHORTCUTS = ['enter', 'arrows', 'tab', 'escape', 'undo', 'slash'] as const
+
+const Shortcuts: FC = () => {
   const t = useT()
-  return captured.length === 0 ? null : (
-    <section
-      aria-labelledby="war-room-captured"
-      className="flex flex-col gap-1"
-    >
-      <h2
-        id="war-room-captured"
-        className="m-0 text-sm font-semibold uppercase tracking-wide text-text-secondary"
-      >
-        {t('warRoom.capturedCount', { count: captured.length })}
-      </h2>
-      <ul
-        aria-label={t('warRoom.captured')}
-        className="m-0 list-none columns-2 gap-4 p-0 text-sm sm:columns-3"
-      >
-        {captured.map(({ item, quantity }) => (
-          <li
-            key={item.id}
-            className="flex justify-between gap-2 border-b border-border py-1"
+  return (
+    <details className="text-sm">
+      <summary className="flex min-h-[44px] cursor-pointer items-center font-semibold text-primary focus-visible:focus-ring">
+        {t('warRoomEntry.shortcutsHeading')}
+      </summary>
+      <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+        {SHORTCUTS.map((key) => (
+          <div
+            key={key}
+            className="contents"
           >
-            <span>{capitaliseFirst(item.name)}</span>
-            {quantity > 1 && (
-              <span className="tabular-nums text-text-secondary">{`×${quantity}`}</span>
-            )}
-          </li>
+            <dt className="font-semibold">
+              <kbd className="font-sans">
+                {t(`warRoomEntry.shortcuts.${key}.keys`)}
+              </kbd>
+            </dt>
+            <dd className="m-0 text-text-secondary">
+              {t(`warRoomEntry.shortcuts.${key}.does`)}
+            </dd>
+          </div>
         ))}
-      </ul>
-    </section>
+      </dl>
+    </details>
   )
 }
 
 /**
- * The War room (#207): a bare, flat capture list for the pre-shop sprint. Type or say what you
- * need; every match goes straight onto the shopping list with an inline acknowledgement. No
- * undo (the list itself is where things are changed), the compact suggestion badges wait for the suggestion engine (#204).
+ * The War room (#207, t26u): a bare, fast capture list for the pre-shop sprint. Type, paste or
+ * say what you need; every match goes straight onto the shopping list with an inline
+ * acknowledgement and an Undo, and the field is ready for the next one at once. Suggestions
+ * follow the part being typed; recent and frequent adds are one tap; history is kept on device.
  */
 export const WarRoom: FC = () => {
   const t = useT()
   useEffect(() => changeTitle(translate('warRoom.title')), [])
+  useSlashToType()
   const list = useChips()
+  const history = useHistory()
   const [text, setText] = useState('')
   const [ack, setAck] = useState('')
-  const [captured, setCaptured] = useState<readonly Captured[]>([])
+  const [undo, setUndo] = useState<Batch | null>(null)
+  const [example, setExample] = useState(0)
   const take = (all: readonly Capture[]): void => {
     const found = distinct(all)
     const known = found.flatMap(({ item, quantity }) =>
@@ -136,7 +166,18 @@ export const WarRoom: FC = () => {
       list.addExtra(item)
       if (quantity > 1) list.setExtra(item.id, quantity)
     })
-    setCaptured((before) => [...[...fresh].reverse(), ...before])
+    const logged = history.add(
+      fresh.map(({ item, quantity }) => ({ itemId: item.id, quantity }))
+    )
+    setUndo(
+      fresh.length === 0
+        ? null
+        : {
+            items: fresh.map(({ item }) => item),
+            entryIds: new Set(logged.map(({ id }) => id))
+          }
+    )
+    if (fresh.length > 0) setExample(nextPrompt)
     setAck(
       sentence(
         fresh.map(({ item }) => item),
@@ -147,60 +188,115 @@ export const WarRoom: FC = () => {
     setText('')
   }
   const voice = useVoice((heard) => take(captureOf(heard)))
-  const { quantity, term } = splitQuantity(text)
-  /* a tap on a match gives focus back to the field, ready for the next one (not after voice) */
-  const pick = (item: LibraryIngredient, count: number): void => {
-    take([{ item, quantity: count, term: item.name }])
+  /* a tap on a suggestion or chip gives focus back to the field, ready for the next one (not after voice) */
+  const pick = (head: string, item: LibraryIngredient, count: number): void => {
+    take([...captureOf(head), { item, quantity: count, term: item.name }])
     focusById(FIELD_ID)
   }
+  const undoLast = (batch: Batch): void => {
+    batch.items.forEach((item) => list.removeExtra(item.id))
+    history.remove(batch.entryIds)
+    setUndo(null)
+    setAck(translate('warRoomEntry.undone', { names: NAMES(batch.items) }))
+    focusById(FIELD_ID)
+  }
+  const shown = shownOf(history.entries)
+  const days = byDay(history.entries, Date.now())
+    .map(({ entries, ...day }) => ({ ...day, shown: shownOf(entries) }))
+    .filter((day) => day.shown.length > 0)
+  const offList = (items: readonly LibraryIngredient[]): LibraryIngredient[] =>
+    items.filter((item) => !list.hasChip(item.id))
+  const recent = offList(
+    itemsOf(recentItemIds(history.entries, QUICK * 2))
+  ).slice(0, QUICK)
+  const recentIds = new Set(recent.map(({ id }) => id))
+  const frequent = offList(itemsOf(frequentItemIds(history.entries, QUICK * 3)))
+    .filter(({ id }) => !recentIds.has(id))
+    .slice(0, QUICK)
+  const remove = ({ entry, item }: Shown): void => {
+    const at = shown.findIndex((s) => s.entry.id === entry.id)
+    const next = [shown[at + 1], shown[at - 1]].flatMap((s) =>
+      s === undefined ? [] : [removeId(s.entry)]
+    )
+    history.remove(new Set([entry.id]))
+    setAck(
+      translate('warRoomEntry.removed', { name: capitaliseFirst(item.name) })
+    )
+    setTimeout(() => focusFirstOf([...next, HISTORY_HEADING_ID]))
+  }
+  const exampleText = t(
+    `warRoomEntry.prompts.${promptKeys(example, 1).join('')}`
+  )
   return (
     <div className="mx-auto flex w-full max-w-layout flex-col gap-3 px-gutter pb-24 pt-4">
       <h1 className="m-0 text-xl font-bold">{t('warRoom.title')}</h1>
-      <p className="m-0 text-sm text-text-secondary">{t('warRoom.hint')}</p>
-      <form
-        className="flex items-end gap-2"
-        onSubmit={(event) => {
-          event.preventDefault()
-          take(captureOf(text))
-        }}
-      >
-        <TextField
-          value={text}
-          onChange={setText}
-          className="flex min-w-0 flex-1 flex-col gap-1"
+      <EntryField
+        text={text}
+        onText={setText}
+        placeholder={t('warRoomEntry.placeholder', { example: exampleText })}
+        onSubmit={(line) => take(captureOf(line))}
+        onPick={pick}
+        onList={(lines) => take(captureOf(lines))}
+        onUndo={undo === null ? null : () => undoLast(undo)}
+        isOnList={list.hasChip}
+        after={
+          voice.toggle !== null && (
+            <Button
+              onPress={voice.toggle}
+              aria-pressed={voice.listening}
+              className={`${COMMAND} aria-pressed:bg-accent`}
+            >
+              {t(voice.listening ? 'warRoom.stop' : 'warRoom.speak')}
+            </Button>
+          )
+        }
+      />
+      <div className="flex min-h-[44px] flex-wrap items-center gap-2">
+        <p
+          role="status"
+          className="m-0 min-h-[1.25rem] flex-1 text-sm font-semibold text-text"
         >
-          <Label className="sr-only">{t('warRoom.field')}</Label>
-          <Input
-            id={FIELD_ID}
-            autoFocus
-            autoComplete="off"
-            autoCapitalize="none"
-            enterKeyHint="done"
-            placeholder={t('warRoom.field')}
-            className="min-h-[44px] rounded-control border border-border bg-surface px-3 text-base text-text data-[focus-visible]:focus-ring"
-          />
-        </TextField>
-        {voice.toggle !== null && (
+          {ack}
+        </p>
+        {undo !== null && (
           <Button
-            onPress={voice.toggle}
-            aria-pressed={voice.listening}
-            className={`${COMMAND} aria-pressed:bg-accent`}
+            aria-label={t('warRoomEntry.undoLabel', {
+              names: NAMES(undo.items)
+            })}
+            onPress={() => undoLast(undo)}
+            className={UNDO}
           >
-            {t(voice.listening ? 'warRoom.stop' : 'warRoom.speak')}
+            {t('warRoomEntry.undo')}
           </Button>
         )}
-      </form>
-      <p
-        role="status"
-        className="m-0 min-h-[1.25rem] text-sm font-semibold text-text"
-      >
-        {ack}
-      </p>
-      <Matches
-        items={autofill(term)}
-        onPick={(item) => pick(item, quantity)}
+      </div>
+      {text === '' && (
+        <QuickChips
+          recent={recent}
+          frequent={frequent}
+          firstTime={history.entries.length === 0}
+          example={example}
+          onAdd={(item) => pick('', item, 1)}
+          onTry={(line) => {
+            setText(line)
+            focusById(FIELD_ID)
+          }}
+        />
+      )}
+      <History
+        days={days}
+        onAgain={({ entry, item }) => {
+          pick('', item, entry.quantity)
+        }}
+        onRemove={remove}
+        onClear={() => {
+          history.clear()
+          setUndo(null)
+          setAck(translate('warRoomEntry.cleared'))
+          focusById(FIELD_ID)
+        }}
       />
-      <CapturedList captured={captured} />
+      <Shortcuts />
       <Link
         to="/"
         className="inline-flex min-h-[44px] items-center self-start rounded-control px-2 text-sm font-semibold text-primary focus-visible:focus-ring"

@@ -342,7 +342,7 @@
   "warRoom": {
     "title": "War room",
     "open": "War room",
-    "hint": "Type or say what you need. Generic names are fine: \"2 carrots, onion and garlic\".",
+    "hint": "Type, paste or say what you need, one after another. Generic names and typos are fine.",
     "field": "Add an item",
     "matches": "Matches",
     "add": "Add {{name}}",
@@ -351,9 +351,79 @@
     "noMatch": "No match for {{terms}}",
     "speak": "Speak",
     "stop": "Stop listening",
-    "captured": "Captured",
-    "capturedCount": "{{count}} captured",
     "back": "Back to your list"
+  },
+  "warRoomEntry": {
+    "placeholder": "Try “{{example}}”",
+    "onList": "On your list",
+    "suggestionCount_one": "{{count}} suggestion. Up and down arrows to choose, Enter to add, Tab to complete.",
+    "suggestionCount_other": "{{count}} suggestions. Up and down arrows to choose, Enter to add, Tab to complete.",
+    "noSuggestions": "No suggestions",
+    "undo": "Undo",
+    "undoLabel": "Undo adding {{names}}",
+    "undone": "{{names}} taken off your list",
+    "recent": "Recently added",
+    "frequent": "Often added",
+    "tryHeading": "Try one",
+    "examples": "More examples",
+    "pasteHint": "Paste a list from your notes and every line goes on at once.",
+    "shortcutsHeading": "Keyboard shortcuts",
+    "shortcuts": {
+      "enter": {
+        "keys": "Enter",
+        "does": "Add what you typed, or the highlighted suggestion"
+      },
+      "arrows": {
+        "keys": "↑ ↓",
+        "does": "Move through the suggestions"
+      },
+      "tab": {
+        "keys": "Tab",
+        "does": "Complete the highlighted suggestion"
+      },
+      "escape": {
+        "keys": "Esc",
+        "does": "Close the suggestions, then clear the field"
+      },
+      "undo": {
+        "keys": "Ctrl+Z / ⌘Z",
+        "does": "Undo the last add, when the field is empty"
+      },
+      "slash": {
+        "keys": "/",
+        "does": "Jump to the field from anywhere on the page"
+      }
+    },
+    "history": "History",
+    "historyEmpty": "Nothing yet. What you add shows up here, newest first.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "addAgain": "Add {{name}} again",
+    "removeEntry": "Remove {{name}}, {{time}}, from history",
+    "removed": "{{name}} removed from history",
+    "clear": "Clear history",
+    "clearQuestion": "Clear all of your War room history? Your shopping list stays as it is.",
+    "clearYes": "Clear all",
+    "clearNo": "Keep",
+    "cleared": "History cleared",
+    "prompts": {
+      "carrots": "3 carrots",
+      "chickpeas": "2 tins of chickpeas",
+      "flour": "1 kg plain flour",
+      "lemons": "lemons x4",
+      "eggs": "a dozen eggs",
+      "stirFry": "garlic, ginger and spring onion",
+      "coriander": "2 bunches coriander",
+      "broccoli": "brocoli",
+      "mince": "mince beef",
+      "breakfast": "rolled oats; banana; honey",
+      "spinach": "a bag of baby spinach",
+      "butter": "250 g butter",
+      "onion": "an onion",
+      "tuna": "3 cans of tuna",
+      "curry": "chickpeas, coconut milk and garam masala",
+      "avocado": "avocadoes"
+    }
   },
   "suggest": {
     "using": "Using",

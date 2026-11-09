@@ -2,6 +2,7 @@
 export { translate } from './i18n'
 export type { Values } from './i18n'
 export { useT } from './useT'
+export { formatClock, formatDayName } from './dates'
 export type { Translate } from './useT'
 export {
   formatCount,
