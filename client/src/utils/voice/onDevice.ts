@@ -44,9 +44,18 @@ export const microphoneError = (reason: unknown): VoiceError => {
     : 'failed'
 }
 
+/*
+ * Raw audio: the browser's call-style noise suppression and gain control made the model mishear
+ * ("tins of checkpiece" for "three tins of chickpeas" in 3 of 3 runs, raw: right in 3 of 3).
+ */
 export const openMicrophone = (): Promise<MediaStream> =>
   navigator.mediaDevices.getUserMedia({
-    audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true }
+    audio: {
+      channelCount: 1,
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false
+    }
   })
 
 export const recordWith = (stream: MediaStream): Recording => {

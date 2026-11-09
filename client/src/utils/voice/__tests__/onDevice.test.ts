@@ -38,12 +38,17 @@ describe('microphoneError', () => {
 })
 
 describe('openMicrophone', () => {
-  it('asks for mono audio with echo cancelling', async () => {
+  it('asks for raw mono audio, which the model hears best', async () => {
     const getUserMedia = jest.fn(() => Promise.resolve('stream'))
     Reflect.set(navigator, 'mediaDevices', { getUserMedia })
     expect(await openMicrophone()).toBe('stream')
     expect(getUserMedia).toHaveBeenCalledWith({
-      audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true }
+      audio: {
+        channelCount: 1,
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false
+      }
     })
     Reflect.deleteProperty(navigator, 'mediaDevices')
   })

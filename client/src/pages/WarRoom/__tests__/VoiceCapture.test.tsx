@@ -214,7 +214,7 @@ it('on-device: a level meter, download progress, and the size only until it is c
     width: '50%'
   })
   expect(screen.getByTestId('voice-ring')).toHaveStyle({
-    transform: 'scale(1.15)'
+    transform: 'scale(1.1)'
   })
   expect(screen.getByTestId('voice-ring').className).toContain(
     'motion-reduce:transition-none'
@@ -222,15 +222,21 @@ it('on-device: a level meter, download progress, and the size only until it is c
   report(() =>
     run?.listener.download({ loaded: 12_000_000, total: 33_400_000 })
   )
-  expect(status()).toHaveTextContent(
-    'Downloading the speech model: 12 of 33 MB'
-  )
+  expect(
+    screen.getByRole('progressbar', { name: 'Speech model download' })
+  ).toHaveAttribute('aria-valuemax', '33400000')
+  expect(
+    screen.getByText('Downloading the speech model: 12 of 33 MB')
+  ).toBeInTheDocument()
+  expect(status()).toHaveTextContent('Listening')
   localStorage.setItem(
     'ingre.voiceModel.onnx-community/moonshine-tiny-ONNX',
     '1'
   )
   report(() => run?.listener.download({ loaded: 1, total: 1 }))
-  expect(status()).toHaveTextContent('Listening')
+  expect(screen.queryByRole('progressbar')).toBeNull()
+  report(() => run?.listener.download({ loaded: 0, total: 0 }))
+  expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuemax', '1')
   report(() => run?.listener.end())
   expect(talk()).not.toHaveAccessibleDescription(/downloads/)
 })

@@ -11,6 +11,8 @@ export interface SpeechModel {
   readonly id: string
   /** what the first use downloads, model plus runtime, rounded up */
   readonly megabytes: number
+  /** the model files alone, so progress has a total before every file has started */
+  readonly modelBytes: number
   readonly dtype: Readonly<Record<string, 'q8'>>
   readonly options: Readonly<Record<string, string>>
 }
@@ -19,12 +21,14 @@ export const MODELS: Readonly<Record<'en' | 'ja', SpeechModel>> = {
   en: {
     id: 'onnx-community/moonshine-tiny-ONNX',
     megabytes: 34,
+    modelBytes: 28_300_000,
     dtype: { encoder_model: 'q8', decoder_model_merged: 'q8' },
     options: {}
   },
   ja: {
     id: 'onnx-community/whisper-base',
     megabytes: 82,
+    modelBytes: 77_000_000,
     dtype: { encoder_model: 'q8', decoder_model_merged: 'q8' },
     options: { language: 'japanese', task: 'transcribe' }
   }
@@ -50,21 +54,23 @@ interface ProgressInfo {
 }
 
 /** Adds one file's progress to the running total across all of a model's files. */
-export const progressTracker = (report: (download: Download) => void) => {
+export const progressTracker = (
+  report: (download: Download) => void,
+  expected = 0
+) => {
   const files = new Map<string, Download>()
   return (info: ProgressInfo): void => {
     const { status, file, loaded, total } = info
     if (status !== 'progress' || file === undefined) return
     files.set(file, { loaded: loaded ?? 0, total: total ?? 0 })
-    report(
-      [...files.values()].reduce(
-        (sum, one) => ({
-          loaded: sum.loaded + one.loaded,
-          total: sum.total + one.total
-        }),
-        { loaded: 0, total: 0 }
-      )
+    const sum = [...files.values()].reduce(
+      (all, one) => ({
+        loaded: all.loaded + one.loaded,
+        total: all.total + one.total
+      }),
+      { loaded: 0, total: 0 }
     )
+    report({ loaded: sum.loaded, total: Math.max(sum.total, expected) })
   }
 }
 
@@ -98,7 +104,7 @@ export const modelLoader =
     env.allowLocalModels = false
     const recognise = await pipeline('automatic-speech-recognition', model.id, {
       dtype: { ...model.dtype },
-      progress_callback: progressTracker(progress)
+      progress_callback: progressTracker(progress, model.modelBytes)
     })
     return async (audio) => textOf(await recognise(audio, { ...model.options }))
   }

@@ -37,6 +37,15 @@ describe('progressTracker', () => {
     track({ status: 'progress', file: 'c' })
     expect(report).toHaveBeenLastCalledWith({ loaded: 11, total: 30 })
   })
+
+  it('shows the whole model’s size before every file has started', () => {
+    const report = jest.fn()
+    progressTracker(
+      report,
+      100
+    )({ status: 'progress', file: 'a', loaded: 1, total: 10 })
+    expect(report).toHaveBeenCalledWith({ loaded: 1, total: 100 })
+  })
 })
 
 describe('loadModel', () => {
@@ -59,7 +68,10 @@ describe('loadModel', () => {
       MODELS.ja.id,
       expect.objectContaining({ dtype: MODELS.ja.dtype })
     )
-    expect(progress).toHaveBeenCalledWith({ loaded: 1, total: 2 })
+    expect(progress).toHaveBeenCalledWith({
+      loaded: 1,
+      total: MODELS.ja.modelBytes
+    })
     const audio = new Float32Array(4)
     expect(await run(audio)).toBe('Two carrots.')
     expect(recognise).toHaveBeenCalledWith(audio, MODELS.ja.options)

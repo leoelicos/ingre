@@ -358,6 +358,7 @@
       "starting": "Starting the microphone",
       "listening": "Listening",
       "transcribing": "Working out what you said",
+      "download": "Speech model download",
       "downloading": "Downloading the speech model: {{loaded}} of {{total}} MB",
       "heard": "Hearing: {{text}}",
       "denied": "The microphone is blocked. Allow it in your browser or phone settings, or type instead.",

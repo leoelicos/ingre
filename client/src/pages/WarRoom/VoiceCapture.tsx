@@ -60,11 +60,6 @@ const engineText = (t: Translate, engine: EngineKind): string => {
 const useStatus = (state: VoiceState): string => {
   const t = useT()
   if (state.error !== null) return errorText(t, state.error)
-  if (state.download !== null)
-    return t('warRoom.voice.downloading', {
-      loaded: megabytes(state.download.loaded),
-      total: megabytes(state.download.total)
-    })
   return phaseText(t, state.phase)
 }
 
@@ -114,6 +109,13 @@ export const VoiceCapture: FC<{
   })
   const { state } = voice
   const { engine } = state
+  const downloaded =
+    state.download === null
+      ? ''
+      : t('warRoom.voice.downloading', {
+          loaded: megabytes(state.download.loaded),
+          total: megabytes(state.download.total)
+        })
   if (engine === null) return null
   const level = state.level
   return (
@@ -150,7 +152,7 @@ export const VoiceCapture: FC<{
           if (heldStop.current) return
           voice.stop()
         }}
-        className={`relative flex h-44 w-44 touch-none select-none flex-col items-center justify-center gap-1 rounded-full text-on-primary shadow-raised data-[focus-visible]:focus-ring data-[pressed]:shadow-pressed ${
+        className={`relative my-5 flex h-44 w-44 touch-none select-none flex-col items-center justify-center gap-1 rounded-full text-on-primary shadow-raised data-[focus-visible]:focus-ring data-[pressed]:shadow-pressed ${
           voice.active ? 'bg-accent' : 'bg-primary'
         }`}
       >
@@ -164,7 +166,7 @@ export const VoiceCapture: FC<{
             style={
               level === null
                 ? undefined
-                : { transform: `scale(${1 + level * 0.3})` }
+                : { transform: `scale(${1 + level * 0.2})` }
             }
           />
         )}
@@ -200,6 +202,33 @@ export const VoiceCapture: FC<{
       >
         {status}
       </p>
+      {state.download !== null && (
+        /* progress is not live: a screen reader can find it, but is not interrupted by every step */
+        <div className="flex w-56 flex-col items-center gap-1">
+          <div
+            role="progressbar"
+            aria-label={t('warRoom.voice.download')}
+            aria-valuemin={0}
+            aria-valuemax={Math.max(1, state.download.total)}
+            aria-valuenow={state.download.loaded}
+            aria-valuetext={downloaded}
+            className="h-1.5 w-full overflow-hidden rounded-pill bg-highlight shadow-recessed"
+          >
+            <div
+              className="h-full bg-text-secondary"
+              style={{
+                width: `${Math.round(
+                  (100 * state.download.loaded) /
+                    Math.max(1, state.download.total)
+                )}%`
+              }}
+            />
+          </div>
+          <p className="m-0 text-center text-xs text-text-secondary">
+            {downloaded}
+          </p>
+        </div>
+      )}
       {state.interim !== '' && (
         <p className="m-0 text-center text-base italic text-text-secondary">
           {t('warRoom.voice.heard', { text: state.interim })}
