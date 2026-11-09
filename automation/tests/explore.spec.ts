@@ -19,10 +19,10 @@ import {
   recipesRegion,
   searchBox
 } from './page'
+import { RECIPE_COUNT } from './library'
 
 /* #181 Search / Explore: one scenario per behaviour, on the phone and desktop projects. */
 
-const RECIPE_COUNT = 14
 const group = (page: Page, name: string): Locator =>
   explore(page)
     .locator('div')
@@ -316,10 +316,11 @@ test.describe('Explore (#181)', () => {
   }) => {
     await typeQuery(page, 'chicken')
     const recipes = await rowNames(group(page, 'Recipes'))
-    expect(recipes.slice(0, 3)).toEqual([
+    expect(recipes.slice(0, 4)).toEqual([
       'Chicken korma',
-      'Butter chicken',
-      'Lemongrass chilli chicken'
+      'Chicken shawarma wraps with garlic yoghurt',
+      'Chicken, avocado and corn salad',
+      'Butter chicken'
     ])
     await typeQuery(page, 'rice')
     const ingredients = await ingredientNames(group(page, 'Ingredients'))

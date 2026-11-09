@@ -406,7 +406,11 @@ describe('Scenario: Search bar (#181)', () => {
 describe('Explore and the profile (#224)', () => {
   it('browses A to Z until the list says what the user likes', () => {
     renderList()
-    expect(browseNames()[0]).toBe('Beef keema with peas')
+    /* the first recipe A to Z, whatever the library holds (#103 grows it) */
+    const first = library
+      .map(({ name }) => name)
+      .sort((a, b) => a.localeCompare(b))[0]
+    expect(browseNames()[0]).toBe(first)
   })
 
   it('puts recipes like the picked ones first', () => {
