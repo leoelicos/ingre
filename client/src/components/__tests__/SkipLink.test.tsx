@@ -27,6 +27,8 @@ describe('SkipLink (#131)', () => {
     expect(link.className).toMatch(/\bsr-only\b/)
     expect(link.className).toMatch(/focus:not-sr-only/)
     expect(link.className).toMatch(/focus:focus-ring/)
+    /* shown below the Android status bar (#296) */
+    expect(link).toHaveClass('focus:top-[calc(var(--safe-top)+0.5rem)]')
     await user.tab()
     expect(link).toHaveFocus()
   })

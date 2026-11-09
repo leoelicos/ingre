@@ -9,11 +9,11 @@ import { DRAWER_MIN_WIDTH, useMinWidth } from '../utils/media/useMinWidth'
 
 export const LOGO_TEXT = 'ingré'
 
-/** The logo: back to the workspace. The wordmark is visible from small tablets up. */
+/** The logo: back to the workspace. The wordmark is visible from small tablets up; below that the egg alone is still a 44px target (#296). */
 const Logo: FC = () => (
   <Link
     to="/"
-    className="flex min-h-[44px] shrink-0 items-center rounded-control no-underline focus-visible:focus-ring"
+    className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-control no-underline focus-visible:focus-ring"
   >
     <IngreIconLogoEgg />
     <span className="sr-only font-['Poppins'] text-[26px] font-normal tracking-[-0.03em] text-text sm:not-sr-only">
@@ -38,14 +38,15 @@ const WarRoomLink: FC = () => (
  * One header everywhere (#164): the logo, search, the War room button and the account menu. On the list page from
  * 1328px the search bar lives in the Explore drawer (or the 33/33/33 Explore column) instead
  * (#181); below that it stays here. Below the drawer width the header sticks to the top (#228):
- * the search stays high, where the keyboard never covers it or moves it.
+ * the search stays high, where the keyboard never covers it or moves it. On Android it reaches up
+ * behind the status bar and pads its content below it with the top safe-area inset (#296).
  */
 export const Header: FC = () => {
   const [auth] = useAuthContext()
   const onList = useLocation().pathname === '/'
   const inDrawer = useMinWidth(DRAWER_MIN_WIDTH) && onList
   return (
-    <header className="ingre-navbar sticky top-0 z-30 bg-bg min-[1328px]:static">
+    <header className="ingre-navbar sticky top-0 z-30 -mt-[var(--safe-top)] bg-bg pt-[var(--safe-top)] min-[1328px]:static">
       <div className="ingre-page flex items-center gap-2 py-2 sm:gap-4 sm:py-3">
         <Logo />
         <div className="flex min-w-0 flex-1">{!inDrawer && <SearchBox />}</div>
