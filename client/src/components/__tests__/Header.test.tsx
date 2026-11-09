@@ -26,6 +26,8 @@ describe('Header (#164)', () => {
     const logo = header.getByRole('link', { name: LOGO_TEXT })
     expect(logo).toHaveAttribute('href', '/')
     expect(logo).toHaveClass('focus-visible:focus-ring')
+    /* the egg alone, below sm, is still a 44px tap target (#296) */
+    expect(logo).toHaveClass('min-h-[44px]', 'min-w-[44px]')
     const warRoom = header.getByRole('link', { name: 'War room' })
     expect(warRoom).toHaveAttribute('href', '/war-room')
     expect(header.getAllByRole('link')).toEqual([logo, warRoom])

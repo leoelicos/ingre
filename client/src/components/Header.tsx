@@ -9,11 +9,11 @@ import { DRAWER_MIN_WIDTH, useMinWidth } from '../utils/media/useMinWidth'
 
 export const LOGO_TEXT = 'ingré'
 
-/** The logo: back to the workspace. The wordmark is visible from small tablets up. */
+/** The logo: back to the workspace. The wordmark is visible from small tablets up; below that the egg alone is still a 44px target (#296). */
 const Logo: FC = () => (
   <Link
     to="/"
-    className="flex min-h-[44px] shrink-0 items-center rounded-control no-underline focus-visible:focus-ring"
+    className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-control no-underline focus-visible:focus-ring"
   >
     <IngreIconLogoEgg />
     <span className="sr-only font-['Poppins'] text-[26px] font-normal tracking-[-0.03em] text-text sm:not-sr-only">
