@@ -1,0 +1,38 @@
+import { existsSync, readFileSync } from 'fs'
+import { join } from 'path'
+import catalogue from '../data/ingredients.json'
+
+/* Every catalogue ingredient needs a 120×120 picture (#290, #291) */
+const DIR = join(__dirname, '../../public/ingredients')
+const ids = catalogue.ingredients.map((ingredient) => ingredient.id)
+
+const rootTag = (svg: string) => svg.match(/<svg\b[^>]*>/)?.[0] ?? ''
+const attr = (tag: string, name: string) =>
+  tag.match(new RegExp(`\\s${name}="([^"]*)"`))?.[1]
+
+describe('ingredient pictures (#290)', () => {
+  it('reads a non-empty catalogue with unique ids', () => {
+    expect(ids.length).toBeGreaterThan(0)
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it('has an SVG in client/public/ingredients/ for every ingredient', () => {
+    const missing = ids.filter((id) => !existsSync(join(DIR, `${id}.svg`)))
+    expect(missing).toEqual([])
+  })
+
+  it.each(ids.filter((id) => existsSync(join(DIR, `${id}.svg`))))(
+    '%s.svg is 120×120',
+    (id) => {
+      const tag = rootTag(readFileSync(join(DIR, `${id}.svg`), 'utf8'))
+      expect(tag).not.toBe('')
+      expect(
+        attr(tag, 'viewBox')
+          ?.trim()
+          .split(/[\s,]+/)
+      ).toEqual(['0', '0', '120', '120'])
+      expect(attr(tag, 'width') ?? '120').toBe('120')
+      expect(attr(tag, 'height') ?? '120').toBe('120')
+    }
+  )
+})
