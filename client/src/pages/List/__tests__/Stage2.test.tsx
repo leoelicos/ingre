@@ -24,8 +24,8 @@ import {
 } from '../../../test/renderList'
 import { saveMock, savedQuery } from '../../../test/savedMocks'
 import type { RecipeInput } from '../../../types/payloads'
-import { NO_EXTRA_HINT } from '../Extra'
-import { REFRESH_QUESTION } from '../Ingredients'
+import { noExtraHint } from '../Extra'
+import { refreshQuestion } from '../Ingredients'
 import { OriginalDetails } from '../RowDetails'
 import { recipeById } from '../../../test/library'
 import { EXTRAS_KEY } from '../../../utils/storage/shoppingState'
@@ -170,20 +170,20 @@ describe('Feature: Balance-sheet ingredients (#182)', () => {
       name: 'Refresh'
     })
     await user.click(refresh)
-    await answer(user, REFRESH_QUESTION, 'No')
+    await answer(user, refreshQuestion(), 'No')
     expect(refresh).toHaveFocus()
     expect(toggleOf('butter')).toHaveAccessibleName(/^Butter, 30 g, /)
     await user.click(refresh)
-    await answer(user, REFRESH_QUESTION, 'Yes')
+    await answer(user, refreshQuestion(), 'Yes')
     expect(toggleOf('butter')).toHaveAccessibleName(/^Butter, 15 g, /)
-    expect(screen.queryByRole('group', { name: REFRESH_QUESTION })).toBeNull()
+    expect(screen.queryByRole('group', { name: refreshQuestion() })).toBeNull()
   })
 })
 
 describe('Feature: Extra (#182)', () => {
   it('Scenario: Empty Extra says so and offers the plus', () => {
     renderList()
-    expect(region('Extra')).toHaveTextContent(NO_EXTRA_HINT)
+    expect(region('Extra')).toHaveTextContent(noExtraHint())
     expect(
       within(region('Extra')).getByRole('button', { name: 'Add an ingredient' })
     ).toBeInTheDocument()

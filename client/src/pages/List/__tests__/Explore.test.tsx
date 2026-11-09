@@ -17,7 +17,7 @@ import {
 import { SEARCH_SETTLE_MS } from '../../../utils/analytics/useSearchedEvent'
 import { readEvents } from '../../../utils/analytics/events'
 import { SETTINGS_KEY } from '../../../utils/profile/settings'
-import { HIDE_EXPLORE, originalIds, matchCounts } from '../Explore'
+import { hideExplore, originalIds, matchCounts } from '../Explore'
 import { library } from '../../../utils/library/recipeLibrary'
 
 beforeEach(() => localStorage.clear())
@@ -115,7 +115,7 @@ describe('Scenario: Explore is always on the page (#181)', () => {
     expect(region('Explore')).toBeVisible()
     expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
     expect(document.getElementById('explore-content')).not.toBeVisible()
-    expect(screen.queryByRole('button', { name: HIDE_EXPLORE })).toBeNull()
+    expect(screen.queryByRole('button', { name: hideExplore() })).toBeNull()
     act(() => searchBox().focus())
     expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
   })
@@ -146,14 +146,14 @@ describe('Scenario: Explore collapses, never goes away (#181)', () => {
       .focus()
     await user.keyboard('{Escape}')
     expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    const hide = screen.getByRole('button', { name: HIDE_EXPLORE })
+    const hide = screen.getByRole('button', { name: hideExplore() })
     expect(hide).toHaveAttribute('aria-controls', 'explore-content')
     await user.click(hide)
     expect(region('Explore')).toBeVisible()
     expect(screen.getByRole('heading', { name: 'Explore' })).toBeVisible()
     expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
     expect(exploreHeader()).toHaveFocus()
-    expect(screen.queryByRole('button', { name: HIDE_EXPLORE })).toBeNull()
+    expect(screen.queryByRole('button', { name: hideExplore() })).toBeNull()
     await user.click(exploreHeader())
     expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
     expect(exploreHeader()).toHaveFocus()
@@ -163,7 +163,7 @@ describe('Scenario: Explore collapses, never goes away (#181)', () => {
     const user = userEvent.setup()
     renderList()
     openFilter()
-    await user.click(screen.getByRole('button', { name: HIDE_EXPLORE }))
+    await user.click(screen.getByRole('button', { name: hideExplore() }))
     await user.click(exploreHeader())
     expect(explore().getByRole('switch', { name: 'Saved' })).toBeVisible()
   })
@@ -177,7 +177,7 @@ describe('Scenario: Explore collapses, never goes away (#181)', () => {
     expect(explore().queryByRole('switch', { name: 'Saved' })).toBeNull()
     act(() => searchBox().focus())
     expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('button', { name: HIDE_EXPLORE })).toBeVisible()
+    expect(screen.getByRole('button', { name: hideExplore() })).toBeVisible()
     await user.click(exploreHeader())
     act(() => searchBox().blur())
     fireEvent.change(searchBox(), { target: { value: 'b' } })

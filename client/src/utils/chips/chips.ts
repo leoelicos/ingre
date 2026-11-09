@@ -67,8 +67,11 @@ export interface Chip {
   readonly customised: boolean
 }
 
-/** Short category names (#179): "Dairy" reads better on a tab than the full section name. */
-export const CATEGORY_LABELS: Readonly<Record<ShopSection, string>> = {
+/**
+ * Short category names (#179): "Dairy" reads better on a tab than the full section name.
+ * Resolved on each call, so they follow a language switch.
+ */
+const categoryLabels = (): Readonly<Record<ShopSection, string>> => ({
   'Fruit & Veg': translate('section.fruitVeg'),
   'Meat & Seafood': translate('section.meatSeafood'),
   'Dairy, Eggs & Fridge': translate('section.dairy'),
@@ -77,10 +80,10 @@ export const CATEGORY_LABELS: Readonly<Record<ShopSection, string>> = {
   Pantry: translate('section.pantry'),
   Frozen: translate('section.frozen'),
   Other: translate('section.other')
-}
+})
 
 export const categoryLabel = (section: ShopSection): string =>
-  CATEGORY_LABELS[section]
+  categoryLabels()[section]
 
 /** A recipe's label, with "(2)", "(3)" when earlier recipes have the same name (#182). */
 export const sourceLabel = (

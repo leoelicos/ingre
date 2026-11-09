@@ -120,7 +120,7 @@ const CapturedList: FC<{ captured: readonly Captured[] }> = ({ captured }) => {
  */
 export const WarRoom: FC = () => {
   const t = useT()
-  useEffect(() => changeTitle(translate('warRoom.title')), [])
+  useEffect(() => changeTitle(t('warRoom.title')), [t])
   const list = useChips()
   const [text, setText] = useState('')
   const [ack, setAck] = useState('')

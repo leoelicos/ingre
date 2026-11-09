@@ -1,4 +1,4 @@
-import { translate, useT } from '../../i18n'
+import { useT } from '../../i18n'
 import type { FC } from 'react'
 import { useEffect } from 'react'
 import { Button } from 'react-aria-components'
@@ -10,6 +10,7 @@ import { useAuthContext } from '../../utils/auth/AuthContext'
 import { changeTitle } from '../../utils/changeTitle'
 import { library } from '../../utils/library/recipeLibrary'
 import { useSaved } from '../../utils/saved/useSaved'
+import { LanguageSection } from './LanguageSection'
 
 const LINK =
   'inline-flex min-h-[44px] items-center rounded-control px-3 font-semibold text-primary underline focus-visible:focus-ring'
@@ -122,7 +123,7 @@ const Saved: FC<{ loggedIn: boolean }> = ({ loggedIn }) => {
  */
 export const ProfilePage: FC = () => {
   const t = useT()
-  useEffect(() => changeTitle(translate('profile.title')), [])
+  useEffect(() => changeTitle(t('profile.title')), [t])
   const loggedIn = useAuthContext()[0].loggedIn
   return (
     <PageMain className="mx-auto flex w-full max-w-layout flex-col gap-6 px-gutter pb-8 pt-4">
@@ -131,6 +132,7 @@ export const ProfilePage: FC = () => {
       </h1>
       <Account loggedIn={loggedIn} />
       <Saved loggedIn={loggedIn} />
+      <LanguageSection />
     </PageMain>
   )
 }

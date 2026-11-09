@@ -17,6 +17,16 @@
   :where(a, button, input, select, textarea, summary, [tabindex]):focus {
     scroll-margin-block: 5rem;
   }
+  /* Japanese (ja): Poppins has no kana or kanji, so they fall through to the platform's
+     Japanese UI font; nothing is downloaded. Strict line breaking keeps small kana and
+     closing brackets off the start of a line. Not word-break: keep-all, which would stop
+     unspaced Japanese wrapping at all and overflow narrow screens. */
+  html:lang(ja) {
+    font-family: 'Poppins', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
+      'Noto Sans JP', 'Yu Gothic', 'Meiryo', sans-serif;
+    line-break: strict;
+    overflow-wrap: anywhere;
+  }
   body {
     background-color: var(--color-bg);
     color: var(--color-text);

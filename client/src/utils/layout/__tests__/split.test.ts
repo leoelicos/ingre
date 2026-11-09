@@ -3,7 +3,7 @@ import {
   DEFAULT_SPLIT,
   SPLITS,
   SPLIT_COLUMNS,
-  SPLIT_LABELS,
+  splitLabels,
   effectiveSplit,
   explorePlacement,
   parseSplit,
@@ -60,7 +60,7 @@ describe('layout split (#181)', () => {
     expect(SPLIT_COLUMNS['25/75']).toBe(
       'grid-cols-[minmax(0,1fr)_minmax(0,3fr)]'
     )
-    expect(SPLIT_LABELS['25/75']).toBe('Ingredients 25%, Recipes 75%')
+    expect(splitLabels()['25/75']).toBe('Ingredients 25%, Recipes 75%')
     expect(SPLIT_COLUMNS.vertical).toBe('grid-cols-1')
   })
 
@@ -68,7 +68,7 @@ describe('layout split (#181)', () => {
     expect(SPLIT_COLUMNS['33/33/33']).toBe(
       'grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]'
     )
-    expect(SPLIT_LABELS['33/33/33']).toBe(
+    expect(splitLabels()['33/33/33']).toBe(
       'Ingredients 33%, Recipes 33%, Explore 33%'
     )
   })

@@ -65,8 +65,8 @@ export const SPLIT_COLUMNS: Readonly<Record<Split, string>> = {
   '75/25': 'grid-cols-[minmax(0,3fr)_minmax(0,1fr)]'
 }
 
-/** What the toggle reads out for each choice. */
-export const SPLIT_LABELS: Readonly<Record<Split, string>> = {
+/** What the toggle reads out for each choice, in the current language. */
+export const splitLabels = (): Readonly<Record<Split, string>> => ({
   vertical: translate('layout.vertical'),
   '50/50': translate('layout.split', { ingredients: 50, recipes: 50 }),
   '25/75': translate('layout.split', { ingredients: 25, recipes: 75 }),
@@ -76,4 +76,4 @@ export const SPLIT_LABELS: Readonly<Record<Split, string>> = {
     explore: 33
   }),
   '75/25': translate('layout.split', { ingredients: 75, recipes: 25 })
-}
+})

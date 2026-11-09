@@ -14,20 +14,24 @@ export interface AccountItem {
   readonly label: string
 }
 
-const SIGNED_OUT: readonly AccountItem[] = [
+/* Built on each call, so the labels follow a language switch. */
+const signedOut = (): readonly AccountItem[] => [
   { id: 'login', label: translate('account.logIn') },
   { id: 'signup', label: translate('account.signUp') },
   { id: 'setup', label: translate('account.setup') }
 ]
 
-const SIGNED_IN: readonly AccountItem[] = [
+const signedIn = (): readonly AccountItem[] => [
   { id: 'saved', label: translate('account.saved') },
   { id: 'setup', label: translate('account.setup') },
   { id: 'logout', label: translate('account.logOut') }
 ]
 
 /** Plans (#208): only once the upsell is allowed. */
-const PLANS: AccountItem = { id: 'plans', label: translate('account.plans') }
+const plansItem = (): AccountItem => ({
+  id: 'plans',
+  label: translate('account.plans')
+})
 
 /**
  * Signed out: Log in, Sign up and Set-up. Signed in: Saved, Set-up and Log out.
@@ -38,10 +42,11 @@ export const accountItems = (
   loggedIn: boolean,
   plans: boolean = false
 ): readonly AccountItem[] => {
-  if (!plans) return loggedIn ? SIGNED_IN : SIGNED_OUT
+  const items = loggedIn ? signedIn() : signedOut()
+  if (!plans) return items
   return loggedIn
-    ? [...SIGNED_IN.slice(0, -1), PLANS, ...SIGNED_IN.slice(-1)]
-    : [...SIGNED_OUT, PLANS]
+    ? [...items.slice(0, -1), plansItem(), ...items.slice(-1)]
+    : [...items, plansItem()]
 }
 
 const ACTIONS: readonly AccountAction[] = [

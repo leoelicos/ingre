@@ -22,7 +22,7 @@ import {
   actionsFor
 } from './accountItems'
 
-export const ACCOUNT_LABEL = translate('account.label')
+export const accountLabel = (): string => translate('account.label')
 
 const TRIGGER =
   'inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-pill border border-border bg-surface text-xl text-text outline-none data-[pressed]:bg-chip-active data-[focus-visible]:focus-ring'
@@ -55,7 +55,7 @@ export const AccountMenu: FC<{ loggedIn: boolean }> = ({ loggedIn }) => {
   return (
     <MenuTrigger>
       <Button
-        aria-label={ACCOUNT_LABEL}
+        aria-label={accountLabel()}
         className={TRIGGER}
       >
         <IngreIconAccount />
@@ -65,7 +65,7 @@ export const AccountMenu: FC<{ loggedIn: boolean }> = ({ loggedIn }) => {
         className="min-w-[10rem] rounded-control border border-border bg-surface p-1 shadow-card"
       >
         <Menu
-          aria-label={ACCOUNT_LABEL}
+          aria-label={accountLabel()}
           className="outline-none"
           onAction={onAction}
         >

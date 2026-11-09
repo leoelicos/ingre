@@ -3,7 +3,7 @@ import { fireEvent, screen, within } from '@testing-library/react'
 import { resetViewport, setViewportWidth } from '../../../test/media'
 import { pick, region, renderList, searchBox } from '../../../test/renderList'
 import { SPLIT_KEY } from '../../../utils/layout/split'
-import { HIDE_EXPLORE } from '../Explore'
+import { hideExplore } from '../Explore'
 
 beforeEach(() => localStorage.clear())
 afterEach(resetViewport)
@@ -184,7 +184,7 @@ describe('Scenario: Explore drawer from 1328px (#181)', () => {
   it('X shrinks it to a strip, focused, whose search button expands it and focuses the search box; Explore stays mounted', () => {
     setViewportWidth(1328)
     renderList()
-    fireEvent.click(screen.getByRole('button', { name: HIDE_EXPLORE }))
+    fireEvent.click(screen.getByRole('button', { name: hideExplore() }))
     expect(drawer()).toHaveClass('w-14')
     expect(document.getElementById('explore')).toBeInTheDocument()
     expect(screen.queryByRole('region', { name: 'Explore' })).toBeNull()
@@ -276,7 +276,7 @@ describe('Scenario: 33/33/33 from 1328px', () => {
     setViewportWidth(1328)
     renderList()
     choose(THIRDS)
-    fireEvent.click(screen.getByRole('button', { name: HIDE_EXPLORE }))
+    fireEvent.click(screen.getByRole('button', { name: hideExplore() }))
     expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
     expect(exploreHeader()).toHaveFocus()
     expect(column()).not.toBeNull()

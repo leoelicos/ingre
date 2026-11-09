@@ -28,7 +28,7 @@ import { usePanel } from './usePanel'
 export const EXTRA_ID = 'extra'
 
 /** Shown when nothing is in Extra (#182, answer 11). */
-export const NO_EXTRA_HINT = translate('extra.empty')
+export const noExtraHint = (): string => translate('extra.empty')
 
 /** "3 items" */
 export const extraSummary = (n: number): string => formatItemCount(n)
@@ -85,7 +85,7 @@ export const Extra: FC<{ state: IngredientsState; collapsible: boolean }> = ({
           onChange={setFilter}
         />
         {list.extraChips.length === 0 && (
-          <p className="m-0 text-text-secondary">{NO_EXTRA_HINT}</p>
+          <p className="m-0 text-text-secondary">{noExtraHint()}</p>
         )}
         {chipFilterOn(filter) && (
           <HiddenNote

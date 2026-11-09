@@ -6,7 +6,7 @@ import { Button, ToggleButton } from '../../lib/aria'
 import { AllergenTags } from '../../components/AllergenTags'
 import { Collapse } from '../../components/Collapse'
 import { splitTitle } from '../../components/recipeTitle'
-import { SEARCH_LABEL, SearchBox } from '../../components/SearchBox/SearchBox'
+import { searchLabel, SearchBox } from '../../components/SearchBox/SearchBox'
 import { IngreIconSearch } from '../../lib/icon/Icon'
 import type { LibraryIngredient, LibraryRecipe } from '../../types/library'
 import {
@@ -45,7 +45,7 @@ import { GuidanceDial } from './GuidanceDial'
 import { IngredientPicture } from '../../components/IngredientPicture'
 import { IngredientDetails } from './IngredientJourney'
 import type { IngredientsState } from './Ingredients'
-import { NO_SAVED_HINT } from './recipeFilter'
+import { noSavedHint } from './recipeFilter'
 import { filterOptions, recipeFilterCount } from './Recipes'
 import type { RowControls } from './RecipeRows'
 import { RecipeRows } from './RecipeRows'
@@ -65,7 +65,7 @@ import {
 } from './Suggestions'
 
 export const EXPLORE_ID = 'explore'
-export const HIDE_EXPLORE = translate('explore.hide')
+export const hideExplore = (): string => translate('explore.hide')
 
 /** What Explore's rows share with the Recipes rows: picks. */
 export type ExploreRowControls = Pick<
@@ -547,7 +547,7 @@ const ExploreBody: FC<{ props: ExploreProps }> = ({ props }) => {
           className="m-0 text-text-secondary"
           role="status"
         >
-          {NO_SAVED_HINT}
+          {noSavedHint()}
         </p>
       ) : (
         <Results
@@ -614,7 +614,7 @@ export const Explore: FC<ExploreViewProps> = ({
         />
         {expanded && (
           <Button
-            aria-label={HIDE_EXPLORE}
+            aria-label={hideExplore()}
             aria-controls={EXPLORE_CONTENT_ID}
             onPress={collapse}
             className={HIDE_BUTTON}
@@ -663,7 +663,7 @@ export const ExploreDrawer: FC<ExploreProps & { expanded: boolean }> = ({
       {!expanded && (
         <Button
           id={RAIL_ID}
-          aria-label={SEARCH_LABEL}
+          aria-label={searchLabel()}
           aria-expanded={false}
           aria-controls={DRAWER_CONTENT_ID}
           onPress={() => {

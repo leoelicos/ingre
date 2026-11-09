@@ -25,7 +25,7 @@ import { RecipeRows } from './RecipeRows'
 import { CopyDetails } from './RowDetails'
 import { Section } from './Section'
 
-export const NO_PICKS_HINT = translate('recipes.empty')
+export const noPicksHint = (): string => translate('recipes.empty')
 
 /** A set with one id added, or removed when it is already there. */
 export const toggled = (
@@ -95,7 +95,7 @@ export const Recipes: FC<{
           onChange={setFilter}
         />
         {list.entries.length === 0 && (
-          <p className="m-0 text-text-secondary">{NO_PICKS_HINT}</p>
+          <p className="m-0 text-text-secondary">{noPicksHint()}</p>
         )}
         {recipeFilterOn(filter) && (
           <HiddenNote

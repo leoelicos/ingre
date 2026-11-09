@@ -50,10 +50,11 @@ export const INGREDIENTS_ID = 'ingredients'
 export const INGREDIENTS_HEADING_ID = `${INGREDIENTS_ID}-heading`
 
 /** Shown when there are no chips yet. */
-export const NO_CHIPS_HINT = translate('ingredients.empty')
+export const noChipsHint = (): string => translate('ingredients.empty')
 
 /** The question before Refresh (#182, answer 35). */
-export const REFRESH_QUESTION = translate('ingredients.refreshQuestion')
+export const refreshQuestion = (): string =>
+  translate('ingredients.refreshQuestion')
 
 /** "5 items, 2 crossed off" */
 export const ingredientsSummary = (
@@ -192,7 +193,7 @@ const RefreshQuestion: FC<{ onYes: () => void; onDone: () => void }> = ({
 }) => (
   <RemoveQuestion
     yesId="refresh-yes"
-    question={REFRESH_QUESTION}
+    question={refreshQuestion()}
     onYes={() => {
       onYes()
       onDone()
@@ -265,7 +266,7 @@ export const Ingredients: FC<{
         />
         <HygieneNotes chips={list.chips} />
         {list.chips.length === 0 && (
-          <p className="m-0 text-text-secondary">{NO_CHIPS_HINT}</p>
+          <p className="m-0 text-text-secondary">{noChipsHint()}</p>
         )}
         {chipFilterOn(filter) && (
           <HiddenNote

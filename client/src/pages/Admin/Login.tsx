@@ -1,4 +1,4 @@
-import { translate, useT } from '../../i18n'
+import { RichText, useT } from '../../i18n'
 import type { FC, ChangeEvent, FormEvent } from 'react'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
@@ -64,8 +64,8 @@ export const Login: FC = () => {
   }
 
   // Redirect only when this page opens. A successful login navigates itself.
+  useEffect(() => changeTitle(t('auth.logIn')), [t])
   useEffect(() => {
-    changeTitle(translate('auth.logIn'))
     if (auth.loggedIn) navigate(from, { replace: true })
   }, [auth.loggedIn, from, navigate])
   return (
@@ -158,14 +158,20 @@ export const Login: FC = () => {
         </form>
       )}
       <p className="auth-page__alt">
-        {t('auth.noAccount')}{' '}
-        <Link
-          to="/signup"
-          state={{ from }}
-          className="focus-visible:focus-ring"
-        >
-          {t('auth.signUp')}
-        </Link>
+        <RichText
+          k="auth.noAccount"
+          components={{
+            link: (text) => (
+              <Link
+                to="/signup"
+                state={{ from }}
+                className="focus-visible:focus-ring"
+              >
+                {text}
+              </Link>
+            )
+          }}
+        />
       </p>
     </div>
   )

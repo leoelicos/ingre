@@ -8,7 +8,7 @@ import { ExploreProvider } from '../../../utils/explore/ExploreContext'
 import { Header } from '../../Header'
 import { logIn } from '../../../test/providers'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
-import { ACCOUNT_LABEL, AccountMenu } from '../AccountMenu'
+import { accountLabel, AccountMenu } from '../AccountMenu'
 import { markFirstEndToEnd } from '../../../utils/tier/upsell'
 import {
   PLANS_PATH,
@@ -45,7 +45,7 @@ const renderMenu = (loggedIn: boolean) =>
     </MockedProvider>
   )
 
-const trigger = () => screen.getByRole('button', { name: ACCOUNT_LABEL })
+const trigger = () => screen.getByRole('button', { name: accountLabel() })
 const itemNames = () =>
   screen.getAllByRole('menuitem').map((item) => item.textContent)
 const where = () => screen.getByTestId('where').textContent
@@ -63,7 +63,7 @@ describe('AccountMenu (#164)', () => {
     await user.click(icon)
     expect(icon).toHaveAttribute('aria-expanded', 'true')
     expect(
-      screen.getByRole('menu', { name: ACCOUNT_LABEL })
+      screen.getByRole('menu', { name: accountLabel() })
     ).toBeInTheDocument()
   })
 

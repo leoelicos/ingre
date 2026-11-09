@@ -7,7 +7,7 @@ import { IngreIconSearch } from '../../lib/icon/Icon'
 import { useExplore } from '../../utils/explore/ExploreContext'
 import { focusById } from '../../utils/focus'
 
-export const SEARCH_LABEL = translate('search.label')
+export const searchLabel = (): string => translate('search.label')
 export const SEARCH_INPUT_ID = 'explore-search'
 
 /**
@@ -37,7 +37,7 @@ export const SearchBox: FC = () => {
       className="relative w-full min-w-0 max-w-[36rem]"
     >
       <SearchField
-        aria-label={SEARCH_LABEL}
+        aria-label={searchLabel()}
         value={explore.query}
         onChange={(text) => {
           explore.setQuery(text)
@@ -54,7 +54,7 @@ export const SearchBox: FC = () => {
         </span>
         <Input
           id={SEARCH_INPUT_ID}
-          placeholder={SEARCH_LABEL}
+          placeholder={searchLabel()}
           className="min-h-[44px] w-full rounded-pill border border-border bg-surface py-2 pl-10 pr-3 text-text placeholder:text-placeholder focus-visible:focus-ring [&::-webkit-search-cancel-button]:hidden"
         />
       </SearchField>

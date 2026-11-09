@@ -1,4 +1,4 @@
-import { translate, useT } from '../../i18n'
+import { useT } from '../../i18n'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import {
@@ -73,7 +73,7 @@ const Avoid: FC<{
  */
 export const IdeasPage: FC = () => {
   const t = useT()
-  useEffect(() => changeTitle(translate('ideas.title')), [])
+  useEffect(() => changeTitle(t('ideas.title')), [t])
   const [text, setText] = useState('')
   const [avoid, setAvoid] = useState<string[]>([])
   const asked = text.trim() !== ''

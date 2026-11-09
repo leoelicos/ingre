@@ -10,7 +10,8 @@ export interface Tab {
   readonly to: string
 }
 
-export const TABS: readonly Tab[] = [
+/** The tabs, labelled in the current language. */
+export const tabs = (): readonly Tab[] => [
   { id: 'explore', label: translate('nav.explore'), to: '/#explore' },
   { id: 'inventory', label: translate('nav.inventory'), to: '/#inventory' },
   { id: 'cook', label: translate('nav.cook'), to: '/#cook' },

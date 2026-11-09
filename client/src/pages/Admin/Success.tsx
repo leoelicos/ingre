@@ -1,4 +1,4 @@
-import { useT } from '../../i18n'
+import { RichText, useT } from '../../i18n'
 import type { FC } from 'react'
 import { Link } from 'react-router-dom'
 import NotLoggedIn from '../../components/NotLoggedIn'
@@ -30,7 +30,10 @@ export const Success: FC = () => {
       <ul>
         <li>{t('success.thanks')}</li>
         <li>
-          {t('success.reference')} <Token />
+          <RichText
+            k="success.reference"
+            components={{ token: () => <Token /> }}
+          />
         </li>
         <li>{t('success.redirect')}</li>
       </ul>
