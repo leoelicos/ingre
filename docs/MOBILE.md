@@ -15,9 +15,9 @@ npx cap open android   # requires Android Studio
 
 ## Debug APK from CI (easiest for testing)
 
-On every pull request (and on manual workflow runs) the Android workflow builds a debug APK and uploads it as an artifact.
+On manual workflow runs (`workflow_dispatch`; pull requests no longer trigger it) the Android workflow builds a debug APK and uploads it as an artifact. Every debug APK is signed with the committed `client/android/app/debug.keystore`, so a newer one (higher `versionCode`) installs over the old app: see `client/android/README.md` (#296).
 
-1. Open the PR or go to the Actions tab.
+1. Go to the Actions tab.
 2. Click the **Mobile Android** workflow run.
 3. Scroll to **Artifacts** and download `app-debug-apk`.
 4. Transfer the APK to an unmanaged Android device and install it
