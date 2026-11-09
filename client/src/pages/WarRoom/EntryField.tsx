@@ -136,10 +136,7 @@ export const EntryField: FC<EntryFieldProps> = ({
       : t('warRoomEntry.suggestionCount', { count: options.length })
   return (
     <div className="flex flex-col gap-1">
-      <form
-        className="flex items-end gap-2"
-        onSubmit={(event) => event.preventDefault()}
-      >
+      <div className="flex items-end gap-2">
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <label
             htmlFor={FIELD_ID}
@@ -173,7 +170,7 @@ export const EntryField: FC<EntryFieldProps> = ({
           />
         </div>
         {after}
-      </form>
+      </div>
       <p
         id={HELP_ID}
         className="m-0 text-sm text-text-secondary"

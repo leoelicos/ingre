@@ -30,7 +30,7 @@ export const completed = (text: string, item: LibraryIngredient): string => {
 }
 
 /** Bullets, checkboxes and numbering a list copied from notes or a chat starts its lines with. */
-const LIST_MARK = /^\s*(?:[-*•·▪◦–]|\[[ xX]?\]|[☐☑✓✔]|\d+[.)])\s*/
+const LIST_MARK = /^\s*(?:(?:[-*•·▪◦–]|\[[ xX]?\]|[☐☑✓✔]|\d+[.)](?=\s))\s*)+/
 
 /** True when pasted text is a list (more than one line), not a word. */
 export const isList = (pasted: string): boolean => /\n/.test(pasted.trim())

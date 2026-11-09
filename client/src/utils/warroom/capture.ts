@@ -83,9 +83,11 @@ const LEADING_QUANTITY = new RegExp(
 const TRAILING_QUANTITY = /\s*[x×]\s*(\d+)$/i
 
 const countOf = (prefix: RegExpExecArray): number => {
-  const [, number = '', measure, dozen] = prefix
+  const [, number, measure, dozen] = prefix
   if (measure !== undefined) return 1
-  const n = /^an?$/i.test(number) ? 1 : Number.parseInt(number, 10)
+  const n = /^an?$/i.test(String(number))
+    ? 1
+    : Number.parseInt(String(number), 10)
   return Math.max(1, dozen === undefined ? n : n * 12)
 }
 
@@ -106,7 +108,7 @@ export const splitQuantity = (text: string): Quantified => {
   const trailing = prefix === null ? TRAILING_QUANTITY.exec(rest) : null
   if (trailing !== null) {
     return {
-      quantity: Math.max(1, Number.parseInt(trailing[1] ?? '1', 10)),
+      quantity: Math.max(1, Number.parseInt(String(trailing[1]), 10)),
       term: rest.slice(0, trailing.index).trim()
     }
   }
