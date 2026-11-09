@@ -262,7 +262,7 @@ export const WarRoom: FC = () => {
           )
         }
       />
-      <div className="flex min-h-[44px] flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <p
           role="status"
           className="m-0 min-h-[1.25rem] flex-1 text-sm font-semibold text-text"
