@@ -10,6 +10,12 @@ describe('Login', () => {
     renderWithProviders(<Login />, { mocks: [], path: '/login', routes: {} })
     expect(screen.getByRole('heading', { name: /log in/i })).toBeInTheDocument()
     expect(document.title).toMatch(/log in/i)
+    /* a 44px tap target on the phone too (#296) */
+    expect(screen.getByRole('link', { name: /sign up/i })).toHaveClass(
+      'inline-flex',
+      'min-h-[44px]',
+      'items-center'
+    )
     const google = screen.getByRole('button', { name: /continue with google/i })
     const biometric = screen.getByRole('button', { name: /use biometrics/i })
     expect(google).toBeInTheDocument()

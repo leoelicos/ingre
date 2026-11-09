@@ -197,6 +197,12 @@ describe('Signup states', () => {
     })
     expect(screen.getAllByRole('alert')).toHaveLength(1)
     expect(screen.getByRole('button', { name: /sign up/i })).toBeDisabled()
+    /* a 44px tap target on the phone too (#296) */
+    expect(screen.getByRole('link', { name: /log in\?/i })).toHaveClass(
+      'inline-flex',
+      'min-h-[44px]',
+      'items-center'
+    )
     fireEvent.click(screen.getByRole('link', { name: /log in\?/i }))
     expect(screen.getByText('login page from /')).toBeInTheDocument()
   })

@@ -20,7 +20,7 @@ export const SkipLink: FC = () => (
   <a
     href={`#${MAIN_ID}`}
     onClick={onSkip}
-    className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-50 focus:inline-flex focus:min-h-[44px] focus:items-center focus:rounded-control focus:bg-surface focus:px-4 focus:text-primary focus:shadow-card focus:focus-ring"
+    className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-[calc(var(--safe-top)+0.5rem)] focus:z-50 focus:inline-flex focus:min-h-[44px] focus:items-center focus:rounded-control focus:bg-surface focus:px-4 focus:text-primary focus:shadow-card focus:focus-ring"
   >
     {translate('skipLink')}
   </a>
