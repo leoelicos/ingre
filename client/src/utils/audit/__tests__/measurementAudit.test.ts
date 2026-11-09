@@ -2,16 +2,13 @@ import type { LibraryIngredient, LibraryRecipe } from '../../../types/library'
 import { itemById, recipeById } from '../../../test/library'
 import { catalogue } from '../../library/recipeLibrary'
 import type { AuditRow } from '../measurementAudit'
+import { auditRows, perServeOf, shareOf, smallestPack } from '../auditRows'
 import {
   AUDIT_COLUMNS,
   DEFAULT_PAGE_SIZE,
   PAGE_SIZES,
-  auditRows,
   nextSort,
   pageOf,
-  perServeOf,
-  shareOf,
-  smallestPack,
   sortRows
 } from '../measurementAudit'
 
