@@ -235,10 +235,7 @@ const Pager: FC<{
           disabled={page.page <= 1}
           onPress={() => onPage(page.page - 1)}
         />
-        <p
-          className="m-0"
-          aria-current="page"
-        >
+        <p className="m-0">
           {t('audit.pageOf', { page: page.page, count: page.pageCount })}
         </p>
         <PagerButton
