@@ -75,7 +75,8 @@ describe('Guests panel', () => {
     expect(await axe(container)).toHaveNoViolations()
     fireEvent.click(guestsButton())
     expect(await axe(container)).toHaveNoViolations()
-  })
+    /* two axe passes over the whole list page, which grows with the library (#103) */
+  }, 20000)
 })
 
 describe('Flags', () => {
