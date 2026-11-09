@@ -3,6 +3,7 @@ import type { FC } from 'react'
 import { useState } from 'react'
 import { Button, ToggleButton } from 'react-aria-components'
 import { Collapse } from '../../components/Collapse'
+import { IngredientPicture } from '../../components/IngredientPicture'
 import type { LibraryIngredient } from '../../types/library'
 import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import { useExplore } from '../../utils/explore/ExploreContext'
@@ -64,6 +65,7 @@ export const IngredientChoice: FC<{ item: LibraryIngredient }> = ({ item }) => {
       className={CHIP}
     >
       <span aria-hidden="true">{on ? '✓' : '+'}</span>
+      <IngredientPicture id={item.id} />
       <span>{capitaliseFirst(item.name)}</span>
     </ToggleButton>
   )
