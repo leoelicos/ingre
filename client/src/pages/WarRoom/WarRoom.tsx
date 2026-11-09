@@ -8,9 +8,9 @@ import { capitaliseFirst } from '../../utils/capitaliseFirst'
 import { changeTitle } from '../../utils/changeTitle'
 import { focusById } from '../../utils/focus'
 import { useChips } from '../../utils/chips/useChips'
-import { useVoice } from '../../utils/voice/speech'
 import type { Capture } from '../../utils/warroom/capture'
 import { autofill, captureOf, splitQuantity } from '../../utils/warroom/capture'
+import { VoiceCapture } from './VoiceCapture'
 
 /** What the War room put on the list this visit, newest first. */
 interface Captured {
@@ -25,9 +25,6 @@ const FIELD_ID = 'war-room-field'
 
 const MATCH =
   'flex min-h-[44px] w-full items-center rounded-control bg-bg px-3 text-left text-sm font-semibold text-text shadow-chip data-[focus-visible]:focus-ring data-[pressed]:shadow-chip-pressed'
-
-const COMMAND =
-  'inline-flex min-h-[44px] items-center justify-center rounded-control bg-primary px-4 text-sm font-semibold text-on-primary data-[focus-visible]:focus-ring data-[pressed]:shadow-pressed'
 
 /** The same ingredient said twice in one go counts once. */
 const distinct = (captures: readonly Capture[]): Capture[] =>
@@ -146,7 +143,6 @@ export const WarRoom: FC = () => {
     )
     setText('')
   }
-  const voice = useVoice((heard) => take(captureOf(heard)))
   const { quantity, term } = splitQuantity(text)
   /* a tap on a match gives focus back to the field, ready for the next one (not after voice) */
   const pick = (item: LibraryIngredient, count: number): void => {
@@ -180,15 +176,6 @@ export const WarRoom: FC = () => {
             className="min-h-[44px] rounded-control border border-border bg-surface px-3 text-base text-text data-[focus-visible]:focus-ring"
           />
         </TextField>
-        {voice.toggle !== null && (
-          <Button
-            onPress={voice.toggle}
-            aria-pressed={voice.listening}
-            className={`${COMMAND} aria-pressed:bg-accent`}
-          >
-            {t(voice.listening ? 'warRoom.stop' : 'warRoom.speak')}
-          </Button>
-        )}
       </form>
       <p
         role="status"
@@ -200,6 +187,7 @@ export const WarRoom: FC = () => {
         items={autofill(term)}
         onPick={(item) => pick(item, quantity)}
       />
+      <VoiceCapture onHeard={(heard) => take(captureOf(heard))} />
       <CapturedList captured={captured} />
       <Link
         to="/"
