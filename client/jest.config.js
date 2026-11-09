@@ -32,7 +32,9 @@ module.exports = {
     '^@vercel/analytics/react$':
       '<rootDir>/node_modules/@vercel/analytics/dist/react/index.js',
     /* cobe is ESM-only; tests never need a real globe */
-    '^cobe$': '<rootDir>/src/test/cobeMock.js'
+    '^cobe$': '<rootDir>/src/test/cobeMock.js',
+    /* Vite's ?worker imports (#207): tests never start the speech model's worker */
+    '\\?worker$': '<rootDir>/src/test/workerMock.js'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   coveragePathIgnorePatterns: ['/node_modules/', 'src/setupTests.ts'],
