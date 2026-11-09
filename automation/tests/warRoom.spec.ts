@@ -114,15 +114,13 @@ test.describe('war room (#207)', () => {
     await page.evaluate(() => {
       const data = new DataTransfer()
       data.setData('text/plain', '- garlic\n- [ ] 2 eggs\n3. honey')
-      document
-        .getElementById('war-room-field')
-        ?.dispatchEvent(
-          new ClipboardEvent('paste', {
-            clipboardData: data,
-            bubbles: true,
-            cancelable: true
-          })
-        )
+      document.getElementById('war-room-field')?.dispatchEvent(
+        new ClipboardEvent('paste', {
+          clipboardData: data,
+          bubbles: true,
+          cancelable: true
+        })
+      )
     })
     await expect(status(page)).toHaveText('Garlic, Eggs, Honey added')
     await page.getByRole('button', { name: /^Undo adding/ }).click()

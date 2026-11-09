@@ -22,7 +22,7 @@ import { nextPrompt } from '../../utils/warroom/prompts'
 import { useHistory } from '../../utils/warroom/useHistory'
 import { EntryField, FIELD_ID } from './EntryField'
 import type { Shown } from './History'
-import { HISTORY_HEADING_ID, History, removeId } from './History'
+import { againId, HISTORY_HEADING_ID, History, removeId } from './History'
 import { promptKeys, QuickChips } from './QuickChips'
 
 const NAMES = (items: readonly LibraryIngredient[]): string =>
@@ -33,6 +33,9 @@ const COMMAND =
 
 const UNDO =
   'inline-flex min-h-[44px] items-center justify-center rounded-pill border-2 border-current px-4 text-sm font-semibold text-primary data-[focus-visible]:focus-ring data-[pressed]:opacity-80'
+
+/** History entries on show at first, and how many more each Show more adds. */
+export const HISTORY_PAGE = 30
 
 /** Chips per row of one-tap adds: a thumb's reach, not a catalogue. */
 const QUICK = 6
@@ -155,6 +158,7 @@ export const WarRoom: FC = () => {
   const [ack, setAck] = useState('')
   const [undo, setUndo] = useState<Batch | null>(null)
   const [example, setExample] = useState(0)
+  const [visible, setVisible] = useState(HISTORY_PAGE)
   const take = (all: readonly Capture[]): void => {
     const found = distinct(all)
     const known = found.flatMap(({ item, quantity }) =>
@@ -200,10 +204,17 @@ export const WarRoom: FC = () => {
     setAck(translate('warRoomEntry.undone', { names: NAMES(batch.items) }))
     focusById(FIELD_ID)
   }
-  const shown = shownOf(history.entries)
-  const days = byDay(history.entries, Date.now())
-    .map(({ entries, ...day }) => ({ ...day, shown: shownOf(entries) }))
-    .filter((day) => day.shown.length > 0)
+  const all = shownOf(history.entries)
+  const shown = all.slice(0, visible)
+  const days = byDay(
+    shown.map(({ entry }) => entry),
+    Date.now()
+  ).map(({ entries, ...day }) => ({ ...day, shown: shownOf(entries) }))
+  const showMore = (): void => {
+    const first = all.slice(visible, visible + 1).map((s) => againId(s.entry))
+    setVisible((before) => before + HISTORY_PAGE)
+    setTimeout(() => focusFirstOf(first))
+  }
   const offList = (items: readonly LibraryIngredient[]): LibraryIngredient[] =>
     items.filter((item) => !list.hasChip(item.id))
   const recent = offList(
@@ -214,8 +225,8 @@ export const WarRoom: FC = () => {
     .filter(({ id }) => !recentIds.has(id))
     .slice(0, QUICK)
   const remove = ({ entry, item }: Shown): void => {
-    const at = shown.findIndex((s) => s.entry.id === entry.id)
-    const next = [shown[at + 1], shown[at - 1]].flatMap((s) =>
+    const at = all.findIndex((s) => s.entry.id === entry.id)
+    const next = [all[at + 1], all[at - 1]].flatMap((s) =>
       s === undefined ? [] : [removeId(s.entry)]
     )
     history.remove(new Set([entry.id]))
@@ -289,6 +300,8 @@ export const WarRoom: FC = () => {
           pick('', item, entry.quantity)
         }}
         onRemove={remove}
+        more={all.length - shown.length}
+        onMore={showMore}
         onClear={() => {
           history.clear()
           setUndo(null)

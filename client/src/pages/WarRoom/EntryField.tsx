@@ -188,7 +188,9 @@ export const EntryField: FC<EntryFieldProps> = ({
         role="listbox"
         aria-label={t('warRoom.matches')}
         hidden={!open}
-        className="m-0 flex list-none flex-col gap-1 rounded-control bg-surface p-1 shadow-raised"
+        className={`m-0 list-none flex-col gap-1 rounded-control bg-surface p-1 shadow-raised ${
+          open ? 'flex' : 'hidden'
+        }`}
       >
         {options.map((item, i) => (
           /* the field keeps focus and handles the keys (aria-activedescendant); a tap picks */

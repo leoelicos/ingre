@@ -564,6 +564,21 @@ describe('history', () => {
     expect(listedIds()).toEqual(['carrot'])
   })
 
+  it('shows the newest 30, then more on request with focus on the first new one', async () => {
+    seed(
+      Array.from({ length: 35 }, (_, i) =>
+        entry(`e${i}`, i % 2 === 0 ? 'carrot' : 'garlic', now - i * 1000)
+      )
+    )
+    const user = userEvent.setup()
+    open()
+    expect(historyButtons()).toHaveLength(30)
+    await user.click(screen.getByRole('button', { name: 'Show 5 more' }))
+    expect(historyButtons()).toHaveLength(35)
+    await waitFor(() => expect(historyButtons()[30]).toHaveFocus())
+    expect(screen.queryByRole('button', { name: /^Show \d+ more$/ })).toBeNull()
+  })
+
   it('a question left open goes when the page goes', () => {
     seeded()
     const { unmount } = open()

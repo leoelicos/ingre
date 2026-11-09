@@ -16,6 +16,8 @@ export const HISTORY_HEADING_ID = 'war-room-history'
 export const CLEAR_ID = 'war-room-clear'
 const CLEAR_NO_ID = 'war-room-clear-no'
 
+export const againId = (entry: HistoryEntry): string =>
+  `war-room-again-${entry.id}`
 export const removeId = (entry: HistoryEntry): string =>
   `war-room-remove-${entry.id}`
 
@@ -81,7 +83,10 @@ export const History: FC<{
   onAgain: (shown: Shown) => void
   onRemove: (shown: Shown) => void
   onClear: () => void
-}> = ({ days, onAgain, onRemove, onClear }) => {
+  /** entries not on show yet */
+  more: number
+  onMore: () => void
+}> = ({ days, onAgain, onRemove, onClear, more, onMore }) => {
   const t = useT()
   const [asking, setAsking] = useState(false)
   return (
@@ -148,6 +153,7 @@ export const History: FC<{
                     className="flex items-center gap-2 border-b border-border py-1"
                   >
                     <Button
+                      id={againId(entry)}
                       aria-label={t('warRoomEntry.addAgain', {
                         name:
                           entry.quantity > 1
@@ -188,6 +194,14 @@ export const History: FC<{
           </section>
         )
       })}
+      {more > 0 && (
+        <Button
+          onPress={onMore}
+          className={`${COMMAND} self-start`}
+        >
+          {t('warRoomEntry.showMore', { count: more })}
+        </Button>
+      )}
     </section>
   )
 }
