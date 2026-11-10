@@ -36,5 +36,7 @@ module.exports = {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   coveragePathIgnorePatterns: ['/node_modules/', 'src/setupTests.ts'],
-  resetMocks: true
+  resetMocks: true,
+  /* The axe and full-list tests run 3-5s locally and slower on CI runners; 5s (the default) flaked on main after #299/#302 */
+  testTimeout: 20000
 }
