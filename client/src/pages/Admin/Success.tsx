@@ -1,12 +1,13 @@
 import { useT } from '../../i18n'
 import type { FC } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import NotLoggedIn from '../../components/NotLoggedIn'
 import { IngreIconPro } from '../../lib/icon/Icon'
 import { useSuccess } from './useSuccess'
 
 export const Success: FC = () => {
   const t = useT()
+  const navigate = useNavigate()
   const { loggedIn, Token, searchParams } = useSuccess()
   if (!loggedIn) return <NotLoggedIn />
   if (!searchParams.get('session_id')) {
@@ -14,11 +15,14 @@ export const Success: FC = () => {
       <div>
         <div>{t('success.paymentError')}</div>
         <div>
-          <button>
-            <Link to="/upgrade">
-              <IngreIconPro />
-              {t('success.tryAgain')}
-            </Link>
+          {/* one control, not a link inside a button, and at least 24px to hit (#106) */}
+          <button
+            type="button"
+            className="min-h-[24px] min-w-[24px] focus-visible:focus-ring"
+            onClick={() => navigate('/upgrade')}
+          >
+            <IngreIconPro />
+            {t('success.tryAgain')}
           </button>
         </div>
       </div>

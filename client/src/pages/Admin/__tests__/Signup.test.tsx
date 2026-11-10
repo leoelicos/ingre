@@ -31,5 +31,11 @@ describe('Signup', () => {
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /log in/i })).toBeInTheDocument()
+    /* a 44px tap target on the phone too (#296) */
+    expect(screen.getByRole('link', { name: /log in/i })).toHaveClass(
+      'inline-flex',
+      'min-h-[44px]',
+      'items-center'
+    )
   })
 })
