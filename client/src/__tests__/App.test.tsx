@@ -34,7 +34,7 @@ describe('App', () => {
       screen.getByRole('heading', { level: 1, name: 'War room' })
     )
     expect(
-      screen.getByRole('combobox', { name: 'Add an item' })
+      screen.getByRole('searchbox', { name: 'Search, type or paste a list' })
     ).toBeInTheDocument()
   })
 

@@ -20,6 +20,16 @@ test.use({
   permissions: ['microphone']
 })
 
+/*
+ * The giant record button is gone in the utility-belt designs (the mic now sits in the search
+ * field, same engines). These specs drive the old button and are parked on the preview branch
+ * until the chosen design is finalised in #308.
+ */
+test.skip(
+  true,
+  'War room record button replaced by the in-field mic (preview designs)'
+)
+
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 
 const talk = (page: Page) =>
