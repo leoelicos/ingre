@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
-import { screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { axe, toHaveNoViolations } from 'jest-axe'
 import type { MockedResponse } from '@apollo/client/testing'
 import { MAKE_USER_PRO } from '../../../lib/apollo/graphQL/mutations'
 import { logIn, renderWithProviders } from '../../../test/providers'
@@ -32,6 +33,8 @@ const renderSuccess = (path: string, mocks: MockedResponse[]) =>
     routes: { '/upgrade': <p>Upgrade page</p> }
   })
 
+expect.extend(toHaveNoViolations)
+
 describe('Success', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -48,10 +51,25 @@ describe('Success', () => {
     logIn(false)
     renderSuccess('/success', [madePro])
     expect(screen.getByText('Payment error')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /try again/i })).toHaveAttribute(
-      'href',
-      '/upgrade'
+    expect(
+      screen.getByRole('button', { name: /try again/i })
+    ).toBeInTheDocument()
+  })
+
+  it('Try again is one control with the shared focus ring and a 24px target, and goes to Upgrade (#106)', async () => {
+    logIn(false)
+    const { container } = renderSuccess('/success', [madePro])
+    const again = screen.getByRole('button', { name: /try again/i })
+    expect(screen.queryByRole('link', { name: /try again/i })).toBeNull()
+    expect(again.querySelector('a')).toBeNull()
+    expect(again).toHaveClass(
+      'focus-visible:focus-ring',
+      'min-h-[24px]',
+      'min-w-[24px]'
     )
+    expect(await axe(container)).toHaveNoViolations()
+    fireEvent.click(again)
+    expect(screen.getByText('Upgrade page')).toBeInTheDocument()
   })
 
   it('thanks the buyer, makes them pro, then returns to Upgrade', async () => {

@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import type { Page } from '@playwright/test'
-import { expect, test } from './fixtures'
+import { expect, newAccount, signUp, test } from './fixtures'
 import {
   DAHL,
   chevron,
@@ -160,6 +160,62 @@ test.describe('keyboard operability (#223)', () => {
     }
     console.log('[a11y] focus ring seen', seen)
     expect(seen.length).toBeGreaterThan(3)
+  })
+})
+
+/** The outline the focused element draws (the shared focus-ring is 3px solid). */
+const focusOutline = (page: Page) =>
+  page.evaluate(() => {
+    const style = getComputedStyle(document.activeElement as Element)
+    return {
+      style: style.outlineStyle,
+      width: Number.parseFloat(style.outlineWidth)
+    }
+  })
+
+test.describe('the small pages use the shared focus ring and one control per action (#106)', () => {
+  test('a missing page: one Go home button with the 3px ring, and it goes home', async ({
+    page
+  }) => {
+    await page.goto('/nowhere')
+    const home = page.getByRole('button', { name: 'Go home' })
+    await expect(page.getByRole('link', { name: 'Go home' })).toHaveCount(0)
+    await home.focus()
+    await page.keyboard.press('Shift+Tab')
+    await page.keyboard.press('Tab')
+    await expect(home).toBeFocused()
+    expect(await focusOutline(page)).toEqual({ style: 'solid', width: 3 })
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/\/$/)
+  })
+
+  test('logged out, Upgrade asks to log in with a link that has the 3px ring', async ({
+    page
+  }) => {
+    await page.goto('/upgrade')
+    const login = page.getByRole('main').getByRole('link', { name: /^Log.in$/ })
+    await login.focus()
+    await page.keyboard.press('Shift+Tab')
+    await page.keyboard.press('Tab')
+    await expect(login).toBeFocused()
+    expect(await focusOutline(page)).toEqual({ style: 'solid', width: 3 })
+  })
+
+  test('a payment error offers one Try again button: no axe violations, 3px ring, back to Upgrade', async ({
+    page
+  }) => {
+    await signUp(page, newAccount())
+    await page.goto('/success')
+    const again = page.getByRole('button', { name: /Try again/ })
+    await expect(again).toBeVisible()
+    expect(await violations(page)).toEqual([])
+    await again.focus()
+    await page.keyboard.press('Shift+Tab')
+    await page.keyboard.press('Tab')
+    await expect(again).toBeFocused()
+    expect(await focusOutline(page)).toEqual({ style: 'solid', width: 3 })
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/\/upgrade$/)
   })
 })
 
