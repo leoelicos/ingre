@@ -678,7 +678,10 @@ export const ExploreDrawer: FC<ExploreProps & { expanded: boolean }> = ({
       <div
         id={DRAWER_CONTENT_ID}
         hidden={!expanded}
-        className="flex flex-col gap-3"
+        /* `hidden` as a class too: a display utility like `flex` beats the browser's own
+           [hidden] rule, and the collapsed strip then leaked a clipped search box and Explore,
+           still in the accessibility tree */
+        className={expanded ? 'flex flex-col gap-3' : 'hidden'}
       >
         <SearchBox />
         <Explore

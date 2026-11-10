@@ -207,6 +207,20 @@ describe('Scenario: Explore drawer from 1328px (#181)', () => {
     expect(screen.queryByRole('region', { name: 'Explore' })).toBeNull()
   })
 
+  it('collapsed, the content is display:none as well as [hidden], so a display utility cannot leak it into the strip', () => {
+    setViewportWidth(1328)
+    pick('dahl')
+    renderList()
+    const content = document.getElementById('explore-drawer-content')
+    expect(content).toHaveAttribute('hidden')
+    expect(content).toHaveClass('hidden')
+    expect(content?.className).not.toMatch(/\b(flex|grid|block)\b/)
+    fireEvent.click(rail())
+    expect(content).not.toHaveAttribute('hidden')
+    expect(content).toHaveClass('flex', 'flex-col')
+    expect(content).not.toHaveClass('hidden')
+  })
+
   it('the header search shows on other pages at wide widths', () => {
     setViewportWidth(1328)
     renderList('/elsewhere')
