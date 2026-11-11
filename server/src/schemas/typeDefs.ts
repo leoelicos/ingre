@@ -15,6 +15,10 @@ export const typeDefs = gql`
     email: String!
     pro: Boolean!
     tier: Tier
+    "#312: true while the tier's Stripe subscription is active or trialing"
+    active: Boolean!
+    "#312: Stripe's subscription status (active, incomplete, past_due, canceled...), null before one"
+    subscriptionStatus: String
     savedRecipes: [Recipe!]!
     numSavedRecipes: Int!
   }
@@ -144,6 +148,13 @@ export const typeDefs = gql`
     removeRecipe(recipeId: ID!): Boolean!
   }
 
+  # #312: the result of subscribing to a tier
+  type TierSubscription {
+    tier: Tier!
+    status: String!
+    active: Boolean!
+  }
+
   # session
   type Query {
     checkout(tier: Tier): Checkout!
@@ -164,6 +175,8 @@ export const typeDefs = gql`
   type Mutation {
     addUser(input: UserInput!): Auth!
     makeUserPro(tier: Tier): User!
+    "#312: subscribes to a tier with a Stripe.js card token (createToken); test mode only"
+    subscribe(tier: Tier!, token: String!): TierSubscription!
   }
 `
 
