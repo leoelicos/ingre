@@ -53,8 +53,10 @@ describe('catalogue notes stay internal', () => {
     expect(recipeData._note.length).toBeGreaterThan(0)
   })
 
-  it('Explore, with the recipe row open, shows no note text (#181)', () => {
-    const { container } = renderAt('/', '/', <ListPage />)
+  it('Explore, with the recipe row open, shows no note text (#181, #192)', () => {
+    renderAt('/', '/', <ListPage />)
+    const container = document.body
+    fireEvent.click(screen.getByRole('button', { name: 'Add a recipe' }))
     fireEvent.click(
       screen.getByRole('button', {
         name: 'See recipe: Pork chops with apples and onion'

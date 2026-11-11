@@ -14,9 +14,6 @@ import { catalogue } from '../../utils/library/recipeLibrary'
 import type { ShopSection } from '../../utils/shopping/sections'
 import { SHOP_SECTIONS, placeInShop } from '../../utils/shopping/sections'
 
-export const PLUS_ID = 'add-ingredient'
-export const PLUS_AREA_ID = 'add-ingredient-area'
-
 /** One tab per category the catalogue has items in, in shop order. */
 export interface PlusTab {
   readonly section: ShopSection
@@ -86,20 +83,14 @@ const ItemRow: FC<{
   </Button>
 )
 
-/** The plus button: opens the add area in place, below the last chip. */
+/** The plus button: opens a recipe's add area in place, below its last chip. */
 export const PlusButton: FC<{
   open: boolean
   onPress: () => void
-  id?: string
-  areaId?: string
-  label?: string
-}> = ({
-  open,
-  onPress,
-  id = PLUS_ID,
-  areaId = PLUS_AREA_ID,
-  label = translate('plus.add')
-}) => (
+  id: string
+  areaId: string
+  label: string
+}> = ({ open, onPress, id, areaId, label }) => (
   <span
     data-plus-zone=""
     className="inline-flex"
@@ -118,6 +109,57 @@ export const PlusButton: FC<{
 )
 
 /**
+ * The catalogue by category (#179): one tab per category, a row per item. Used by the add area
+ * in a recipe and, from #192, in the Extra sheet.
+ */
+export const CategoryTabs: FC<{
+  onPick: (item: LibraryIngredient) => void
+  hasChip: (id: string) => boolean
+  mark: string
+}> = ({ onPick, hasChip, mark }) => {
+  const t = useT()
+  return (
+    <Tabs className="flex flex-col gap-2 rounded-[10px] bg-surface p-3">
+      <TabList
+        aria-label={t('plus.categories')}
+        className="flex flex-wrap gap-2"
+      >
+        {plusTabs().map((tab) => (
+          <Tab
+            key={tab.section}
+            id={tab.section}
+            className={`inline-flex min-h-[44px] cursor-pointer items-center rounded-pill border px-3 text-sm data-[selected]:border-2 data-[selected]:font-bold data-[focus-visible]:focus-ring ${
+              TONE_CLASSES[sectionTone(tab.section)]
+            }`}
+          >
+            {categoryLabel(tab.section)}
+          </Tab>
+        ))}
+      </TabList>
+      {plusTabs().map((tab) => (
+        <TabPanel
+          key={tab.section}
+          id={tab.section}
+          className="rounded-control data-[focus-visible]:focus-ring"
+        >
+          <ul className="m-0 grid max-h-80 list-none grid-cols-1 gap-1 overflow-y-auto p-1 sm:grid-cols-2">
+            {tab.items.map((item) => (
+              <li key={item.id}>
+                <ItemRow
+                  item={item}
+                  mark={hasChip(item.id) ? mark : null}
+                  onPick={onPick}
+                />
+              </li>
+            ))}
+          </ul>
+        </TabPanel>
+      ))}
+    </Tabs>
+  )
+}
+
+/**
  * The add area (#179): styled like an open chip, with category tabs instead of Used in.
  * Picking a row adds it as a chip; picking one already on the list opens that chip instead.
  */
@@ -126,19 +168,10 @@ export const PlusArea: FC<{
   onClose: (refocus: boolean) => void
   onPick: (item: LibraryIngredient) => void
   hasChip: (id: string) => boolean
-  id?: string
-  label?: string
-  mark?: string
-}> = ({
-  open,
-  onClose,
-  onPick,
-  hasChip,
-  id = PLUS_AREA_ID,
-  label = translate('plus.add'),
-  mark = ON_LIST
-}) => {
-  const t = useT()
+  id: string
+  label: string
+  mark: string
+}> = ({ open, onClose, onPick, hasChip, id, label, mark }) => {
   useDismiss(open, onClose)
   return (
     <div
@@ -154,43 +187,11 @@ export const PlusArea: FC<{
             aria-label={label}
             className="rounded-card border-2 border-text-secondary p-1"
           >
-            <Tabs className="flex flex-col gap-2 rounded-[10px] bg-surface p-3">
-              <TabList
-                aria-label={t('plus.categories')}
-                className="flex flex-wrap gap-2"
-              >
-                {plusTabs().map((tab) => (
-                  <Tab
-                    key={tab.section}
-                    id={tab.section}
-                    className={`inline-flex min-h-[44px] cursor-pointer items-center rounded-pill border px-3 text-sm data-[selected]:border-2 data-[selected]:font-bold data-[focus-visible]:focus-ring ${
-                      TONE_CLASSES[sectionTone(tab.section)]
-                    }`}
-                  >
-                    {categoryLabel(tab.section)}
-                  </Tab>
-                ))}
-              </TabList>
-              {plusTabs().map((tab) => (
-                <TabPanel
-                  key={tab.section}
-                  id={tab.section}
-                  className="rounded-control data-[focus-visible]:focus-ring"
-                >
-                  <ul className="m-0 grid max-h-80 list-none grid-cols-1 gap-1 overflow-y-auto p-1 sm:grid-cols-2">
-                    {tab.items.map((item) => (
-                      <li key={item.id}>
-                        <ItemRow
-                          item={item}
-                          mark={hasChip(item.id) ? mark : null}
-                          onPick={onPick}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                </TabPanel>
-              ))}
-            </Tabs>
+            <CategoryTabs
+              onPick={onPick}
+              hasChip={hasChip}
+              mark={mark}
+            />
           </div>
         </div>
       </div>

@@ -5,7 +5,6 @@ import { axe, toHaveNoViolations } from 'jest-axe'
 import {
   explore,
   pickedIds,
-  recipes,
   region,
   renderList,
   searchBox
@@ -143,7 +142,12 @@ describe('Scenario: add to the list in one action, with an acknowledgement (#204
     expect(suggestions().getByRole('status')).toHaveTextContent(
       `${CHOPS} added to your list`
     )
-    expect(recipes().getByRole('button', { name: CHOPS })).toBeVisible()
+    /* on the page under the open sheet (#192), so outside the accessibility tree until it shuts */
+    expect(
+      within(
+        screen.getByRole('region', { name: 'Recipes', hidden: true })
+      ).getByRole('button', { name: CHOPS, hidden: true })
+    ).toBeVisible()
     expect(
       suggestions().queryByRole('button', { name: `Add ${CHOPS} to your list` })
     ).toBeNull()

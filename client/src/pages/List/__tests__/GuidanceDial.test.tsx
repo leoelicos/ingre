@@ -103,7 +103,7 @@ describe('Scenario: what each position does (#206)', () => {
       explore().getByRole('button', { name: 'Details of carrot' })
     )
     expect(
-      await screen.findByRole('tooltip', {}, { timeout: 3000 })
+      await screen.findByRole('tooltip', { hidden: true }, { timeout: 3000 })
     ).toHaveTextContent('See where it sits in the shop')
   })
 
@@ -113,7 +113,7 @@ describe('Scenario: what each position does (#206)', () => {
     const use = explore().getByRole('button', { name: 'Use carrot' })
     await user.hover(use)
     expect(
-      await screen.findByRole('tooltip', {}, { timeout: 3000 })
+      await screen.findByRole('tooltip', { hidden: true }, { timeout: 3000 })
     ).toHaveTextContent('Pick what you have')
     await user.click(use)
     const notes = explore().getAllByTestId('suggestion-note').length

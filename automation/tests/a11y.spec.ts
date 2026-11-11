@@ -1,10 +1,11 @@
 import AxeBuilder from '@axe-core/playwright'
 import type { Page } from '@playwright/test'
-import { expect, test } from './fixtures'
+import { expect, newAccount, signUp, test } from './fixtures'
 import {
   DAHL,
   chevron,
   explore,
+  fab,
   openExplore,
   pickRows,
   searchBox
@@ -41,6 +42,7 @@ test.describe('axe: no violations along the core loop (#223)', () => {
 
       test('searching ingredients and recipes', async ({ page }) => {
         console.log('[a11y] searching for carrot')
+        await openExplore(page)
         await searchBox(page).fill('carrot')
         console.log('[a11y] filled search, waiting for Add carrot')
         const add = explore(page)
@@ -63,19 +65,16 @@ test.describe('axe: no violations along the core loop (#223)', () => {
         expect(await violations(page)).toEqual([])
       })
 
-      test('the plus area, a recipe filter and a search result already on the list', async ({
+      test('a recipe filter and a search result already on the list', async ({
         page
       }) => {
         await pickRows(page, DAHL)
-        await page
-          .getByRole('button', { name: 'Add an ingredient' })
-          .first()
-          .click()
         await page
           .getByRole('toolbar', { name: 'Recipes actions' })
           .getByRole('button', { name: /^Filter/ })
           .click()
         expect(await violations(page)).toEqual([])
+        await openExplore(page)
         await searchBox(page).fill('onion')
         await expect(
           explore(page)
@@ -112,7 +111,9 @@ test.describe('keyboard operability (#223)', () => {
     page
   }) => {
     await page.goto('/')
-    await searchBox(page).focus()
+    await fab(page).focus()
+    await page.keyboard.press('Enter')
+    await expect(searchBox(page)).toBeFocused()
     await page.keyboard.type('carrot')
     const add = explore(page)
       .getByRole('button', { name: /^Add carrot/i })
@@ -120,10 +121,11 @@ test.describe('keyboard operability (#223)', () => {
     await add.focus()
     await page.keyboard.press('Enter')
     await expect(
-      page.locator('[data-scope="extra"][data-chip]').first()
+      explore(page)
+        .getByRole('button', { name: /^Carrot, on your list/i })
+        .first()
     ).toBeVisible()
     await searchBox(page).fill('')
-    await page.keyboard.press('Escape')
     const dahl = explore(page).getByRole('button', { name: DAHL, exact: true })
     await dahl.focus()
     await page.keyboard.press('Space')
@@ -160,6 +162,62 @@ test.describe('keyboard operability (#223)', () => {
     }
     console.log('[a11y] focus ring seen', seen)
     expect(seen.length).toBeGreaterThan(3)
+  })
+})
+
+/** The outline the focused element draws (the shared focus-ring is 3px solid). */
+const focusOutline = (page: Page) =>
+  page.evaluate(() => {
+    const style = getComputedStyle(document.activeElement as Element)
+    return {
+      style: style.outlineStyle,
+      width: Number.parseFloat(style.outlineWidth)
+    }
+  })
+
+test.describe('the small pages use the shared focus ring and one control per action (#106)', () => {
+  test('a missing page: one Go home button with the 3px ring, and it goes home', async ({
+    page
+  }) => {
+    await page.goto('/nowhere')
+    const home = page.getByRole('button', { name: 'Go home' })
+    await expect(page.getByRole('link', { name: 'Go home' })).toHaveCount(0)
+    await home.focus()
+    await page.keyboard.press('Shift+Tab')
+    await page.keyboard.press('Tab')
+    await expect(home).toBeFocused()
+    expect(await focusOutline(page)).toEqual({ style: 'solid', width: 3 })
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/\/$/)
+  })
+
+  test('logged out, Upgrade asks to log in with a link that has the 3px ring', async ({
+    page
+  }) => {
+    await page.goto('/upgrade')
+    const login = page.getByRole('main').getByRole('link', { name: /^Log.in$/ })
+    await login.focus()
+    await page.keyboard.press('Shift+Tab')
+    await page.keyboard.press('Tab')
+    await expect(login).toBeFocused()
+    expect(await focusOutline(page)).toEqual({ style: 'solid', width: 3 })
+  })
+
+  test('a payment error offers one Try again button: no axe violations, 3px ring, back to Upgrade', async ({
+    page
+  }) => {
+    await signUp(page, newAccount())
+    await page.goto('/success')
+    const again = page.getByRole('button', { name: /Try again/ })
+    await expect(again).toBeVisible()
+    expect(await violations(page)).toEqual([])
+    await again.focus()
+    await page.keyboard.press('Shift+Tab')
+    await page.keyboard.press('Tab')
+    await expect(again).toBeFocused()
+    expect(await focusOutline(page)).toEqual({ style: 'solid', width: 3 })
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/\/upgrade$/)
   })
 })
 
