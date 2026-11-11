@@ -1,5 +1,5 @@
 /* The app's i18n API: import from here, never from i18next or react-i18next. */
-export { LOCALE_KEY, setLocale, translate } from './i18n'
+export { LOCALE_KEY, locale, setLocale, translate } from './i18n'
 export type { Values } from './i18n'
 export { LOCALES } from './locales'
 export type { Locale } from './locales'
