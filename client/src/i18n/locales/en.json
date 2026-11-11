@@ -376,7 +376,6 @@
       "unavailable": "Voice isn’t available on this device. Type instead.",
       "noSpeech": "Nothing was heard. Tap Talk and try again.",
       "failed": "Voice stopped working. Try again, or type instead.",
-      "native": "Uses your phone’s speech recognition.",
       "webSpeech": "Uses your browser’s speech recognition, which may send audio to Google or Apple.",
       "onDevice": "Recognised on this device. No audio leaves it."
     },

@@ -1,4 +1,4 @@
-/** Google OAuth start path. Desktop uses a redirect; native shells use Capacitor. */
+/** Google OAuth start path. Desktop uses a redirect; native apps pass their platform. */
 
 export type GooglePlatform = 'web' | 'ios' | 'android'
 

@@ -27,11 +27,9 @@
     line-break: strict;
     overflow-wrap: anywhere;
   }
-  /* The top safe-area inset only (#296): the status bar on Android, where index.html opts into
-     viewport-fit=cover. Capacitor injects --safe-area-inset-top (older WebViews report env() as 0);
-     everywhere else this is 0. */
+  /* The top safe-area inset only (#296): 0 unless the viewport opts into viewport-fit=cover. */
   :root {
-    --safe-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+    --safe-top: env(safe-area-inset-top, 0px);
   }
   body {
     background-color: var(--color-bg);

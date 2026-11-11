@@ -15,9 +15,8 @@ afterEach(() => {
 })
 
 describe('detectAbilities', () => {
-  it('in jsdom: not an app, no recogniser, no recording', () => {
+  it('in jsdom: no recogniser, no recording', () => {
     expect(detectAbilities()).toEqual({
-      native: false,
       webSpeech: false,
       record: false
     })
@@ -74,8 +73,8 @@ describe('useVoiceCapture', () => {
     const engine = jest.fn()
     const { result } = renderHook(() =>
       useVoiceCapture(jest.fn(), () => ({
-        abilities: { native: false, webSpeech: false, record: false },
-        engines: { native: engine, webSpeech: engine, onDevice: engine },
+        abilities: { webSpeech: false, record: false },
+        engines: { webSpeech: engine, onDevice: engine },
         lang: () => 'en-AU'
       }))
     )
@@ -91,8 +90,8 @@ describe('useVoiceCapture, the engine’s reports', () => {
     webSpeech: import('../types').Engine,
     onDevice: import('../types').Engine
   ) => ({
-    abilities: { native: false, webSpeech: true, record: true },
-    engines: { native: webSpeech, webSpeech, onDevice },
+    abilities: { webSpeech: true, record: true },
+    engines: { webSpeech, onDevice },
     lang: () => 'en-AU'
   })
 

@@ -1,69 +1,10 @@
-# Mobile (iOS & Android) Setup for Production
+# Mobile apps
 
-This project uses [Capacitor](https://capacitorjs.com/) to wrap the React web app as native iOS and Android applications.
+Ingre's phone apps are native, built from their own folders (#195):
 
-## Local development
+- **Android**: Kotlin + Jetpack Compose in `android/`. See `android/README.md`. The **Native Android** workflow (`.github/workflows/android-native.yml`) builds a debug APK on pull requests that touch `android/**`, or on manual runs.
+- **iOS**: Swift + SwiftUI in `ios/`. See the "Native iOS app" section of the root `README.md`. The **native** workflow (`.github/workflows/native.yml`) runs the `IngreCore` unit tests and the UI tests on an iPhone simulator.
 
-```bash
-cd client
-npm ci
-npm run build          # or npm start for live reload
-npx cap sync
-npx cap open ios       # requires macOS + Xcode
-npx cap open android   # requires Android Studio
-```
+The web app in `client/` is web only. The earlier Capacitor wrapper of it (`client/android`, `client/ios` and the `mobile-android` / `mobile-ios` release workflows) was removed before any store release.
 
-## Debug APK from CI (easiest for testing)
-
-On manual workflow runs (`workflow_dispatch`; pull requests no longer trigger it) the Android workflow builds a debug APK and uploads it as an artifact. Every debug APK is signed with the shared debug key, which CI restores into `client/android/app/debug.keystore` from the `ANDROID_DEBUG_KEYSTORE_BASE64` secret, so a newer one (higher `versionCode`) installs over the old app: see `client/android/README.md` (#296).
-
-1. Go to the Actions tab.
-2. Click the **Mobile Android** workflow run.
-3. Scroll to **Artifacts** and download `app-debug-apk`.
-4. Transfer the APK to an unmanaged Android device and install it
-   (allow “Install unknown apps” for the file manager if prompted).
-
-The workflow log prints a direct link to the run.
-
-## Production pipelines
-
-GitHub Actions workflows:
-
-- `.github/workflows/mobile-android.yml` — builds a signed AAB and uploads to Google Play production track on tags `v*`.
-- `.github/workflows/mobile-ios.yml` — builds a signed IPA and uploads to App Store Connect / TestFlight on tags `v*`.
-
-### Required secrets
-
-#### Android
-
-| Secret                             | Description                                                         |
-| ---------------------------------- | ------------------------------------------------------------------- |
-| `ANDROID_KEYSTORE_BASE64`          | Base64-encoded `.keystore` or `.jks` file                           |
-| `ANDROID_KEYSTORE_PASSWORD`        | Keystore password                                                   |
-| `ANDROID_KEY_ALIAS`                | Key alias                                                           |
-| `ANDROID_KEY_PASSWORD`             | Key password                                                        |
-| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | JSON key for a Google Play service account with release permissions |
-
-#### iOS
-
-| Secret                         | Description                                            |
-| ------------------------------ | ------------------------------------------------------ |
-| `IOS_BUILD_CERTIFICATE_BASE64` | Base64-encoded `.p12` distribution certificate         |
-| `IOS_P12_PASSWORD`             | Password for the `.p12`                                |
-| `IOS_PROVISION_PROFILE_BASE64` | Base64-encoded `.mobileprovision` distribution profile |
-| `IOS_KEYCHAIN_PASSWORD`        | Temporary keychain password (any strong random string) |
-| `APPLE_TEAM_ID`                | Your Apple Developer Team ID                           |
-| `APPLE_ID`                     | Apple ID email used for altool                         |
-| `APPLE_APP_SPECIFIC_PASSWORD`  | App-specific password for the Apple ID                 |
-
-### App identifiers
-
-- Bundle ID / package name: `com.leoelicos.ingre`
-- App name: `ingre`
-
-### Notes
-
-- Tag a release (`git tag v1.0.0 && git push --tags`) to trigger production uploads.
-- You can also run the workflows manually via the Actions tab (`workflow_dispatch`).
-- Icons currently use Capacitor defaults. Replace `client/android/app/src/main/res/mipmap-*/ic_launcher*.png` and the iOS `AppIcon.appiconset` assets with your branded icons before store submission.
-- The web build output directory is `client/build` (configured in `vite.config.mts` and `capacitor.config.ts`).
+Store releases (signing, Google Play and TestFlight uploads) are not set up yet for the native apps.

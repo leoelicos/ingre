@@ -20,7 +20,6 @@ Track where each feature currently exists.
 | Food-safety notes                         | In PR | —       | —     | #263  |
 | Local analytics events                    | In PR | —       | —     | #261  |
 | Postgres path (no cutover)                | In PR | —       | —     | #262  |
-| Capacitor shell                           | In PR | In PR   | In PR | #202  |
 | Import / export                           | Draft | —       | —     | #270  |
 | Composed menus                            | Draft | —       | —     | #267  |
 | Precise execution / cook plan             | Draft | —       | —     | #268  |
@@ -38,4 +37,4 @@ Track where each feature currently exists.
 
 ## Rule
 
-Web mobile is the reference. Android and iOS (Capacitor) must not drop a feature that is Yes or In PR on web without an explicit note here.
+Web mobile is the reference. The native Android and iOS apps must not drop a feature that is Yes or In PR on web without an explicit note here.

@@ -1,10 +1,10 @@
 /*
- * One shape for every way the War room can listen (#207): the phone's own recogniser in the
- * apps, the browser's where it has one, and a free on-device model everywhere else.
+ * One shape for every way the War room can listen (#207): the browser's own recogniser where
+ * it has one, and a free on-device model everywhere else.
  */
 
 /** Which recogniser is doing the listening. */
-export type EngineKind = 'native' | 'webSpeech' | 'onDevice'
+export type EngineKind = 'webSpeech' | 'onDevice'
 
 /** Why listening stopped early, in the words the button shows. */
 export type VoiceError = 'denied' | 'unavailable' | 'noSpeech' | 'failed'

@@ -56,7 +56,7 @@ describe('voiceReducer', () => {
 
   it('keeps the error showing when the engine ends afterwards', () => {
     const failed = run([
-      { type: 'start', engine: 'native' },
+      { type: 'start', engine: 'webSpeech' },
       { type: 'error', error: 'noSpeech' },
       { type: 'end' }
     ])

@@ -1,4 +1,4 @@
-/** Platform biometric login adapter. Desktop uses WebAuthn; iOS/Android use Capacitor. */
+/** Platform biometric login adapter. Desktop uses WebAuthn; iOS/Android use the platform's own check. */
 
 export type BiometricPlatform = 'web' | 'ios' | 'android' | 'unknown'
 
@@ -8,11 +8,11 @@ export type BiometricResult =
 
 export function detectPlatform(
   userAgent = '',
-  capacitor = false
+  nativeShell = false
 ): BiometricPlatform {
   if (/iPhone|iPad|iPod/i.test(userAgent)) return 'ios'
   if (/Android/i.test(userAgent)) return 'android'
-  if (capacitor) return 'unknown'
+  if (nativeShell) return 'unknown'
   return 'web'
 }
 
