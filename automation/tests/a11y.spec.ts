@@ -5,6 +5,7 @@ import {
   DAHL,
   chevron,
   explore,
+  fab,
   openExplore,
   pickRows,
   searchBox
@@ -41,6 +42,7 @@ test.describe('axe: no violations along the core loop (#223)', () => {
 
       test('searching ingredients and recipes', async ({ page }) => {
         console.log('[a11y] searching for carrot')
+        await openExplore(page)
         await searchBox(page).fill('carrot')
         console.log('[a11y] filled search, waiting for Add carrot')
         const add = explore(page)
@@ -63,19 +65,16 @@ test.describe('axe: no violations along the core loop (#223)', () => {
         expect(await violations(page)).toEqual([])
       })
 
-      test('the plus area, a recipe filter and a search result already on the list', async ({
+      test('a recipe filter and a search result already on the list', async ({
         page
       }) => {
         await pickRows(page, DAHL)
-        await page
-          .getByRole('button', { name: 'Add an ingredient' })
-          .first()
-          .click()
         await page
           .getByRole('toolbar', { name: 'Recipes actions' })
           .getByRole('button', { name: /^Filter/ })
           .click()
         expect(await violations(page)).toEqual([])
+        await openExplore(page)
         await searchBox(page).fill('onion')
         await expect(
           explore(page)
@@ -112,7 +111,9 @@ test.describe('keyboard operability (#223)', () => {
     page
   }) => {
     await page.goto('/')
-    await searchBox(page).focus()
+    await fab(page).focus()
+    await page.keyboard.press('Enter')
+    await expect(searchBox(page)).toBeFocused()
     await page.keyboard.type('carrot')
     const add = explore(page)
       .getByRole('button', { name: /^Add carrot/i })
@@ -120,10 +121,11 @@ test.describe('keyboard operability (#223)', () => {
     await add.focus()
     await page.keyboard.press('Enter')
     await expect(
-      page.locator('[data-scope="extra"][data-chip]').first()
+      explore(page)
+        .getByRole('button', { name: /^Carrot, on your list/i })
+        .first()
     ).toBeVisible()
     await searchBox(page).fill('')
-    await page.keyboard.press('Escape')
     const dahl = explore(page).getByRole('button', { name: DAHL, exact: true })
     await dahl.focus()
     await page.keyboard.press('Space')

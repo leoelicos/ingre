@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { MockedProvider } from '@apollo/client/testing'
@@ -70,16 +70,38 @@ describe('Keyboard-only', () => {
     expect(screen.getByRole('button', { name: /sign up/i })).toHaveFocus()
   })
 
-  it('the list has no Home control, and its section headers work from the keyboard', async () => {
+  it('the list has no Home control and no accordions; the FAB opens Explore from the keyboard, Escape gives focus back (#192)', async () => {
     const user = userEvent.setup()
     renderAt(<ListPage />, '/')
     expect(screen.queryByRole('button', { name: 'Home' })).toBeNull()
-    const ingredients = screen.getByRole('button', { name: /^Ingredients/ })
-    ingredients.focus()
+    expect(document.querySelector('[aria-expanded][id$="-toggle"]')).toBeNull()
+    const fab = screen.getByRole('button', { name: 'Add a recipe' })
+    fab.focus()
     await user.keyboard('{Enter}')
-    expect(ingredients).toHaveAttribute('aria-expanded', 'false')
+    const dialog = screen.getByRole('dialog', { name: 'Explore' })
+    expect(within(dialog).getByRole('searchbox')).toHaveFocus()
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog')).toBeNull()
+    await waitFor(() => expect(fab).toHaveFocus())
+  })
+
+  it('an ingredient is a checkbox: Space crosses it off and back (#192)', async () => {
+    const user = userEvent.setup()
+    localStorage.setItem('ingre.copies', JSON.stringify([]))
+    renderAt(<ListPage />, '/')
+    await user.click(screen.getByRole('button', { name: 'Add a recipe' }))
+    await user.click(screen.getByRole('button', { name: 'Red lentil dahl' }))
+    await user.keyboard('{Escape}')
+    const box = within(
+      screen.getByRole('region', { name: 'Ingredients' })
+    ).getAllByRole('checkbox')[0]
+    if (box === undefined) throw new Error('no ingredient')
+    box.focus()
     await user.keyboard(' ')
-    expect(ingredients).toHaveAttribute('aria-expanded', 'true')
+    expect(box).toBeChecked()
+    await user.keyboard(' ')
+    expect(box).not.toBeChecked()
+    localStorage.clear()
   })
 })
 
@@ -114,6 +136,7 @@ describe('VoiceOver (ARIA name, role, state)', () => {
   it('the list Saved filter exposes on/off state as a switch', async () => {
     const user = userEvent.setup()
     renderAt(<ListPage />, '/')
+    await user.click(screen.getByRole('button', { name: 'Add a recipe' }))
     await user.click(
       within(
         screen.getByRole('toolbar', { name: 'Explore actions' })

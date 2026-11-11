@@ -129,21 +129,26 @@ const AvoidStep: FC<{
 /**
  * The three TMD questions (#211): "Step X of 3", why we ask, Back and Next, and Skip at every
  * step. Finishing saves the answers and sets the dial; skipping changes nothing, so a first run
- * ends on Assisted. `onDone` runs either way.
+ * ends on Assisted. `onDone` runs either way, and Explore opens (#192: its sheet), so the list
+ * page starts on search.
  */
 export const Tmd: FC<{ onDone: () => void }> = ({ onDone }) => {
   const t = useT()
   const { answers, save } = useTmd()
-  const { setGuidance } = useExplore()
+  const { setGuidance, show } = useExplore()
   const [step, setStep] = useState(0)
   const [draft, setDraft] = useState<TmdAnswers>(answers)
   const last = step === TMD_STEPS.length - 1
   const text = stepText(t)
   const current = TMD_STEPS.filter((_, i) => i === step)
+  const done = (): void => {
+    show()
+    onDone()
+  }
   const finish = (): void => {
     save(draft)
     setGuidance(draft.guidance)
-    onDone()
+    done()
   }
   return (
     <div className="ingre-page mx-auto flex w-full max-w-xl flex-col gap-5 py-8">
@@ -214,7 +219,7 @@ export const Tmd: FC<{ onDone: () => void }> = ({ onDone }) => {
           {last ? t('tmd.finish') : t('tmd.next')}
         </PrimaryButton>
         <Button
-          onPress={onDone}
+          onPress={done}
           className="min-h-[48px] rounded-control px-4 text-primary underline focus-visible:focus-ring"
         >
           {t('tmd.skip')}
