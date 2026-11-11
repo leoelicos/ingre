@@ -10,6 +10,7 @@ import { useAuthContext } from '../../utils/auth/AuthContext'
 import { changeTitle } from '../../utils/changeTitle'
 import { library } from '../../utils/library/recipeLibrary'
 import { useSaved } from '../../utils/saved/useSaved'
+import { PreferencesForm } from './PreferencesForm'
 
 const LINK =
   'inline-flex min-h-[44px] items-center rounded-control px-3 font-semibold text-primary underline focus-visible:focus-ring'
@@ -118,7 +119,7 @@ const Saved: FC<{ loggedIn: boolean }> = ({ loggedIn }) => {
 
 /**
  * Profile (#227): the fourth tab. Your account, and your saved recipes and any other collections
- * under it, instead of tabs of their own.
+ * under it, instead of tabs of their own; then the app's preferences, kept on this device.
  */
 export const ProfilePage: FC = () => {
   const t = useT()
@@ -131,6 +132,7 @@ export const ProfilePage: FC = () => {
       </h1>
       <Account loggedIn={loggedIn} />
       <Saved loggedIn={loggedIn} />
+      <PreferencesForm />
     </PageMain>
   )
 }
