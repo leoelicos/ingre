@@ -5,6 +5,18 @@ export const focusById = (id: string): void => {
   document.getElementById(id)?.focus({ preventScroll: true })
 }
 
+/**
+ * Focuses the element with this id unless focus already sits on a control of its own choosing
+ * (#192): only when it is on nothing, or still on a sheet's top bar (its ✕), where a modal's
+ * focus scope puts it.
+ */
+export const claimFocusById = (id: string): void => {
+  const active = document.activeElement ?? document.body
+  const unclaimed =
+    active === document.body || active.closest('[data-sheet-grip]') !== null
+  if (unclaimed) focusById(id)
+}
+
 /** True when the user asked the device for less motion. */
 export const prefersReducedMotion = (): boolean =>
   typeof window.matchMedia === 'function' &&

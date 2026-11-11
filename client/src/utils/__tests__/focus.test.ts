@@ -1,4 +1,6 @@
+import '@testing-library/jest-dom'
 import {
+  claimFocusById,
   focusById,
   focusCheckedIn,
   prefersReducedMotion,
@@ -80,5 +82,47 @@ describe('focus helpers', () => {
     expect(document.activeElement).toBe(document.body)
     focusCheckedIn('g')
     expect(document.activeElement?.id).toBe('y')
+  })
+})
+
+describe('claimFocusById (#192)', () => {
+  const setUp = () => {
+    document.body.innerHTML = `
+      <div data-sheet-grip><button id="close">Close</button></div>
+      <input id="search" />
+      <input id="other" />`
+    return (id: string) => document.getElementById(id)
+  }
+  afterEach(() => {
+    jest.restoreAllMocks()
+    document.body.innerHTML = ''
+  })
+
+  it('takes focus from nothing', () => {
+    const byId = setUp()
+    claimFocusById('search')
+    expect(byId('search')).toHaveFocus()
+  })
+
+  it('takes focus when the document reports no active element', () => {
+    const byId = setUp()
+    jest.spyOn(document, 'activeElement', 'get').mockReturnValue(null)
+    claimFocusById('search')
+    jest.restoreAllMocks()
+    expect(byId('search')).toHaveFocus()
+  })
+
+  it("takes focus from a sheet's top bar", () => {
+    const byId = setUp()
+    byId('close')?.focus()
+    claimFocusById('search')
+    expect(byId('search')).toHaveFocus()
+  })
+
+  it('leaves focus on a control the user chose', () => {
+    const byId = setUp()
+    byId('other')?.focus()
+    claimFocusById('search')
+    expect(byId('other')).toHaveFocus()
   })
 })
