@@ -40,7 +40,7 @@ describe('App', () => {
 
   it('opens on the one page: the header, Recipes, Ingredients and the FAB, no search (#164, #179, #192)', () => {
     openAt('/')
-    expect(screen.getByRole('link', { name: 'ingré' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'INGRE' })).toHaveAttribute(
       'href',
       '/'
     )

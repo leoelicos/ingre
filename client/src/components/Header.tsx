@@ -5,7 +5,8 @@ import { useAuthContext } from '../utils/auth/AuthContext'
 import { IngreIconLogoEgg } from '../lib/icon/Icon'
 import { AccountMenu } from './AccountMenu/AccountMenu'
 
-export const LOGO_TEXT = 'ingré'
+/** The wordmark (#235): option C from #251, quiet caps without the accent. */
+export const LOGO_TEXT = 'INGRE'
 
 /** The logo: back to the workspace. The wordmark is visible from small tablets up; below that the egg alone is still a 44px target (#296). */
 const Logo: FC = () => (
@@ -14,7 +15,7 @@ const Logo: FC = () => (
     className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-control no-underline focus-visible:focus-ring"
   >
     <IngreIconLogoEgg />
-    <span className="sr-only font-['Poppins'] text-[26px] font-normal tracking-[-0.03em] text-text sm:not-sr-only">
+    <span className="sr-only font-['Poppins'] text-[19px] font-medium tracking-normal text-text sm:not-sr-only">
       {LOGO_TEXT}
     </span>
   </Link>
