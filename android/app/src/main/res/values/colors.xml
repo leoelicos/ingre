@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- palette-cream in client/src/styles/theme.css: the web app's light page background -->
+    <color name="splash_background">#FFF8F0</color>
+</resources>

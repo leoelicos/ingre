@@ -1,8 +1,13 @@
 name: Ingre
 options:
-  bundleIdPrefix: app.ingre
+  bundleIdPrefix: com.leoelicos
   deploymentTarget:
-    iOS: "26.0"
+    iOS: "17.0"
+settings:
+  base:
+    # Store versions: see docs/MOBILE.md. Bump both before every store upload.
+    MARKETING_VERSION: 1.0.0
+    CURRENT_PROJECT_VERSION: 1
 packages:
   IngreCore:
     path: IngreCore
@@ -18,8 +23,10 @@ targets:
       SWIFT_VERSION: "6.0"
       TARGETED_DEVICE_FAMILY: "1"
       GENERATE_INFOPLIST_FILE: YES
-      PRODUCT_BUNDLE_IDENTIFIER: app.ingre
-      INFOPLIST_KEY_UILaunchScreen_Generation: YES
+      PRODUCT_BUNDLE_IDENTIFIER: com.leoelicos.ingre
+      ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      INFOPLIST_KEY_CFBundleDisplayName: INGRE
+      INFOPLIST_FILE: Ingre/Info.plist
       INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
   IngreUITests:
     type: bundle.ui-testing
@@ -31,7 +38,7 @@ targets:
     settings:
       SWIFT_VERSION: "6.0"
       GENERATE_INFOPLIST_FILE: YES
-      PRODUCT_BUNDLE_IDENTIFIER: app.ingre.uitests
+      PRODUCT_BUNDLE_IDENTIFIER: com.leoelicos.ingre.uitests
 schemes:
   Ingre:
     build:

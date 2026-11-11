@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Ingre egg (client/public/images/ingre-icon.svg) for the Android 12+ splash screen.
+  108dp canvas; the egg sits inside the centre circle the system keeps (2/3 of the canvas).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:translateX="22"
+        android:translateY="22">
+        <path
+            android:fillColor="#F5B700"
+            android:pathData="M32,5C43.5,5 52,22.5 52,37.5C52,50.5 43.3,59 32,59C20.7,59 12,50.5 12,37.5C12,22.5 20.5,5 32,5Z"
+            android:strokeColor="#B45309"
+            android:strokeLineJoin="round"
+            android:strokeWidth="3.5" />
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M22.5,36.5L29,43L42,28.5"
+            android:strokeColor="#2B2B2B"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeWidth="5.5" />
+    </group>
+</vector>

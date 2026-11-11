@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Adaptive launcher icon background layer behind the transparent egg: palette-cream from client/src/styles/theme.css. -->
+    <color name="ic_launcher_background">#FFF8F0</color>
+</resources>

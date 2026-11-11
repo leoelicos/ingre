@@ -43,7 +43,7 @@ fun LoginScreen(onLogin: (String) -> Unit, onSignup: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("ingre", fontSize = 40.sp)
+        Text("INGRE", fontSize = 40.sp)
         Spacer(Modifier.height(32.dp))
         OutlinedTextField(
             value = email,
