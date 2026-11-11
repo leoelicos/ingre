@@ -8,3 +8,33 @@ Ingre's phone apps are native, built from their own folders (#195):
 The web app in `client/` is web only. The earlier Capacitor wrapper of it (`client/android`, `client/ios` and the `mobile-android` / `mobile-ios` release workflows) was removed before any store release.
 
 Store releases (signing, Google Play and TestFlight uploads) are not set up yet for the native apps.
+
+## Store identity
+
+Neither app has been published, so these are the first values the stores will see. The app ID can never change after the first upload.
+
+| | Android | iOS |
+| --- | --- | --- |
+| App ID | `applicationId = "com.leoelicos.ingre"` (`android/app/build.gradle.kts`) | `PRODUCT_BUNDLE_IDENTIFIER: com.leoelicos.ingre` (`ios/project.yml`) |
+| Test bundle | n/a | `com.leoelicos.ingre.uitests` |
+| Version shown to people | `versionName = "1.0.0"` | `MARKETING_VERSION: 1.0.0` |
+| Build number | `versionCode = 1` | `CURRENT_PROJECT_VERSION: 1` |
+
+The version and build number each live in one place: `android/app/build.gradle.kts` (`defaultConfig`) and the project-wide `settings.base` in `ios/project.yml` (every iOS target inherits it; run `xcodegen generate` after editing).
+
+### Bumping for a release
+
+- **Version** (`1.0.0`): semantic version, the same on both platforms for the same release. Raise the patch for fixes, the minor for features.
+- **Build number**: a whole number that only goes up. Google Play rejects any `versionCode` it has already seen, and App Store Connect rejects a repeated `CURRENT_PROJECT_VERSION` for the same version. Raise it for every upload, including a re-upload of the same version.
+
+### Icons and launch screens
+
+The icon is the egg from `client/public/images/ingre-icon.svg` (#296), on white.
+
+- **Android**: `android/app/src/main/res/mipmap-*` (launcher, round and adaptive foreground PNGs, adaptive background `@color/ic_launcher_background`). The launch screen uses the Android 12 SplashScreen API through `androidx.core:core-splashscreen` (`Theme.Ingre.Starting`, `installSplashScreen()` in `MainActivity`): the egg (`drawable/ic_splash.xml`) on `@color/splash_background`.
+- **iOS**: `ios/Ingre/Assets.xcassets`: `AppIcon` (one 1024 px image; Xcode makes the other sizes), `LaunchIcon` and `LaunchBackground`. The launch screen is the `UILaunchScreen` entry in `ios/Ingre/Info.plist`, merged with the generated Info.plist keys.
+- **Colours**: the web app's page background from `client/src/styles/theme.css`: `--palette-cream` `#FFF8F0` in light mode, `--palette-night` `#141815` in dark mode.
+
+### Privacy manifest (iOS)
+
+`ios/Ingre/PrivacyInfo.xcprivacy` is bundled with the app. Today it declares no tracking, no collected data and no required-reason APIs, because the iOS app only reads its bundled catalogue and keeps the list in memory. Update it in the same PR as any change that adds one of those, for example `UserDefaults` (required-reason API `NSPrivacyAccessedAPICategoryUserDefaults`, reason `CA92.1`), accounts, network calls or purchases.
