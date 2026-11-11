@@ -119,6 +119,7 @@ const SAME_AS_ENGLISH = new Set([
   'tiers.features.haccp',
   'suggest.money',
   'ideas.queryPlaceholder',
+  'preferences.textSize.unit',
   'demo.placeholder'
 ])
 

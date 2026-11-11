@@ -165,7 +165,7 @@ export const Login: FC = () => {
               <Link
                 to="/signup"
                 state={{ from }}
-                className="focus-visible:focus-ring"
+                className="inline-flex min-h-[44px] items-center focus-visible:focus-ring"
               >
                 {text}
               </Link>

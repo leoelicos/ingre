@@ -1,23 +1,26 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { savedQuery, savedRecipe } from '../../../test/savedMocks'
 import {
   chip,
   explore,
-  exploreHeader,
+  closeSheet,
+  fab,
+  openSheet,
+  sheet,
   hasChipEl,
   pick,
   pickFromExplore,
+  pickInExplore,
   recipes,
-  region,
   renderList,
   searchBox
 } from '../../../test/renderList'
 import { SEARCH_SETTLE_MS } from '../../../utils/analytics/useSearchedEvent'
 import { readEvents } from '../../../utils/analytics/events'
 import { SETTINGS_KEY } from '../../../utils/profile/settings'
-import { hideExplore, originalIds, matchCounts } from '../Explore'
+import { originalIds, matchCounts } from '../Explore'
 import { library } from '../../../utils/library/recipeLibrary'
 
 beforeEach(() => localStorage.clear())
@@ -91,97 +94,43 @@ const openFilter = () =>
     )
   )
 
-describe('Scenario: Explore is always on the page (#181)', () => {
-  it('is expanded on load when nothing is selected: an inline, labelled region that pushes content down', () => {
+describe('Scenario: Explore lives in a sheet (#192)', () => {
+  it('is off the page until "+ Recipe" opens it as a labelled dialog, search at the top with focus', () => {
     renderList()
-    const area = region('Explore')
-    expect(area.tagName).toBe('SECTION')
-    expect(area).toHaveClass('shadow-raised')
-    expect(area.className).not.toMatch(/\b(absolute|fixed)\b/)
-    expect(screen.queryByRole('dialog')).toBeNull()
-    // Explore comes before the sections, in the flow
+    expect(sheet('Explore')).toBeNull()
+    expect(document.getElementById('explore')).toBeNull()
+    expect(screen.queryByRole('search')).toBeNull()
+    openSheet()
+    const dialog = screen.getByRole('dialog', { name: 'Explore' })
+    expect(searchBox()).toHaveFocus()
     expect(
-      area.compareDocumentPosition(region('Ingredients')) &
-        Node.DOCUMENT_POSITION_FOLLOWING
+      within(dialog)
+        .getByRole('search')
+        .compareDocumentPosition(
+          within(dialog).getByRole('heading', { name: 'Browse recipes' })
+        ) & Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    expect(exploreHeader()).toHaveAttribute('aria-controls', 'explore-content')
-    expect(document.getElementById('explore-content')).toBeVisible()
   })
 
-  it('is collapsed on load when something is selected, but still there; search focus expands it', () => {
-    pick('dahl')
-    renderList()
-    expect(region('Explore')).toBeVisible()
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(document.getElementById('explore-content')).not.toBeVisible()
-    expect(screen.queryByRole('button', { name: hideExplore() })).toBeNull()
-    act(() => searchBox().focus())
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-  })
-
-  it('expands when typing', async () => {
-    const user = userEvent.setup()
-    pick('dahl')
-    renderList()
-    act(() => searchBox().blur())
-    fireEvent.change(searchBox(), { target: { value: 'dahl' } })
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    await user.clear(searchBox())
-    expect(
-      explore().getByRole('heading', { name: 'Browse recipes' })
-    ).toBeVisible()
-  })
-})
-
-describe('Scenario: Explore collapses, never goes away (#181)', () => {
-  it('stays expanded on an outside click and Escape; X collapses it to its header row and focuses that', async () => {
+  it('Escape clears a filled search first, then closes the sheet and focus goes back to the FAB', async () => {
     const user = userEvent.setup()
     renderList()
-    await user.click(screen.getByRole('heading', { level: 1, hidden: true }))
-    fireEvent.pointerDown(document.body)
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    explore()
-      .getByRole('button', { name: /^Filter/ })
-      .focus()
+    await user.click(fab())
+    await user.paste('dahl')
     await user.keyboard('{Escape}')
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    const hide = screen.getByRole('button', { name: hideExplore() })
-    expect(hide).toHaveAttribute('aria-controls', 'explore-content')
-    await user.click(hide)
-    expect(region('Explore')).toBeVisible()
-    expect(screen.getByRole('heading', { name: 'Explore' })).toBeVisible()
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(exploreHeader()).toHaveFocus()
-    expect(screen.queryByRole('button', { name: hideExplore() })).toBeNull()
-    await user.click(exploreHeader())
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    expect(exploreHeader()).toHaveFocus()
+    expect(searchBox()).toHaveValue('')
+    await user.keyboard('{Escape}')
+    expect(sheet('Explore')).toBeNull()
+    await waitFor(() => expect(fab()).toHaveFocus())
   })
 
-  it('keeps what is inside while collapsed: an open filter is still open when it expands', async () => {
+  it('keeps the query while it is shut, so it opens where it was left', async () => {
     const user = userEvent.setup()
     renderList()
-    openFilter()
-    await user.click(screen.getByRole('button', { name: hideExplore() }))
-    await user.click(exploreHeader())
-    expect(explore().getByRole('switch', { name: 'Saved' })).toBeVisible()
-  })
-
-  it('the header row collapses the results but keeps the header; search focus or typing expands it', async () => {
-    const user = userEvent.setup()
-    renderList()
-    await user.click(exploreHeader())
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'false')
-    expect(exploreHeader()).toHaveClass('shadow-raised')
-    expect(explore().queryByRole('switch', { name: 'Saved' })).toBeNull()
-    act(() => searchBox().focus())
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('button', { name: hideExplore() })).toBeVisible()
-    await user.click(exploreHeader())
-    act(() => searchBox().blur())
-    fireEvent.change(searchBox(), { target: { value: 'b' } })
-    expect(exploreHeader()).toHaveAttribute('aria-expanded', 'true')
+    await search(user, 'dahl')
+    closeSheet()
+    expect(searchBox()).toHaveValue('dahl')
+    expect(groupNames('Recipes')).toEqual(['Red lentil dahl'])
   })
 })
 
@@ -216,7 +165,7 @@ describe('Scenario: Browse and search (#181)', () => {
     expect(
       explore().getByRole('heading', { name: 'Browse recipes' })
     ).toBeVisible()
-    expect(region('Explore')).toBeInTheDocument()
+    expect(sheet('Explore')).toBeInTheDocument()
   })
 
   it('ranks starts-with, then word starts, then contains, in separate groups that sit side by side from 768px', async () => {
@@ -255,8 +204,9 @@ describe('Scenario: Browse and search (#181)', () => {
     const user = userEvent.setup()
     renderList()
     await search(user, 'chikpea')
-    expect(explore().getByRole('status')).toHaveTextContent(
-      'No matches for ‘chikpea’'
+    expect(explore().getByText('No matches for ‘chikpea’')).toHaveAttribute(
+      'role',
+      'status'
     )
     expect(
       explore().getByRole('heading', { name: 'Close matches' })
@@ -266,9 +216,7 @@ describe('Scenario: Browse and search (#181)', () => {
     ).toBeVisible()
     await user.clear(searchBox())
     await search(user, 'zzqxw')
-    expect(explore().getByRole('status')).toHaveTextContent(
-      'No matches for ‘zzqxw’'
-    )
+    expect(explore().getByText('No matches for ‘zzqxw’')).toBeInTheDocument()
     expect(
       explore().queryByRole('heading', { name: 'Close matches' })
     ).toBeNull()
@@ -281,7 +229,7 @@ describe('Scenario: Browse and search (#181)', () => {
 describe('Scenario: Explore results act in place (#181)', () => {
   it('ticks a recipe from Explore, and See recipe expands the row in place', () => {
     renderList()
-    fireEvent.click(pickFromExplore('Red lentil dahl'))
+    pickInExplore('Red lentil dahl')
     expect(
       recipes().getByRole('button', { name: 'Red lentil dahl' })
     ).toHaveAttribute('aria-pressed', 'true')
@@ -302,31 +250,26 @@ describe('Scenario: Explore results act in place (#181)', () => {
     expect(see).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('an ingredient result adds it as an extra, or opens its chip when it is on the list', async () => {
+  it('an ingredient result adds it as an extra and stays in the sheet; again says it is in Extra (#192)', async () => {
     const user = userEvent.setup()
-    const scrolled: Element[] = []
-    Element.prototype.scrollIntoView = function () {
-      scrolled.push(this)
-    }
     renderList()
     await search(user, 'banana')
     await user.click(
       explore().getAllByRole('button', { name: /Add banana/i })[0]!
     )
     expect(hasChipEl('banana')).toBe(1)
-    expect(hasChipEl('banana', 'extra')).toBe(1)
     expect(screen.getByText('Banana added to Extra')).toBeInTheDocument()
     const onList = explore().getAllByRole('button', {
       name: /banana.*on your list/i
     })[0]!
     expect(onList.closest('li')).toHaveTextContent('on your list')
     await user.click(onList)
-    const chevron = within(chip('banana')).getByRole('button', {
-      name: 'Banana details'
-    })
-    expect(chevron).toHaveAttribute('aria-expanded', 'true')
-    expect(scrolled).toEqual([chevron])
+    expect(
+      explore().getByText('Banana is already in Extra')
+    ).toBeInTheDocument()
+    closeSheet()
     expect(hasChipEl('banana')).toBe(1)
+    expect(chip('banana')).toHaveAttribute('data-category')
   })
 
   it('shows allergen tags on ingredient results', async () => {
@@ -347,12 +290,21 @@ describe('Scenario: Saved filters Explore (#181)', () => {
     renderList('/', [savedQuery([savedRecipe('dahl')])])
     signIn()
     expect(recipes().queryByRole('switch')).toBeNull()
+    explore()
     openFilter()
     fireEvent.click(explore().getByRole('switch', { name: 'Saved' }))
     expect(where()).toHaveTextContent('/?saved=1')
     await waitFor(() => expect(browseNames()).toEqual(['Red lentil dahl']))
     fireEvent.click(explore().getByRole('switch', { name: 'Saved' }))
     expect(where()).toHaveTextContent(/^\/$/)
+  })
+
+  it('closing the sheet opened by the Saved link drops ?saved=1, so the link opens it again', () => {
+    renderList('/?saved=1')
+    expect(sheet('Explore')).toBeInTheDocument()
+    closeSheet()
+    expect(where()).toHaveTextContent(/^\/$/)
+    expect(sheet('Explore')).toBeNull()
   })
 
   it('says when nothing is saved yet', () => {
@@ -367,25 +319,15 @@ describe('Scenario: Saved filters Explore (#181)', () => {
   })
 })
 
-describe('Scenario: Search bar (#181)', () => {
-  it('has a max width and the new placeholder', () => {
+describe('Scenario: Search bar (#181, #192)', () => {
+  it('sits at the top of the Explore sheet with the placeholder, not in the header', () => {
     renderList()
+    expect(screen.queryByRole('search')).toBeNull()
     expect(searchBox()).toHaveAttribute(
       'placeholder',
       'Search ingredients and recipes'
     )
-    expect(screen.getByRole('search')).toHaveClass('max-w-[36rem]')
-  })
-
-  it('away from the list, typing goes to the list with the text and focus kept', async () => {
-    const user = userEvent.setup()
-    renderList('/elsewhere')
-    expect(screen.getByText('Elsewhere')).toBeInTheDocument()
-    await search(user, 'd')
-    expect(where()).toHaveTextContent(/^\/$/)
-    expect(searchBox()).toHaveValue('d')
-    expect(searchBox()).toHaveFocus()
-    expect(region('Explore')).toBeInTheDocument()
+    expect(explore().getByRole('search')).toContainElement(searchBox())
   })
 
   it('a result is named by what it shows, so voice control can say what it sees (WCAG 2.5.3, #223)', async () => {
@@ -416,7 +358,6 @@ describe('Explore and the profile (#224)', () => {
   it('puts recipes like the picked ones first', () => {
     pick('egg-fried-rice')
     renderList()
-    fireEvent.click(exploreHeader())
     expect(browseNames()[0]).toBe('Egg fried rice')
   })
 
@@ -424,7 +365,6 @@ describe('Explore and the profile (#224)', () => {
     pick('beef-keema')
     localStorage.setItem(SETTINGS_KEY, JSON.stringify({ dislikes: ['beef'] }))
     renderList()
-    fireEvent.click(exploreHeader())
     const names = browseNames()
     expect(names.indexOf('Beef keema with peas')).toBeGreaterThan(
       names.indexOf('Red lentil dahl')

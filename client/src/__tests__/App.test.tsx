@@ -38,20 +38,21 @@ describe('App', () => {
     ).toBeInTheDocument()
   })
 
-  it('opens on the one page: the header, Explore, Ingredients and Recipes (#164, #179, #181)', () => {
+  it('opens on the one page: the header, Recipes, Ingredients and the FAB, no search (#164, #179, #192)', () => {
     openAt('/')
     expect(screen.getByRole('link', { name: 'ingré' })).toHaveAttribute(
       'href',
       '/'
     )
-    expect(
-      screen.getByRole('searchbox', { name: 'Search ingredients and recipes' })
-    ).toBeInTheDocument()
+    expect(screen.queryByRole('searchbox')).toBeNull()
     expect(screen.getByRole('button', { name: 'Account' })).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { level: 1, name: 'Shopping list' })
     ).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: 'Explore' })).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Explore' })).toBeNull()
+    expect(
+      screen.getByRole('button', { name: 'Add a recipe' })
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { level: 2, name: 'Ingredients' })
     ).toBeInTheDocument()
@@ -134,7 +135,7 @@ describe('App first run (#211)', () => {
     returning()
     openAt('/setup')
     expect(screen.getByText('Step 1 of 3')).toBeInTheDocument()
-    expect(screen.getByRole('searchbox')).toBeInTheDocument()
+    expect(screen.getByRole('banner')).toBeInTheDocument()
   })
 })
 

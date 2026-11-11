@@ -26,6 +26,16 @@ const overflows = (page: Page) =>
 const nav = (page: Page) =>
   page.getByRole('navigation', { name: 'メイン', exact: true })
 
+const exploreSheet = (page: Page) =>
+  page.getByRole('dialog', { name: 'さがす', exact: true })
+
+/** Opens the Explore sheet (#192) from the FAB, "+ レシピ", unless it is open already. */
+const openExplore = async (page: Page) => {
+  if (await exploreSheet(page).isVisible()) return
+  await page.getByRole('button', { name: 'レシピを追加', exact: true }).click()
+  await expect(exploreSheet(page)).toBeVisible()
+}
+
 test.describe('Japanese (ja)', () => {
   test.use({ locale: 'ja-JP' })
 
@@ -43,6 +53,7 @@ test.describe('Japanese (ja)', () => {
         '料理',
         'マイページ'
       ])
+      await openExplore(page)
       await expect(
         page.getByRole('searchbox', { name: '食材とレシピを検索' })
       ).toBeVisible()
@@ -55,19 +66,21 @@ test.describe('Japanese (ja)', () => {
     page
   }) => {
     await page.goto('/')
-    await page.getByRole('searchbox', { name: '食材とレシピを検索' }).click()
-    const explore = page.getByRole('region', { name: 'さがす', exact: true })
+    await openExplore(page)
+    const explore = exploreSheet(page)
     await expect(
-      explore
-        .getByRole('heading', { level: 2, name: 'さがす', exact: true })
-        .getByRole('button')
-    ).toHaveAttribute('aria-expanded', 'true')
+      explore.getByRole('searchbox', { name: '食材とレシピを検索' })
+    ).toBeFocused()
     const dahl = explore.getByRole('button', {
       name: 'Red lentil dahl',
       exact: true
     })
     await dahl.click()
     await expect(dahl).toHaveAttribute('aria-pressed', 'true')
+    expect(await overflows(page)).toBe(false)
+    expect(await violations(page)).toEqual([])
+    await page.getByRole('button', { name: 'さがすを閉じる' }).click()
+    await expect(explore).toHaveCount(0)
     await expect(
       page.getByRole('region', { name: '材料', exact: true })
     ).toBeVisible()

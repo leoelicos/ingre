@@ -76,8 +76,6 @@
   },
   "explore": {
     "title": "Explore",
-    "hide": "Hide Explore",
-    "drawer": "Explore drawer",
     "actions": "Explore actions",
     "filter": "Filter Explore",
     "browse": "Browse recipes",
@@ -120,24 +118,37 @@
     "sort": "Sort",
     "refresh": "Refresh",
     "filter": "Filter ingredients",
-    "empty": "Nothing on your list yet. Tick recipes in Explore, or add an ingredient with the plus in Extra.",
+    "empty": "Nothing on your list yet. Add recipes with + Recipe, or pantry items with + Pantry Item.",
     "refreshQuestion": "Reset every recipe to its original ingredients and 2 portions?",
     "summaryCrossed": "{{items}}, {{count}} crossed off",
     "usedIn": "Used in",
-    "added": "{{name}} added to Extra"
+    "added": "{{name}} added to Extra",
+    "alreadyExtra": "{{name}} is already in Extra"
   },
   "recipes": {
     "title": "Recipes",
     "actions": "Recipes actions",
     "filter": "Filter recipes",
-    "empty": "No recipes picked yet. Tick recipes in Explore and they show here.",
-    "picked": "{{recipes}} picked"
+    "empty": "No recipes picked yet. Add some with + Recipe and they show here.",
+    "picked": "{{recipes}} picked",
+    "removed": "Removed {{title}}",
+    "undo": "Undo",
+    "dismiss": "Dismiss"
   },
   "extra": {
     "title": "Extra",
     "actions": "Extra actions",
     "filter": "Filter extra",
-    "empty": "Nothing extra yet. Add staples and anything else with the plus."
+    "empty": "Nothing extra yet. Add staples and anything else below."
+  },
+  "fab": {
+    "recipe": "Recipe",
+    "pantry": "Pantry Item",
+    "recipeLabel": "Add a recipe",
+    "pantryLabel": "Add a pantry item"
+  },
+  "sheet": {
+    "close": "Close {{title}}"
   },
   "chip": {
     "details": "{{name}} details",
@@ -170,12 +181,6 @@
     "notes": "Notes",
     "customisations": "Customisations",
     "portions": "Portions"
-  },
-  "layout": {
-    "label": "Layout",
-    "vertical": "Vertical",
-    "split": "Ingredients {{ingredients}}%, Recipes {{recipes}}%",
-    "thirds": "Ingredients {{ingredients}}%, Recipes {{recipes}}%, Explore {{explore}}%"
   },
   "scrollToTop": "Scroll to top",
   "notLoggedIn": {
@@ -330,8 +335,7 @@
     "count_other": "{{count}} ideas"
   },
   "bra": {
-    "label": "Quick actions",
-    "add": "Add item"
+    "label": "Quick actions"
   },
   "guests": {
     "button": "Guests",
@@ -457,5 +461,68 @@
     "tickets": "Tickets",
     "fab": "Add ticket for {{title}}",
     "fabNone": "Add ticket"
+  },
+  "preferences": {
+    "title": "Preferences",
+    "intro": "Saved on this device. Change any of them and press Save preferences.",
+    "appearance": "Appearance",
+    "theme": "Colour theme",
+    "themeSystem": "Match my device",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "textSize": {
+      "label": "Text size",
+      "hint": "A whole number from {{min}} to {{max}}. {{standard}} is the standard size.",
+      "unit": "%",
+      "required": "Enter a text size",
+      "whole": "Enter the text size as a whole number, like 125",
+      "range": "Enter a text size from {{min}} to {{max}}"
+    },
+    "recipes": "Recipes",
+    "diet": "Diet",
+    "dietHint": "Explore hides recipes that do not fit.",
+    "dietNone": "No diet",
+    "dietPescatarian": "Pescatarian",
+    "dietVegetarian": "Vegetarian",
+    "dietVegan": "Vegan",
+    "allergens": "Allergens to avoid",
+    "allergensHint": "Explore hides recipes that contain any you tick.",
+    "errorPrefix": "Error:",
+    "summaryTitle": "There is a problem",
+    "save": "Save preferences",
+    "saved": "Preferences saved."
+  },
+  "audit": {
+    "open": "Check measurements",
+    "openLabel": "Check measurements: {{title}}",
+    "caption": "{{title}}: measurements per serve",
+    "note": "One serve of each ingredient, as the recipe stores it. Share of pack is how much of the smallest pack one serve uses.",
+    "column": {
+      "name": "Ingredient",
+      "quantity": "Quantity",
+      "unit": "Unit",
+      "perServe": "Per serve (g or ml)",
+      "pack": "Smallest pack",
+      "share": "Share of pack"
+    },
+    "loose": "Sold loose",
+    "unknown": "Not known",
+    "loading": "Loading measurements…",
+    "loaded_one": "Measurements loaded: {{count}} ingredient.",
+    "loaded_other": "Measurements loaded: {{count}} ingredients.",
+    "failed": "Could not load the measurements.",
+    "retry": "Try again",
+    "empty": "This recipe has no ingredients to check.",
+    "sorted": "Sorted by {{column}}, {{direction}}.",
+    "ascending": "ascending",
+    "descending": "descending",
+    "showing_one": "Showing {{first}}–{{last}} of {{count}} ingredient",
+    "showing_other": "Showing {{first}}–{{last}} of {{count}} ingredients",
+    "pages": "Pages of {{title}} measurements",
+    "pageOf": "Page {{page}} of {{count}}",
+    "pageAnnounce": "Page {{page}} of {{pages}}. {{showing}}.",
+    "previous": "Previous",
+    "next": "Next",
+    "pageSize": "Rows per page"
   }
 }

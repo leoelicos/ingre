@@ -69,8 +69,6 @@
   },
   "explore": {
     "title": "さがす",
-    "hide": "「さがす」を閉じる",
-    "drawer": "「さがす」パネル",
     "actions": "「さがす」の操作",
     "filter": "「さがす」を絞り込む",
     "browse": "レシピを見る",
@@ -117,20 +115,33 @@
     "refreshQuestion": "すべてのレシピを元の材料と2人分に戻しますか？",
     "summaryCrossed": "{{items}}、うち{{count}}個チェック済み",
     "usedIn": "使うレシピ",
-    "added": "{{name}}を「追加」に入れました"
+    "added": "{{name}}を「追加」に入れました",
+    "alreadyExtra": "{{name}}はすでにエクストラにあります"
   },
   "recipes": {
     "title": "レシピ",
     "actions": "レシピの操作",
     "filter": "レシピを絞り込む",
     "empty": "まだレシピを選んでいません。「さがす」でレシピにチェックを入れると、ここに表示されます。",
-    "picked": "{{recipes}}を選択中"
+    "picked": "{{recipes}}を選択中",
+    "removed": "{{title}}を削除しました",
+    "undo": "元に戻す",
+    "dismiss": "閉じる"
   },
   "extra": {
     "title": "追加",
     "actions": "「追加」の操作",
     "filter": "「追加」を絞り込む",
     "empty": "追加の品はまだありません。常備品などをプラスから追加してください。"
+  },
+  "fab": {
+    "recipe": "レシピ",
+    "pantry": "常備品",
+    "recipeLabel": "レシピを追加",
+    "pantryLabel": "常備品を追加"
+  },
+  "sheet": {
+    "close": "{{title}}を閉じる"
   },
   "chip": {
     "details": "{{name}}の詳細",
@@ -163,12 +174,6 @@
     "notes": "メモ",
     "customisations": "変更点",
     "portions": "人数"
-  },
-  "layout": {
-    "label": "レイアウト",
-    "vertical": "縦並び",
-    "split": "材料 {{ingredients}}%、レシピ {{recipes}}%",
-    "thirds": "材料 {{ingredients}}%、レシピ {{recipes}}%、さがす {{explore}}%"
   },
   "scrollToTop": "ページの先頭へ",
   "notLoggedIn": {
@@ -321,8 +326,7 @@
     "count_other": "アイデア{{count}}件"
   },
   "bra": {
-    "label": "クイック操作",
-    "add": "品目を追加"
+    "label": "クイック操作"
   },
   "guests": {
     "button": "ゲスト",
@@ -448,5 +452,66 @@
     "tickets": "チケット",
     "fab": "{{title}}のチケットを追加",
     "fabNone": "チケットを追加"
+  },
+  "preferences": {
+    "title": "設定",
+    "intro": "この端末に保存されます。変更したら「設定を保存」を押してください。",
+    "appearance": "表示",
+    "theme": "カラーテーマ",
+    "themeSystem": "端末に合わせる",
+    "themeLight": "ライト",
+    "themeDark": "ダーク",
+    "textSize": {
+      "label": "文字サイズ",
+      "hint": "{{min}}から{{max}}までの整数。標準は{{standard}}です。",
+      "unit": "%",
+      "required": "文字サイズを入力してください",
+      "whole": "文字サイズは125のような整数で入力してください",
+      "range": "文字サイズは{{min}}から{{max}}の間で入力してください"
+    },
+    "recipes": "レシピ",
+    "diet": "食事制限",
+    "dietHint": "合わないレシピはさがすに表示されません。",
+    "dietNone": "制限なし",
+    "dietPescatarian": "ペスカタリアン",
+    "dietVegetarian": "ベジタリアン",
+    "dietVegan": "ヴィーガン",
+    "allergens": "避けたいアレルゲン",
+    "allergensHint": "チェックしたものを含むレシピはさがすに表示されません。",
+    "errorPrefix": "エラー：",
+    "summaryTitle": "問題があります",
+    "save": "設定を保存",
+    "saved": "設定を保存しました。"
+  },
+  "audit": {
+    "open": "分量を確認",
+    "openLabel": "分量を確認：{{title}}",
+    "caption": "{{title}}：1人分の分量",
+    "note": "レシピに保存されている各材料の1人分です。パック比は、最小パックのうち1人分で使う割合です。",
+    "column": {
+      "name": "材料",
+      "quantity": "数量",
+      "unit": "単位",
+      "perServe": "1人分（gまたはml）",
+      "pack": "最小パック",
+      "share": "パック比"
+    },
+    "loose": "量り売り",
+    "unknown": "不明",
+    "loading": "分量を読み込み中…",
+    "loaded_other": "分量を読み込みました：{{count}}件の材料。",
+    "failed": "分量を読み込めませんでした。",
+    "retry": "再試行",
+    "empty": "このレシピには確認する材料がありません。",
+    "sorted": "{{column}}で{{direction}}に並べ替えました。",
+    "ascending": "昇順",
+    "descending": "降順",
+    "showing_other": "{{count}}件中{{first}}～{{last}}件目の材料を表示",
+    "pages": "{{title}}の分量のページ",
+    "pageOf": "{{count}}ページ中{{page}}ページ目",
+    "pageAnnounce": "{{pages}}ページ中{{page}}ページ目。{{showing}}。",
+    "previous": "前へ",
+    "next": "次へ",
+    "pageSize": "1ページの行数"
   }
 }

@@ -50,7 +50,10 @@ describe('switching the app to Japanese', () => {
     expect(
       screen.getByRole('searchbox', { name: '食材とレシピを検索' })
     ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: '本文へスキップ' })).toBeTruthy()
+    // the Explore tab opens the Explore sheet (#192), a modal, so the page behind is hidden
+    expect(
+      screen.getByRole('link', { name: '本文へスキップ', hidden: true })
+    ).toBeTruthy()
   })
 
   it('starts in the saved language on the next visit', () => {
