@@ -243,6 +243,8 @@
   /* lines */
   --color-border: #8a827c;
 
+  --color-scrim: rgba(0, 0, 0, 0.65);
+
   /* meal tints */
   --color-tint-dinner: #1f3a2a;
   --color-tint-dinner-ink: #4f8f66;
