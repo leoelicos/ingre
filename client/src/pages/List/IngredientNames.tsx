@@ -14,12 +14,19 @@ export const nameChipClass = (line: CopyLine): string =>
     startSection(line.item)
   )}`
 
+/** Closed-row names. A phone card scrolls them in one row so the card cannot fill the screen. */
+export const namesClass = (scroll: boolean): string =>
+  `col-span-2 m-0 flex list-none gap-2 pb-4 pl-14 pr-4 pt-0 ${
+    scroll ? 'flex-nowrap overflow-x-auto' : 'flex-wrap'
+  }`
 /** A guest's allergen (#209): an outline in the accent colour; the row's words say who and what. */
 export const GUEST_OUTLINE = 'outline outline-2 outline-offset-1 outline-accent'
 
 /**
  * A closed recipe row's ingredients: every one by name, as flat read-only chips (#191).
  * A plain list, not controls: no checkbox, amount or chevron, and nothing to focus.
+ * On a phone card (`scroll`) they stay on one row, so one recipe does not grow to the
+ * screen and sit under the FAB (#192).
  */
 const NONE: ReadonlySet<string> = new Set()
 
@@ -29,16 +36,18 @@ const FLAGGED = 'outline outline-2 outline-offset-1 outline-accent'
 export const IngredientNames: FC<{
   lines: readonly CopyLine[]
   title: string
+  scroll: boolean
   /** ingredient ids to outline (#206): the missing ones, as far as the dial goes */
   flagged?: ReadonlySet<string> | undefined
-}> = ({ lines, title, flagged = NONE }) => {
+}> = ({ lines, title, scroll, flagged = NONE }) => {
   const t = useT()
   const guestFlagged = flaggedIngredientIds(lines, useGuestList())
   return (
     <ul
       aria-label={t('row.ingredientsIn', { title })}
       data-testid="ingredient-names"
-      className="col-span-2 m-0 flex list-none flex-wrap gap-2 pb-4 pl-14 pr-4 pt-0"
+      className={namesClass(scroll)}
+      {...(scroll ? { tabIndex: 0 } : {})}
     >
       {lines.map((line) => {
         const isMissing = flagged.has(line.ingredientId)
@@ -51,6 +60,7 @@ export const IngredientNames: FC<{
             data-flagged={String(isMissing)}
             className={[
               nameChipClass(line),
+              ...(scroll ? ['shrink-0'] : []),
               ...(isMissing || isGuest ? [FLAGGED] : [])
             ].join(' ')}
           >

@@ -12,5 +12,7 @@ describe('NotLoggedIn', () => {
     )
     expect(screen.getByText(/need to be logged in/i)).toBeInTheDocument()
     expect(screen.getByRole('link')).toHaveAttribute('href', '/login')
+    /* the browser's thin default ring is not enough: the shared 3px ring (#106) */
+    expect(screen.getByRole('link')).toHaveClass('focus-visible:focus-ring')
   })
 })

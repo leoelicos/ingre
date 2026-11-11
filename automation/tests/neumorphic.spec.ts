@@ -133,22 +133,27 @@ test.describe('neumorphic hierarchy', () => {
     await pickRows(page, DAHL)
     await openDahl(page)
     const bg = await pageBackground(page)
-    for (const target of [
-      chipToggle(page, 'tomato'),
-      chevron(page, 'tomato'),
-      chipToggle(page, 'tomato', 'row-dahl'),
-      row(page, DAHL)
-    ]) {
+    /* a chip's checkbox is drawn by the row (label) around it (#192) */
+    const ringOf = (l: Locator) => l.locator('xpath=ancestor::label[1]')
+    for (const [target, ring] of [
+      [chipToggle(page, 'tomato'), ringOf(chipToggle(page, 'tomato'))],
+      [chevron(page, 'tomato'), chevron(page, 'tomato')],
+      [
+        chipToggle(page, 'tomato', 'row-dahl'),
+        ringOf(chipToggle(page, 'tomato', 'row-dahl'))
+      ],
+      [row(page, DAHL), row(page, DAHL)]
+    ] as const) {
       /* reach it from the keyboard, so React Aria shows its focus-visible ring */
       await target.focus()
       await page.keyboard.press('Shift+Tab')
       await page.keyboard.press('Tab')
       await expect(target).toBeFocused()
-      await expect(target).toHaveAttribute('data-focus-visible', 'true')
-      await expect(target).toHaveCSS('outline-style', 'solid')
-      await expect(target).toHaveCSS('outline-width', '3px')
+      await expect(ring).toHaveAttribute('data-focus-visible', 'true')
+      await expect(ring).toHaveCSS('outline-style', 'solid')
+      await expect(ring).toHaveCSS('outline-width', '3px')
       expect(
-        contrast(await css(target, 'outline-color'), bg)
+        contrast(await css(ring, 'outline-color'), bg)
       ).toBeGreaterThanOrEqual(3)
     }
   })

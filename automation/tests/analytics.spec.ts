@@ -42,6 +42,7 @@ test.describe('Analytics events (#222)', () => {
       name: 'ticket_added',
       props: { recipeId: 'dahl' }
     })
+    await openExplore(page)
     await exploreRow(page, DAHL).click()
     expect(await logged(page)).toHaveLength(1)
   })
@@ -51,6 +52,7 @@ test.describe('Analytics events (#222)', () => {
     outsideRequests
   }) => {
     await pickRows(page, DAHL)
+    await openExplore(page)
     await searchBox(page).fill('onion')
     await expect.poll(() => logged(page).then((l) => l.length)).toBe(2)
     expect(outsideRequests).toEqual([])

@@ -5,7 +5,13 @@ import { axe, toHaveNoViolations } from 'jest-axe'
 import { IngredientPicture } from '../../../components/IngredientPicture'
 import { IngredientNames } from '../IngredientNames'
 import { catalogue } from '../../../utils/library/recipeLibrary'
-import { chip, explore, renderList, searchBox } from '../../../test/renderList'
+import {
+  chip,
+  explore,
+  extra,
+  renderList,
+  searchBox
+} from '../../../test/renderList'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { EXTRAS_KEY } from '../../../utils/storage/shoppingState'
 
@@ -70,6 +76,7 @@ describe('Scenario: Explore and the chips show the ingredient picture', () => {
       ])
     )
     renderList()
+    extra()
     const candles = document.querySelector<HTMLElement>(
       '[data-scope="extra"][data-category="Other"]'
     )
@@ -84,6 +91,7 @@ describe('Scenario: Explore and the chips show the ingredient picture', () => {
     render(
       <IngredientNames
         title="Test"
+        scroll={false}
         lines={[
           { ...line, ingredientId: 'garlic', name: 'garlic', item: garlic },
           { ...line, ingredientId: 'x1', name: 'candles', item: null }

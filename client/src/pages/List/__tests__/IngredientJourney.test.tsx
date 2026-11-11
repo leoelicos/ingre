@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom'
 import { fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { axe, toHaveNoViolations } from 'jest-axe'
+import { toHaveNoViolations } from 'jest-axe'
+import { axe } from '../../../test/axe'
 import {
   explore,
   pickedIds,

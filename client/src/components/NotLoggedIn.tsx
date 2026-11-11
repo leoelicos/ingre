@@ -6,7 +6,12 @@ const NotLoggedIn: FC = () => {
   return (
     <div>
       <div>{translate('notLoggedIn.message')}</div>
-      <Link to="/login">{translate('notLoggedIn.logIn')}</Link>
+      <Link
+        to="/login"
+        className="focus-visible:focus-ring"
+      >
+        {translate('notLoggedIn.logIn')}
+      </Link>
     </div>
   )
 }

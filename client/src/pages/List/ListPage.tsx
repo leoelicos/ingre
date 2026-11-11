@@ -1,40 +1,26 @@
 import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 import { changeTitle } from '../../utils/changeTitle'
 import { useChips } from '../../utils/chips/useChips'
 import { useExplore } from '../../utils/explore/ExploreContext'
-import type { Split } from '../../utils/layout/split'
-import { SPLIT_COLUMNS, explorePlacement } from '../../utils/layout/split'
-import { useSplit } from '../../utils/layout/useSplit'
 import { useFlag } from '../../utils/flags/useFlag'
 import { usePersonal } from '../../utils/profile/personal'
 import { useSaved } from '../../utils/saved/useSaved'
 import { useMarkFirstEndToEnd } from '../../utils/tier/upsell'
 import type { ExploreProps } from './Explore'
-import {
-  EXPLORE_TOGGLE_ID,
-  Explore,
-  ExploreColumn,
-  ExploreDrawer,
-  savedIdsOf
-} from './Explore'
-import { Extra } from './Extra'
-import {
-  INGREDIENTS_HEADING_ID,
-  INGREDIENTS_ID,
-  Ingredients,
-  useIngredients
-} from './Ingredients'
-import { LayoutToggle } from './LayoutToggle'
-import { Recipes } from './Recipes'
+import { ExploreSheet, savedIdsOf } from './Explore'
+import { ExtraSheet } from './Extra'
+import type { FabMode } from './Fab'
+import { Fab, useFabMode } from './Fab'
+import { INGREDIENTS_ID, Ingredients, useIngredients } from './Ingredients'
+import { RECIPES_HEADING_ID, RECIPES_ID, Recipes } from './Recipes'
 import { useTabArrival } from './tabArrival'
 import { ScrollToTop } from './ScrollToTop'
 import { Bra } from '../../components/Bra'
 import { PageMain } from '../../components/SkipLink'
-import { AddFab } from './AddFab'
 
 /** "?saved=1" from the Saved account link or old Saved links: Explore's Saved filter (#181). */
 export const savedParam = (params: URLSearchParams): boolean =>
@@ -51,14 +37,19 @@ export const withSaved = (
   return next
 }
 
-/** Choosing 33/33/33 shows Explore, expanded, as the third column. */
-export const showsExplore = (split: Split): boolean => split === '33/33/33'
+/** Which discovery sheet is open (#192), if any. */
+export type OpenSheet = 'explore' | 'extra' | null
+
+/** "+ Recipe" opens Explore, "+ Pantry Item" opens Extra. */
+export const sheetFor = (mode: FabMode): OpenSheet =>
+  mode === 'pantry' ? 'extra' : 'explore'
 
 /**
- * The one page (#179, #181, #182): Explore, then Ingredients, Recipes and Extra, stacked or
- * side by side (Ingredients on the left; Recipes with Extra under it on the right). From 1328px
- * Explore is a drawer column on the right, or with 33/33/33 the third equal column. Explore is
- * always on the page: on load it is expanded when nothing is selected, collapsed otherwise.
+ * The one page (#179, #192): a single workspace, no accordions. Recipes and Ingredients side by
+ * side from 576px (Recipes on the left), Recipes above Ingredients below it. Discovery lives
+ * in sheets (a bottom sheet on mobile, a centred modal from 576px) opened from the FAB:
+ * Explore, with the search bar, from "+ Recipe" and Extra from "+ Pantry Item". The account
+ * menu's Saved link ("?saved=1") opens Explore with its Saved filter on.
  */
 export const ListPage: FC = () => {
   const t = useT()
@@ -68,20 +59,37 @@ export const ListPage: FC = () => {
   const list = useChips()
   useMarkFirstEndToEnd(useFlag('tiers'), list.chips, list.pickedIds.size)
   const ingredients = useIngredients(list)
-  const { split, options, drawer, choose } = useSplit()
   const [params, setParams] = useSearchParams()
   const savedOnly = savedParam(params)
   const loggedIn = useAuthContext()[0].loggedIn
   const savedState = useSaved(loggedIn)
   const saved = loggedIn ? savedState : null
   const personal = usePersonal(list, savedIdsOf(saved))
-  /* on load, Explore is expanded when nothing is selected (or Saved was asked for) */
-  const [expandedOnLoad] = useState(
-    () => list.entries.length === 0 || savedOnly
-  )
-  const expanded = explore.expanded ?? expandedOnLoad
-  const placement = explorePlacement(drawer, split)
-  const vertical = split === 'vertical'
+  /* Explore's sheet is open while Explore is expanded (#181, #192): the FAB, the Explore tab
+     and the account menu's Saved link all expand it; it starts shut */
+  const exploreOpen = explore.expanded === true
+  const [extraOpen, setExtraOpen] = useState(false)
+  const sheet: OpenSheet = exploreOpen ? 'explore' : extraOpen ? 'extra' : null
+  const mode = useFabMode(INGREDIENTS_ID)
+  /* the Saved link opens Explore once each time it is followed, not on every render */
+  const latest = useRef(explore)
+  latest.current = explore
+  useEffect(() => {
+    if (savedOnly) latest.current.show()
+  }, [savedOnly])
+  const open = (next: OpenSheet) => {
+    if (next === 'extra') setExtraOpen(true)
+    else {
+      explore.show()
+      explore.requestFocus()
+    }
+  }
+  /* closing Explore also drops "?saved=1", so the Saved link opens it again next time */
+  const close = () => {
+    explore.collapse()
+    setExtraOpen(false)
+    if (savedOnly) setParams(withSaved(params, false))
+  }
   const exploreProps: ExploreProps = {
     ingredients,
     rows: {
@@ -94,70 +102,50 @@ export const ListPage: FC = () => {
     onSaved: (on) => setParams(withSaved(params, on))
   }
   return (
-    <div className="mx-auto flex w-full max-w-layout gap-6 px-gutter">
+    <div className="mx-auto flex w-full max-w-layout px-gutter">
       <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-36 pt-4">
         <h1 className="sr-only">{t('list.title')}</h1>
-        {placement === 'inline' && (
-          <Explore
-            {...exploreProps}
-            expanded={expanded}
-            collapseFocusId={EXPLORE_TOGGLE_ID}
-          />
-        )}
-        <LayoutToggle
-          split={split}
-          options={options}
-          onChange={(next) => {
-            if (showsExplore(next)) explore.show()
-            choose(next)
-          }}
-        />
         <div
-          data-split={split}
-          className={`grid items-start gap-6 ${SPLIT_COLUMNS[split]}`}
+          data-workspace=""
+          className="grid grid-cols-1 items-start gap-6 desk:grid-cols-2"
         >
-          <Ingredients
-            state={ingredients}
-            collapsible={vertical}
+          <Recipes
+            list={list}
+            saved={saved}
           />
-          <div className="flex min-w-0 flex-col gap-6">
-            <Recipes
-              list={list}
-              saved={saved}
-              collapsible={vertical}
-            />
-            <Extra
-              state={ingredients}
-              collapsible={vertical}
-            />
-          </div>
-          {placement === 'column' && (
-            <ExploreColumn
-              {...exploreProps}
-              expanded={expanded}
-            />
-          )}
+          <Ingredients state={ingredients} />
         </div>
         <p
           role="status"
           className="sr-only"
         >
-          {[ingredients.message, saved?.error ?? ''].join(' ').trim()}
+          {[sheet === null ? ingredients.message : '', saved?.error ?? '']
+            .join(' ')
+            .trim()}
         </p>
         <Bra>
           <ScrollToTop
-            watchId={INGREDIENTS_ID}
-            headingId={INGREDIENTS_HEADING_ID}
+            watchId={RECIPES_ID}
+            headingId={RECIPES_HEADING_ID}
           />
-          <AddFab />
+          <Fab
+            mode={mode}
+            onPress={(pressed) => open(sheetFor(pressed))}
+          />
         </Bra>
-      </PageMain>
-      {placement === 'drawer' && (
-        <ExploreDrawer
+        <ExploreSheet
           {...exploreProps}
-          expanded={expanded}
+          isOpen={sheet === 'explore'}
+          onClose={close}
+          query={explore.query}
+          onQuery={explore.setQuery}
         />
-      )}
+        <ExtraSheet
+          state={ingredients}
+          isOpen={sheet === 'extra'}
+          onClose={close}
+        />
+      </PageMain>
     </div>
   )
 }
