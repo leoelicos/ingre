@@ -1,5 +1,5 @@
 import { expect, test } from './fixtures'
-import { DAHL, explore, pickRows, searchBox } from './page'
+import { DAHL, explore, openExplore, pickRows, searchBox } from './page'
 
 /* The ingredient pictograms (#290) in Explore and the chips: they load, and stay decorative. */
 
@@ -16,6 +16,7 @@ test('Explore results and the chips show each ingredient picture, decorative and
   expect(
     await chipPicture.evaluate((img: HTMLImageElement) => img.naturalWidth)
   ).toBeGreaterThan(0)
+  await openExplore(page)
   await searchBox(page).fill('banana')
   const add = explore(page).getByRole('button', { name: 'Add banana' }).first()
   await expect(add).toBeVisible()

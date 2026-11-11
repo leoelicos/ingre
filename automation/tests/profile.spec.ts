@@ -49,6 +49,7 @@ test.describe('customer profile (#224)', () => {
     expect(before).toEqual([...before].sort((a, b) => a.localeCompare(b)))
     await pickRows(page, EGG_RICE)
     /* ticking a row does not reshuffle the rows under your finger */
+    await openExplore(page)
     expect(await browseNames(page)).toEqual(before)
     await page.reload()
     await openExplore(page)

@@ -1,13 +1,11 @@
 import { useSyncExternalStore } from 'react'
 
-/** Side by side from here (#181): Ingredients and Recipes in two columns. */
-export const SPLIT_MIN_WIDTH = 576
 /**
- * From here: Explore is a drawer column on the right holding the search bar, and the layout
- * toggle also offers 25/75, 33/33/33 and 75/25 (#193). 1328px is the 1282px layout width plus
- * room around it.
+ * The one breakpoint (#192, antd `sm`): from here the page is desktop (Recipes and Ingredients
+ * side by side, discovery in a centred modal); below it, mobile (stacked, a bottom sheet).
+ * Keep in step with the `desk` screen in tailwind.config.js.
  */
-export const DRAWER_MIN_WIDTH = 1328
+export const DESKTOP_MIN_WIDTH = 576
 
 export const minWidthQuery = (px: number): string => `(min-width: ${px}px)`
 

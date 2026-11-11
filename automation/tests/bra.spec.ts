@@ -8,10 +8,10 @@ test.describe('bottom-right area (#210)', () => {
     await page.goto('/')
   })
 
-  test('the add button sits in the bottom-right corner, above the tabs', async ({
+  test('the FAB (#192) sits in the bottom-right corner, above the tabs', async ({
     page
   }) => {
-    const add = page.getByRole('button', { name: 'Add item', exact: true })
+    const add = page.getByRole('button', { name: 'Add a recipe', exact: true })
     await expect(add).toBeVisible()
     const box = await add.boundingBox()
     const viewport = page.viewportSize()
@@ -27,13 +27,19 @@ test.describe('bottom-right area (#210)', () => {
   })
 
   test('it stays put while the page scrolls underneath', async ({ page }) => {
-    const add = page.getByRole('button', { name: 'Add item', exact: true })
-    const before = await add.boundingBox()
+    /* the FAB's label changes as Ingredients comes up (#192), so watch the corner it sits in */
+    const area = page.getByRole('group', { name: 'Quick actions' })
+    const corner = async () => {
+      const box = await area.boundingBox()
+      if (box === null) throw new Error('no box')
+      return { right: box.x + box.width, bottom: box.y + box.height }
+    }
+    const before = await corner()
     await page.evaluate(() =>
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' })
     )
-    await expect(add).toBeVisible()
-    expect(await add.boundingBox()).toEqual(before)
+    await expect(area).toBeVisible()
+    expect(await corner()).toEqual(before)
   })
 
   test('the last content can be scrolled clear of the buttons', async ({
@@ -47,14 +53,18 @@ test.describe('bottom-right area (#210)', () => {
     const clusterTop = (await cluster.boundingBox())?.y ?? 0
     const lastBottom = await page.evaluate(
       () =>
-        document.querySelector('[data-split]')?.getBoundingClientRect()
+        document.querySelector('[data-workspace]')?.getBoundingClientRect()
           .bottom ?? 0
     )
     expect(lastBottom).toBeLessThanOrEqual(clusterTop + 1)
   })
 
-  test('add opens Explore and puts the cursor in search', async ({ page }) => {
-    await page.getByRole('button', { name: 'Add item', exact: true }).click()
+  test('+ Recipe opens Explore and puts the cursor in search', async ({
+    page
+  }) => {
+    await page
+      .getByRole('button', { name: 'Add a recipe', exact: true })
+      .click()
     await expect(searchBox(page)).toBeFocused()
   })
 })

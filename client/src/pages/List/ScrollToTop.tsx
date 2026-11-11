@@ -42,9 +42,10 @@ export const useScrolledPast = (id: string): boolean => {
 }
 
 /**
- * Scroll to top (#179): the page's one floating button. It collapses while the on-screen keyboard is up (#228). Shows once the chips are out of view. Scrolls the chips back to the top of
- * the screen (Explore may sit above them, #181) and
- * moves focus to the Ingredients heading, so keyboard and screen reader users land there too.
+ * Scroll to top (#179): shows once the watched section (#192: Recipes, at the top) has scrolled
+ * out of view, and collapses while the on-screen keyboard is up (#228). Scrolls it back to the
+ * top of the screen and moves focus to its heading, so keyboard and screen reader users land
+ * there too. It sits just above the FAB.
  */
 export const ScrollToTop: FC<{ watchId: string; headingId: string }> = ({
   watchId,
