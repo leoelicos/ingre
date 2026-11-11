@@ -40,11 +40,11 @@ client/
   vite.config.mts, tailwind.config.js, postcss.config.js, jest.config.js, tsconfig.json
   .eslintrc.js (ESLint 8, legacy config), .prettierrc.json
   src/index.tsx, src/App.tsx    entry + routes + Apollo client setup
-  src/components/   Header, BottomNav, AccountMenu, HeaderSearch, SectionTone, Widgets, ...
+  src/components/   Header, BottomNav, AccountMenu, SearchBox, Sheet (bottom sheet / centred modal, #192), SectionTone, Widgets, ...
   src/pages/        Home, Recipe, Search, ShoppingList, TapOff, Admin (login/signup/upgrade/success/404)
   src/lib/apollo/graphQL   queries/mutations
-  src/utils/        auth, idb, storage, shopping, state, library, rag (local retrieval, #225)
-  src/utils/        auth, idb, storage, shopping, state, library, profile
+  src/utils/        auth, idb, storage, shopping, state, library, profile, rag (local retrieval, #225),
+                    media (the one 576px breakpoint), gestures (swipe)
   src/data/         ingredients.json, recipes.json
   src/styles/       theme.css (design tokens), segmented.css
 server/
@@ -131,7 +131,8 @@ Accessibility
   Accounts and header
 - No account needed this phase. Saved stays on the device.
 - Navigation is four tabs in one stable bottom bar (BottomNav): Explore, Inventory, Cook, Profile (#227). Saved recipes and other collections live under Profile, never as top-level tabs.
-- Header shows only: logo, search, account icon. Log in / Sign up live in the account icon menu.
+- Header shows only: logo, the War room button (#207) and account icon (#192). Search sits at the top of the
+  Explore sheet, opened by the "+ Recipe" button or the Explore tab. Log in / Sign up live in the account icon menu.
 - Saved appears in the account icon menu after sign-in.
   Analytics
 - Core-loop actions are logged as named events with `track()` (`client/src/utils/analytics/events.ts`,

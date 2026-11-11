@@ -1,15 +1,8 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from './fixtures'
-import {
-  CURRY,
-  DAHL,
-  pickRows,
-  recipesRegion,
-  searchBox,
-  useVertical
-} from './page'
+import { CURRY, DAHL, openExplore, pickRows, searchBox } from './page'
 
-/* #228 Search placement and keyboard: the search stays high; the bars at the bottom step aside while the keyboard is up. */
+/* #228 Search placement and keyboard: the search stays high (#192: at the top of the Explore sheet); the bars at the bottom step aside while the keyboard is up. */
 
 /** A visual viewport the test can shorten, as a soft keyboard does (headless browsers have no keyboard). */
 const withFakeViewport = (page: Page) =>
@@ -41,16 +34,23 @@ const scrollDown = (page: Page) =>
   )
 
 test.describe('search placement and keyboard (#228)', () => {
-  test('the search stays at the top of the screen however far the page is scrolled', async ({
+  /** The search is in the top third of the screen, clear of a keyboard coming up from below. */
+  const expectHigh = async (page: Page) => {
+    await expect(searchBox(page)).toBeInViewport()
+    const box = await searchBox(page).boundingBox()
+    const height = page.viewportSize()?.height ?? 0
+    expect(box?.y ?? 999).toBeLessThan(height / 3)
+  }
+
+  test('however far the page is scrolled, the Explore tab opens the search high on the screen', async ({
     page
   }) => {
     await page.goto('/')
-    await useVertical(page)
     await pickRows(page, DAHL, CURRY)
     await scrollDown(page)
-    await expect(searchBox(page)).toBeInViewport()
-    const box = await searchBox(page).boundingBox()
-    expect(box?.y ?? 999).toBeLessThan(80)
+    await nav(page).getByRole('link', { name: 'Explore' }).click()
+    await expect(searchBox(page)).toBeFocused()
+    await expectHigh(page)
   })
 
   test('the bottom bar and Scroll to top step aside while the keyboard is up, and return', async ({
@@ -58,12 +58,7 @@ test.describe('search placement and keyboard (#228)', () => {
   }) => {
     await withFakeViewport(page)
     await page.goto('/')
-    await useVertical(page)
     await pickRows(page, DAHL, CURRY)
-    for (const title of [DAHL, CURRY])
-      await recipesRegion(page)
-        .getByRole('button', { name: `${title} details` })
-        .click()
     await scrollDown(page)
     const toTop = page.getByRole('button', { name: 'Scroll to top' })
     await expect(toTop).toBeVisible()
@@ -81,10 +76,9 @@ test.describe('search placement and keyboard (#228)', () => {
   }) => {
     await withFakeViewport(page)
     await page.goto('/')
+    await openExplore(page)
     await searchBox(page).click()
     await keyboard(page, true)
-    await expect(searchBox(page)).toBeInViewport()
-    const box = await searchBox(page).boundingBox()
-    expect(box?.y ?? 999).toBeLessThan(80)
+    await expectHigh(page)
   })
 })

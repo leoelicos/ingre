@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { axe, toHaveNoViolations } from 'jest-axe'
+import { toHaveNoViolations } from 'jest-axe'
+import { axe } from '../../test/axe'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthProvider } from '../../utils/auth/AuthContext'
 import { ExploreProvider } from '../../utils/explore/ExploreContext'
@@ -10,13 +11,16 @@ import { Header } from '../../components/Header'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
 import { ListPage } from '../List/ListPage'
-import { SearchBox } from '../../components/SearchBox/SearchBox'
+import { fakeObserver, fire, resetObserver } from '../../test/observer'
 import { PICKED_KEY } from '../../utils/storage/shoppingState'
 
 expect.extend(toHaveNoViolations)
 
 const searchBox = () =>
   screen.getByRole('searchbox', { name: 'Search ingredients and recipes' })
+
+const openFab = () =>
+  fireEvent.click(screen.getByRole('button', { name: /^Add a / }))
 
 const renderScreen = (ui: React.ReactElement, path = '/') =>
   render(
@@ -44,14 +48,17 @@ describe('All screens accessibility (axe)', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('The list with the Saved filter on has no axe violations', async () => {
-    const { container } = renderScreen(<ListPage />, '/?saved=1')
-    expect(await axe(container)).toHaveNoViolations()
+  it('The list with the Saved filter on (Explore open) has no axe violations', async () => {
+    renderScreen(<ListPage />, '/?saved=1')
+    expect(screen.getByRole('dialog', { name: 'Explore' })).toBeInTheDocument()
+    expect(await axe(document.body)).toHaveNoViolations()
   })
 
-  it('Explore browsing, with an open See recipe row, has no axe violations (#181)', async () => {
+  it('Explore browsing, with an open See recipe row, has no axe violations (#181, #192)', async () => {
     localStorage.clear()
-    const { container } = renderScreen(<ListPage />, '/')
+    renderScreen(<ListPage />, '/')
+    openFab()
+    const container = document.body
     fireEvent.click(
       screen.getByRole('button', { name: 'See recipe: Red lentil dahl' })
     )
@@ -62,15 +69,10 @@ describe('All screens accessibility (axe)', () => {
     'Explore searching %s (matches, then no matches) has no axe violations (#181)',
     async (query) => {
       localStorage.clear()
-      const { container } = renderScreen(
-        <>
-          <SearchBox />
-          <ListPage />
-        </>,
-        '/'
-      )
+      renderScreen(<ListPage />, '/')
+      openFab()
       fireEvent.change(searchBox(), { target: { value: query } })
-      expect(await axe(container)).toHaveNoViolations()
+      expect(await axe(document.body)).toHaveNoViolations()
     }
   )
 
@@ -90,16 +92,31 @@ describe('All screens accessibility (axe)', () => {
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('The list with chips, an open chip panel, the plus area and an open row has no axe violations', async () => {
+  it('The Extra sheet, with its catalogue, has no axe violations (#192)', async () => {
+    localStorage.clear()
+    fakeObserver()
+    renderScreen(<ListPage />, '/')
+    fire('ingredients', { isIntersecting: true })
+    fireEvent.click(screen.getByRole('button', { name: 'Add a pantry item' }))
+    expect(screen.getByRole('dialog', { name: 'Extra' })).toBeInTheDocument()
+    expect(await axe(document.body)).toHaveNoViolations()
+    resetObserver()
+  })
+
+  it('The list with chips, an open chip panel and an open row with its add area has no axe violations', async () => {
     localStorage.setItem(
       PICKED_KEY,
       JSON.stringify(['dahl', 'vegetable-curry'])
     )
     const { container } = renderScreen(<ListPage />, '/')
     fireEvent.click(screen.getByRole('button', { name: 'Brown onion details' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Add an ingredient' }))
     fireEvent.click(
       screen.getByRole('button', { name: 'Red lentil dahl details' })
+    )
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Add an ingredient to Red lentil dahl'
+      })
     )
     expect(await axe(container)).toHaveNoViolations()
     localStorage.clear()

@@ -20,12 +20,11 @@ const menuItems = async (page: Page): Promise<(string | null)[]> => {
 
 /** Crosses off every chip in Ingredients, which is the first end-to-end with a picked recipe. */
 const crossOffEverything = async (page: Page) => {
-  const toggles = ingredientsRegion(page)
-    .locator('[data-scope="chip"]')
-    .getByRole('button', { name: /, / })
-  const count = await toggles.count()
+  /* a tap on each chip's row, the way a shopper does (#192: the row is a checkbox's label) */
+  const rows = ingredientsRegion(page).locator('[data-scope="chip"] label')
+  const count = await rows.count()
   expect(count).toBeGreaterThan(0)
-  for (let i = 0; i < count; i++) await toggles.nth(i).click()
+  for (let i = 0; i < count; i++) await rows.nth(i).click()
 }
 
 test.describe('tiers behind the flag (#208)', () => {

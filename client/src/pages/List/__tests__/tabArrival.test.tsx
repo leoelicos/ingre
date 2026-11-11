@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -78,9 +78,11 @@ describe('arriving from a tab (#227)', () => {
     expect(scrolls).toEqual([])
     await user.click(tab('Cook'))
     expect(scrolls).toEqual(['recipes'])
-    expect(
-      screen.getByRole('heading', { level: 2, name: /^Recipes/ })
-    ).toHaveFocus()
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 2, name: /^Recipes/ })
+      ).toHaveFocus()
+    )
   })
 
   it('Inventory: scrolls to Ingredients and focuses its heading, again each time it is pressed', async () => {
@@ -89,18 +91,20 @@ describe('arriving from a tab (#227)', () => {
     await user.click(tab('Inventory'))
     await user.click(tab('Inventory'))
     expect(scrolls).toEqual(['ingredients', 'ingredients'])
-    expect(
-      screen.getByRole('heading', { level: 2, name: /^Ingredients/ })
-    ).toHaveFocus()
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 2, name: /^Ingredients/ })
+      ).toHaveFocus()
+    )
   })
 
-  it('Explore: back to the top, Explore expanded, search focused', async () => {
+  it('Explore: back to the top, the Explore sheet open, search focused (#192)', async () => {
     const user = userEvent.setup()
     renderApp('/#cook')
     expect(scrolls).toEqual(['recipes'])
     await user.click(tab('Explore'))
     expect(tops).toEqual([{ top: 0, behavior: 'smooth' }])
-    expect(screen.getByRole('region', { name: 'Explore' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Explore' })).toBeInTheDocument()
     expect(
       screen.getByRole('searchbox', { name: 'Search ingredients and recipes' })
     ).toHaveFocus()

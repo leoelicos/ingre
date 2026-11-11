@@ -10,7 +10,7 @@ import {
   pickRows,
   setBox,
   sourceBox,
-  useVertical
+  crossOff
 } from './page'
 
 /* #181 Ingredient chips: checkbox, no "1×" for mass/volume, neumorphic chevron, fan, no Done. */
@@ -18,7 +18,6 @@ import {
 test.describe('ingredient chips (#181)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    await useVertical(page)
   })
 
   test('a checkbox replaces the three-letter code and ticks when crossed off', async ({
@@ -32,7 +31,7 @@ test.describe('ingredient chips (#181)', () => {
     await expect(
       page.locator('[data-chip]').getByText(/^[A-Z]{3}$/)
     ).toHaveCount(0)
-    await chipToggle(page, 'tomato').click()
+    await crossOff(page, 'tomato')
     await expect(check).toHaveText('✓')
   })
 
@@ -42,15 +41,9 @@ test.describe('ingredient chips (#181)', () => {
     await pickRows(page, DAHL)
     const check = chip(page, 'tomato').getByTestId('chip-check')
     await check.click()
-    await expect(chipToggle(page, 'tomato')).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    await expect(chipToggle(page, 'tomato')).toBeChecked()
     await chip(page, 'tomato').getByText('Tomatoes').click()
-    await expect(chipToggle(page, 'tomato')).toHaveAttribute(
-      'aria-pressed',
-      'false'
-    )
+    await expect(chipToggle(page, 'tomato')).not.toBeChecked()
     await expect(
       page.getByRole('group', { name: 'Tomatoes details' })
     ).toBeHidden()
@@ -60,7 +53,7 @@ test.describe('ingredient chips (#181)', () => {
     page
   }) => {
     await pickRows(page, DAHL)
-    const lentils = chipToggle(page, 'red-lentils')
+    const lentils = chip(page, 'red-lentils').locator('label').first()
     await expect(lentils).toContainText('150 g')
     await expect(lentils).not.toContainText('×')
     await chevron(page, 'red-lentils').click()
@@ -178,7 +171,7 @@ test.describe('ingredient chips (#181)', () => {
     const check = tomato.getByTestId('chip-check')
     await expect(check).toHaveCSS('box-shadow', 'none')
     await expect(check).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
-    await chipToggle(page, 'tomato').click()
+    await crossOff(page, 'tomato')
     await expect.poll(shadow).toContain('inset')
     await expect(check).toHaveCSS('box-shadow', 'none')
     await expect(check).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')

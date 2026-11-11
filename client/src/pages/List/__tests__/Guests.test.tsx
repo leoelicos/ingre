@@ -23,7 +23,8 @@ expect.extend(toHaveNoViolations)
 
 beforeEach(() => localStorage.clear())
 
-const actions = () => screen.getByRole('toolbar', { name: 'Explore actions' })
+const actions = () =>
+  explore().getByRole('toolbar', { name: 'Explore actions' })
 const guestsButton = (name: string | RegExp = /^Guests/) =>
   within(actions()).getByRole('button', { name })
 const panel = () => screen.getByRole('group', { name: 'Guests at the table' })
@@ -123,7 +124,7 @@ describe('Flags', () => {
     const butter = chip('butter')
     expect(butter).toHaveAttribute('data-guest-flag', 'true')
     expect(
-      within(butter).getByRole('button', { name: /, / })
+      within(butter).getByRole('checkbox', { name: /, / })
     ).toHaveAccessibleName(/\. Kai can't have: milk$/)
     expect(chip('onion')).not.toHaveAttribute('data-guest-flag')
     fireEvent.click(within(butter).getByRole('button', { name: /details$/ }))
