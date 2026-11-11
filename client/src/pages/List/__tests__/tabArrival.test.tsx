@@ -104,10 +104,17 @@ describe('arriving from a tab (#227)', () => {
     expect(scrolls).toEqual(['recipes'])
     await user.click(tab('Explore'))
     expect(tops).toEqual([{ top: 0, behavior: 'smooth' }])
-    expect(screen.getByRole('dialog', { name: 'Explore' })).toBeInTheDocument()
     expect(
-      screen.getByRole('searchbox', { name: 'Search ingredients and recipes' })
-    ).toHaveFocus()
+      await screen.findByRole('dialog', { name: 'Explore' })
+    ).toBeInTheDocument()
+    // the sheet focuses its search once it has opened, which can lag under load
+    await waitFor(() =>
+      expect(
+        screen.getByRole('searchbox', {
+          name: 'Search ingredients and recipes'
+        })
+      ).toHaveFocus()
+    )
   })
 
   it('opening the page without a tab moves nothing', () => {

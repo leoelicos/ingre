@@ -1,10 +1,12 @@
 /*
  * The English resource file is the one place UI wording lives: every key the code asks for
  * exists, every key in the file is used, and plural keys come in _one/_other pairs.
+ * Japanese mirrors it key for key, with the plural forms Intl.PluralRules('ja') asks for.
  */
 import { readFileSync, readdirSync, statSync } from 'fs'
 import { join, relative } from 'path'
 import en from '../locales/en.json'
+import ja from '../locales/ja.json'
 import { resources } from '../locales'
 
 const SRC = join(__dirname, '..', '..')
@@ -39,7 +41,8 @@ const usedKeys = (): string[] =>
       ),
       ...readFileSync(file, 'utf8').matchAll(
         /\? '([a-zA-Z]+\.[a-zA-Z.]+)'\s*:\s*'([a-zA-Z]+\.[a-zA-Z.]+)'/g
-      )
+      ),
+      ...readFileSync(file, 'utf8').matchAll(/<RichText\s+k="([^"]+)"/g)
     ].flatMap((m) =>
       m.slice(1).filter((key): key is string => key !== undefined)
     )
@@ -53,8 +56,8 @@ describe('English resources', () => {
   const keys = leafKeys(en)
   const bases = new Set(keys.map(baseKey))
 
-  it('English is the only locale for now', () => {
-    expect(Object.keys(resources)).toEqual(['en'])
+  it('ships English and Japanese', () => {
+    expect(Object.keys(resources)).toEqual(['en', 'ja'])
   })
 
   it('every key the code asks for is in the English file', () => {
@@ -85,3 +88,111 @@ describe('English resources', () => {
     expect(files.some((file) => file.includes('__tests__'))).toBe(false)
   })
 })
+
+/** The plural forms a locale's rules can select, e.g. ['one', 'other'] or ['other']. */
+const pluralForms = (lng: string): string[] =>
+  new Intl.PluralRules(lng).resolvedOptions().pluralCategories
+
+/** The keys a locale needs: each English key, with plural keys in that locale's forms. */
+const expectedKeys = (lng: string): string[] => [
+  ...new Set(
+    leafKeys(en).flatMap((key) =>
+      PLURAL.test(key)
+        ? pluralForms(lng).map((form) => `${baseKey(key)}_${form}`)
+        : [key]
+    )
+  )
+]
+
+/** Japanese that may read exactly as the English: units, symbols, the HACCP acronym, and
+ * search examples, which stay English while the catalogue is English. */
+const SAME_AS_ENGLISH = new Set([
+  'measure.g',
+  'measure.kg',
+  'measure.ml',
+  'measure.L',
+  'customisation.changed',
+  'explore.onListName',
+  'explore.addName',
+  'exploreSection.onListMark',
+  'exploreSection.onListName',
+  'tiers.features.haccp',
+  'suggest.money',
+  'ideas.queryPlaceholder',
+  'preferences.textSize.unit',
+  'demo.placeholder'
+])
+
+/** Every {{placeholder}} and <tag> a message uses, sorted. */
+const slots = (message: string): string[] =>
+  [...message.matchAll(/\{\{(\w+)\}\}|<(\w+)\/?>/g)]
+    .map((m) => m[1] ?? m[2] ?? '')
+    .sort()
+
+describe('Japanese resources', () => {
+  const englishValues = new Map(
+    leafKeys(en).map((key) => [key, String(lookup(en, key))])
+  )
+  const english = (key: string): string =>
+    englishValues.get(key) ??
+    englishValues.get(`${baseKey(key)}_other`) ??
+    `missing ${key}`
+
+  it('Japanese has one plural form, other', () => {
+    expect(pluralForms('ja')).toEqual(['other'])
+  })
+
+  it('has exactly the English keys, plurals in its own forms: none missing, none extra', () => {
+    const keys = leafKeys(ja)
+    const wanted = expectedKeys('ja')
+    expect(wanted.filter((key) => !keys.includes(key))).toEqual([])
+    expect(keys.filter((key) => !wanted.includes(key))).toEqual([])
+    expect(keys.length).toBeGreaterThan(350)
+  })
+
+  it('every message is translated, apart from the allowed units and symbols', () => {
+    const same = leafKeys(ja).filter(
+      (key) => String(lookup(ja, key)) === english(key)
+    )
+    expect(same.filter((key) => !SAME_AS_ENGLISH.has(key))).toEqual([])
+    expect([...SAME_AS_ENGLISH].filter((key) => !same.includes(key))).toEqual(
+      []
+    )
+  })
+
+  it('every message keeps the English placeholders and tags', () => {
+    leafKeys(ja)
+      .filter((key) => key !== 'countUnit_other')
+      .forEach((key) => {
+        expect([key, slots(String(lookup(ja, key)))]).toEqual([
+          key,
+          slots(english(key))
+        ])
+      })
+  })
+
+  it('counted units use one Japanese counter, not the catalogue’s English words', () => {
+    expect(lookup(ja, 'countUnit_other')).toBe('個')
+  })
+
+  it('no message is empty', () => {
+    leafKeys(ja).forEach((key) => {
+      expect([key, String(lookup(ja, key)).trim().length > 0]).toEqual([
+        key,
+        true
+      ])
+    })
+  })
+})
+
+/** The value at a dotted key: "filter.hidden". */
+function lookup(messages: object, key: string): unknown {
+  const [head = '', ...rest] = key.split('.')
+  const entries = new Map(Object.entries(messages))
+  const direct = entries.get(key)
+  if (direct !== undefined) return direct
+  const next: unknown = entries.get(head)
+  return typeof next === 'object' && next !== null
+    ? lookup(next, rest.join('.'))
+    : undefined
+}

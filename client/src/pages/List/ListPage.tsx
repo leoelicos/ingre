@@ -1,4 +1,4 @@
-import { translate, useT } from '../../i18n'
+import { useT } from '../../i18n'
 import type { FC } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -53,7 +53,7 @@ export const sheetFor = (mode: FabMode): OpenSheet =>
  */
 export const ListPage: FC = () => {
   const t = useT()
-  useEffect(() => changeTitle(translate('list.title')), [])
+  useEffect(() => changeTitle(t('list.title')), [t])
   const explore = useExplore()
   useTabArrival(explore)
   const list = useChips()

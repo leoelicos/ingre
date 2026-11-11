@@ -67,20 +67,23 @@ export interface Chip {
   readonly customised: boolean
 }
 
-/** Short category names (#179): "Dairy" reads better on a tab than the full section name. */
-export const CATEGORY_LABELS: Readonly<Record<ShopSection, string>> = {
-  'Fruit & Veg': translate('section.fruitVeg'),
-  'Meat & Seafood': translate('section.meatSeafood'),
-  'Dairy, Eggs & Fridge': translate('section.dairy'),
-  Deli: translate('section.deli'),
-  Bakery: translate('section.bakery'),
-  Pantry: translate('section.pantry'),
-  Frozen: translate('section.frozen'),
-  Other: translate('section.other')
+/**
+ * Short category names (#179): "Dairy" reads better on a tab than the full section name.
+ * Each is translated when asked for, so it follows a language switch.
+ */
+const CATEGORY_LABELS: Readonly<Record<ShopSection, () => string>> = {
+  'Fruit & Veg': () => translate('section.fruitVeg'),
+  'Meat & Seafood': () => translate('section.meatSeafood'),
+  'Dairy, Eggs & Fridge': () => translate('section.dairy'),
+  Deli: () => translate('section.deli'),
+  Bakery: () => translate('section.bakery'),
+  Pantry: () => translate('section.pantry'),
+  Frozen: () => translate('section.frozen'),
+  Other: () => translate('section.other')
 }
 
 export const categoryLabel = (section: ShopSection): string =>
-  CATEGORY_LABELS[section]
+  CATEGORY_LABELS[section]()
 
 /** A recipe's label, with "(2)", "(3)" when earlier recipes have the same name (#182). */
 export const sourceLabel = (

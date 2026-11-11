@@ -1,14 +1,14 @@
-import { TABS, activeTabs } from '../tabs'
+import { activeTabs, tabs } from '../tabs'
 
 describe('tabs (#227)', () => {
   it('are Explore, Inventory, Cook and Profile, in that order', () => {
-    expect(TABS.map((tab) => tab.label)).toEqual([
+    expect(tabs().map((tab) => tab.label)).toEqual([
       'Explore',
       'Inventory',
       'Cook',
       'Profile'
     ])
-    expect(TABS.map((tab) => tab.to)).toEqual([
+    expect(tabs().map((tab) => tab.to)).toEqual([
       '/#explore',
       '/#inventory',
       '/#cook',
