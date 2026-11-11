@@ -1,5 +1,7 @@
 import type { CountUnit } from '../../types/library'
 import {
+  formatPercent,
+  formatQuantityNumber,
   formatCount,
   formatCountUnit,
   formatFraction,
@@ -161,5 +163,20 @@ describe('formatMoney (#204)', () => {
       '$0.00',
       '$1234.50'
     ])
+  })
+})
+
+describe('measurement audit numbers', () => {
+  it('writes weights and volumes as decimals, other measures in quarters', () => {
+    expect(formatQuantityNumber(37.5, 'g')).toBe('37.5')
+    expect(formatQuantityNumber(400, 'g tin')).toBe('400')
+    expect(formatQuantityNumber(0.25, 'whole')).toBe('¼')
+    expect(formatQuantityNumber(1.5, 'tbsp')).toBe('1½')
+  })
+
+  it('writes shares as percentages, one decimal at most', () => {
+    expect(formatPercent(0.25)).toBe('25%')
+    expect(formatPercent(0.0125)).toBe('1.3%')
+    expect(formatPercent(1.5)).toBe('150%')
   })
 })

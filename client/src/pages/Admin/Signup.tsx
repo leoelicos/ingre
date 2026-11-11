@@ -1,4 +1,4 @@
-import { useT } from '../../i18n'
+import { RichText, useT } from '../../i18n'
 import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -93,14 +93,20 @@ export const Signup: FC = () => {
             className="auth-page__error"
             role="alert"
           >
-            {t('auth.emailExists')}{' '}
-            <Link
-              to="/login"
-              state={{ from }}
-              className="inline-flex min-h-[44px] items-center focus-visible:focus-ring"
-            >
-              {t('auth.logInQuestion')}
-            </Link>
+            <RichText
+              k="auth.emailExistsLogIn"
+              components={{
+                link: (text) => (
+                  <Link
+                    to="/login"
+                    state={{ from }}
+                    className="inline-flex min-h-[44px] items-center focus-visible:focus-ring"
+                  >
+                    {text}
+                  </Link>
+                )
+              }}
+            />
           </p>
         )}
         {!emailExists && validationMessage && (
@@ -159,14 +165,20 @@ export const Signup: FC = () => {
         </PrimaryButton>
       </form>
       <p className="auth-page__alt">
-        {t('auth.haveAccount')}{' '}
-        <Link
-          to="/login"
-          state={{ from }}
-          className="inline-flex min-h-[44px] items-center focus-visible:focus-ring"
-        >
-          {t('auth.logIn')}
-        </Link>
+        <RichText
+          k="auth.haveAccount"
+          components={{
+            link: (text) => (
+              <Link
+                to="/login"
+                state={{ from }}
+                className="inline-flex min-h-[44px] items-center focus-visible:focus-ring"
+              >
+                {text}
+              </Link>
+            )
+          }}
+        />
       </p>
     </div>
   )

@@ -30,7 +30,7 @@ import {
 import { savedParam, withSaved } from '../ListPage'
 import { toggled } from '../Recipes'
 import { isAbove } from '../ScrollToTop'
-import { NO_EXTRA_HINT } from '../Extra'
+import { noExtraHint } from '../Extra'
 import { disconnected, fire, resetObserver } from '../../../test/observer'
 
 beforeEach(() => localStorage.clear())
@@ -275,7 +275,7 @@ describe('Scenario: Add an extra (#192: the Extra sheet)', () => {
     const sheet = extra()
     const tabs = sheet.getByRole('tablist', { name: 'Categories' })
     expect(within(tabs).getAllByRole('tab').length).toBeGreaterThan(1)
-    expect(sheet.getByText(NO_EXTRA_HINT)).toBeInTheDocument()
+    expect(sheet.getByText(noExtraHint())).toBeInTheDocument()
     expect(sheet.queryByText('Used in')).toBeNull()
     await user.click(within(tabs).getByRole('tab', { name: 'Dairy' }))
     await user.click(sheet.getByRole('button', { name: 'Butter' }))

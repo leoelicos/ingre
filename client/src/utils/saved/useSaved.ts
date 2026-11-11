@@ -8,7 +8,7 @@ import { GET_SAVED_RECIPES } from '../../lib/apollo/graphQL/queries'
 import type { SavedRecipe } from '../../lib/apollo/graphQL/typedefs'
 import type { RecipeInput } from '../../types/payloads'
 
-export const SAVE_FAILED = translate('saved.failed')
+export const saveFailed = (): string => translate('saved.failed')
 
 /** The library ids with a heart. */
 export const savedLibraryIds = (
@@ -38,7 +38,7 @@ export const useSaved = (loggedIn: boolean) => {
   })
   const [remove] = useMutation(REMOVE_RECIPE)
   const ids = savedLibraryIds(recipes)
-  const fail = () => setError(SAVE_FAILED)
+  const fail = () => setError(saveFailed())
   const unsave = (libraryId: string) =>
     recipes
       .filter((recipe) => recipe.libraryId === libraryId)

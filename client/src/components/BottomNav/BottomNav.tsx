@@ -3,7 +3,7 @@ import type { FC } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useKeyboardOpen } from '../../utils/media/useKeyboardOpen'
 import type { Tab } from '../../utils/nav/tabs'
-import { TABS, activeTabs } from '../../utils/nav/tabs'
+import { activeTabs, tabs } from '../../utils/nav/tabs'
 
 const TAB =
   'flex min-h-[56px] flex-1 items-center justify-center rounded-control px-2 text-sm font-semibold text-text no-underline focus-visible:focus-ring'
@@ -53,7 +53,7 @@ export const BottomNav: FC = () => {
         className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)]"
       >
         <ul className="mx-auto m-0 flex max-w-layout list-none gap-1 p-1">
-          {TABS.map((tab) => (
+          {tabs().map((tab) => (
             <TabLink
               key={tab.id}
               tab={tab}

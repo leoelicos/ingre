@@ -9,9 +9,9 @@ import { changeTitle } from '../../utils/changeTitle'
 import { focusById, focusFirstOf } from '../../utils/focus'
 import { useChips } from '../../utils/chips/useChips'
 import { catalogue } from '../../utils/library/recipeLibrary'
-import { useVoice } from '../../utils/voice/speech'
 import type { Capture } from '../../utils/warroom/capture'
 import { captureOf } from '../../utils/warroom/capture'
+import { captureSpoken } from '../../utils/warroom/spoken'
 import type { HistoryEntry } from '../../utils/warroom/history'
 import {
   byDay,
@@ -24,12 +24,10 @@ import { EntryField, FIELD_ID } from './EntryField'
 import type { Shown } from './History'
 import { againId, HISTORY_HEADING_ID, History, removeId } from './History'
 import { promptKeys, QuickChips } from './QuickChips'
+import { VoiceCapture } from './VoiceCapture'
 
 const NAMES = (items: readonly LibraryIngredient[]): string =>
   items.map(({ name }) => capitaliseFirst(name)).join(', ')
-
-const COMMAND =
-  'inline-flex min-h-[44px] items-center justify-center rounded-control bg-primary px-4 text-sm font-semibold text-on-primary data-[focus-visible]:focus-ring data-[pressed]:shadow-pressed'
 
 const UNDO =
   'inline-flex min-h-[44px] items-center justify-center rounded-pill border-2 border-current px-4 text-sm font-semibold text-primary data-[focus-visible]:focus-ring data-[pressed]:opacity-80'
@@ -150,7 +148,7 @@ const Shortcuts: FC = () => {
  */
 export const WarRoom: FC = () => {
   const t = useT()
-  useEffect(() => changeTitle(translate('warRoom.title')), [])
+  useEffect(() => changeTitle(t('warRoom.title')), [t])
   useSlashToType()
   const list = useChips()
   const history = useHistory()
@@ -191,7 +189,6 @@ export const WarRoom: FC = () => {
     )
     setText('')
   }
-  const voice = useVoice((heard) => take(captureOf(heard)))
   /* a tap on a suggestion or chip gives focus back to the field, ready for the next one (not after voice) */
   const pick = (head: string, item: LibraryIngredient, count: number): void => {
     take([...captureOf(head), { item, quantity: count, term: item.name }])
@@ -250,17 +247,6 @@ export const WarRoom: FC = () => {
         onList={(lines) => take(captureOf(lines))}
         onUndo={undo === null ? null : () => undoLast(undo)}
         isOnList={list.hasChip}
-        after={
-          voice.toggle !== null && (
-            <Button
-              onPress={voice.toggle}
-              aria-pressed={voice.listening}
-              className={`${COMMAND} aria-pressed:bg-accent`}
-            >
-              {t(voice.listening ? 'warRoom.stop' : 'warRoom.speak')}
-            </Button>
-          )
-        }
       />
       <div className="flex flex-wrap items-center gap-2">
         <p
@@ -281,6 +267,7 @@ export const WarRoom: FC = () => {
           </Button>
         )}
       </div>
+      <VoiceCapture onHeard={(heard) => take(captureSpoken(heard))} />
       {text === '' && (
         <QuickChips
           recent={recent}

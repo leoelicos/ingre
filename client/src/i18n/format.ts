@@ -67,6 +67,12 @@ export const formatCountUnit = (
 const joinQuantity = (number: string, unit: string): string =>
   translate('quantity', { number, unit })
 
+/**
+ * Measures some locales write before the number (Japanese: 大さじ1, カップ½). English keeps
+ * "1 tbsp"; the order lives in each locale's quantityUnitFirst message.
+ */
+const UNIT_FIRST_MEASURES: readonly string[] = ['tsp', 'tbsp', 'cup']
+
 /** Measures written as plain decimals: weights and volumes. */
 const DECIMAL_MEASURES: readonly string[] = ['g', 'ml', 'g tin', 'ml tin']
 
@@ -77,6 +83,15 @@ const DECIMAL_MEASURES: readonly string[] = ['g', 'ml', 'g tin', 'ml tin']
 export const formatMeasure = (quantity: number, measure: string): string =>
   translateOr(`measure.${measure}`, measure, { count: pluralCount(quantity) })
 
+/** A recipe amount's number (#182): weights and volumes as decimals, other measures in quarters. */
+export const formatQuantityNumber = (
+  quantity: number,
+  measure: string
+): string =>
+  DECIMAL_MEASURES.includes(measure)
+    ? formatNumber(quantity)
+    : formatFraction(quantity)
+
 /**
  * A recipe amount in its own unit (#182): "37.5 g", "½ tbsp", "1½ cloves", "2 onions";
  * "whole" takes the item's count unit.
@@ -85,15 +100,23 @@ export const formatQuantity = (
   quantity: number,
   measure: string,
   unit: CountUnit | null = null
-): string =>
-  joinQuantity(
-    DECIMAL_MEASURES.includes(measure)
-      ? formatNumber(quantity)
-      : formatFraction(quantity),
+): string => {
+  const number = formatQuantityNumber(quantity, measure)
+  const word =
     measure === 'whole'
       ? formatCountUnit(quantity, unit)
       : formatMeasure(quantity, measure)
-  )
+  return UNIT_FIRST_MEASURES.includes(measure)
+    ? translate('quantityUnitFirst', { number, unit: word })
+    : joinQuantity(number, word)
+}
+
+/** A share as a percentage, one decimal at most: 0.25 -> "25%", 0.0125 -> "1.3%". */
+export const formatPercent = (share: number): string =>
+  new Intl.NumberFormat(locale(), {
+    style: 'percent',
+    maximumFractionDigits: 1
+  }).format(share)
 
 /** A counted amount: "3 eggs", "1½ onions", "1 item". */
 export const formatCount = (quantity: number, unit: CountUnit | null): string =>

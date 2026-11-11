@@ -3,7 +3,7 @@
  * for the part of the line being typed. Focus never leaves the field: the highlighted option is
  * aria-activedescendant, Enter adds, Tab completes, Esc closes then clears.
  */
-import type { ClipboardEvent, FC, KeyboardEvent, ReactNode } from 'react'
+import type { ClipboardEvent, FC, KeyboardEvent } from 'react'
 import { useState } from 'react'
 import { useT } from '../../i18n'
 import type { LibraryIngredient } from '../../types/library'
@@ -40,8 +40,6 @@ export interface EntryFieldProps {
   /** Ctrl+Z or Cmd+Z in an empty field */
   readonly onUndo: (() => void) | null
   readonly isOnList: (id: string) => boolean
-  /** a control after the field in the same row (voice) */
-  readonly after?: ReactNode
 }
 
 const OPTION =
@@ -58,8 +56,7 @@ export const EntryField: FC<EntryFieldProps> = ({
   onPick,
   onList,
   onUndo,
-  isOnList,
-  after
+  isOnList
 }) => {
   const t = useT()
   const [active, setActive] = useState(-1)
@@ -169,7 +166,6 @@ export const EntryField: FC<EntryFieldProps> = ({
             className="min-h-[44px] w-full rounded-control border border-border bg-surface px-3 text-base text-text placeholder:text-placeholder focus-visible:focus-ring"
           />
         </div>
-        {after}
       </div>
       <p
         id={HELP_ID}

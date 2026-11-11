@@ -20,13 +20,13 @@ import {
 } from './Filters'
 import type { IngredientsState } from './Ingredients'
 import { EXTRA_SHEET_ID, chipFilterCount, chipView } from './Ingredients'
-import { CategoryTabs, ON_LIST } from './PlusArea'
+import { CategoryTabs, onListLabel } from './PlusArea'
 import { usePanel } from './usePanel'
 
 export const EXTRA_ID = 'extra'
 
 /** Shown when nothing is in Extra (#182, answer 11). */
-export const NO_EXTRA_HINT = translate('extra.empty')
+export const noExtraHint = (): string => translate('extra.empty')
 
 /** "3 items" */
 export const extraSummary = (n: number): string => formatItemCount(n)
@@ -73,7 +73,7 @@ export const ExtraBody: FC<{ state: IngredientsState }> = ({ state }) => {
         onChange={setFilter}
       />
       {list.extraChips.length === 0 && (
-        <p className="m-0 text-text-secondary">{NO_EXTRA_HINT}</p>
+        <p className="m-0 text-text-secondary">{noExtraHint()}</p>
       )}
       {chipFilterOn(filter) && (
         <HiddenNote
@@ -98,7 +98,7 @@ export const ExtraBody: FC<{ state: IngredientsState }> = ({ state }) => {
         <CategoryTabs
           onPick={state.add}
           hasChip={list.hasChip}
-          mark={ON_LIST}
+          mark={onListLabel()}
         />
       </section>
     </div>

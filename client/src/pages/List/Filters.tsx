@@ -21,7 +21,7 @@ import type {
   ChipStatus,
   RecipeFilter
 } from '../../utils/filters/filters'
-import { STATUS_LABELS, hiddenText } from '../../utils/filters/filters'
+import { hiddenText, statusLabels } from '../../utils/filters/filters'
 import { SHOP_SECTIONS } from '../../utils/shopping/sections'
 import { displayName } from '../../utils/shopping/shoppingList'
 import { SavedFilter } from './SavedFilter'
@@ -151,7 +151,7 @@ export const ChipFilterPanel: FC<{
         label={translate('filter.status')}
         options={statuses.map((status) => ({
           value: status,
-          label: STATUS_LABELS[status]
+          label: statusLabels()[status]
         }))}
         value={[...filter.statuses]}
         onChange={(value) =>

@@ -593,10 +593,12 @@ class FakeRecogniser {
   continuous = false
   interimResults = false
   onresult: ((event: unknown) => void) | null = null
+  onstart: (() => void) | null = null
   onend: (() => void) | null = null
-  onerror: (() => void) | null = null
-  start = jest.fn()
+  onerror: ((event: { error: string }) => void) | null = null
+  start = jest.fn(() => this.onstart?.())
   stop = jest.fn(() => this.onend?.())
+  abort = jest.fn()
   constructor() {
     FakeRecogniser.last = this
   }
@@ -610,10 +612,12 @@ const say = (text: string) =>
     })
   )
 
-describe('voice (the browser’s own recogniser)', () => {
-  it('has no microphone button when the browser cannot listen', () => {
+const talk = () => screen.getByRole('button', { name: 'Talk' })
+
+describe('voice (#207: the giant record button)', () => {
+  it('has no record button when the device cannot listen', () => {
     open()
-    expect(screen.queryByRole('button', { name: 'Speak' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Talk' })).toBeNull()
   })
 
   describe('in a browser that can listen', () => {
@@ -624,43 +628,46 @@ describe('voice (the browser’s own recogniser)', () => {
       Reflect.deleteProperty(window, 'webkitSpeechRecognition')
     })
 
-    it('listens while pressed, adds what is said, and stops when pressed again', async () => {
+    it('listens while on, adds what is said (spoken numbers too), and stops when pressed again', async () => {
       const user = userEvent.setup()
       open()
-      await user.click(screen.getByRole('button', { name: 'Speak' }))
+      await user.click(talk())
       expect(FakeRecogniser.last?.start).toHaveBeenCalled()
-      expect(FakeRecogniser.last?.continuous).toBe(true)
-      expect(
-        screen.getByRole('button', { name: 'Stop listening' })
-      ).toHaveAttribute('aria-pressed', 'true')
-      say('2 carrots and onion')
+      expect(FakeRecogniser.last?.lang).toBe('en-AU')
+      expect(talk()).toHaveAttribute('aria-pressed', 'true')
+      say('Two carrots and onion.')
       expect(screen.getByRole('status')).toHaveTextContent(
         'Carrot, Brown onion added'
       )
+      expect(historyButtons()).toHaveLength(2)
       say('garlic')
       expect(historyButtons()).toHaveLength(3)
-      await user.click(screen.getByRole('button', { name: 'Stop listening' }))
+      await user.click(talk())
       expect(FakeRecogniser.last?.stop).toHaveBeenCalled()
-      expect(screen.getByRole('button', { name: 'Speak' })).toHaveAttribute(
-        'aria-pressed',
-        'false'
-      )
+      expect(talk()).toHaveAttribute('aria-pressed', 'false')
     })
 
-    it('goes back to Speak when the recogniser ends by itself', async () => {
+    it('keeps the text field for typing alongside', async () => {
       const user = userEvent.setup()
       open()
-      await user.click(screen.getByRole('button', { name: 'Speak' }))
-      act(() => FakeRecogniser.last?.onerror?.())
-      expect(screen.getByRole('button', { name: 'Speak' })).toBeInTheDocument()
+      await user.type(field(), 'egg{Enter}')
+      expect(screen.getByRole('status')).toHaveTextContent('Eggs added')
+      expect(talk()).toBeInTheDocument()
     })
 
     it('stops listening when the page goes', async () => {
       const user = userEvent.setup()
       const { unmount } = open()
-      await user.click(screen.getByRole('button', { name: 'Speak' }))
+      await user.click(talk())
       unmount()
-      expect(FakeRecogniser.last?.stop).toHaveBeenCalled()
+      expect(FakeRecogniser.last?.abort).toHaveBeenCalled()
+    })
+
+    it('has no accessibility violations while listening', async () => {
+      const user = userEvent.setup()
+      const { container } = open()
+      await user.click(talk())
+      expect(await axe(container)).toHaveNoViolations()
     })
   })
 })

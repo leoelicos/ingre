@@ -1,9 +1,11 @@
 import { translate } from '../../i18n'
 import type { FC } from 'react'
+import { useEffect } from 'react'
 import { Input, SearchField } from 'react-aria-components'
 import { IngreIconSearch } from '../../lib/icon/Icon'
+import { claimFocusById } from '../../utils/focus'
 
-export const SEARCH_LABEL = translate('search.label')
+export const searchLabel = (): string => translate('search.label')
 export const SEARCH_INPUT_ID = 'explore-search'
 
 /**
@@ -15,29 +17,37 @@ export const SEARCH_INPUT_ID = 'explore-search'
 export const SearchBox: FC<{
   value: string
   onChange: (text: string) => void
-}> = ({ value, onChange }) => (
-  <div
-    role="search"
-    className="relative w-full min-w-0"
-  >
-    <SearchField
-      aria-label={SEARCH_LABEL}
-      value={value}
-      onChange={onChange}
-      className="w-full"
+}> = ({ value, onChange }) => {
+  // autoFocus can lose to the sheet's own focus scope, which then lands on ✕; a frame later
+  // the search box takes it back, unless the user has moved on (#192)
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => claimFocusById(SEARCH_INPUT_ID))
+    return () => cancelAnimationFrame(frame)
+  }, [])
+  return (
+    <div
+      role="search"
+      className="relative w-full min-w-0"
     >
-      <span
-        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
-        aria-hidden="true"
+      <SearchField
+        aria-label={searchLabel()}
+        value={value}
+        onChange={onChange}
+        className="w-full"
       >
-        <IngreIconSearch />
-      </span>
-      <Input
-        id={SEARCH_INPUT_ID}
-        autoFocus
-        placeholder={SEARCH_LABEL}
-        className="min-h-[44px] w-full rounded-pill border border-border bg-surface py-2 pl-10 pr-3 text-text placeholder:text-placeholder focus-visible:focus-ring [&::-webkit-search-cancel-button]:hidden"
-      />
-    </SearchField>
-  </div>
-)
+        <span
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+          aria-hidden="true"
+        >
+          <IngreIconSearch />
+        </span>
+        <Input
+          id={SEARCH_INPUT_ID}
+          autoFocus
+          placeholder={searchLabel()}
+          className="min-h-[44px] w-full rounded-pill border border-border bg-surface py-2 pl-10 pr-3 text-text placeholder:text-placeholder focus-visible:focus-ring [&::-webkit-search-cancel-button]:hidden"
+        />
+      </SearchField>
+    </div>
+  )
+}

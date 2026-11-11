@@ -18,9 +18,9 @@ type SignupResult =
 
 export const MIN_PASSWORD_LENGTH = 5
 
-const EMAIL_EXISTS = translate('auth.emailExists')
-const CHECK_FAILED = translate('auth.checkFailed')
-const SIGNUP_FAILED = translate('auth.signupFailed')
+const emailExistsMessage = (): string => translate('auth.emailExists')
+const checkFailedMessage = (): string => translate('auth.checkFailed')
+const signupFailedMessage = (): string => translate('auth.signupFailed')
 
 export const useSignup = () => {
   changeTitle(translate('auth.signUp'))
@@ -93,20 +93,20 @@ export const useSignup = () => {
     try {
       const result = await checkEmailAlreadyExists({ variables: { email } })
       if (result.error || !result.data) {
-        setValidationMessage(CHECK_FAILED)
-        return { ok: false, reason: 'error', message: CHECK_FAILED }
+        setValidationMessage(checkFailedMessage())
+        return { ok: false, reason: 'error', message: checkFailedMessage() }
       }
       if (result.data.checkEmailAlreadyExists) {
-        setValidationMessage(EMAIL_EXISTS)
+        setValidationMessage(emailExistsMessage())
         return {
           ok: false,
           reason: 'email-exists',
-          message: EMAIL_EXISTS
+          message: emailExistsMessage()
         }
       }
     } catch {
-      setValidationMessage(CHECK_FAILED)
-      return { ok: false, reason: 'error', message: CHECK_FAILED }
+      setValidationMessage(checkFailedMessage())
+      return { ok: false, reason: 'error', message: checkFailedMessage() }
     }
 
     try {
@@ -121,8 +121,8 @@ export const useSignup = () => {
       navigate(from, { replace: true })
       return { ok: true }
     } catch {
-      setValidationMessage(SIGNUP_FAILED)
-      return { ok: false, reason: 'error', message: SIGNUP_FAILED }
+      setValidationMessage(signupFailedMessage())
+      return { ok: false, reason: 'error', message: signupFailedMessage() }
     }
   }
 

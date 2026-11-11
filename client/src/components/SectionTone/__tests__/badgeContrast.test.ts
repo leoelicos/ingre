@@ -68,6 +68,8 @@ const TEXT_PAIRS: readonly (readonly [string, string])[] = [
   ['color-on-primary', 'color-primary'],
   ['color-added-pill', 'color-surface'],
   ['color-allergen', 'color-surface'],
+  ['color-error', 'color-surface'],
+  ['color-error', 'color-bg'],
   ['color-inverse-text', 'color-text']
 ]
 

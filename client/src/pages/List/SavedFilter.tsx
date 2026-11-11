@@ -3,7 +3,7 @@ import type { FC } from 'react'
 import { Switch } from 'react-aria-components'
 import { HeartIcon } from '../../components/SaveButton'
 
-export const SAVED_FILTER_LABEL = translate('saved.filter')
+export const savedFilterLabel = (): string => translate('saved.filter')
 
 const SAVED_SWITCH =
   'inline-flex min-h-[44px] shrink-0 cursor-pointer items-center gap-1 self-start rounded-pill border border-border px-[14px] py-1 text-sm text-text data-[selected]:border-primary data-[selected]:bg-chip-active data-[selected]:text-added-pill data-[focus-visible]:focus-ring'
@@ -22,6 +22,6 @@ export const SavedFilter: FC<{
     className={SAVED_SWITCH}
   >
     <HeartIcon filled={on} />
-    {SAVED_FILTER_LABEL}
+    {savedFilterLabel()}
   </Switch>
 )
