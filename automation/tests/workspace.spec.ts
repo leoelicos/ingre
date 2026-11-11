@@ -143,7 +143,8 @@ test.describe('layout (#192)', () => {
       .click()
     const opened = await box(recipe)
     expect(opened.height).toBeLessThan(size.height)
-    expect(opened.y + opened.height).toBeLessThanOrEqual(button.y + 1)
+    /* short enough to scroll clear above the FAB, which sits over the bottom tabs (#210, #227) */
+    expect(opened.height).toBeLessThanOrEqual(button.y + 1)
   })
 
   test('the Ingredients header sticks to the top while its list scrolls under it', async ({
@@ -186,24 +187,26 @@ test.describe('layout (#192)', () => {
 })
 
 test.describe('the FAB (#192)', () => {
-  test('fixed bottom right above the safe area, "+ Recipe" at the top and "+ Pantry Item" in Ingredients', async ({
+  test('fixed bottom right, above the bottom tabs, "+ Recipe" at the top and "+ Pantry Item" in Ingredients', async ({
     page
   }) => {
     await page.goto('/')
-    await expect(page.locator('meta[name="viewport"]')).toHaveAttribute(
-      'content',
-      /viewport-fit=cover/
-    )
     await pickRows(page, DAHL, CURRY)
     const button = fab(page)
-    await expect(button).toHaveCSS('position', 'fixed')
+    /* the bottom-right area (#210) holds it, fixed, just above the tabs (#227) */
+    await expect(page.getByRole('group', { name: 'Quick actions' })).toHaveCSS(
+      'position',
+      'fixed'
+    )
     const size = page.viewportSize() ?? { width: 0, height: 0 }
     const b = await box(button)
-    expect(Math.round(size.height - (b.y + b.height))).toBe(16)
     expect(Math.round(size.width - (b.x + b.width))).toBe(16)
     expect(b.height).toBeGreaterThanOrEqual(44)
-    // 1rem above the home indicator: env(safe-area-inset-bottom) is 0 here
-    await expect(button).toHaveClass(/env\(safe-area-inset-bottom\)/)
+    const navTop =
+      (await page.getByRole('navigation', { name: 'Main' }).boundingBox())?.y ??
+      0
+    expect(b.y + b.height).toBeLessThanOrEqual(navTop)
+    expect(b.y + b.height).toBeGreaterThan(navTop - 40)
 
     await toTop(page)
     await expect(button).toHaveText(/\+\s*Recipe/)

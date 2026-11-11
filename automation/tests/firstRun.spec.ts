@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from './fixtures'
-import { searchBox } from './page'
+import { closeSheet, fab, searchBox } from './page'
 
 /* #211 First run: Landing (a hard stop), three skippable TMD questions, then Explore. */
 
@@ -72,7 +72,7 @@ test.describe('first run (#211)', () => {
       page.getByRole('slider', { name: 'Guidance', exact: true })
     ).toHaveAccessibleDescription('Hand-held')
     await page.reload()
-    await expect(searchBox(page)).toBeVisible()
+    await expect(fab(page)).toBeVisible()
     await expect(getStarted(page)).toHaveCount(0)
   })
 
@@ -96,6 +96,7 @@ test.describe('first run (#211)', () => {
     await page.goto('/')
     await getStarted(page).click()
     await page.getByRole('button', { name: 'Skip' }).click()
+    await closeSheet(page)
     await page.getByRole('button', { name: 'Account' }).click()
     await page.getByRole('menuitem', { name: 'Set-up' }).click()
     await expect(page).toHaveURL(/\/setup$/)
