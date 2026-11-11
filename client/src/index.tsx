@@ -1,5 +1,7 @@
 /* self-hosted fonts (#176): no third-party font request at runtime */
 import '@fontsource/poppins/400.css'
+// the wordmark's weight (#235), so it is real Poppins Medium, not a synthesised bold
+import '@fontsource/poppins/500.css'
 import '@fontsource-variable/open-sans/wdth.css'
 import { createRoot } from 'react-dom/client'
 import { Ingre } from './App'
