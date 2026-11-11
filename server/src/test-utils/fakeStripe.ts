@@ -1,7 +1,7 @@
 /*
  * #312: a local stand-in for api.stripe.com that behaves like Stripe's test mode for the
- * documented test tokens (https://docs.stripe.com/testing): tok_visa and tok_mastercard
- * succeed, tok_visa_chargeDeclined can't be attached (card_declined / generic_decline), and
+ * documented test tokens (https://docs.stripe.com/testing), each made into a PaymentMethod
+ * (card[token]): tok_visa and tok_mastercard succeed, tok_visa_chargeDeclined can't be attached (card_declined / generic_decline), and
  * tok_chargeCustomerFail attaches but its first charge fails (the subscription is incomplete).
  */
 import { createServer, type IncomingMessage, type Server } from 'http'
@@ -34,6 +34,8 @@ export const fakeStripe = () => {
   const prices: Json[] = []
   const products: Json[] = []
   const sources = new Map<string, string>()
+  /** PaymentMethod id to the test token it was made from */
+  const paymentMethods = new Map<string, string>()
   const subscriptions = new Map<string, Json>()
   let down = false
   let n = 0
@@ -92,7 +94,17 @@ export const fakeStripe = () => {
       prices.push(price)
       return [200, price]
     }
-    const source = body['source']
+    if (method === 'POST' && pathname === '/v1/payment_methods') {
+      const id = next('pm')
+      paymentMethods.set(id, body['card[token]'] ?? '')
+      return [200, { id, object: 'payment_method', type: 'card' }]
+    }
+    /* a PaymentMethod made from a token carries the token's test behaviour */
+    const attaching =
+      body['payment_method'] ??
+      pathname.match(/^\/v1\/payment_methods\/(\w+)\/attach$/)?.[1]
+    const source =
+      attaching === undefined ? undefined : paymentMethods.get(attaching)
     if (source !== undefined && source in DECLINES) {
       return [
         402,
@@ -106,6 +118,18 @@ export const fakeStripe = () => {
         }
       ]
     }
+    const attached = pathname.match(/^\/v1\/payment_methods\/(\w+)\/attach$/)
+    if (method === 'POST' && attached !== null) {
+      if (source !== undefined) sources.set(body['customer'] ?? '', source)
+      return [
+        200,
+        {
+          id: attached[1],
+          object: 'payment_method',
+          customer: body['customer']
+        }
+      ]
+    }
     if (method === 'POST' && pathname === '/v1/customers') {
       const id = next('cus')
       if (source !== undefined) sources.set(id, source)
@@ -113,7 +137,6 @@ export const fakeStripe = () => {
     }
     const customer = pathname.match(/^\/v1\/customers\/(\w+)$/)?.[1]
     if (method === 'POST' && customer !== undefined) {
-      if (source !== undefined) sources.set(customer, source)
       return [200, { id: customer, object: 'customer' }]
     }
     if (method === 'POST' && pathname === '/v1/subscriptions') {

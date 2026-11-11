@@ -72,7 +72,7 @@ describe('setUp (the idempotent setup script)', () => {
 })
 
 describe('subscribe, with Stripe’s documented test tokens', () => {
-  it('tok_visa: makes the Customer with the token as its source and an active subscription', async () => {
+  it('tok_visa: makes a PaymentMethod from the token, the Customer’s default, and an active subscription', async () => {
     const result = await new BillingApi(stripe, {}).subscribe({
       ...who,
       tier: 'MANAGER',
@@ -82,11 +82,18 @@ describe('subscribe, with Stripe’s documented test tokens', () => {
     const customer = fake.calls.find(
       (c) => c.method === 'POST' && c.path === '/v1/customers'
     )
+    const card = fake.calls.find(
+      (c) => c.method === 'POST' && c.path === '/v1/payment_methods'
+    )
+    expect(card?.body).toEqual({ type: 'card', 'card[token]': 'tok_visa' })
     expect(customer?.body).toMatchObject({
-      source: 'tok_visa',
+      payment_method: expect.stringMatching(/^pm_/),
+      'invoice_settings[default_payment_method]':
+        customer?.body['payment_method'],
       email: who.email,
       'metadata[userId]': 'u1'
     })
+    expect(customer?.body['source']).toBeUndefined()
     const sub = fake.calls.find(
       (c) => c.method === 'POST' && c.path === '/v1/subscriptions'
     )
@@ -151,10 +158,16 @@ describe('subscribe, with Stripe’s documented test tokens', () => {
     )
     expect(update?.body['items[0][price]']).toBe(leader?.['id'])
     expect(update?.body['items[0][id]']).toMatch(/^si_/)
+    const attach = fake.calls
+      .filter((c) => /^\/v1\/payment_methods\/pm_\w+\/attach$/.test(c.path))
+      .pop()
+    expect(attach?.body).toEqual({ customer: first.customerId })
     const customer = fake.calls
       .filter((c) => c.path === `/v1/customers/${first.customerId}`)
       .pop()
-    expect(customer?.body['source']).toBe('tok_mastercard')
+    expect(customer?.body['invoice_settings[default_payment_method]']).toBe(
+      attach?.path.split('/')[3]
+    )
   })
 
   it('a pinned Price id is used as is', async () => {

@@ -1,7 +1,8 @@
 /*
  * #312: the three tiers as Stripe subscriptions. Products and monthly Prices are made once by
  * the setup script (scripts/stripe-setup.ts); the Plans page tokenises a card with Stripe.js
- * (`createToken`), and `subscribe` attaches that token to the user's Customer and subscribes.
+ * (`createToken`), and `subscribe` turns that token into a PaymentMethod on the user's Customer
+ * and subscribes.
  */
 import Stripe from 'stripe'
 import { PaymentDeclinedError, PaymentProviderError } from '../errors'
@@ -128,7 +129,7 @@ export class BillingApi {
   }
 
   /**
-   * Attaches the Stripe.js token to the user's Customer as its payment source (making the
+   * Makes a PaymentMethod from the Stripe.js token and sets it as the user's Customer default (making the
    * Customer on first use), then subscribes it to the tier, or moves its subscription there.
    */
   public subscribe = async ({
@@ -149,15 +150,27 @@ export class BillingApi {
     subscriptionId: string | null
   }): Promise<Subscribed> => {
     const price = await this.priceId(tier)
+    /*
+     * Stripe no longer takes a card token as a Customer's `source` (the Sources/Charges
+     * path has reached end of life), so the token becomes a PaymentMethod first
+     * (card[token]) and that is the Customer's default for subscription invoices.
+     */
+    const card = await this.stripe.paymentMethods
+      .create({ type: 'card', card: { token } })
+      .catch(declined)
+    const defaults = { invoice_settings: { default_payment_method: card.id } }
     const customer = await (
       customerId === null
         ? this.stripe.customers.create({
             email,
             name,
-            source: token,
+            payment_method: card.id,
+            ...defaults,
             metadata: { userId }
           })
-        : this.stripe.customers.update(customerId, { source: token })
+        : this.stripe.paymentMethods
+            .attach(card.id, { customer: customerId })
+            .then(() => this.stripe.customers.update(customerId, defaults))
     ).catch(declined)
     const metadata = { userId, [TIER_METADATA_KEY]: tier }
     const subscription = await (

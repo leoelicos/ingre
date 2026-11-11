@@ -32,7 +32,7 @@ Creates one Product per tier (metadata `ingre_tier`) and a monthly recurring USD
 
 1. Plans (with the `tiers` flag and a publishable key): **Choose Manager** opens a card form drawn by Stripe Elements (`@stripe/react-stripe-js` `CardElement`). The card number never reaches ingré.
 2. **Pay** calls `stripe.createToken(cardElement)` and sends only the token id: `subscribe(tier: MANAGER, token: "tok_…")`.
-3. The server attaches the token as the payment source of the user's Stripe Customer (created on first use, `metadata.userId`), then creates the subscription for the tier's Price, or moves an existing subscription to the new Price.
+3. The server makes a PaymentMethod from the token (`paymentMethods.create({ type: 'card', card: { token } })`), attaches it to the user's Stripe Customer (created on first use, `metadata.userId`) as the default for invoices, then creates the subscription for the tier's Price, or moves an existing subscription to the new Price. (Stripe no longer accepts a card token as a Customer `source`: on this account that returns "Card Token usage on the Customers API and Charges API has reached end of life", found in the live test-mode check.)
 4. The user gets `stripeCustomerId`, `stripeSubscriptionId`, `subscriptionStatus` and `active` (true while `active` or `trialing`); an active subscription also sets `tier`.
 
 `createToken` is Stripe's legacy Tokens API; Stripe now recommends PaymentMethods with Payment/Setup Intents (which also handle 3D Secure). It is used here because #312 asked for it. Moving to `createPaymentMethod` + a SetupIntent later only touches `CardSubscribe.tsx` and `BillingApi.subscribe`.
