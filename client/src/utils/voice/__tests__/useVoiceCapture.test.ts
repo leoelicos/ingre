@@ -85,3 +85,50 @@ describe('useVoiceCapture', () => {
     expect(result.current.firstUseMegabytes).toBe(0)
   })
 })
+
+describe('useVoiceCapture, the engine’s reports', () => {
+  const setupWith = (
+    webSpeech: import('../types').Engine,
+    onDevice: import('../types').Engine
+  ) => ({
+    abilities: { native: false, webSpeech: true, record: true },
+    engines: { native: webSpeech, webSpeech, onDevice },
+    lang: () => 'en-AU'
+  })
+
+  it('shows the level, and moves to the on-device model when the recogniser is not there', () => {
+    const listeners: import('../types').Listener[] = []
+    const session = { stop: jest.fn(), cancel: jest.fn() }
+    const webSpeech = jest.fn((_lang, listener) => {
+      listeners.push(listener)
+      return session
+    })
+    const onDevice = jest.fn((_lang, listener) => {
+      listeners.push(listener)
+      return session
+    })
+    const { result } = renderHook(() =>
+      useVoiceCapture(jest.fn(), () => setupWith(webSpeech, onDevice))
+    )
+    act(() => result.current.toggle())
+    act(() => listeners[0]?.level(0.5))
+    expect(result.current.state).toMatchObject({ level: 0.5 })
+    act(() => listeners[0]?.error('unavailable'))
+    expect(onDevice).toHaveBeenCalled()
+    expect(result.current.state.engine).toBe('onDevice')
+  })
+
+  it('an engine that ends at once leaves nothing running', () => {
+    const engine = jest.fn((_lang, listener: import('../types').Listener) => {
+      listener.end()
+      return { stop: jest.fn(), cancel: jest.fn() }
+    })
+    const { result } = renderHook(() =>
+      useVoiceCapture(jest.fn(), () => setupWith(engine, engine))
+    )
+    act(() => result.current.toggle())
+    act(() => result.current.toggle())
+    expect(engine).toHaveBeenCalledTimes(2)
+    expect(result.current.active).toBe(false)
+  })
+})

@@ -1,673 +1,480 @@
 import '@testing-library/jest-dom'
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within
-} from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { axe, toHaveNoViolations } from 'jest-axe'
+import { resetViewport, setViewportWidth } from '../../../test/media'
 import { EXTRAS_KEY } from '../../../utils/storage/shoppingState'
-import type { HistoryEntry } from '../../../utils/warroom/history'
-import { HISTORY_KEY } from '../../../utils/warroom/history'
+import type { Abilities } from '../../../utils/voice/engine'
+import type { Engine, Listener } from '../../../utils/voice/types'
+import type { VoiceSetup } from '../../../utils/voice/useVoiceCapture'
+import { ALL_TILES } from '../../../utils/warroom/rank'
+import { SETTLE_MS } from '../../../utils/warroom/useWarRoom'
 import { WarRoom } from '../WarRoom'
 
 expect.extend(toHaveNoViolations)
 
 beforeEach(() => localStorage.clear())
 
-/*
- * Acceptance for #207 and t26u: type, paste or say; it lands on the list with an inline
- * acknowledgement and an Undo; suggestions as you type; one-tap recent, frequent and
- * examples; a history kept on the device.
- */
+/* The War room's poster grid (t34u): adds on one tap and stays accessible. */
 
 const open = () =>
   render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={['/war-room']}>
       <WarRoom />
     </MemoryRouter>
   )
-const field = () => screen.getByRole('combobox', { name: 'Add an item' })
-const suggestions = () => screen.queryByRole('listbox', { name: 'Matches' })
+const wall = () => screen.getByRole('list', { name: 'Ingredients and recipes' })
+const field = () =>
+  screen.getByRole('searchbox', { name: 'Search, type or paste a list' })
 const listed = (): { ingredientId: string; quantity: number }[] =>
   JSON.parse(localStorage.getItem(EXTRAS_KEY) ?? '[]')
-const listedIds = () => listed().map(({ ingredientId }) => ingredientId)
-const stored = (): HistoryEntry[] =>
-  JSON.parse(localStorage.getItem(HISTORY_KEY) ?? '[]')
-const history = () => screen.getByRole('region', { name: 'History' })
-const historyButtons = () =>
-  within(history()).queryAllByRole('button', { name: /^Add .* again$/ })
-const status = () => screen.getByRole('status')
-const seed = (entries: readonly HistoryEntry[]) =>
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(entries))
-const entry = (
-  id: string,
-  itemId: string,
-  at: number,
-  quantity = 1
-): HistoryEntry => ({ id, itemId, quantity, at })
 
-describe('typing', () => {
-  it('opens with the field focused, suggestions closed and examples to try', () => {
-    open()
-    expect(field()).toHaveFocus()
-    expect(field()).toHaveAttribute('aria-expanded', 'false')
-    expect(field()).toHaveAttribute('aria-autocomplete', 'list')
-    expect(field()).toHaveAccessibleDescription(/Type, paste or say/)
-    expect(field()).toHaveAttribute('placeholder', 'Try “3 carrots”')
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'War room'
-    )
-    expect(suggestions()).toBeNull()
-    const tryOne = screen.getByRole('region', { name: 'Try one' })
-    expect(within(tryOne).getAllByRole('button')).toHaveLength(6)
-    expect(within(history()).getByText(/Nothing yet/)).toBeInTheDocument()
-    expect(
-      within(history()).queryByRole('button', { name: 'Clear history' })
-    ).toBeNull()
-  })
-
-  it('suggests on every keystroke, on short and long names and typos, with a count', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'car')
-    expect(field()).toHaveAttribute('aria-expanded', 'true')
-    expect(field()).toHaveAttribute('aria-controls', 'war-room-suggestions')
-    expect(
-      within(suggestions() as HTMLElement).getByRole('option', {
-        name: 'Carrot'
-      })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(/^\d+ suggestions?\. Up and down/)
-    ).toBeInTheDocument()
-    await user.clear(field())
-    await user.type(field(), 'cream')
-    expect(
-      screen.getByRole('option', { name: 'Thickened cream' })
-    ).toBeInTheDocument()
-    await user.clear(field())
-    await user.type(field(), 'brocoli')
-    expect(screen.getByRole('option', { name: 'Broccoli' })).toBeInTheDocument()
-    expect(screen.getByText(/^1 suggestion\. Up and down/)).toBeInTheDocument()
-    await user.clear(field())
-    await user.type(field(), 'zzzz')
-    expect(suggestions()).toBeNull()
-    expect(screen.getByText('No suggestions')).toBeInTheDocument()
-  })
-
-  it('a tap on a suggestion adds it, says so, clears the field and keeps focus there', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'car')
-    await user.click(screen.getByRole('option', { name: 'Carrot' }))
-    expect(status()).toHaveTextContent('Carrot added')
-    expect(field()).toHaveValue('')
-    expect(field()).toHaveFocus()
-    expect(listedIds()).toEqual(['carrot'])
-    expect(
-      within(history()).getByRole('heading', { level: 3, name: 'Today' })
-    ).toBeInTheDocument()
-    expect(historyButtons()).toHaveLength(1)
-  })
-
-  it('Enter adds the best match, with a quantity when one is typed', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), '3 carrots{Enter}')
-    expect(status()).toHaveTextContent('Carrot added')
-    expect(listed()).toMatchObject([{ ingredientId: 'carrot', quantity: 3 }])
-    expect(
-      within(history()).getByRole('button', { name: 'Add carrot ×3 again' })
-    ).toBeInTheDocument()
-    expect(stored()).toMatchObject([{ itemId: 'carrot', quantity: 3 }])
-  })
-
-  it('reads pack words and weights: "2 tins of chickpeas, 500 g plain flour"', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), '2 tins of chickpeas, 500 g plain flour{Enter}')
-    expect(listed()).toMatchObject([
-      { ingredientId: 'chickpeas', quantity: 2 },
-      { ingredientId: 'plain-flour', quantity: 1 }
-    ])
-  })
-
-  it('a quantity typed before picking a suggestion goes with it', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), '2 onion')
-    await user.click(screen.getByRole('option', { name: 'Brown onion' }))
-    expect(listed()).toMatchObject([{ ingredientId: 'onion', quantity: 2 }])
-  })
-
-  it('suggests for the part being typed, and a pick adds the whole line', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'carrot, 2 oni')
-    expect(screen.queryByRole('option', { name: 'Carrot' })).toBeNull()
-    await user.click(screen.getByRole('option', { name: 'Brown onion' }))
-    expect(status()).toHaveTextContent('Carrot, Brown onion added')
-    expect(listed()).toMatchObject([
-      { ingredientId: 'carrot', quantity: 1 },
-      { ingredientId: 'onion', quantity: 2 }
-    ])
-  })
-
-  it('says when nothing matches, and when it is already on the list', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'zzzz{Enter}')
-    expect(status()).toHaveTextContent('No match for zzzz')
-    expect(historyButtons()).toHaveLength(0)
-    expect(screen.queryByRole('button', { name: /^Undo/ })).toBeNull()
-    await user.type(field(), 'carrot{Enter}')
-    await user.type(field(), 'carrot{Enter}')
-    expect(status()).toHaveTextContent('Carrot already on your list')
-    expect(historyButtons()).toHaveLength(1)
-    expect(screen.queryByRole('button', { name: /^Undo/ })).toBeNull()
-    await user.type(field(), 'car')
-    expect(
-      screen.getByRole('option', { name: 'Carrot On your list' })
-    ).toBeInTheDocument()
-  })
-
-  it('several in one line, said once each', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'carrot, onion and carrot{Enter}')
-    expect(status()).toHaveTextContent('Carrot, Brown onion added')
-    expect(historyButtons()).toHaveLength(2)
-  })
-
-  it('Enter in an empty field does nothing', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), '{Enter}')
-    expect(status()).toHaveTextContent('')
-  })
-
-  it('has no accessibility violations with suggestions open and a history', async () => {
+describe('the poster grid', () => {
+  it('adds on one tap, takes one off with minus, and passes axe', async () => {
     const user = userEvent.setup()
     const { container } = open()
-    await user.type(field(), 'carrot{Enter}')
-    await user.type(field(), 'oni{ArrowDown}')
+    const banana = within(wall()).getByRole('button', { name: 'Add banana' })
+    await user.click(banana)
+    await user.click(banana)
+    expect(listed()).toMatchObject([{ ingredientId: 'banana', quantity: 2 }])
+    expect(
+      within(wall()).getByRole('button', { name: 'Add banana, 2 on list' })
+    ).toBeInTheDocument()
+    await user.click(
+      within(wall()).getByRole('button', { name: 'One less banana' })
+    )
+    expect(listed()).toMatchObject([{ ingredientId: 'banana', quantity: 1 }])
     expect(await axe(container)).toHaveNoViolations()
   })
 
-  it('links back to the list', () => {
-    open()
-    expect(
-      screen.getByRole('link', { name: 'Back to your list' })
-    ).toHaveAttribute('href', '/')
-  })
-})
-
-describe('keyboard', () => {
-  it('arrows move the highlight through the suggestions and round; Enter adds it', async () => {
+  it('"ba" shows Banana first; Enter adds it and keeps the field', async () => {
     const user = userEvent.setup()
     open()
-    await user.type(field(), 'onion')
-    const options = screen.getAllByRole('option')
-    expect(options.length).toBeGreaterThan(2)
-    expect(field()).not.toHaveAttribute('aria-activedescendant')
-    await user.keyboard('{ArrowDown}')
-    expect(field()).toHaveAttribute('aria-activedescendant', options[0]?.id)
-    expect(options[0]).toHaveAttribute('aria-selected', 'true')
-    await user.keyboard('{ArrowDown}')
-    expect(field()).toHaveAttribute('aria-activedescendant', options[1]?.id)
-    expect(options[0]).toHaveAttribute('aria-selected', 'false')
-    await user.keyboard('{ArrowUp}{ArrowUp}')
-    expect(field()).toHaveAttribute(
-      'aria-activedescendant',
-      options[options.length - 1]?.id
-    )
-    await user.keyboard('{ArrowDown}{ArrowDown}{Enter}')
-    expect(status()).toHaveTextContent(`${options[1]?.textContent ?? ''} added`)
-  })
-
-  it('ArrowUp from no highlight goes to the last suggestion', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'onion{ArrowUp}')
-    const options = screen.getAllByRole('option')
-    expect(options[options.length - 1]).toHaveAttribute('aria-selected', 'true')
-  })
-
-  it('Escape closes the suggestions, then clears the field; ArrowDown opens them again', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'car{ArrowDown}{Escape}')
-    expect(field()).toHaveAttribute('aria-expanded', 'false')
-    expect(field()).not.toHaveAttribute('aria-activedescendant')
-    expect(field()).toHaveValue('car')
-    await user.keyboard('{ArrowUp}')
-    expect(field()).toHaveAttribute('aria-expanded', 'false')
-    await user.keyboard('{ArrowDown}')
-    expect(field()).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getAllByRole('option')[0]).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
-    await user.keyboard('{Escape}{Escape}')
-    expect(field()).toHaveValue('')
-    await user.keyboard('{Escape}{ArrowDown}')
-    expect(field()).toHaveValue('')
-    expect(field()).toHaveAttribute('aria-expanded', 'false')
-  })
-
-  it('Tab completes the highlighted suggestion and stays; without a highlight it moves on', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), '2 car{ArrowDown}{Tab}')
-    expect(field()).toHaveValue('2 carrot')
-    expect(field()).toHaveFocus()
-    await user.type(field(), ', oni{ArrowDown}')
-    await user.keyboard('{Shift>}{Tab}{/Shift}')
-    expect(field()).not.toHaveFocus()
-    await user.click(field())
-    await user.tab()
-    expect(field()).not.toHaveFocus()
-  })
-
-  it('leaving the field drops the highlight', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'car{ArrowDown}')
-    act(() => field().blur())
-    expect(field()).not.toHaveAttribute('aria-activedescendant')
-  })
-
-  it('"/" from anywhere on the page goes to the field, but not while typing elsewhere', async () => {
-    const user = userEvent.setup()
-    open()
-    const back = screen.getByRole('link', { name: 'Back to your list' })
-    act(() => back.focus())
     await user.keyboard('/')
     expect(field()).toHaveFocus()
-    expect(field()).toHaveValue('')
-    await user.keyboard('/')
-    expect(field()).toHaveValue('/')
-    act(() => back.focus())
-    await user.keyboard('{Control>}/{/Control}')
-    expect(back).toHaveFocus()
-    await user.keyboard('{Meta>}/{/Meta}{Alt>}/{/Alt}a')
-    expect(back).toHaveFocus()
-    const editable = document.createElement('div')
-    Object.defineProperty(editable, 'isContentEditable', { value: true })
-    document.body.append(editable)
-    fireEvent.keyDown(editable, { key: '/' })
-    expect(back).toHaveFocus()
-    fireEvent.keyDown(document, { key: '/' })
+    await user.keyboard('ba')
+    const matches = screen.getByRole('list', { name: 'Matches' })
+    const first = within(matches).getAllByRole('button')[0]
+    expect(first).toHaveAccessibleName('Add banana')
+    await user.keyboard('{Enter}')
+    expect(listed()).toMatchObject([{ ingredientId: 'banana', quantity: 1 }])
     expect(field()).toHaveFocus()
-    editable.remove()
-  })
-
-  it('lists the shortcuts', () => {
-    open()
-    const group = screen.getByText('Keyboard shortcuts').closest('details')
-    expect(group).not.toBeNull()
-    expect(within(group as HTMLElement).getAllByRole('term')).toHaveLength(6)
-  })
-})
-
-describe('rapid entry: paste and undo', () => {
-  it('a pasted list goes on at once, bullets and all, with what was typed', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'carrot')
-    await user.paste('- [ ] 2 eggs\n- garlic\n\n3. honey')
-    expect(status()).toHaveTextContent('Carrot, Eggs, Garlic, Honey added')
-    expect(listed()).toMatchObject([
-      { ingredientId: 'carrot' },
-      { ingredientId: 'egg', quantity: 2 },
-      { ingredientId: 'garlic' },
-      { ingredientId: 'honey' }
-    ])
     expect(field()).toHaveValue('')
   })
 
-  it('a pasted word is just typed', async () => {
+  it('the kind toggle filters the wall and is remembered', async () => {
     const user = userEvent.setup()
-    open()
-    await user.paste('garlic')
-    expect(field()).toHaveValue('garlic')
-    expect(listed()).toEqual([])
-  })
-
-  it('Undo takes the last add off the list and out of the history, and comes back to the field', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'garlic{Enter}')
-    await user.type(field(), 'carrot and onion{Enter}')
-    await user.click(
-      screen.getByRole('button', { name: 'Undo adding Carrot, Brown onion' })
-    )
-    expect(listedIds()).toEqual(['garlic'])
-    expect(stored().map(({ itemId }) => itemId)).toEqual(['garlic'])
-    expect(status()).toHaveTextContent(
-      'Carrot, Brown onion taken off your list'
-    )
-    expect(field()).toHaveFocus()
-    expect(screen.queryByRole('button', { name: /^Undo/ })).toBeNull()
-  })
-
-  it('Ctrl+Z or Cmd+Z in an empty field undoes; with text it is the field’s own undo', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'garlic{Enter}')
-    await user.type(field(), 'x{Control>}z{/Control}')
-    expect(listedIds()).toEqual(['garlic'])
-    await user.clear(field())
-    await user.keyboard('z')
-    expect(field()).toHaveValue('z')
-    await user.clear(field())
-    await user.keyboard('{Control>}z{/Control}')
-    expect(listedIds()).toEqual([])
-    expect(status()).toHaveTextContent('Garlic taken off your list')
-    await user.type(field(), 'carrot{Enter}{Meta>}z{/Meta}')
-    expect(listedIds()).toEqual([])
-    await user.keyboard('{Control>}z{/Control}')
-    expect(status()).toHaveTextContent('Carrot taken off your list')
-  })
-})
-
-describe('one tap: recent, often added, examples', () => {
-  const now = new Date('2026-11-10T12:00:00').getTime()
-  const hour = 3_600_000
-
-  it('shows recent and often-added items not on the list, and adds in one tap', async () => {
-    seed([
-      ...['garlic', 'egg', 'honey', 'jam', 'lime', 'tea-bags', 'butter'].map(
-        (id, i) => entry(`r${i}`, id, now - i * hour)
-      ),
-      entry('c1', 'carrot', now - 20 * hour),
-      entry('c2', 'carrot', now - 21 * hour),
-      entry('b2', 'butter', now - 22 * hour),
-      entry('gone', 'not-in-the-catalogue', now - 23 * hour)
-    ])
-    const user = userEvent.setup()
-    open()
-    const recent = screen.getByRole('region', { name: 'Recently added' })
-    expect(
-      within(recent)
-        .getAllByRole('button')
-        .map((b) => b.textContent)
-    ).toEqual(['Garlic', 'Eggs', 'Honey', 'Jam', 'Lime', 'Tea bags'])
-    const often = screen.getByRole('region', { name: 'Often added' })
-    expect(
-      within(often)
-        .getAllByRole('button')
-        .map((b) => b.textContent)
-    ).toEqual(['Butter', 'Carrot'])
-    expect(screen.queryByRole('region', { name: 'Try one' })).toBeNull()
-    await user.click(within(often).getByRole('button', { name: 'Add carrot' }))
-    expect(listedIds()).toEqual(['carrot'])
-    expect(field()).toHaveFocus()
-    expect(
-      within(
-        screen.getByRole('region', { name: 'Recently added' })
-      ).queryByRole('button', { name: 'Add carrot' })
-    ).toBeNull()
-  })
-
-  it('hides the chips while typing', async () => {
-    seed([entry('a', 'garlic', now)])
-    const user = userEvent.setup()
-    open()
-    expect(screen.getByRole('region', { name: 'Recently added' })).toBeVisible()
-    await user.type(field(), 'g')
-    expect(screen.queryByRole('region', { name: 'Recently added' })).toBeNull()
-  })
-
-  it('an example goes into the field to try, and the examples turn over after each add', async () => {
-    const user = userEvent.setup()
-    open()
-    const tryOne = screen.getByRole('region', { name: 'Try one' })
-    await user.click(within(tryOne).getByRole('button', { name: '3 carrots' }))
-    expect(field()).toHaveValue('3 carrots')
-    expect(field()).toHaveFocus()
-    await user.keyboard('{Enter}')
-    expect(field()).toHaveAttribute('placeholder', 'Try “2 tins of chickpeas”')
-    const more = screen.getByText('More examples').closest('details')
-    expect(within(more as HTMLElement).getAllByRole('button')).toHaveLength(16)
-  })
-})
-
-describe('history', () => {
-  const now = new Date('2026-11-10T12:00:00').getTime()
-  const day = 86_400_000
-  beforeEach(() => {
-    jest.spyOn(Date, 'now').mockReturnValue(now)
-  })
-  afterEach(() => jest.restoreAllMocks())
-
-  const seeded = () =>
-    seed([
-      entry('t1', 'carrot', now - 1000, 3),
-      entry('t2', 'garlic', now - 2000),
-      entry('gone', 'not-in-the-catalogue', now - 3000),
-      entry('y1', 'onion', now - day),
-      entry('old', 'egg', now - 4 * day),
-      entry('lost', 'not-in-the-catalogue', now - 6 * day)
-    ])
-
-  it('reads newest first, in days, skipping items the catalogue no longer has', () => {
-    seeded()
-    open()
-    const days = within(history()).getAllByRole('heading', { level: 3 })
-    expect(days.map((h) => h.textContent)).toEqual([
-      'Today',
-      'Yesterday',
-      expect.stringMatching(/Friday/)
-    ])
-    expect(historyButtons().map((b) => b.getAttribute('aria-label'))).toEqual([
-      'Add carrot ×3 again',
-      'Add garlic again',
-      'Add brown onion again',
-      'Add eggs again'
-    ])
-    expect(
-      within(history()).getAllByRole('button', { name: /^Remove / })[0]
-    ).toHaveAccessibleName(/^Remove carrot, .+, from history$/)
-  })
-
-  it('adds an entry again in one tap, with its quantity', async () => {
-    seeded()
-    const user = userEvent.setup()
-    open()
-    await user.click(
-      within(history()).getByRole('button', { name: 'Add carrot ×3 again' })
-    )
-    expect(listed()).toMatchObject([{ ingredientId: 'carrot', quantity: 3 }])
-    expect(historyButtons()).toHaveLength(5)
-    expect(field()).toHaveFocus()
-  })
-
-  it('removes one entry and moves focus to the next, then the one before, then the heading', async () => {
-    seed([entry('a', 'carrot', now - 1000), entry('b', 'garlic', now - 2000)])
-    const user = userEvent.setup()
-    open()
-    await user.click(
-      within(history()).getByRole('button', { name: /^Remove carrot/ })
-    )
-    expect(status()).toHaveTextContent('Carrot removed from history')
-    expect(stored().map(({ id }) => id)).toEqual(['b'])
-    await waitFor(() =>
-      expect(
-        within(history()).getByRole('button', { name: /^Remove garlic/ })
-      ).toHaveFocus()
-    )
-    await user.keyboard('{Enter}')
-    await waitFor(() =>
-      expect(
-        within(history()).getByRole('heading', { level: 2, name: 'History' })
-      ).toHaveFocus()
-    )
-    expect(within(history()).getByText(/Nothing yet/)).toBeInTheDocument()
-  })
-
-  it('removing the last entry of several moves focus to the one before', async () => {
-    seed([entry('a', 'carrot', now - 1000), entry('b', 'garlic', now - 2000)])
-    const user = userEvent.setup()
-    open()
-    await user.click(
-      within(history()).getByRole('button', { name: /^Remove garlic/ })
-    )
-    await waitFor(() =>
-      expect(
-        within(history()).getByRole('button', { name: /^Remove carrot/ })
-      ).toHaveFocus()
-    )
-  })
-
-  it('clears everything only after a question, with Keep focused first', async () => {
-    seeded()
-    const user = userEvent.setup()
-    open()
-    await user.click(screen.getByRole('button', { name: 'Clear history' }))
-    const question = screen.getByRole('group', { name: /Clear all of your/ })
-    await waitFor(() =>
-      expect(
-        within(question).getByRole('button', { name: 'Keep' })
-      ).toHaveFocus()
-    )
-    await user.keyboard('{Enter}')
-    expect(
-      screen.queryByRole('group', { name: /Clear all of your/ })
-    ).toBeNull()
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'Clear history' })
-      ).toHaveFocus()
-    )
-    expect(historyButtons()).toHaveLength(4)
-    await user.click(screen.getByRole('button', { name: 'Clear history' }))
-    await user.click(screen.getByRole('button', { name: 'Clear all' }))
-    expect(stored()).toEqual([])
-    expect(status()).toHaveTextContent('History cleared')
-    expect(within(history()).getByText(/Nothing yet/)).toBeInTheDocument()
-    expect(field()).toHaveFocus()
-  })
-
-  it('clearing also drops the Undo for the last add', async () => {
-    const user = userEvent.setup()
-    open()
-    await user.type(field(), 'carrot{Enter}')
-    await user.click(screen.getByRole('button', { name: 'Clear history' }))
-    await user.click(screen.getByRole('button', { name: 'Clear all' }))
-    expect(screen.queryByRole('button', { name: /^Undo/ })).toBeNull()
-    expect(listedIds()).toEqual(['carrot'])
-  })
-
-  it('shows the newest 30, then more on request with focus on the first new one', async () => {
-    seed(
-      Array.from({ length: 35 }, (_, i) =>
-        entry(`e${i}`, i % 2 === 0 ? 'carrot' : 'garlic', now - i * 1000)
-      )
-    )
-    const user = userEvent.setup()
-    open()
-    expect(historyButtons()).toHaveLength(30)
-    await user.click(screen.getByRole('button', { name: 'Show 5 more' }))
-    expect(historyButtons()).toHaveLength(35)
-    await waitFor(() => expect(historyButtons()[30]).toHaveFocus())
-    expect(screen.queryByRole('button', { name: /^Show \d+ more$/ })).toBeNull()
-  })
-
-  it('a question left open goes when the page goes', () => {
-    seeded()
     const { unmount } = open()
-    fireEvent.click(screen.getByRole('button', { name: 'Clear history' }))
+    await user.click(screen.getByRole('radio', { name: 'Recipes' }))
+    expect(
+      within(wall()).queryByRole('button', { name: 'Add banana' })
+    ).not.toBeInTheDocument()
     unmount()
+    open()
+    expect(screen.getByRole('radio', { name: 'Recipes' })).toBeChecked()
   })
 })
 
-class FakeRecogniser {
-  static last: FakeRecogniser | null = null
-  lang = ''
-  continuous = false
-  interimResults = false
-  onresult: ((event: unknown) => void) | null = null
-  onstart: (() => void) | null = null
-  onend: (() => void) | null = null
-  onerror: ((event: { error: string }) => void) | null = null
-  start = jest.fn(() => this.onstart?.())
-  stop = jest.fn(() => this.onend?.())
-  abort = jest.fn()
-  constructor() {
-    FakeRecogniser.last = this
-  }
+/* ---- the rest of the poster grid: voice, keys, paste, recipes, Undo, suggestions ---- */
+
+interface Running {
+  readonly lang: string
+  readonly listener: Listener
+  readonly stop: jest.Mock
+  readonly cancel: jest.Mock
 }
 
-const say = (text: string) =>
-  act(() =>
-    FakeRecogniser.last?.onresult?.({
-      resultIndex: 0,
-      results: [{ isFinal: true, 0: { transcript: text } }]
-    })
+const fakeVoice = (abilities: Partial<Abilities>) => {
+  const runs: Running[] = []
+  const engine: Engine = (lang, listener) => {
+    const run = { lang, listener, stop: jest.fn(), cancel: jest.fn() }
+    runs.push(run)
+    return run
+  }
+  const setup = (): VoiceSetup => ({
+    abilities: { native: false, webSpeech: false, record: false, ...abilities },
+    engines: { native: engine, webSpeech: engine, onDevice: engine },
+    lang: () => 'en-AU'
+  })
+  return { runs, setup }
+}
+
+const openWith = (setup: () => VoiceSetup) =>
+  render(
+    <MemoryRouter initialEntries={['/war-room']}>
+      <WarRoom setup={setup} />
+    </MemoryRouter>
   )
 
 const talk = () => screen.getByRole('button', { name: 'Talk' })
+const said = () => screen.getByRole('status')
+const live = () =>
+  screen.getByText(
+    (_, element) =>
+      element?.tagName === 'P' &&
+      element.getAttribute('aria-live') === 'polite' &&
+      element.id === ''
+  )
 
-describe('voice (#207: the giant record button)', () => {
-  it('has no record button when the device cannot listen', () => {
-    open()
+describe('the big yellow mic on the bar’s edge', () => {
+  it('is not there when the device cannot listen, and the field keeps its own padding', () => {
+    openWith(fakeVoice({}).setup)
     expect(screen.queryByRole('button', { name: 'Talk' })).toBeNull()
+    expect(field().className).toContain('pr-3')
   })
 
-  describe('in a browser that can listen', () => {
-    beforeEach(() => {
-      Reflect.set(window, 'webkitSpeechRecognition', FakeRecogniser)
-    })
-    afterEach(() => {
-      Reflect.deleteProperty(window, 'webkitSpeechRecognition')
-    })
+  it('sits half over the field’s right-hand edge, yellow with ink, and says where the audio goes', () => {
+    openWith(fakeVoice({ webSpeech: true }).setup)
+    expect(talk().className).toContain('bg-mic')
+    expect(talk().className).toContain('text-on-mic')
+    expect(talk().className).toContain('-right-7')
+    expect(talk().className).toContain('h-14')
+    expect(field().className).toContain('pr-10')
+    expect(talk()).toHaveAccessibleDescription(
+      'Uses your browser’s speech recognition, which may send audio to Google or Apple.'
+    )
+  })
 
-    it('listens while on, adds what is said (spoken numbers too), and stops when pressed again', async () => {
-      const user = userEvent.setup()
-      open()
-      await user.click(talk())
-      expect(FakeRecogniser.last?.start).toHaveBeenCalled()
-      expect(FakeRecogniser.last?.lang).toBe('en-AU')
-      expect(talk()).toHaveAttribute('aria-pressed', 'true')
-      say('Two carrots and onion.')
-      expect(screen.getByRole('status')).toHaveTextContent(
-        'Carrot, Brown onion added'
+  it('on-device: says the first download', () => {
+    openWith(fakeVoice({ record: true }).setup)
+    expect(talk()).toHaveAccessibleDescription(/Recognised on this device/)
+    expect(talk()).toHaveAccessibleDescription(/MB speech model/)
+  })
+
+  it('a tap listens, shows what it hears, adds what is said, and a tap stops', async () => {
+    const user = userEvent.setup()
+    const { runs } = fakeVoice({ webSpeech: true })
+    const voice = fakeVoice({ webSpeech: true })
+    openWith(voice.setup)
+    expect(runs).toHaveLength(0)
+    await user.click(talk())
+    const run = voice.runs[0]
+    expect(run?.lang).toBe('en-AU')
+    expect(talk()).toHaveAttribute('aria-pressed', 'true')
+    expect(talk().className).toContain('motion-safe:animate-pulse')
+    expect(live()).toHaveTextContent('Starting the microphone')
+    act(() => run?.listener.listening())
+    expect(live()).toHaveTextContent('Listening')
+    act(() => run?.listener.interim('two bana'))
+    expect(live()).toHaveTextContent('Hearing: two bana')
+    act(() => run?.listener.final('Two bananas.'))
+    expect(listed()).toMatchObject([{ ingredientId: 'banana', quantity: 2 }])
+    await user.click(talk())
+    expect(run?.stop).toHaveBeenCalled()
+    act(() => run?.listener.transcribing())
+    expect(live()).toHaveTextContent('Working out what you said')
+    act(() => run?.listener.end())
+    expect(talk()).toHaveAttribute('aria-pressed', 'false')
+    expect(live()).toHaveTextContent('')
+    expect(live()).toHaveClass('sr-only')
+  })
+
+  it('shows the model download, then an error in words', async () => {
+    const user = userEvent.setup()
+    const voice = fakeVoice({ record: true })
+    openWith(voice.setup)
+    await user.click(talk())
+    const run = voice.runs[0]
+    act(() => run?.listener.download({ loaded: 5e6, total: 34e6 }))
+    expect(live()).toHaveTextContent('Downloading the speech model: 5 of 34 MB')
+    act(() => run?.listener.error('denied'))
+    expect(live()).toHaveTextContent('The microphone is blocked.')
+  })
+})
+
+describe('the search field’s keys', () => {
+  it('ArrowDown goes to the first tile; ArrowUp from the top row comes back', async () => {
+    const user = userEvent.setup()
+    open()
+    await user.click(field())
+    await user.keyboard('{ArrowDown}')
+    expect(document.activeElement).toHaveAttribute('data-tile')
+    await user.keyboard('{ArrowUp}')
+    expect(field()).toHaveFocus()
+  })
+
+  it('Escape clears what was typed; Enter on nothing does nothing', async () => {
+    const user = userEvent.setup()
+    open()
+    await user.click(field())
+    await user.keyboard('{Escape}{Enter}')
+    expect(listed()).toEqual([])
+    await user.keyboard('ba')
+    expect(
+      screen.getByText(/ matches\. Down arrow to reach them\.$/)
+    ).toBeInTheDocument()
+    await user.keyboard('{Escape}')
+    expect(field()).toHaveValue('')
+  })
+
+  it('a tapped match clears the search', async () => {
+    const user = userEvent.setup()
+    open()
+    await user.click(field())
+    await user.keyboard('ba')
+    const matches = screen.getByRole('list', { name: 'Matches' })
+    const first = within(matches).getAllByRole('button')[0]
+    if (first === undefined) throw new Error('no match')
+    await user.click(first)
+    expect(field()).toHaveValue('')
+    expect(listed()).toMatchObject([{ ingredientId: 'banana', quantity: 1 }])
+  })
+
+  it('says when nothing matches', async () => {
+    const user = userEvent.setup()
+    open()
+    await user.click(field())
+    await user.keyboard('zzzzq')
+    expect(
+      screen.getByText('No matches. Enter adds what you typed if it can.')
+    ).toBeInTheDocument()
+    await user.keyboard('{Enter}')
+    expect(said()).toHaveTextContent('No match for zzzzq')
+  })
+
+  it('a typed list adds each once and says so; Ctrl+Z in an empty field undoes the last', async () => {
+    const user = userEvent.setup()
+    open()
+    await user.click(field())
+    await user.keyboard('banana, banana, 2 carrots{Enter}')
+    expect(said()).toHaveTextContent('Banana, Carrot added')
+    expect(listed()).toMatchObject([
+      { ingredientId: 'banana', quantity: 1 },
+      { ingredientId: 'carrot', quantity: 2 }
+    ])
+    await user.keyboard('{Control>}z{/Control}')
+    expect(listed()).toHaveLength(2)
+    await user.click(
+      within(wall()).getByRole('button', { name: 'Add banana, 1 on list' })
+    )
+    await user.click(field())
+    await user.keyboard('x{Control>}z{/Control}{Backspace}{Meta>}z{/Meta}')
+    expect(listed()).toMatchObject([
+      { ingredientId: 'banana', quantity: 1 },
+      { ingredientId: 'carrot', quantity: 2 }
+    ])
+  })
+
+  it('a pasted list goes on at once; a pasted word is just typed', async () => {
+    const user = userEvent.setup()
+    open()
+    await user.click(field())
+    await user.paste('banana')
+    expect(field()).toHaveValue('banana')
+    await user.clear(field())
+    await user.paste('- banana\n- carrot')
+    expect(listed().map(({ ingredientId }) => ingredientId)).toEqual([
+      'banana',
+      'carrot'
+    ])
+  })
+})
+
+describe('Undo, minus and recipes', () => {
+  beforeAll(() => {
+    Element.prototype.scrollIntoView = jest.fn()
+  })
+
+  it('Undo takes the last tap back; minus to none takes it off the list', async () => {
+    const user = userEvent.setup()
+    open()
+    const undo = () => screen.getByRole('button', { name: /^Undo/ })
+    expect(undo()).toBeDisabled()
+    await user.click(within(wall()).getByRole('button', { name: 'Add banana' }))
+    await user.click(
+      within(wall()).getByRole('button', { name: 'Add banana, 1 on list' })
+    )
+    expect(undo()).toHaveAccessibleName('Undo Banana ×2')
+    await user.click(undo())
+    expect(listed()).toMatchObject([{ ingredientId: 'banana', quantity: 1 }])
+    expect(said()).toHaveTextContent('Banana, 1 on list')
+    await user.click(
+      within(wall()).getByRole('button', { name: 'One less banana' })
+    )
+    expect(listed()).toEqual([])
+    expect(said()).toHaveTextContent('Banana, none on list')
+    await user.click(within(wall()).getByRole('button', { name: 'Add banana' }))
+    await user.click(undo())
+    expect(listed()).toEqual([])
+  })
+
+  it('the minus key on a tile takes one off; other keys move between tiles', async () => {
+    const user = userEvent.setup()
+    open()
+    const banana = within(wall()).getByRole('button', { name: 'Add banana' })
+    await user.click(banana)
+    await user.click(banana)
+    within(wall())
+      .getByRole('button', { name: 'Add banana, 2 on list' })
+      .focus()
+    await user.keyboard('-')
+    expect(listed()).toMatchObject([{ ingredientId: 'banana', quantity: 1 }])
+    await user.keyboard('{Home}')
+    expect(within(wall()).getAllByRole('button')[0]).toHaveFocus()
+  })
+
+  it('a recipe goes on in one tap, once, comes off with minus, and Undo takes it back', async () => {
+    const user = userEvent.setup()
+    open()
+    await user.click(screen.getByRole('radio', { name: 'Recipes' }))
+    const recipe = within(wall()).getAllByRole('button')[0]
+    const name = recipe?.getAttribute('aria-label') ?? ''
+    expect(name).toMatch(/^Add recipe: /)
+    if (recipe === undefined) throw new Error('no recipe tile')
+    await user.click(recipe)
+    const on = within(wall()).getByRole('button', {
+      name: /^Recipe: .*, on list$/
+    })
+    await user.click(on)
+    expect(said()).toHaveTextContent(/, 1 on list$/)
+    await user.click(
+      within(wall()).getByRole('button', { name: /^Take .* recipe off$/ })
+    )
+    expect(said()).toHaveTextContent(/, none on list$/)
+    expect(within(wall()).getAllByRole('button')[0]).toHaveAccessibleName(name)
+    await user.click(within(wall()).getAllByRole('button')[0] ?? recipe)
+    expect(within(wall()).getAllByRole('button')[0]).not.toHaveAccessibleName(
+      name
+    )
+    await user.click(screen.getByRole('button', { name: /^Undo/ }))
+    expect(within(wall()).getAllByRole('button')[0]).toHaveAccessibleName(name)
+  })
+
+  it('a recipe’s ingredients count as on the list', async () => {
+    const user = userEvent.setup()
+    open()
+    await user.click(screen.getByRole('radio', { name: 'Recipes' }))
+    const recipe = within(wall()).getAllByRole('button')[0]
+    if (recipe === undefined) throw new Error('no recipe tile')
+    await user.click(recipe)
+    await user.click(screen.getByRole('radio', { name: 'Ingredients' }))
+    expect(
+      within(wall()).getAllByRole('button', { name: /, 1 on list$/ }).length
+    ).toBeGreaterThan(0)
+  })
+
+  it('a stored kind the app does not know falls back to Both', () => {
+    localStorage.setItem('ingre.warRoom.kind', '"zzz"')
+    open()
+    expect(screen.getByRole('radio', { name: 'Both' })).toBeChecked()
+  })
+})
+
+describe('More: clear the history', () => {
+  it('clears it, and Undo puts it back', async () => {
+    const user = userEvent.setup()
+    open()
+    await user.click(within(wall()).getByRole('button', { name: 'Add banana' }))
+    await user.click(screen.getByRole('button', { name: 'More' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Clear history' }))
+    expect(said()).toHaveTextContent('History cleared')
+    expect(localStorage.getItem('ingre.warRoom.history')).toBe('[]')
+    await user.click(
+      screen.getByRole('button', { name: 'Undo History cleared' })
+    )
+    expect(localStorage.getItem('ingre.warRoom.history')).not.toBe('[]')
+  })
+})
+
+describe('suggestions settle after the last tap', () => {
+  afterEach(() => jest.useRealTimers())
+
+  it('fill the strip 600 ms later with things that go with the list, and a tap adds one', async () => {
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    open()
+    const strip = () => screen.getByRole('list', { name: 'Suggestions' })
+    await user.click(within(wall()).getByRole('button', { name: 'Add banana' }))
+    await user.click(screen.getByRole('radio', { name: 'Ingredients' }))
+    await user.click(field())
+    await user.keyboard('beef mince{Enter}')
+    act(() => jest.advanceTimersByTime(SETTLE_MS))
+    const first = within(strip()).getAllByRole('button')[0]
+    expect(first).toHaveAccessibleName(/, with /)
+    if (first === undefined) throw new Error('no suggestion')
+    await user.click(first)
+    expect(listed().length).toBe(3)
+  })
+
+  it('pads with recipes to try, and with this person’s usuals', () => {
+    jest.useFakeTimers()
+    localStorage.setItem(
+      'ingre.warRoom.history',
+      JSON.stringify(
+        ['quinoa', 'tofu', 'kale', 'tempeh', 'miso-paste'].map((itemId, i) => ({
+          id: `h${i}`,
+          itemId,
+          quantity: 1,
+          at: 1_000 + i
+        }))
       )
-      expect(historyButtons()).toHaveLength(2)
-      say('garlic')
-      expect(historyButtons()).toHaveLength(3)
-      await user.click(talk())
-      expect(FakeRecogniser.last?.stop).toHaveBeenCalled()
-      expect(talk()).toHaveAttribute('aria-pressed', 'false')
-    })
+    )
+    open()
+    const names = within(screen.getByRole('list', { name: 'Suggestions' }))
+      .getAllByRole('button')
+      .map((b) => b.getAttribute('aria-label'))
+    expect(names.some((n) => n?.endsWith('try it'))).toBe(true)
+  })
 
-    it('keeps the text field for typing alongside', async () => {
-      const user = userEvent.setup()
-      open()
-      await user.type(field(), 'egg{Enter}')
-      expect(screen.getByRole('status')).toHaveTextContent('Eggs added')
-      expect(talk()).toBeInTheDocument()
-    })
+  it('pads with this person’s usuals beyond what the wall already shows', () => {
+    const ids = ALL_TILES.filter((tile) => tile.kind === 'ingredient')
+      .slice(0, 40)
+      .map(({ id }) => id)
+    localStorage.setItem(
+      'ingre.warRoom.history',
+      JSON.stringify(
+        ids.map((itemId, i) => ({
+          id: `h${i}`,
+          itemId,
+          quantity: 1,
+          at: 1_000 + i
+        }))
+      )
+    )
+    open()
+    const names = within(screen.getByRole('list', { name: 'Suggestions' }))
+      .getAllByRole('button')
+      .map((b) => b.getAttribute('aria-label'))
+    expect(names.some((n) => n?.endsWith('usual'))).toBe(true)
+  })
+})
 
-    it('stops listening when the page goes', async () => {
-      const user = userEvent.setup()
-      const { unmount } = open()
-      await user.click(talk())
-      unmount()
-      expect(FakeRecogniser.last?.abort).toHaveBeenCalled()
-    })
+describe('on a tablet', () => {
+  afterEach(() => resetViewport())
 
-    it('has no accessibility violations while listening', async () => {
-      const user = userEvent.setup()
-      const { container } = open()
-      await user.click(talk())
-      expect(await axe(container)).toHaveNoViolations()
-    })
+  it('draws bigger pictures', () => {
+    setViewportWidth(768)
+    open()
+    const img = wall().querySelector('img')
+    expect(img).toHaveAttribute('width', '64')
+  })
+})
+
+describe('the bar under a sticky header', () => {
+  it('sticks right under the app header', () => {
+    const header = document.createElement('header')
+    header.className = 'ingre-navbar'
+    header.style.position = 'sticky'
+    Object.defineProperty(header, 'offsetHeight', { value: 60 })
+    document.body.append(header)
+    const { unmount } = open()
+    expect(field().closest('.sticky')).toHaveStyle({ top: '60px' })
+    window.dispatchEvent(new Event('resize'))
+    unmount()
+    header.style.position = 'static'
+    open()
+    expect(field().closest('.sticky')).toHaveStyle({ top: '0px' })
+    header.remove()
+  })
+})
+
+describe('a picture that fails to load', () => {
+  it('falls back to initials on the aisle colour', () => {
+    open()
+    const img = wall().querySelector('img')
+    if (img === null) throw new Error('no picture')
+    fireEvent.error(img)
+    expect(screen.getAllByTestId('tile-fallback').length).toBe(1)
   })
 })
