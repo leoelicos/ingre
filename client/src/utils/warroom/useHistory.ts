@@ -25,6 +25,8 @@ export const useHistory = () => {
     },
     remove: (ids: ReadonlySet<string>): void =>
       update((previous) => withoutIds(previous, ids)),
-    clear: (): void => update(() => [])
+    clear: (): void => update(() => []),
+    /** puts back a whole history, for Undo after Clear */
+    restore: (entries: readonly HistoryEntry[]): void => update(() => entries)
   }
 }

@@ -15,6 +15,9 @@ module.exports = {
         primary: 'var(--color-primary)',
         'on-primary': 'var(--color-on-primary)',
         accent: 'var(--color-accent)',
+        /* the War room's big yellow mic (t34u) */
+        mic: 'var(--color-mic)',
+        'on-mic': 'var(--color-on-mic)',
         brand: 'var(--color-brand)',
         highlight: 'var(--color-highlight)',
         'inverse-text': 'var(--color-inverse-text)',
