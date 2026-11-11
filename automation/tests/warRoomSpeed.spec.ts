@@ -1,4 +1,3 @@
-import { writeFileSync } from 'fs'
 import type { Page } from '@playwright/test'
 import { expect, test } from './fixtures'
 
@@ -190,23 +189,22 @@ const shop = async (page: Page, design: string, visit: string) => {
   return result
 }
 
-for (const design of ['a', 'b', 'c'] as const) {
-  test(`speed run, design ${design}: 40 adds, nothing moves, feedback fast`, async ({
-    page
-  }, info) => {
-    test.skip(info.project.name !== 'mobile')
-    test.setTimeout(240_000)
-    await page.goto(`/war-room?design=${design}`)
-    await page.evaluate(() => localStorage.clear())
-    await page.reload()
-    const first = await shop(page, design, 'first')
-    /* next week: same shop, the wall has re-sorted from history on this new visit */
-    await page.evaluate(() => localStorage.removeItem('ingre.list.extras'))
-    await page.reload()
-    const again = await shop(page, design, 'returning')
-    writeFileSync(
-      `/workspace/warroom-speed-${design}.json`,
-      JSON.stringify([first, again], null, 2)
-    )
+test('speed run, the poster grid: 40 adds, nothing moves, feedback fast', async ({
+  page
+}, info) => {
+  test.skip(info.project.name !== 'mobile')
+  test.setTimeout(240_000)
+  await page.goto('/war-room')
+  await page.evaluate(() => localStorage.clear())
+  await page.reload()
+  const first = await shop(page, 'poster', 'first')
+  /* next week: same shop, the wall has re-sorted from history on this new visit */
+  await page.evaluate(() => localStorage.removeItem('ingre.list.extras'))
+  await page.reload()
+  const again = await shop(page, 'poster', 'returning')
+  /* the timings ride along with the report instead of a file on the runner */
+  await info.attach('warroom-speed.json', {
+    body: JSON.stringify([first, again], null, 2),
+    contentType: 'application/json'
   })
-}
+})
