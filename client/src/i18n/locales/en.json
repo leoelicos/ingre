@@ -160,6 +160,19 @@
     "categories": "Categories",
     "marked": "{{name}}, {{mark}}"
   },
+  "orderPad": {
+    "label": "Order pad",
+    "example": "portion for 3",
+    "hint": "Try “portion for 3” or “at most 1 kg carrots”.",
+    "apply": "Apply",
+    "unreadable": "Not understood. Try “portion for 3” or “at most 1 kg carrots”.",
+    "portions": "Portions set to {{portions}}.",
+    "set": "{{name}} set to {{amount}}.",
+    "within": "{{name}} is already within that.",
+    "missing": "No {{ingredient}} in this recipe.",
+    "unit": "{{name}} can’t be compared in that unit.",
+    "range": "Portions go from {{min}} to {{max}}."
+  },
   "row": {
     "seeRecipe": "See recipe",
     "seeRecipeLabel": "See recipe: {{title}}",
