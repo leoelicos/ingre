@@ -14,6 +14,9 @@ private func bundled(_ name: String) -> String {
 
 /// The phone page. Explore, Ingredients, Recipes, then Extra. No sheets.
 struct PhoneView: View {
+    /// #314: Plans, only with the `tiers` flag
+    var plans: PlansModel?
+    var account: AccountSession?
     @State private var query = ""
     @State private var memory = ListMemory()
     @State private var open = true
@@ -84,6 +87,9 @@ struct PhoneView: View {
                 }
                 .frame(minHeight: 44)
                 ForEach(extras, id: \.self) { Text($0).frame(minHeight: 44) }
+                if let plans, let account {
+                    PlansSection(model: plans, account: account)
+                }
             }
             .padding(16)
         }
@@ -112,9 +118,34 @@ struct PhoneView: View {
     }
 }
 
+#if INGRE_TIERS
+private let tiersCompiledIn = true
+#else
+private let tiersCompiledIn = false
+#endif
+
 @main
 struct IngreApp: App {
+    /// #208/#314: off by default; `-IngreTiers YES` (UI tests) or the INGRE_TIERS condition turns it on
+    private let tiers = tiersEnabled(arguments: ProcessInfo.processInfo.arguments, compiledIn: tiersCompiledIn)
+    @State private var account = AccountSession()
+    @State private var plans: PlansModel?
+    @State private var updates: Task<Void, Never>?
+
     var body: some Scene {
-        WindowGroup { PhoneView() }
+        WindowGroup {
+            PhoneView(plans: plans, account: tiers ? account : nil)
+                .task {
+                    guard tiers, plans == nil else { return }
+                    let session = account
+                    let model = PlansModel(
+                        store: StoreKitGateway(),
+                        submitter: ServerSubmitter(account: session),
+                        accountId: { userId(fromJWT: session.token) }
+                    )
+                    plans = model
+                    updates = StoreKitGateway.listen(model)
+                }
+        }
     }
 }

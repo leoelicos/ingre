@@ -1,0 +1,133 @@
+{
+  "identifier" : "9C3E1D14",
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21500314",
+      "localizations" : [],
+      "name" : "ingre plans",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "4.00",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "6753140001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Suggestions, capture support, triage",
+              "displayName" : "ingre Explorer",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "ingre_explorer_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Explorer monthly",
+          "subscriptionGroupID" : "21500314",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "8.00",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6753140002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Budget, calendar, composed menus, guest profiles",
+              "displayName" : "ingre Manager",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "ingre_manager_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Manager monthly",
+          "subscriptionGroupID" : "21500314",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "16.00",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6753140003",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Precise execution, multi-day prep, dietary separation",
+              "displayName" : "ingre Leader",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "ingre_leader_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Leader monthly",
+          "subscriptionGroupID" : "21500314",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

@@ -4,6 +4,7 @@ import { IngredientApi } from './ingredient'
 import { CategoryApi } from './category'
 import { StripeApi } from './stripe'
 import { BillingApi } from './billing'
+import { StoreApi } from './store'
 
 export const createDataSources = () => {
   return {
@@ -12,6 +13,7 @@ export const createDataSources = () => {
     ingredientApi: new IngredientApi(),
     categoryApi: new CategoryApi(),
     stripeApi: new StripeApi(),
-    billingApi: new BillingApi()
+    billingApi: new BillingApi(),
+    storeApi: new StoreApi()
   }
 }
