@@ -90,7 +90,7 @@ cd ../server && npm ci && npm test
 ```
 
 Note: CI enforces 100% client coverage. CI does not run server lint or server tsc.
-Env vars: TODO (not verified; check `server/config/connection.ts`, `client/src/lib/apollo`).
+Env vars: TODO (not verified; check `server/config/connection.ts`, `client/src/lib/apollo`). Stripe (test mode only): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, see `docs/STRIPE.md`.
 
 ## Coding conventions (observed)
 

@@ -1,4 +1,11 @@
-import { TIERS, isTier, tierProduct } from './tiers'
+import {
+  LOOKUP_KEYS,
+  TIERS,
+  isActiveStatus,
+  isTier,
+  tierOfLookupKey,
+  tierProduct
+} from './tiers'
 
 describe('tiers (#208)', () => {
   it('has three tiers, cheapest first', () => {
@@ -23,5 +30,23 @@ describe('tiers (#208)', () => {
     expect(isTier('LEADER')).toBe(true)
     expect(isTier('leader')).toBe(false)
     expect(isTier(null)).toBe(false)
+  })
+})
+
+describe('Stripe prices for the tiers (#312)', () => {
+  it('has one lookup key per tier and reads it back', () => {
+    TIERS.forEach((tier) =>
+      expect(tierOfLookupKey(LOOKUP_KEYS[tier])).toBe(tier)
+    )
+    expect(tierOfLookupKey('something_else')).toBeNull()
+    expect(tierOfLookupKey(null)).toBeNull()
+  })
+
+  it('counts active and trialing subscriptions as active', () => {
+    expect(isActiveStatus('active')).toBe(true)
+    expect(isActiveStatus('trialing')).toBe(true)
+    ;['incomplete', 'past_due', 'canceled', 'unpaid', null].forEach((status) =>
+      expect(isActiveStatus(status)).toBe(false)
+    )
   })
 })

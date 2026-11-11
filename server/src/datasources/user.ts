@@ -2,7 +2,7 @@ import { NotFoundError } from '../errors'
 import { User, UserMethods, UserSchema } from '../models/User'
 import { Types } from 'mongoose'
 import { UserInput } from '../schemas/types'
-import type { Tier } from '../utils/tiers'
+import { isActiveStatus, type Tier } from '../utils/tiers'
 
 export class UserApi {
   public async findOneUserById({ id }: { id: Types.ObjectId }) {
@@ -139,5 +139,62 @@ export class UserApi {
     ).select('-__v')
     if (!user) throw new NotFoundError('User not found')
     return user.toObject({ virtuals: true })
+  }
+
+  /** #312: who to bill, and the Stripe Customer and subscription they already have. */
+  public async findBilling(_id: Types.ObjectId) {
+    const user = await User.findById<UserSchema>(_id)
+    if (!user) throw new NotFoundError('User not found')
+    return {
+      email: user.email,
+      name: `${user.firstName} ${user.lastName}`,
+      customerId: user.stripeCustomerId ?? null,
+      subscriptionId: user.stripeSubscriptionId ?? null
+    }
+  }
+
+  /**
+   * #312: what Stripe says about the user's subscription. `tier` is kept while active and
+   * cleared once the subscription ends; a failed payment leaves the tier but not `active`.
+   */
+  public async setSubscription(
+    filter: { _id: Types.ObjectId | string } | { stripeCustomerId: string },
+    subscription: SubscriptionState
+  ) {
+    const user = await User.findOneAndUpdate(
+      filter,
+      { $set: subscriptionFields(subscription) },
+      { new: true }
+    ).select('-__v')
+    return user ? user.toObject({ virtuals: true }) : null
+  }
+}
+
+export interface SubscriptionState {
+  readonly customerId: string
+  readonly subscriptionId: string | null
+  readonly status: string
+  /** null when the status alone changed (an invoice event) */
+  readonly tier: Tier | null
+}
+
+const ENDED = new Set(['canceled', 'incomplete_expired'])
+
+export const subscriptionFields = ({
+  customerId,
+  subscriptionId,
+  status,
+  tier
+}: SubscriptionState) => {
+  const active = isActiveStatus(status)
+  return {
+    stripeCustomerId: customerId,
+    subscriptionStatus: status,
+    active,
+    ...(subscriptionId === null
+      ? {}
+      : { stripeSubscriptionId: subscriptionId }),
+    ...(ENDED.has(status) ? { tier: null } : {}),
+    ...(active && tier !== null ? { tier, pro: true } : {})
   }
 }

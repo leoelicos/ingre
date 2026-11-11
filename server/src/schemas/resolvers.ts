@@ -11,6 +11,7 @@ import { checkout } from './resolvers/session/checkout'
 
 import { addUser } from './resolvers/user/addUser'
 import { makeUserPro } from './resolvers/user/makeUserPro'
+import { subscribe } from './resolvers/user/subscribe'
 import { saveRecipe } from './resolvers/recipe/saveRecipe'
 import { removeRecipe } from './resolvers/recipe/removeRecipe'
 import { login } from './resolvers/session/login'
@@ -35,6 +36,7 @@ export const resolvers = {
   Mutation: {
     addUser,
     makeUserPro,
+    subscribe,
     saveRecipe,
     removeRecipe,
     login

@@ -4,6 +4,7 @@ import type {
   RecipeVariables,
   SavedRecipe,
   Tier,
+  TierSubscription,
   User,
   UserInput,
   UserProfile
@@ -32,6 +33,20 @@ export const MAKE_USER_PRO: Operation<
     makeUserPro(tier: $tier) {
       _id
       pro
+    }
+  }
+`
+
+/** #312: subscribes to a tier with the id of a Stripe.js card token (createToken). */
+export const SUBSCRIBE: Operation<
+  { subscribe: TierSubscription },
+  { tier: Tier; token: string }
+> = gql`
+  mutation Subscribe($tier: Tier!, $token: String!) {
+    subscribe(tier: $tier, token: $token) {
+      tier
+      status
+      active
     }
   }
 `

@@ -273,7 +273,18 @@
     "adds": "Adds",
     "includes": "Everything in {{tier}}",
     "choose": "Choose {{tier}}",
-    "current": "Your plan"
+    "current": "Your plan",
+    "card": {
+      "heading": "Pay for {{tier}}",
+      "testCards": "Test mode: no real charges. 4242 4242 4242 4242 pays; 4000 0000 0000 0002 is declined. Any future expiry, any 3-digit CVC.",
+      "label": "Card details",
+      "pay": "Pay {{price}} USD a month",
+      "paying": "Paying…",
+      "subscribed": "Done: you are on {{tier}}.",
+      "incomplete": "Your card was saved, but the first payment did not go through. Try another card.",
+      "declined": "Your card was declined: {{message}}",
+      "failed": "Couldn't reach Stripe. Try again."
+    }
   },
   "tiers": {
     "names": {

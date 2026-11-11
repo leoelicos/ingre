@@ -79,6 +79,8 @@ export type Mutation = {
   makeUserPro: User
   removeRecipe: Scalars['Boolean']['output']
   saveRecipe: Recipe
+  /** #312: subscribes to a tier with a Stripe.js card token (createToken); test mode only */
+  subscribe: TierSubscription
 }
 
 export type MutationAddUserArgs = {
@@ -90,12 +92,21 @@ export type MutationLoginArgs = {
   password: Scalars['String']['input']
 }
 
+export type MutationMakeUserProArgs = {
+  tier?: InputMaybe<Tier>
+}
+
 export type MutationRemoveRecipeArgs = {
   recipeId: Scalars['ID']['input']
 }
 
 export type MutationSaveRecipeArgs = {
   input: RecipeInput
+}
+
+export type MutationSubscribeArgs = {
+  tier: Tier
+  token: Scalars['String']['input']
 }
 
 export type PortionsChange = {
@@ -119,6 +130,10 @@ export type Query = {
 
 export type QueryCheckEmailAlreadyExistsArgs = {
   email: Scalars['String']['input']
+}
+
+export type QueryCheckoutArgs = {
+  tier?: InputMaybe<Tier>
 }
 
 export type QueryGetRecipeArgs = {
@@ -156,14 +171,27 @@ export type RemovedIngredientInput = {
   ingredientId: Scalars['String']['input']
 }
 
+export type Tier = 'EXPLORER' | 'LEADER' | 'MANAGER'
+
+export type TierSubscription = {
+  active: Scalars['Boolean']['output']
+  status: Scalars['String']['output']
+  tier: Tier
+}
+
 export type User = {
   _id: Scalars['ID']['output']
+  /** #312: true while the tier's Stripe subscription is active or trialing */
+  active: Scalars['Boolean']['output']
   email: Scalars['String']['output']
   firstName: Scalars['String']['output']
   lastName: Scalars['String']['output']
   numSavedRecipes: Scalars['Int']['output']
   pro: Scalars['Boolean']['output']
   savedRecipes: Array<Recipe>
+  /** #312: Stripe's subscription status (active, incomplete, past_due, canceled...), null before one */
+  subscriptionStatus?: Maybe<Scalars['String']['output']>
+  tier?: Maybe<Tier>
 }
 
 export type UserInput = {

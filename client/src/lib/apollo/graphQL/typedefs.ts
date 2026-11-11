@@ -73,6 +73,13 @@ export type TierProfile = {
   tier: Tier | null
 }
 
+/** #312: what subscribing to a tier did; `active` while Stripe says active or trialing. */
+export type TierSubscription = {
+  tier: Tier
+  status: string
+  active: boolean
+}
+
 export type Checkout = {
   session: string
 }

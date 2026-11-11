@@ -11,7 +11,8 @@
     "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js -c ./jest.config.js --watch",
     "seed": "node seeds/index.js",
     "pg": "npx tsx scripts/pg.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "stripe:setup": "npx tsx scripts/stripe-setup.ts"
   },
   "keywords": [],
   "author": "",

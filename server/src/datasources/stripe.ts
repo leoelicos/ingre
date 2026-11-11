@@ -52,7 +52,7 @@ type Env = Readonly<Record<string, string | undefined>>
 
 type StripeConnection = Pick<Stripe.StripeConfig, 'host' | 'port' | 'protocol'>
 
-const requireTestKey = (key: string): string => {
+export const requireTestKey = (key: string): string => {
   if (!key.startsWith('sk_test_')) {
     throw new Error('Stripe runs in test-mode only: expected an sk_test_ key')
   }
