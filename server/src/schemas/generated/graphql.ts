@@ -79,6 +79,8 @@ export type Mutation = {
   makeUserPro: User
   removeRecipe: Scalars['Boolean']['output']
   saveRecipe: Recipe
+  /** #314: a native app's purchase, verified with the store. purchaseToken is Google's purchase token or Apple's signed transaction (JWS) */
+  submitStorePurchase: StoreSubscription
   /** #312: subscribes to a tier with a Stripe.js card token (createToken); test mode only */
   subscribe: TierSubscription
 }
@@ -102,6 +104,12 @@ export type MutationRemoveRecipeArgs = {
 
 export type MutationSaveRecipeArgs = {
   input: RecipeInput
+}
+
+export type MutationSubmitStorePurchaseArgs = {
+  platform: StorePlatform
+  productId: Scalars['String']['input']
+  purchaseToken: Scalars['String']['input']
 }
 
 export type MutationSubscribeArgs = {
@@ -171,6 +179,18 @@ export type RemovedIngredientInput = {
   ingredientId: Scalars['String']['input']
 }
 
+export type StorePlatform = 'APPLE' | 'GOOGLE'
+
+export type StoreSubscription = {
+  active: Scalars['Boolean']['output']
+  /** ISO 8601; when the current period ends */
+  expiresAt?: Maybe<Scalars['String']['output']>
+  platform: StorePlatform
+  productId: Scalars['String']['output']
+  status: Scalars['String']['output']
+  tier?: Maybe<Tier>
+}
+
 export type Tier = 'EXPLORER' | 'LEADER' | 'MANAGER'
 
 export type TierSubscription = {
@@ -189,6 +209,8 @@ export type User = {
   numSavedRecipes: Scalars['Int']['output']
   pro: Scalars['Boolean']['output']
   savedRecipes: Array<Recipe>
+  /** #314: the store behind the subscription when it was bought in a native app */
+  storePlatform?: Maybe<StorePlatform>
   /** #312: Stripe's subscription status (active, incomplete, past_due, canceled...), null before one */
   subscriptionStatus?: Maybe<Scalars['String']['output']>
   tier?: Maybe<Tier>

@@ -34,3 +34,7 @@ With `VITE_STRIPE_PUBLISHABLE_KEY` set, choosing a tier opens a card form in pla
 ## Test mode only
 
 There are **no real charges**. The server refuses any Stripe key that is not an `sk_test_` key (`server/src/datasources/stripe.ts`). Keys come from the environment (`STRIPE_SECRET_KEY`) and are never committed. With no key, the public sample test key is used. E2E runs against the WireMock Stripe stand-in; to run against Stripe's real test mode, add test keys (`sk_test_…`, `pk_test_…`) as CI secrets. Use Stripe's public test card `4242 4242 4242 4242`, any future expiry, any 3-digit CVC.
+
+## Native apps (#314)
+
+The native apps sell the same tiers through the App Store and Google Play (stores require their own billing in apps), behind the same flag, off by default. See `docs/STORE_SUBSCRIPTIONS.md`.

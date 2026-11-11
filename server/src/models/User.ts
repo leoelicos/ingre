@@ -22,6 +22,11 @@ export interface UserSchema extends Document {
   stripeSubscriptionId?: string | null
   subscriptionStatus?: string | null
   active: boolean
+  // #314: an App Store or Google Play subscription behind the tier
+  storePlatform?: 'APPLE' | 'GOOGLE' | null
+  storeProductId?: string | null
+  storeId?: string | null
+  storeExpiresAt?: Date | null
   savedRecipes: Array<Types.Subdocument & RecipeSchema>
   numSavedRecipes: number // virtual
 }
@@ -47,7 +52,17 @@ const userSchema = new Schema<UserSchema, {}, UserMethods, UserVirtuals>(
     stripeSubscriptionId: { type: String, default: null },
     subscriptionStatus: { type: String, default: null },
     // true while the subscription is active or trialing
-    active: { type: Boolean, default: false }
+    active: { type: Boolean, default: false },
+    // #314: set by `submitStorePurchase` and kept in step by the store notifications.
+    // storeId is Apple's originalTransactionId or Google's purchase token.
+    storePlatform: {
+      type: String,
+      enum: ['APPLE', 'GOOGLE', null],
+      default: null
+    },
+    storeProductId: { type: String, default: null },
+    storeId: { type: String, default: null, index: true },
+    storeExpiresAt: { type: Date, default: null }
   },
   {
     toJSON: { virtuals: true },

@@ -16,21 +16,31 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.leoelicos.ingre.billing.Flags
+import com.leoelicos.ingre.billing.SubscriptionManager
 import com.leoelicos.ingre.data.TokenStore
 import kotlinx.coroutines.launch
 
 @Composable
-fun AccountScreen(token: String?, store: TokenStore) {
+fun AccountScreen(token: String?, store: TokenStore, plans: SubscriptionManager? = null) {
     val scope = rememberCoroutineScope()
     var mode by remember { mutableStateOf("menu") }
 
     if (token != null) {
+        // #314: Plans only with the `tiers` flag (and so a manager)
+        if (mode == "plans" && plans != null) {
+            PlansScreen(manager = plans, onBack = { mode = "menu" })
+            return
+        }
         Column(
             Modifier.fillMaxSize().padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text("Account", fontSize = 28.sp)
             Text("Signed in. Saved recipes sync to the server.")
+            if (plans != null) {
+                Button(onClick = { mode = "plans" }, modifier = Modifier.fillMaxWidth()) { Text("Plans") }
+            }
             Button(onClick = { scope.launch { store.clear() } }, modifier = Modifier.fillMaxWidth()) {
                 Text("Log out")
             }
@@ -56,7 +66,12 @@ fun AccountScreen(token: String?, store: TokenStore) {
             Text("Optional. The app works without an account. Sign in to sync saved recipes.")
             Button(onClick = { mode = "login" }, modifier = Modifier.fillMaxWidth()) { Text("Log in") }
             Button(onClick = { mode = "signup" }, modifier = Modifier.fillMaxWidth()) { Text("Sign up") }
-            Button(onClick = { mode = "upgrade" }, modifier = Modifier.fillMaxWidth()) { Text("Upgrade") }
+            if (Flags.tiers) {
+                // #314: plans are bought with Google Play and belong to an account
+                Text("Log in to choose a plan.")
+            } else {
+                Button(onClick = { mode = "upgrade" }, modifier = Modifier.fillMaxWidth()) { Text("Upgrade") }
+            }
         }
     }
 }

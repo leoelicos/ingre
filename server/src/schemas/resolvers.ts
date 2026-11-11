@@ -12,6 +12,7 @@ import { checkout } from './resolvers/session/checkout'
 import { addUser } from './resolvers/user/addUser'
 import { makeUserPro } from './resolvers/user/makeUserPro'
 import { subscribe } from './resolvers/user/subscribe'
+import { submitStorePurchase } from './resolvers/user/submitStorePurchase'
 import { saveRecipe } from './resolvers/recipe/saveRecipe'
 import { removeRecipe } from './resolvers/recipe/removeRecipe'
 import { login } from './resolvers/session/login'
@@ -37,6 +38,7 @@ export const resolvers = {
     addUser,
     makeUserPro,
     subscribe,
+    submitStorePurchase,
     saveRecipe,
     removeRecipe,
     login

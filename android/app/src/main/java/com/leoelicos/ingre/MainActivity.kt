@@ -13,7 +13,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.lifecycleScope
+import com.leoelicos.ingre.billing.Flags
+import com.leoelicos.ingre.billing.GraphQLPurchaseVerifier
+import com.leoelicos.ingre.billing.PlayBillingGateway
+import com.leoelicos.ingre.billing.SubscriptionManager
+import com.leoelicos.ingre.billing.userIdOf
 import com.leoelicos.ingre.data.TokenStore
+import kotlinx.coroutines.launch
 import com.leoelicos.ingre.ui.AccountScreen
 import com.leoelicos.ingre.ui.ExploreScreen
 import com.leoelicos.ingre.ui.ExtraScreen
@@ -28,6 +35,21 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         val store = TokenStore(this)
+        // #314: Google Play subscriptions, only with the `tiers` flag (off by default)
+        var signedIn: String? = null
+        val plans = if (Flags.tiers) {
+            val gateway = PlayBillingGateway(this) { this }
+            SubscriptionManager(
+                gateway = gateway,
+                verifier = GraphQLPurchaseVerifier(token = { signedIn }),
+                accountId = { userIdOf(signedIn) }
+            ).also { manager ->
+                lifecycleScope.launch { gateway.updates.collect { manager.onUpdate(it) } }
+            }
+        } else {
+            null
+        }
+        lifecycleScope.launch { store.token.collect { signedIn = it } }
         setContent {
             IngreTheme {
                 val token by store.token.collectAsState(initial = null)
@@ -56,7 +78,7 @@ class MainActivity : ComponentActivity() {
                             1 -> ShoppingListScreen()
                             2 -> ExploreScreen(token = token)
                             3 -> ExtraScreen()
-                            4 -> AccountScreen(token = token, store = store)
+                            4 -> AccountScreen(token = token, store = store, plans = plans)
                             else -> UpgradeScreen()
                         }
                     }

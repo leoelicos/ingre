@@ -1,4 +1,5 @@
-import { NotFoundError } from '../errors'
+import { ConflictError, NotFoundError } from '../errors'
+import type { StoreState } from '../store/common'
 import { User, UserMethods, UserSchema } from '../models/User'
 import { Types } from 'mongoose'
 import { UserInput } from '../schemas/types'
@@ -168,6 +169,62 @@ export class UserApi {
     ).select('-__v')
     return user ? user.toObject({ virtuals: true }) : null
   }
+
+  /**
+   * #314: a purchase the signed-in user's app sent, after the store confirmed it. A
+   * subscription already tied to another user is refused, so one purchase can't unlock
+   * two accounts.
+   */
+  public async setStoreSubscription(
+    _id: Types.ObjectId | string,
+    state: StoreState
+  ) {
+    const owners = [state.storeId, state.replacesStoreId].filter(
+      (id): id is string => id !== null
+    )
+    const taken = await User.exists({
+      _id: { $ne: _id },
+      storeId: { $in: owners }
+    })
+    if (taken)
+      throw new ConflictError('This purchase belongs to another account')
+    const user = await User.findByIdAndUpdate(
+      _id,
+      { $set: storeFields(state) },
+      { new: true }
+    ).select('-__v')
+    if (!user) throw new NotFoundError('User not found')
+    return user.toObject({ virtuals: true })
+  }
+
+  /**
+   * #314: a store notification. The user is the one holding this subscription, else the
+   * one holding the subscription it replaced (an upgrade or downgrade on Google Play),
+   * else (for an active subscription) the account the app tied the purchase to. Null
+   * when nobody matches.
+   */
+  public async applyStoreNotification(state: StoreState) {
+    const filters = [
+      { storeId: state.storeId },
+      ...(state.replacesStoreId === null
+        ? []
+        : [{ storeId: state.replacesStoreId }]),
+      // only a live purchase may claim an account this way, so a notice about an old,
+      // replaced token can't switch the account off
+      ...(state.accountUserId !== null && state.status === 'active'
+        ? [{ _id: state.accountUserId }]
+        : [])
+    ]
+    for (const filter of filters) {
+      const user = await User.findOneAndUpdate(
+        filter,
+        { $set: storeFields(state) },
+        { new: true }
+      ).select('-__v')
+      if (user) return user.toObject({ virtuals: true })
+    }
+    return null
+  }
 }
 
 export interface SubscriptionState {
@@ -180,21 +237,33 @@ export interface SubscriptionState {
 
 const ENDED = new Set(['canceled', 'incomplete_expired'])
 
+/** #312, #314: one rule for every payment route: `active`, and when the tier is kept. */
+export const activationFields = (status: string, tier: Tier | null) => {
+  const active = isActiveStatus(status)
+  return {
+    subscriptionStatus: status,
+    active,
+    ...(ENDED.has(status) ? { tier: null } : {}),
+    ...(active && tier !== null ? { tier, pro: true } : {})
+  }
+}
+
 export const subscriptionFields = ({
   customerId,
   subscriptionId,
   status,
   tier
-}: SubscriptionState) => {
-  const active = isActiveStatus(status)
-  return {
-    stripeCustomerId: customerId,
-    subscriptionStatus: status,
-    active,
-    ...(subscriptionId === null
-      ? {}
-      : { stripeSubscriptionId: subscriptionId }),
-    ...(ENDED.has(status) ? { tier: null } : {}),
-    ...(active && tier !== null ? { tier, pro: true } : {})
-  }
-}
+}: SubscriptionState) => ({
+  stripeCustomerId: customerId,
+  ...(subscriptionId === null ? {} : { stripeSubscriptionId: subscriptionId }),
+  ...activationFields(status, tier)
+})
+
+/** #314: a verified store subscription as User fields. */
+export const storeFields = (state: StoreState) => ({
+  storePlatform: state.platform,
+  storeProductId: state.productId,
+  storeId: state.storeId,
+  storeExpiresAt: state.expiresAt,
+  ...activationFields(state.status, state.tier)
+})

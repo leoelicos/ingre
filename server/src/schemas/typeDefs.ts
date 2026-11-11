@@ -19,6 +19,8 @@ export const typeDefs = gql`
     active: Boolean!
     "#312: Stripe's subscription status (active, incomplete, past_due, canceled...), null before one"
     subscriptionStatus: String
+    "#314: the store behind the subscription when it was bought in a native app"
+    storePlatform: StorePlatform
     savedRecipes: [Recipe!]!
     numSavedRecipes: Int!
   }
@@ -155,6 +157,23 @@ export const typeDefs = gql`
     active: Boolean!
   }
 
+  # #314: where a native app's subscription was bought
+  enum StorePlatform {
+    APPLE
+    GOOGLE
+  }
+
+  # #314: a verified App Store or Google Play subscription
+  type StoreSubscription {
+    platform: StorePlatform!
+    productId: String!
+    tier: Tier
+    status: String!
+    active: Boolean!
+    "ISO 8601; when the current period ends"
+    expiresAt: String
+  }
+
   # session
   type Query {
     checkout(tier: Tier): Checkout!
@@ -177,6 +196,12 @@ export const typeDefs = gql`
     makeUserPro(tier: Tier): User!
     "#312: subscribes to a tier with a Stripe.js card token (createToken); test mode only"
     subscribe(tier: Tier!, token: String!): TierSubscription!
+    "#314: a native app's purchase, verified with the store. purchaseToken is Google's purchase token or Apple's signed transaction (JWS)"
+    submitStorePurchase(
+      platform: StorePlatform!
+      productId: String!
+      purchaseToken: String!
+    ): StoreSubscription!
   }
 `
 

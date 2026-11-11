@@ -16,7 +16,7 @@ Neither app has been published, so these are the first values the stores will se
 | | Android | iOS |
 | --- | --- | --- |
 | App ID | `applicationId = "com.leoelicos.ingre"` (`android/app/build.gradle.kts`) | `PRODUCT_BUNDLE_IDENTIFIER: com.leoelicos.ingre` (`ios/project.yml`) |
-| Test bundle | n/a | `com.leoelicos.ingre.uitests` |
+| Test bundles | n/a | `com.leoelicos.ingre.tests` (unit), `com.leoelicos.ingre.uitests` (UI) |
 | Name people see | `app_name` = `INGRE` (`res/values/strings.xml`) | `INFOPLIST_KEY_CFBundleDisplayName: INGRE` |
 | Minimum OS | Android 8.0 (`minSdk = 26`) | iOS 17 (`deploymentTarget`, and `platforms` in `ios/IngreCore/Package.swift`) |
 | Version shown to people | `versionName = "1.0.0"` | `MARKETING_VERSION: 1.0.0` |
@@ -41,4 +41,4 @@ The name people see is uppercase `INGRE`. Code, IDs and package names stay lower
 
 ### Privacy manifest (iOS)
 
-`ios/Ingre/PrivacyInfo.xcprivacy` is bundled with the app. Today it declares no tracking, no collected data and no required-reason APIs, because the iOS app only reads its bundled catalogue and keeps the list in memory. Update it in the same PR as any change that adds one of those, for example `UserDefaults` (required-reason API `NSPrivacyAccessedAPICategoryUserDefaults`, reason `CA92.1`), accounts, network calls or purchases.
+`ios/Ingre/PrivacyInfo.xcprivacy` is bundled with the app. Today it declares no tracking and no required-reason APIs. Collected data is limited to email address and purchase history, linked to the account and used only for app functionality, because Plans (#314) signs in and sends App Store transactions to the server. Update it in the same PR as any change that adds one of those, for example `UserDefaults` (required-reason API `NSPrivacyAccessedAPICategoryUserDefaults`, reason `CA92.1`), accounts, network calls or purchases.

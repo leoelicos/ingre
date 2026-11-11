@@ -39,3 +39,21 @@ export class PaymentDeclinedError extends GraphQLError {
     this.name = 'PaymentDeclinedError'
   }
 }
+
+/** #314: store purchases can't be checked here: credentials for that store aren't set. */
+export class StoreNotConfiguredError extends GraphQLError {
+  constructor(platform: string) {
+    super(`${platform} purchases are not set up on this server`, {
+      extensions: { code: 'STORE_NOT_CONFIGURED' }
+    })
+    this.name = 'StoreNotConfiguredError'
+  }
+}
+
+/** #314: the store did not confirm the purchase (bad token, signature, product or account). */
+export class StoreVerificationError extends GraphQLError {
+  constructor(message: string) {
+    super(message, { extensions: { code: 'STORE_VERIFICATION_FAILED' } })
+    this.name = 'StoreVerificationError'
+  }
+}

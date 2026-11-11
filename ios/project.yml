@@ -19,6 +19,8 @@ targets:
       - Ingre
     dependencies:
       - package: IngreCore
+      # #314: App Store subscriptions (StoreKit 2)
+      - sdk: StoreKit.framework
     settings:
       SWIFT_VERSION: "6.0"
       TARGETED_DEVICE_FAMILY: "1"
@@ -28,6 +30,21 @@ targets:
       INFOPLIST_KEY_CFBundleDisplayName: INGRE
       INFOPLIST_FILE: Ingre/Info.plist
       INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+  # #314: StoreKit tests against Ingre.storekit (SKTestSession), hosted in the app
+  IngreTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - IngreTests
+      - path: Ingre.storekit
+        buildPhase: resources
+    dependencies:
+      - target: Ingre
+      - sdk: StoreKitTest.framework
+    settings:
+      SWIFT_VERSION: "6.0"
+      GENERATE_INFOPLIST_FILE: YES
+      PRODUCT_BUNDLE_IDENTIFIER: com.leoelicos.ingre.tests
   IngreUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -44,6 +61,10 @@ schemes:
     build:
       targets:
         Ingre: all
+    run:
+      # #314: local StoreKit testing in the simulator (Xcode signs these; the server refuses them)
+      storeKitConfiguration: Ingre.storekit
     test:
       targets:
+        - IngreTests
         - IngreUITests

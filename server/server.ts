@@ -10,6 +10,8 @@ import { MyContext } from './src/schemas/types'
 import { getStripe } from './src/datasources/stripe'
 import { UserApi } from './src/datasources/user'
 import { stripeWebhook } from './src/webhooks/stripe'
+import { StoreApi } from './src/datasources/store'
+import { appleNotifications, googleRtdn } from './src/webhooks/store'
 
 const PORT = process.env['PORT'] || 3001
 const app = express()
@@ -23,6 +25,14 @@ const startApolloServer = async () => {
     '/stripe/webhook',
     raw({ type: 'application/json' }),
     stripeWebhook(getStripe(), new UserApi())
+  )
+  // #314: App Store and Google Play subscription notices (verified with each store)
+  const store = new StoreApi()
+  app.post('/store/google/rtdn', json(), googleRtdn(store, new UserApi()))
+  app.post(
+    '/store/apple/notifications',
+    json({ limit: '1MB' }),
+    appleNotifications(store, new UserApi())
   )
   app.use(
     '/graphql',

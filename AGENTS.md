@@ -28,6 +28,7 @@ vercel.json           SPA rewrite to /index.html
 .github/workflows/ci.yml  the only CI workflow
 .cursor/              rules + atomised context notes (context/*.md)
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, TIERS.md (feature flags, tiers)
+docs/                 STORE_SUBSCRIPTIONS.md (App Store / Google Play subscriptions in the native apps, #314)
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, ANALYTICS.md
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, RAG.md (retrieval over curated profiles, #225)
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, ENGAGEMENT_LOOP.md
@@ -90,7 +91,7 @@ cd ../server && npm ci && npm test
 ```
 
 Note: CI enforces 100% client coverage. CI does not run server lint or server tsc.
-Env vars: TODO (not verified; check `server/config/connection.ts`, `client/src/lib/apollo`). Stripe (test mode only): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, see `docs/STRIPE.md`.
+Env vars: TODO (not verified; check `server/config/connection.ts`, `client/src/lib/apollo`). Stripe (test mode only): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, see `docs/STRIPE.md`. Store subscriptions (native apps, off without them): `GOOGLE_PLAY_*`, `GOOGLE_RTDN_TOKEN`, `APPLE_*`, see `docs/STORE_SUBSCRIPTIONS.md`.
 
 ## Coding conventions (observed)
 
