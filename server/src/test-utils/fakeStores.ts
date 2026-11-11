@@ -19,7 +19,7 @@ const json = (status: number, body: unknown) =>
   })
 
 export const PACKAGE = 'com.leoelicos.ingre'
-export const BUNDLE = 'app.ingre'
+export const BUNDLE = 'com.leoelicos.ingre'
 
 export const googleKeys = () => {
   const { privateKey, publicKey } = generateKeyPairSync('rsa', {

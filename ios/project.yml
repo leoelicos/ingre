@@ -44,7 +44,7 @@ targets:
     settings:
       SWIFT_VERSION: "6.0"
       GENERATE_INFOPLIST_FILE: YES
-      PRODUCT_BUNDLE_IDENTIFIER: app.ingre.tests
+      PRODUCT_BUNDLE_IDENTIFIER: com.leoelicos.ingre.tests
   IngreUITests:
     type: bundle.ui-testing
     platform: iOS

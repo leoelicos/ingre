@@ -37,7 +37,7 @@ Statuses use Stripe's words so one rule decides `active` and `tier`: active (inc
 | `GOOGLE_PLAY_PACKAGE_NAME`         | `com.leoelicos.ingre`                                            |
 | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | the service account's JSON key, as is or base64                  |
 | `GOOGLE_RTDN_TOKEN`                | any long random string; also put in the Pub/Sub push URL (below) |
-| `APPLE_BUNDLE_ID`                  | `app.ingre`                                                      |
+| `APPLE_BUNDLE_ID`                  | `com.leoelicos.ingre`                                            |
 | `APPLE_IAP_KEY_ID`                 | the In-App Purchase key's id                                     |
 | `APPLE_IAP_ISSUER_ID`              | the Issuer ID on the same page                                   |
 | `APPLE_IAP_PRIVATE_KEY`            | the `.p8` file's contents (newlines as `\n`, or base64)          |
@@ -77,7 +77,7 @@ None of this costs money beyond each store's developer fee. Do it when you're re
 ### App Store Connect
 
 1. **Agreements, Tax and Banking**: accept the Paid Apps agreement and fill in tax (ABN) and bank details. Products can't be sold until it's active.
-2. **App**: create the app with bundle id `app.ingre` (already in `ios/project.yml`).
+2. **App**: create the app with bundle id `com.leoelicos.ingre` (already in `ios/project.yml`).
 3. **Subscription group**: your app → Monetisation → Subscriptions → create a group named `ingre plans`, then three auto-renewable subscriptions with the product ids above, duration 1 month, the prices, and a display name and description each. Levels: Leader 1, Manager 2, Explorer 3 (same as `ios/Ingre.storekit`). Each needs a review screenshot before first submission.
 4. **In-App Purchase key** for the server: Users and Access → Integrations → In-App Purchase → generate a key. Download the `.p8` (only once) → `APPLE_IAP_PRIVATE_KEY`; the Key ID → `APPLE_IAP_KEY_ID`; the Issuer ID → `APPLE_IAP_ISSUER_ID`.
 5. **Server notifications**: your app → App Information → App Store Server Notifications → **Version 2** for both Production and Sandbox, URL `https://ingre-backend.onrender.com/store/apple/notifications`.
