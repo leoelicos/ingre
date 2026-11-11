@@ -54,18 +54,24 @@ test.describe('measurement audit table', () => {
       'aria-sort',
       'descending'
     )
-    await expect(explore(page).getByRole('status')).toContainText(
-      `Sorted by ${PER_SERVE}, descending.`
-    )
+    // the sheet has its own status too (#192): find the audit's by what it says
+    await expect(
+      explore(page)
+        .getByRole('status')
+        .filter({ hasText: `Sorted by ${PER_SERVE}, descending.` })
+    ).toHaveCount(1)
     expect((await rowNames(page))[0]).toBe('Canned crushed tomatoes')
 
     await explore(page).getByRole('button', { name: 'Next' }).click()
     await expect(
       explore(page).getByText('Page 2 of 2', { exact: true })
     ).toBeVisible()
-    await expect(explore(page).getByRole('status')).toContainText(
-      'Page 2 of 2. Showing 6–10 of 10 ingredients.'
-    )
+    // the sheet has its own status too (#192): find the audit's by what it says
+    await expect(
+      explore(page)
+        .getByRole('status')
+        .filter({ hasText: 'Page 2 of 2. Showing 6–10 of 10 ingredients.' })
+    ).toHaveCount(1)
     await explore(page)
       .getByRole('combobox', { name: 'Rows per page' })
       .selectOption('20')
