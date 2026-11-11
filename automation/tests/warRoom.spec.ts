@@ -1,63 +1,116 @@
+import AxeBuilder from '@axe-core/playwright'
 import type { Page } from '@playwright/test'
 import { expect, test } from './fixtures'
-import { ingredientsRegion } from './page'
 
-/* #207 War room: a button in the menu bar opens a bare, fast capture list. */
+/*
+ * War room utility belt (t27u-t34u), designs A/B/C behind ?design=. Tap adds, "ba" finds
+ * Banana in one tap with the keyboard kept open, the Ingredients/Recipes/Both toggle filters
+ * everything and is remembered, arrow keys move through the wall, and axe passes.
+ */
+
+const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 
 const field = (page: Page) =>
-  page.getByRole('textbox', { name: 'Add an item', exact: true })
-
-test.describe('war room (#207)', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/')
-    await page
-      .getByRole('banner')
-      .getByRole('link', { name: 'War room', exact: true })
-      .click()
-    await expect(field(page)).toBeFocused()
+  page.getByRole('searchbox', {
+    name: 'Search, type or paste a list',
+    exact: true
   })
+const wall = (page: Page) => page.locator('#war-room-wall')
 
-  test('opens from the menu bar with the field ready to type into', async ({
-    page
-  }) => {
-    await expect(page).toHaveURL(/\/war-room$/)
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'War room' })
-    ).toBeVisible()
-    await expect(field(page)).toBeFocused()
-  })
+for (const design of ['a', 'b', 'c'] as const) {
+  test.describe(`war room design ${design}`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto(`/war-room?design=${design}`)
+      await page.evaluate(() => localStorage.clear())
+      await page.reload()
+    })
 
-  test('typing and Enter, over and over, with an inline acknowledgement each time', async ({
-    page
-  }) => {
-    for (const [text, said] of [
-      ['3 carrots', 'Carrot added'],
-      ['garlic', 'Garlic added'],
-      ['egg', 'Eggs added']
-    ] as const) {
-      await page.keyboard.type(text)
+    test('"ba" then one tap adds Banana; the field keeps focus', async ({
+      page
+    }) => {
+      await page.keyboard.press('/')
+      await expect(field(page)).toBeFocused()
+      await page.keyboard.type('ba')
+      const first = wall(page).locator('[data-tile]').first()
+      await expect(first).toHaveAccessibleName('Add banana')
+      const at = await first.boundingBox()
+      await page.keyboard.type('n')
+      expect(
+        await wall(page).locator('[data-tile]').first().boundingBox()
+      ).toEqual(at)
+      await wall(page).locator('[data-tile]').first().click()
+      await expect(field(page)).toBeFocused()
+      await expect(field(page)).toHaveValue('')
+      await expect(
+        page.locator('[data-tile-id="banana"]').first()
+      ).toHaveAccessibleName('Add banana, 1 on list')
+    })
+
+    test('the kind toggle filters the wall and search, and is remembered', async ({
+      page
+    }) => {
+      const toggle = page.getByRole('radiogroup', { name: 'Show' })
+      await toggle.getByText('Recipes', { exact: true }).click()
+      await expect(
+        page.locator('#war-room-wall [data-tile-id="banana"]')
+      ).toHaveCount(0)
+      await field(page).fill('ch')
+      const kinds = await wall(page)
+        .locator('[data-tile]')
+        .evaluateAll((els) =>
+          els.map((el) => el.getAttribute('aria-label') ?? '')
+        )
+      expect(kinds.length).toBeGreaterThan(0)
+      kinds.forEach((label) => expect(label).toMatch(/recipe/i))
+      await page.reload()
+      await expect(
+        page.getByRole('radio', { name: 'Recipes', exact: true })
+      ).toBeChecked()
+      await page
+        .getByRole('radiogroup', { name: 'Show' })
+        .getByText('Ingredients', { exact: true })
+        .click()
+      await expect(
+        page.locator('#war-room-wall [aria-label^="Add recipe"]')
+      ).toHaveCount(0)
+    })
+
+    test('arrow keys move through the wall; ArrowUp from the top returns to search', async ({
+      page
+    }) => {
+      await field(page).focus()
+      await page.keyboard.press('ArrowDown')
+      const first = await page.evaluate(() =>
+        document.activeElement?.getAttribute('data-tile-id')
+      )
+      expect(first).toBeTruthy()
+      await page.keyboard.press('ArrowRight')
+      const second = await page.evaluate(() =>
+        document.activeElement?.getAttribute('data-tile-id')
+      )
+      expect(second).not.toBe(first)
       await page.keyboard.press('Enter')
-      await expect(page.getByRole('status')).toHaveText(said)
+      await expect(
+        page.locator(`[data-tile-id="${second}"]`).first()
+      ).toHaveAccessibleName(/on list/)
+    })
+
+    for (const scheme of ['light', 'dark'] as const) {
+      test(`no accessibility violations (${scheme})`, async ({ page }) => {
+        await page.emulateMedia({
+          colorScheme: scheme,
+          reducedMotion: 'reduce'
+        })
+        await page.locator('[data-tile-id="banana"]').first().click()
+        await page.waitForTimeout(700)
+        const results = await new AxeBuilder({ page }).withTags(WCAG).analyze()
+        expect(
+          results.violations.map((v) => ({
+            id: v.id,
+            targets: v.nodes.map((n) => n.target)
+          }))
+        ).toEqual([])
+      })
     }
-    const captured = page.getByRole('list', { name: 'Captured', exact: true })
-    await expect(captured.getByRole('listitem')).toHaveCount(3)
-    await expect(captured).toContainText('×3')
   })
-
-  test('autofill buttons add in one tap', async ({ page }) => {
-    await page.keyboard.type('car')
-    await page.getByRole('button', { name: 'Add carrot', exact: true }).click()
-    await expect(page.getByRole('status')).toHaveText('Carrot added')
-    await expect(field(page)).toBeFocused()
-  })
-
-  test('what was captured is on the shopping list', async ({ page }) => {
-    await page.keyboard.type('2 onions')
-    await page.keyboard.press('Enter')
-    await expect(page.getByRole('status')).toHaveText('Brown onion added')
-    await page
-      .getByRole('link', { name: 'Back to your list', exact: true })
-      .click()
-    await expect(ingredientsRegion(page)).toContainText('Brown onion')
-  })
-})
+}

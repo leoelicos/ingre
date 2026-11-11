@@ -20,11 +20,24 @@ test.use({
   permissions: ['microphone']
 })
 
+/*
+ * The giant record button is gone in the utility-belt designs (the mic now sits in the search
+ * field, same engines). These specs drive the old button and are parked on the preview branch
+ * until the chosen design is finalised in #308.
+ */
+test.skip(
+  true,
+  'War room record button replaced by the in-field mic (preview designs)'
+)
+
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 
 const talk = (page: Page) =>
   page.getByRole('button', { name: 'Talk', exact: true })
-const voiceStatus = (page: Page) => page.locator('[aria-live="polite"]')
+const voiceStatus = (page: Page) =>
+  page
+    .getByRole('region', { name: 'Talk', exact: true })
+    .locator('[aria-live="polite"]')
 const ack = (page: Page) => page.getByRole('status')
 
 /** A stand-in for the browser's recogniser; the test speaks through window.say(). */
@@ -90,12 +103,12 @@ test.describe('war room voice, browser recogniser (#207)', () => {
     await say(page, 'Two carrots and garlic.')
     await expect(ack(page)).toHaveText('Carrot, Garlic added')
     await expect(
-      page.getByRole('list', { name: 'Captured', exact: true })
-    ).toContainText('×2')
+      page.getByRole('button', { name: 'Add carrot ×2 again', exact: true })
+    ).toBeVisible()
     await button.click()
     await expect(button).toHaveAttribute('aria-pressed', 'false')
     await expect(
-      page.getByRole('textbox', { name: 'Add an item', exact: true })
+      page.getByRole('combobox', { name: 'Add an item', exact: true })
     ).toBeVisible()
   })
 

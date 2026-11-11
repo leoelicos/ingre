@@ -33,6 +33,7 @@ describe('captureSpoken', () => {
 
   it('lets the last words name the ingredient when the whole phrase does not', () => {
     expect(found('Three tins of chickpeas.')).toEqual([[3, 'chickpeas']])
+    expect(found('Zzzz qqqq chickpeas.')).toEqual([[1, 'chickpeas']])
   })
 
   it('still says when nothing fits', () => {

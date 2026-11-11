@@ -12,6 +12,7 @@
   --palette-ink: #2b2b2b;
   --palette-stone: #6b6460;
   --palette-amber: #b45309;
+  --palette-yellow: #ffd23f;
 
   /* surfaces */
   --color-bg: var(--palette-cream); /* page background */
@@ -31,6 +32,10 @@
   --color-error: var(
     --palette-amber
   ); /* form errors: always with words, never colour alone */
+
+  /* the War room's big mic (t34u): yellow in both themes, with ink on it (12:1) */
+  --color-mic: var(--palette-yellow);
+  --color-on-mic: var(--palette-ink);
 
   /* text */
   --color-text: var(--palette-ink);

@@ -353,23 +353,14 @@
   "warRoom": {
     "title": "作戦室",
     "open": "作戦室",
-    "hint": "必要なものを入力するか、話しかけてください。食材名は今のところ英語で、一般的な名前で大丈夫です（例：\"2 carrots, onion and garlic\"）。",
-    "field": "品目を追加",
-    "matches": "候補",
-    "add": "{{name}}を追加",
     "added": "{{names}}を追加しました",
-    "already": "{{names}}はすでにリストにあります",
     "noMatch": "{{terms}}に一致するものはありません",
     "talk": "話す",
-    "talkIdle": "タップまたは長押し",
-    "talkActive": "タップして停止",
-    "talkHelp": "タップで開始、もう一度タップで停止。話している間だけ長押しすることもできます。ショートカット：Alt+R。",
     "firstUse": "初回のみ{{size}} MBの音声モデルをダウンロードします。その後はオフラインで使えます。",
     "voice": {
       "starting": "マイクを起動しています",
       "listening": "聞き取り中",
       "transcribing": "内容を解析しています",
-      "download": "音声モデルのダウンロード",
       "downloading": "音声モデルをダウンロード中：{{total}} MB中{{loaded}} MB",
       "heard": "聞き取り：{{text}}",
       "denied": "マイクがブロックされています。ブラウザーまたはスマートフォンの設定で許可するか、入力してください。",
@@ -380,9 +371,83 @@
       "webSpeech": "ブラウザーの音声認識を使います。音声がGoogleやAppleに送信される場合があります。",
       "onDevice": "この端末上で認識します。音声が外部に送信されることはありません。"
     },
-    "captured": "取り込み済み",
-    "capturedCount": "{{count}}件を取り込みました",
     "back": "リストに戻る"
+  },
+  "warRoomEntry": {
+    "placeholder": "例：「{{example}}」",
+    "undo": "元に戻す",
+    "shortcuts": {
+      "enter": {
+        "keys": "Enter",
+        "does": "入力した内容、または選択中の候補を追加"
+      },
+      "arrows": {
+        "keys": "↑ ↓",
+        "does": "候補を移動"
+      },
+      "tab": {
+        "keys": "Tab",
+        "does": "選択中の候補で補完"
+      },
+      "escape": {
+        "keys": "Esc",
+        "does": "候補を閉じ、もう一度押すと入力欄をクリア"
+      },
+      "undo": {
+        "keys": "Ctrl+Z / ⌘Z",
+        "does": "入力欄が空のとき、直前の追加を元に戻す"
+      },
+      "slash": {
+        "keys": "/",
+        "does": "ページのどこからでも入力欄へ移動"
+      }
+    },
+    "clear": "履歴を消去",
+    "cleared": "履歴を消去しました",
+    "prompts": {
+      "carrots": "3 carrots",
+      "chickpeas": "2 tins of chickpeas",
+      "flour": "1 kg plain flour",
+      "lemons": "lemons x4",
+      "eggs": "a dozen eggs",
+      "stirFry": "garlic, ginger and spring onion",
+      "coriander": "2 bunches coriander",
+      "broccoli": "brocoli",
+      "mince": "mince beef",
+      "breakfast": "rolled oats; banana; honey",
+      "spinach": "a bag of baby spinach",
+      "butter": "250 g butter",
+      "onion": "an onion",
+      "tuna": "3 cans of tuna",
+      "curry": "chickpeas, coconut milk and garam masala",
+      "avocado": "avocadoes"
+    }
+  },
+  "warRoomWall": {
+    "search": "検索、入力、またはリストを貼り付け",
+    "more": "その他",
+    "kind": "表示",
+    "kindBoth": "両方",
+    "kindIngredients": "材料",
+    "kindRecipes": "レシピ",
+    "wall": "材料とレシピ",
+    "resultsLabel": "候補",
+    "suggestions": "おすすめ",
+    "results_other": "{{count}}件見つかりました。下矢印キーで移動します。",
+    "noResults": "見つかりません。Enterで、入力した内容を追加できる場合は追加します。",
+    "add": "{{name}}を追加",
+    "addCount": "{{name}}を追加（リストに{{count}}）",
+    "recipe": "レシピを追加：{{name}}",
+    "recipeOn": "レシピ：{{name}}（リストにあります）",
+    "minus": "{{name}}を1つ減らす",
+    "minusRecipe": "{{name}}のレシピを外す",
+    "onList": "{{name}}（リストに{{count}}）",
+    "offList": "{{name}}（リストにありません）",
+    "with": "{{name}}と一緒に",
+    "moreToBuy_other": "あと{{count}}",
+    "usual": "いつもの",
+    "try": "お試し",
+    "undoLabel": "{{label}}を元に戻す"
   },
   "suggest": {
     "using": "使用中",
