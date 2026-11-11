@@ -50,7 +50,7 @@ const usedKeys = (): string[] =>
 
 /** Keys the code builds at run time: measure words by measure, the dial's modes by mode (#206), explore sections, account options, and tier names/features. */
 const DYNAMIC =
-  /^(measure\.|guidance\.(self-directed|guided|assisted|hand-held)$|exploreSection\.|explore\.addName|account\.(biometric|google|plans)|tiers\.(names|features)\.)/
+  /^(measure\.|guidance\.(self-directed|guided|assisted|hand-held)$|exploreSection\.|explore\.addName|account\.(biometric|google|plans)|tiers\.(names|features)\.|warRoomEntry\.(prompts|shortcuts)\.)/
 
 describe('English resources', () => {
   const keys = leafKeys(en)
@@ -120,7 +120,30 @@ const SAME_AS_ENGLISH = new Set([
   'suggest.money',
   'ideas.queryPlaceholder',
   'preferences.textSize.unit',
-  'demo.placeholder'
+  'demo.placeholder',
+  // War room keys and typed examples, which stay as typed on a keyboard
+  'warRoomEntry.prompts.carrots',
+  'warRoomEntry.prompts.chickpeas',
+  'warRoomEntry.prompts.flour',
+  'warRoomEntry.prompts.lemons',
+  'warRoomEntry.prompts.eggs',
+  'warRoomEntry.prompts.stirFry',
+  'warRoomEntry.prompts.coriander',
+  'warRoomEntry.prompts.broccoli',
+  'warRoomEntry.prompts.mince',
+  'warRoomEntry.prompts.breakfast',
+  'warRoomEntry.prompts.spinach',
+  'warRoomEntry.prompts.butter',
+  'warRoomEntry.prompts.onion',
+  'warRoomEntry.prompts.tuna',
+  'warRoomEntry.prompts.curry',
+  'warRoomEntry.prompts.avocado',
+  'warRoomEntry.shortcuts.enter.keys',
+  'warRoomEntry.shortcuts.arrows.keys',
+  'warRoomEntry.shortcuts.tab.keys',
+  'warRoomEntry.shortcuts.escape.keys',
+  'warRoomEntry.shortcuts.undo.keys',
+  'warRoomEntry.shortcuts.slash.keys'
 ])
 
 /** Every {{placeholder}} and <tag> a message uses, sorted. */
