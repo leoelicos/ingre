@@ -66,13 +66,13 @@ export const ActionsRow: FC<{ label: string; children: ReactNode }> = ({
   </div>
 )
 
-const PANEL =
+export const PANEL =
   'flex flex-col gap-3 rounded-card border-2 border-border bg-surface p-3 text-text'
 
-const BOX =
+export const BOX =
   'inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-pill border border-border px-3 text-sm data-[selected]:border-2 data-[selected]:border-primary data-[selected]:font-bold data-[focus-visible]:focus-ring'
 
-const CheckMark: FC<{ on: boolean }> = ({ on }) => (
+export const CheckMark: FC<{ on: boolean }> = ({ on }) => (
   <span
     aria-hidden="true"
     className="inline-flex h-5 w-5 items-center justify-center rounded-[5px] border-2 border-current text-xs"

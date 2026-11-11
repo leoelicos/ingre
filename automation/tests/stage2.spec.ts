@@ -59,7 +59,9 @@ const choose = async (
 const addExtra = async (page: Page, query: string, name: string) => {
   await openExplore(page)
   await page.getByRole('searchbox').fill(query)
-  await page.getByRole('button', { name: `${name}, on your list` }).click()
+  await page
+    .getByRole('button', { name: `${name}, on your list`, exact: true })
+    .click()
   await closeSheet(page)
   await expect(chip(page, query)).toHaveCount(1)
 }
@@ -212,7 +214,12 @@ test.describe('Extra (#182)', () => {
     await pickRows(page, DAHL)
     await openExplore(page)
     await page.getByRole('searchbox').fill('butter')
-    await page.getByRole('button', { name: 'Butter, on your list' }).click()
+    await page
+      .getByRole('button', {
+        name: 'Butter, on your list',
+        exact: true
+      })
+      .click()
     await closeSheet(page)
     await openExtra(page)
     await expect(chip(page, 'butter', 'extra')).toContainText('1 g')

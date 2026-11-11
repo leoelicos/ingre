@@ -1,7 +1,8 @@
 import { libIngredient, libRecipe } from '../../../test/fixtures'
+import { NO_PERSONAL } from '../../profile/personal'
 import type { ExploreSource } from '../exploreSearch'
 import {
-  alphabetical,
+  allowedRecipes,
   closeMatches,
   exploreResults,
   ingredientMatches,
@@ -33,7 +34,8 @@ const source: ExploreSource = {
   recipes,
   ingredients,
   savedOnly: false,
-  savedIds: new Set()
+  savedIds: new Set(),
+  personal: NO_PERSONAL
 }
 const names = (items: readonly { name: string }[]) => items.map((i) => i.name)
 
@@ -55,11 +57,6 @@ describe('ranking (#181)', () => {
       'chick z',
       'A chick',
       'B chick'
-    ])
-    expect(names(alphabetical(items))).toEqual([
-      'A chick',
-      'B chick',
-      'chick z'
     ])
   })
 
@@ -112,5 +109,63 @@ describe('exploreResults (#181)', () => {
     if (results.kind !== 'matches') throw new Error(results.kind)
     expect(results.recipes).toEqual([])
     expect(results.ingredients).toHaveLength(2)
+  })
+})
+
+describe('exploreResults with a profile (#224)', () => {
+  const beef = libRecipe({
+    id: 'beef',
+    name: 'Zesty beef',
+    ingredients: [{ ingredientId: 'beef-mince', quantity: 1, measure: 'g' }]
+  })
+  const rice = libRecipe({
+    id: 'jasmine',
+    name: 'Aromatic rice',
+    ingredients: [{ ingredientId: 'jasmine-rice', quantity: 1, measure: 'g' }]
+  })
+  const items = [
+    libIngredient({ id: 'beef-mince', name: 'beef mince' }),
+    libIngredient({ id: 'jasmine-rice', name: 'jasmine rice' })
+  ]
+  const base: ExploreSource = {
+    ...source,
+    recipes: [beef, rice],
+    ingredients: items
+  }
+  const liking = (like: 'rice' | 'beef'): ExploreSource => ({
+    ...base,
+    personal: {
+      taste: { ...NO_PERSONAL.taste, likes: new Set([like]) },
+      locks: NO_PERSONAL.locks
+    }
+  })
+
+  it('browses best match for the profile first, and A to Z with no history', () => {
+    expect(names(exploreResults('', base).recipes)).toEqual([
+      'Aromatic rice',
+      'Zesty beef'
+    ])
+    expect(names(exploreResults('', liking('beef')).recipes)).toEqual([
+      'Zesty beef',
+      'Aromatic rice'
+    ])
+  })
+
+  it('never shows a recipe a lock rules out, however it is found', () => {
+    const vegetarian: ExploreSource = {
+      ...liking('beef'),
+      personal: {
+        taste: liking('beef').personal.taste,
+        locks: { allergens: [], diet: 'vegetarian' }
+      }
+    }
+    expect(names(shownRecipes(vegetarian))).toEqual(['Aromatic rice'])
+    expect(names(exploreResults('', vegetarian).recipes)).toEqual([
+      'Aromatic rice'
+    ])
+    const results = exploreResults('zesty', vegetarian)
+    if (results.kind !== 'none') throw new Error(results.kind)
+    expect(names(results.recipes)).not.toContain('Zesty beef')
+    expect(names(allowedRecipes(vegetarian))).toEqual(['Aromatic rice'])
   })
 })

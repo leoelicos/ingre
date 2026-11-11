@@ -13,12 +13,16 @@ import {
   TONE_CLASSES,
   sectionTone
 } from '../../components/SectionTone/badgeTone'
+import { IngredientPicture } from '../../components/IngredientPicture'
 import type { BadgeTone } from '../../components/SectionTone/tones'
 import type { Chip, ChipGroup } from '../../utils/chips/chips'
 import { categoryLabel } from '../../utils/chips/chips'
 import type { ShopSection } from '../../utils/shopping/sections'
 import { displayName } from '../../utils/shopping/shoppingList'
 import type { ChipScope } from './chipText'
+import { useGuestList } from '../../utils/guests/GuestsContext'
+import { conflictText, conflictsOf } from '../../utils/guests/guests'
+import { GUEST_OUTLINE } from './IngredientNames'
 import { chipChevronId, chipLabel, chipPanelId, chipToggleId } from './chipText'
 
 /** Which chip's panel is open, or closing (kept mounted so it can animate shut). */
@@ -72,7 +76,11 @@ const ChipCheck: FC<{ crossed: boolean }> = ({ crossed }) => (
  * crosses off or restores, and it is at least 44px tall. A greyed chip (removed from every
  * recipe) can't be crossed off (#182).
  */
-const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
+const ChipToggle: FC<{ chip: Chip; view: ChipView; warning: string }> = ({
+  chip,
+  view,
+  warning
+}) => {
   const amount = view.amountOf(chip)
   return (
     <Checkbox
@@ -80,7 +88,9 @@ const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
       isSelected={chip.crossed}
       isDisabled={chip.greyed}
       onChange={() => view.onToggle(chip.id)}
-      aria-label={chipLabel(chip, amount)}
+      aria-label={[chipLabel(chip, amount), warning]
+        .filter((part) => part !== '')
+        .join('. ')}
       className="flex min-h-[44px] min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-l-pill py-1 pl-3 pr-1 text-left data-[disabled]:cursor-default data-[focus-visible]:focus-ring"
     >
       <ChipCheck crossed={chip.crossed} />
@@ -89,7 +99,10 @@ const ChipToggle: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
           chip.crossed ? 'line-through' : ''
         }`}
       >
-        <span className="font-semibold">{displayName(chip)}</span>
+        <span className="inline-flex items-center gap-1 font-semibold">
+          {chip.item !== null && <IngredientPicture id={chip.item.id} />}
+          {displayName(chip)}
+        </span>{' '}
         <span className="text-xs">{amount}</span>
       </span>
     </Checkbox>
@@ -125,17 +138,24 @@ const CHEVRON =
 const ChipItem: FC<{ chip: Chip; view: ChipView }> = ({ chip, view }) => {
   const t = useT()
   const expanded = view.panel.open && view.panel.id === chip.id
+  const warning = conflictText(
+    conflictsOf(chip.item?.allergens ?? [], useGuestList())
+  )
   return (
     <li
       data-chip={chip.id}
+      data-guest-flag={warning === '' ? undefined : 'true'}
       data-scope={view.scope}
       data-category={categoryLabel(chip.section)}
       data-greyed={chip.greyed}
-      className={chipClass(chip)}
+      className={`${chipClass(chip)}${
+        warning === '' ? '' : ` ${GUEST_OUTLINE}`
+      }`}
     >
       <ChipToggle
         chip={chip}
         view={view}
+        warning={warning}
       />
       <Button
         id={chipChevronId(chip.id, view.scope)}
@@ -156,6 +176,8 @@ const FAN_TONES: Readonly<Record<BadgeTone, string>> = {
   produce: 'before:bg-badge-produce-ink',
   meat: 'before:bg-badge-meat-ink',
   dairy: 'before:bg-badge-dairy-ink',
+  fruit: 'before:bg-badge-fruit-ink',
+  seafood: 'before:bg-badge-seafood-ink',
   deli: 'before:bg-badge-deli-ink',
   bakery: 'before:bg-badge-bakery-ink',
   pantry: 'before:bg-badge-pantry-ink',

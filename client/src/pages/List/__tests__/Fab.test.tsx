@@ -68,7 +68,6 @@ describe('Feature: The FAB (#192)', () => {
       expect(fab).toHaveTextContent(`+${label}`)
       expect(fab).toHaveAttribute('aria-haspopup', 'dialog')
       expect(fab).toHaveAttribute('data-mode', mode)
-      expect(fab.className).toMatch(/env\(safe-area-inset-bottom\)/)
       fireEvent.click(fab)
       expect(pressed).toEqual([mode])
     }

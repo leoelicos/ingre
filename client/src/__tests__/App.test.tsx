@@ -8,6 +8,10 @@ import {
   SiteAnalytics,
   withAuthHeaders
 } from '../App'
+import { FIRST_RUN_KEY } from '../utils/firstRun/firstRun'
+
+/** A return visit: the first run is over, so the app opens on the list. */
+const returning = () => localStorage.setItem(FIRST_RUN_KEY, '"done"')
 
 /** Renders the whole app at a path, as a browser would open it. */
 const openAt = (path: string) => {
@@ -18,6 +22,20 @@ const openAt = (path: string) => {
 describe('App', () => {
   beforeEach(() => {
     localStorage.clear()
+    returning()
+  })
+
+  it("opens the War room from the header, in the page's one main landmark (#207)", async () => {
+    openAt('/')
+    await userEvent
+      .setup()
+      .click(screen.getByRole('link', { name: 'War room' }))
+    expect(screen.getByRole('main')).toContainElement(
+      screen.getByRole('heading', { level: 1, name: 'War room' })
+    )
+    expect(
+      screen.getByRole('textbox', { name: 'Add an item' })
+    ).toBeInTheDocument()
   })
 
   it('opens on the one page: the header, Recipes, Ingredients and the FAB, no search (#164, #179, #192)', () => {
@@ -99,7 +117,31 @@ describe('App', () => {
   })
 })
 
+describe('App first run (#211)', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('a first visit opens on the landing, without the header', () => {
+    openAt('/')
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: /organised ingredient lists/
+      })
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('searchbox')).not.toBeInTheDocument()
+  })
+
+  it('/setup shows the three questions again for a return visit', () => {
+    returning()
+    openAt('/setup')
+    expect(screen.getByText('Step 1 of 3')).toBeInTheDocument()
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+  })
+})
+
 describe('App skip link (#131)', () => {
+  beforeEach(returning)
+
   it('the first Tab on a page lands on "Skip to content", which targets the main landmark', async () => {
     const user = userEvent.setup()
     window.history.pushState({}, '', '/login')

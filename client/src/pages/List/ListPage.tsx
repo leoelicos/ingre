@@ -1,19 +1,25 @@
 import { translate, useT } from '../../i18n'
 import type { FC } from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 import { changeTitle } from '../../utils/changeTitle'
 import { useChips } from '../../utils/chips/useChips'
+import { useExplore } from '../../utils/explore/ExploreContext'
+import { useFlag } from '../../utils/flags/useFlag'
+import { usePersonal } from '../../utils/profile/personal'
 import { useSaved } from '../../utils/saved/useSaved'
+import { useMarkFirstEndToEnd } from '../../utils/tier/upsell'
 import type { ExploreProps } from './Explore'
-import { ExploreSheet } from './Explore'
+import { ExploreSheet, savedIdsOf } from './Explore'
 import { ExtraSheet } from './Extra'
 import type { FabMode } from './Fab'
 import { Fab, useFabMode } from './Fab'
 import { INGREDIENTS_ID, Ingredients, useIngredients } from './Ingredients'
 import { RECIPES_HEADING_ID, RECIPES_ID, Recipes } from './Recipes'
+import { useTabArrival } from './tabArrival'
 import { ScrollToTop } from './ScrollToTop'
+import { Bra } from '../../components/Bra'
 import { PageMain } from '../../components/SkipLink'
 
 /** "?saved=1" from the Saved account link or old Saved links: Explore's Saved filter (#181). */
@@ -48,22 +54,40 @@ export const sheetFor = (mode: FabMode): OpenSheet =>
 export const ListPage: FC = () => {
   const t = useT()
   useEffect(() => changeTitle(translate('list.title')), [])
+  const explore = useExplore()
+  useTabArrival(explore)
   const list = useChips()
+  useMarkFirstEndToEnd(useFlag('tiers'), list.chips, list.pickedIds.size)
   const ingredients = useIngredients(list)
   const [params, setParams] = useSearchParams()
   const savedOnly = savedParam(params)
   const loggedIn = useAuthContext()[0].loggedIn
   const savedState = useSaved(loggedIn)
   const saved = loggedIn ? savedState : null
-  const [sheet, setSheet] = useState<OpenSheet>(null)
-  const [query, setQuery] = useState('')
+  const personal = usePersonal(list, savedIdsOf(saved))
+  /* Explore's sheet is open while Explore is expanded (#181, #192): the FAB, the Explore tab
+     and the account menu's Saved link all expand it; it starts shut */
+  const exploreOpen = explore.expanded === true
+  const [extraOpen, setExtraOpen] = useState(false)
+  const sheet: OpenSheet = exploreOpen ? 'explore' : extraOpen ? 'extra' : null
   const mode = useFabMode(INGREDIENTS_ID)
+  /* the Saved link opens Explore once each time it is followed, not on every render */
+  const latest = useRef(explore)
+  latest.current = explore
   useEffect(() => {
-    if (savedOnly) setSheet('explore')
+    if (savedOnly) latest.current.show()
   }, [savedOnly])
+  const open = (next: OpenSheet) => {
+    if (next === 'extra') setExtraOpen(true)
+    else {
+      explore.show()
+      explore.requestFocus()
+    }
+  }
   /* closing Explore also drops "?saved=1", so the Saved link opens it again next time */
   const close = () => {
-    setSheet(null)
+    explore.collapse()
+    setExtraOpen(false)
     if (savedOnly) setParams(withSaved(params, false))
   }
   const exploreProps: ExploreProps = {
@@ -74,11 +98,12 @@ export const ListPage: FC = () => {
     },
     saved,
     savedOnly,
+    personal,
     onSaved: (on) => setParams(withSaved(params, on))
   }
   return (
     <div className="mx-auto flex w-full max-w-layout px-gutter">
-      <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pt-4">
+      <PageMain className="flex min-w-0 flex-1 flex-col gap-6 pb-36 pt-4">
         <h1 className="sr-only">{t('list.title')}</h1>
         <div
           data-workspace=""
@@ -98,20 +123,22 @@ export const ListPage: FC = () => {
             .join(' ')
             .trim()}
         </p>
-        <ScrollToTop
-          watchId={RECIPES_ID}
-          headingId={RECIPES_HEADING_ID}
-        />
-        <Fab
-          mode={mode}
-          onPress={(pressed) => setSheet(sheetFor(pressed))}
-        />
+        <Bra>
+          <ScrollToTop
+            watchId={RECIPES_ID}
+            headingId={RECIPES_HEADING_ID}
+          />
+          <Fab
+            mode={mode}
+            onPress={(pressed) => open(sheetFor(pressed))}
+          />
+        </Bra>
         <ExploreSheet
           {...exploreProps}
           isOpen={sheet === 'explore'}
           onClose={close}
-          query={query}
-          onQuery={setQuery}
+          query={explore.query}
+          onQuery={explore.setQuery}
         />
         <ExtraSheet
           state={ingredients}

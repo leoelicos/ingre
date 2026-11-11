@@ -17,10 +17,10 @@ import {
   recipesRegion,
   searchBox
 } from './page'
+import { RECIPE_COUNT } from './library'
 
 /* #181 Search / Explore, in its sheet from #192: one scenario per behaviour, on the phone and desktop projects. */
 
-const RECIPE_COUNT = 14
 const group = (page: Page, name: string): Locator =>
   explore(page)
     .locator('div')
@@ -38,12 +38,17 @@ const rowNames = (scope: Locator) =>
     )
 const ingredientNames = (scope: Locator) =>
   scope
-    .getByRole('button', { name: /^Add |, on your list$/ })
+    .getByRole('button', { name: /^Add |on your list$/ })
     .evaluateAll((els) =>
       els.map((el) =>
-        (el.getAttribute('aria-label') ?? '')
+        (el.textContent ?? '')
+          .replace(/^✓?\s*/, '')
           .replace(/^Add /, '')
-          .replace(/, on your list$/, '')
+          .replace(
+            /(Fruit & Veg|Meat & Seafood|Dairy, Eggs & Fridge|Deli|Bakery|Pantry|Frozen|Other).*$/,
+            ''
+          )
+          .trim()
           .toLowerCase()
       )
     )
@@ -200,10 +205,11 @@ test.describe('Explore (#181)', () => {
   }) => {
     await typeQuery(page, 'chicken')
     const recipes = await rowNames(group(page, 'Recipes'))
-    expect(recipes.slice(0, 3)).toEqual([
+    expect(recipes.slice(0, 4)).toEqual([
       'Chicken korma',
-      'Butter chicken',
-      'Lemongrass chilli chicken'
+      'Chicken shawarma wraps with garlic yoghurt',
+      'Chicken, avocado and corn salad',
+      'Butter chicken'
     ])
     await typeQuery(page, 'rice')
     const ingredients = await ingredientNames(group(page, 'Ingredients'))
@@ -308,7 +314,10 @@ test.describe('Explore (#181)', () => {
       explore(page).getByText('Banana added to Extra')
     ).toBeAttached()
     await expect(
-      explore(page).getByRole('button', { name: 'Banana, on your list' })
+      explore(page).getByRole('button', {
+        name: 'Banana, on your list',
+        exact: true
+      })
     ).toBeVisible()
     await closeSheet(page)
     await expect(chip(page, 'banana')).toHaveCount(1)
@@ -322,7 +331,10 @@ test.describe('Explore (#181)', () => {
     await pickRows(page, DAHL)
     await typeQuery(page, 'butter')
     await explore(page)
-      .getByRole('button', { name: 'Butter, on your list' })
+      .getByRole('button', {
+        name: 'Butter, on your list',
+        exact: true
+      })
       .click()
     await expect(
       explore(page).getByText('Butter added to Extra')

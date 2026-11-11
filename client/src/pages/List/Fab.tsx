@@ -39,9 +39,9 @@ export const useFabMode = (id: string): FabMode => {
 
 export const FAB_ID = 'fab'
 
-/** Fixed bottom right, above the iOS home indicator (with viewport-fit=cover). */
+/** In the bottom-right area (#210), which keeps it above the bottom bar and the home indicator. */
 const FAB =
-  'fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-20 inline-flex min-h-[56px] items-center gap-2 rounded-pill bg-primary px-5 text-lg font-bold text-on-primary shadow-raised data-[pressed]:shadow-pressed data-[focus-visible]:focus-ring'
+  'inline-flex min-h-[56px] items-center gap-2 rounded-pill bg-primary px-5 text-lg font-bold text-on-primary shadow-raised data-[pressed]:shadow-pressed data-[focus-visible]:focus-ring'
 
 /**
  * The FAB (#192): "+ Recipe" opens Explore, "+ Pantry Item" opens Extra. Its accessible

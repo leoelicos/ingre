@@ -8,6 +8,8 @@ import type { LibraryRecipe } from '../../types/library'
 import type { CopyLine } from '../../utils/balance/copies'
 import type { SwipeRule } from '../../utils/gestures/swipe'
 import { useSwipe } from '../../utils/gestures/swipe'
+import { linesAllergens } from '../../utils/guests/guests'
+import { GuestFlag } from './GuestFlag'
 import { IngredientNames } from './IngredientNames'
 
 /** What every row shares: picks, open rows, and what an open row shows. */
@@ -40,6 +42,10 @@ export interface Row {
   /** the ingredients it uses, named under the title while the row is closed (#191) */
   readonly lines: readonly CopyLine[]
   readonly details: (title: string) => ReactNode
+  /** what a suggestion adds under the ingredients, open or closed (#204) */
+  readonly note?: ReactNode
+  /** ingredient ids to outline in the closed row: the missing ones, by the dial (#206) */
+  readonly flagged?: ReadonlySet<string>
 }
 
 export const ROW_HEADING = 'm-0 text-sm font-semibold uppercase tracking-wide'
@@ -238,8 +244,14 @@ const RowCard: FC<{
           lines={row.lines}
           title={title}
           scroll={controls.namesScroll}
+          flagged={row.flagged}
         />
       )}
+      <GuestFlag
+        tags={linesAllergens(row.lines)}
+        className="col-span-2 mx-4 mb-4 ml-14"
+      />
+      {row.note}
       <Collapse
         id={detailsId}
         open={open}

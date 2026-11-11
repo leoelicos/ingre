@@ -7,6 +7,7 @@ import {
   model
 } from 'mongoose'
 import { RecipeSchema } from './Recipe'
+import { TIERS, type Tier } from '../utils/tiers'
 
 export interface UserSchema extends Document {
   _id: Types.ObjectId
@@ -15,6 +16,7 @@ export interface UserSchema extends Document {
   email: string
   password: string
   pro: boolean
+  tier?: Tier | null
   savedRecipes: Array<Types.Subdocument & RecipeSchema>
   numSavedRecipes: number // virtual
 }
@@ -32,7 +34,9 @@ const userSchema = new Schema<UserSchema, {}, UserMethods, UserVirtuals>(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlength: 5 },
     savedRecipes: [{ type: Types.ObjectId, ref: 'Recipe', required: true }],
-    pro: { type: Boolean, default: false }
+    pro: { type: Boolean, default: false },
+    // #208: null until a tier is bought
+    tier: { type: String, enum: [...TIERS, null], default: null }
   },
   {
     toJSON: { virtuals: true },

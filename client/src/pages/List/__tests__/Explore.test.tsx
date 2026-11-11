@@ -11,13 +11,47 @@ import {
   sheet,
   hasChipEl,
   pick,
+  pickFromExplore,
   pickInExplore,
   recipes,
   renderList,
   searchBox
 } from '../../../test/renderList'
+import { SEARCH_SETTLE_MS } from '../../../utils/analytics/useSearchedEvent'
+import { readEvents } from '../../../utils/analytics/events'
+import { SETTINGS_KEY } from '../../../utils/profile/settings'
+import { originalIds, matchCounts } from '../Explore'
+import { library } from '../../../utils/library/recipeLibrary'
 
 beforeEach(() => localStorage.clear())
+
+describe('pure helpers', () => {
+  it('originalIds returns the ingredient ids of a recipe', () => {
+    const recipe = library[0]
+    if (recipe === undefined) throw new Error('no recipes')
+    const ids = originalIds(recipe)
+    expect(ids.size).toBe(recipe.ingredients.length)
+    expect(ids.has(recipe.ingredients[0]?.ingredientId ?? '')).toBe(true)
+  })
+
+  it('matchCounts returns zero for non-matches and the lengths for matches', () => {
+    expect(
+      matchCounts({
+        kind: 'none',
+        ingredients: [],
+        recipes: [],
+        browse: []
+      })
+    ).toEqual({ ingredients: 0, recipes: 0 })
+    expect(
+      matchCounts({
+        kind: 'matches',
+        ingredients: [],
+        recipes: []
+      })
+    ).toEqual({ ingredients: 0, recipes: 0 })
+  })
+})
 
 type User = ReturnType<typeof userEvent.setup>
 /** Puts the whole query in at once: typing key by key re-renders every result per key, slow on CI. */
@@ -47,6 +81,7 @@ const ingredientResults = () =>
       .parentElement ?? document.body
   )
     .getAllByRole('button')
+    .filter((button) => button.hasAttribute('data-section'))
     .map((button) => button.getAttribute('aria-label'))
 const browseNames = () => groupNames('Browse recipes')
 const signIn = () =>
@@ -140,7 +175,7 @@ describe('Scenario: Browse and search (#181)', () => {
     const recipeNames = groupNames('Recipes')
     expect(recipeNames[0]).toMatch(/^Chick/)
     const ingredients = ingredientResults()
-    expect(ingredients[0]).toMatch(/^Add chick/)
+    expect(ingredients[0]).toMatch(/^Add chicken/)
     const grid = explore().getByRole('heading', {
       level: 3,
       name: 'Ingredients'
@@ -219,12 +254,15 @@ describe('Scenario: Explore results act in place (#181)', () => {
     const user = userEvent.setup()
     renderList()
     await search(user, 'banana')
-    await user.click(explore().getByRole('button', { name: 'Add banana' }))
-    expect(explore().getByText('Banana added to Extra')).toBeInTheDocument()
-    const onList = explore().getByRole('button', {
-      name: 'Banana, on your list'
-    })
-    expect(onList).toHaveTextContent('on your list')
+    await user.click(
+      explore().getAllByRole('button', { name: /Add banana/i })[0]!
+    )
+    expect(hasChipEl('banana')).toBe(1)
+    expect(screen.getByText('Banana added to Extra')).toBeInTheDocument()
+    const onList = explore().getAllByRole('button', {
+      name: /banana.*on your list/i
+    })[0]!
+    expect(onList.closest('li')).toHaveTextContent('on your list')
     await user.click(onList)
     expect(
       explore().getByText('Banana is already in Extra')
@@ -239,7 +277,7 @@ describe('Scenario: Explore results act in place (#181)', () => {
     renderList()
     await search(user, 'butter')
     const item = explore()
-      .getByRole('button', { name: 'Add butter' })
+      .getAllByRole('button', { name: /Add butter/i })[0]!
       .closest('li')
     expect(
       within(item ?? document.body).getByRole('list', { name: 'Allergens' })
@@ -290,5 +328,166 @@ describe('Scenario: Search bar (#181, #192)', () => {
       'Search ingredients and recipes'
     )
     expect(explore().getByRole('search')).toContainElement(searchBox())
+  })
+
+  it('a result is named by what it shows, so voice control can say what it sees (WCAG 2.5.3, #223)', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'banana')
+    const add = explore().getAllByRole('button', { name: /Add banana/i })[0]!
+    expect(add).toHaveAttribute('aria-label')
+    expect(add).toHaveAccessibleName('Add banana')
+    await user.click(add)
+    const onList = explore().getAllByRole('button', {
+      name: /banana.*on your list/i
+    })[0]!
+    expect(onList).toHaveAccessibleName(/banana.*on your list/i)
+  })
+})
+
+describe('Explore and the profile (#224)', () => {
+  it('browses A to Z until the list says what the user likes', () => {
+    renderList()
+    /* the first recipe A to Z, whatever the library holds (#103 grows it) */
+    const first = library
+      .map(({ name }) => name)
+      .sort((a, b) => a.localeCompare(b))[0]
+    expect(browseNames()[0]).toBe(first)
+  })
+
+  it('puts recipes like the picked ones first', () => {
+    pick('egg-fried-rice')
+    renderList()
+    expect(browseNames()[0]).toBe('Egg fried rice')
+  })
+
+  it('lets a dislike override behaviour, so a favourite class sinks', () => {
+    pick('beef-keema')
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ dislikes: ['beef'] }))
+    renderList()
+    const names = browseNames()
+    expect(names.indexOf('Beef keema with peas')).toBeGreaterThan(
+      names.indexOf('Red lentil dahl')
+    )
+  })
+
+  it('never shows a locked recipe, and a lock beats a like', () => {
+    localStorage.setItem(
+      SETTINGS_KEY,
+      JSON.stringify({ diet: 'vegetarian', likes: ['beef', 'poultry'] })
+    )
+    renderList()
+    const names = browseNames()
+    expect(names).toContain('Red lentil dahl')
+    expect(names.join('|')).not.toMatch(/beef|chicken|pork|prawn/i)
+  })
+})
+
+describe('Explore sections (#226)', () => {
+  const filter = () =>
+    within(
+      explore().getByRole('group', { name: 'Filter ingredients by section' })
+    )
+
+  it('marks each ingredient result with its section: a name, and an accent bar', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'o')
+    const results = explore()
+      .getAllByRole('button', {
+        name: /^(Add|.*on your list)/
+      })
+      .filter((button) => button.hasAttribute('data-section'))
+    expect(results.length).toBeGreaterThan(3)
+    results.forEach((result) => {
+      expect(result.className).toMatch(/border-l-4/)
+      expect(result.getAttribute('data-section')).not.toBeNull()
+    })
+  })
+
+  it('tells fruit from vegetables and seafood from meat', async () => {
+    const user = userEvent.setup()
+    renderList()
+    const sectionOf = async (name: string): Promise<string | null> => {
+      await user.clear(searchBox())
+      await search(user, name)
+      return explore()
+        .getAllByRole('button', { name: `Add ${name}` })[0]!
+        .getAttribute('data-section')
+    }
+    expect(await sectionOf('banana')).toBe('fruit')
+    expect(await sectionOf('carrot')).toBe('vegetables')
+    expect(await sectionOf('beef mince')).toBe('meat')
+    expect(await sectionOf('cooked prawns')).toBe('seafood')
+  })
+
+  it('narrows the ingredient results to the sections toggled, and back with none', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'a')
+    const all = ingredientResults().length
+    await user.click(filter().getByRole('button', { name: 'Fruit' }))
+    expect(filter().getByRole('button', { name: 'Fruit' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
+    const fruit = ingredientResults()
+    expect(fruit.length).toBeLessThan(all)
+    expect(fruit).toContain('Add banana')
+    expect(fruit).not.toContain('Add carrot')
+    await user.click(filter().getByRole('button', { name: 'Seafood' }))
+    expect(ingredientResults()).toContain('Add cooked prawns')
+    await user.click(filter().getByRole('button', { name: 'Fruit' }))
+    await user.click(filter().getByRole('button', { name: 'Seafood' }))
+    expect(ingredientResults()).toHaveLength(all)
+  })
+
+  it('has no filter when the results fall in one section', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'red lentils')
+    expect(
+      explore().queryByRole('group', { name: 'Filter ingredients by section' })
+    ).toBeNull()
+  })
+})
+
+describe('analytics (#222)', () => {
+  const searched = () =>
+    readEvents()
+      .filter((event) => event.name === 'ingredient_searched')
+      .map((event) => event.props)
+  const settled = (count: number) =>
+    waitFor(() => expect(searched()).toHaveLength(count), {
+      timeout: SEARCH_SETTLE_MS * 4
+    })
+
+  it('logs ingredient_searched once with its matches, and ticket_added when a recipe is added', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'dahl')
+    await settled(1)
+    expect(searched()[0]).toEqual({
+      query: 'dahl',
+      ingredients: expect.any(Number),
+      recipes: expect.any(Number)
+    })
+    expect(searched()[0]?.['recipes']).toBeGreaterThan(0)
+    fireEvent.click(pickFromExplore('Red lentil dahl'))
+    expect(
+      readEvents().filter((event) => event.name === 'ticket_added')
+    ).toHaveLength(1)
+  })
+
+  it('logs a search with no matches as zero matches', async () => {
+    const user = userEvent.setup()
+    renderList()
+    await search(user, 'zzzzqq')
+    await settled(1)
+    expect(searched()[0]).toEqual({
+      query: 'zzzzqq',
+      ingredients: 0,
+      recipes: 0
+    })
   })
 })

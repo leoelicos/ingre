@@ -3,6 +3,7 @@ import type { FC } from 'react'
 import { useEffect, useState } from 'react'
 import { Button } from 'react-aria-components'
 import { focusById, scrollToStartOf } from '../../utils/focus'
+import { useKeyboardOpen } from '../../utils/media/useKeyboardOpen'
 
 /** True once the chips have scrolled up out of view (not when they are below the screen). */
 export const isScrolledPast = (
@@ -42,8 +43,9 @@ export const useScrolledPast = (id: string): boolean => {
 
 /**
  * Scroll to top (#179): shows once the watched section (#192: Recipes, at the top) has scrolled
- * out of view. Scrolls it back to the top of the screen and moves focus to its heading, so
- * keyboard and screen reader users land there too. It sits just above the FAB.
+ * out of view, and collapses while the on-screen keyboard is up (#228). Scrolls it back to the
+ * top of the screen and moves focus to its heading, so keyboard and screen reader users land
+ * there too. It sits just above the FAB.
  */
 export const ScrollToTop: FC<{ watchId: string; headingId: string }> = ({
   watchId,
@@ -51,14 +53,15 @@ export const ScrollToTop: FC<{ watchId: string; headingId: string }> = ({
 }) => {
   const t = useT()
   const past = useScrolledPast(watchId)
-  return past ? (
+  const keyboard = useKeyboardOpen()
+  return past && !keyboard ? (
     <Button
       aria-label={t('scrollToTop')}
       onPress={() => {
         scrollToStartOf(watchId)
         focusById(headingId)
       }}
-      className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-20 inline-flex h-12 w-12 items-center justify-center rounded-pill bg-primary text-xl text-on-primary shadow-raised data-[focus-visible]:focus-ring"
+      className="fixed bottom-[calc(9.5rem+env(safe-area-inset-bottom))] right-4 z-10 inline-flex h-12 w-12 items-center justify-center rounded-pill bg-primary text-xl text-on-primary shadow-raised data-[focus-visible]:focus-ring"
     >
       <span aria-hidden="true">↑</span>
     </Button>

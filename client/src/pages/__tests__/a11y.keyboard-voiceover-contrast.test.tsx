@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthProvider } from '../../utils/auth/AuthContext'
+import { ExploreProvider } from '../../utils/explore/ExploreContext'
+import { GuestsProvider } from '../../utils/guests/GuestsContext'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
 import { ListPage } from '../List/ListPage'
@@ -14,12 +16,16 @@ const renderAt = (ui: React.ReactElement, path: string) =>
     <MockedProvider mocks={[]}>
       <MemoryRouter initialEntries={[path]}>
         <AuthProvider>
-          <Routes>
-            <Route
-              path="*"
-              element={ui}
-            />
-          </Routes>
+          <ExploreProvider>
+            <GuestsProvider>
+              <Routes>
+                <Route
+                  path="*"
+                  element={ui}
+                />
+              </Routes>
+            </GuestsProvider>
+          </ExploreProvider>
         </AuthProvider>
       </MemoryRouter>
     </MockedProvider>

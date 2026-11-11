@@ -6,6 +6,8 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import ingredientData from '../../data/ingredients.json'
 import recipeData from '../../data/recipes.json'
 import { AuthProvider } from '../../utils/auth/AuthContext'
+import { ExploreProvider } from '../../utils/explore/ExploreContext'
+import { GuestsProvider } from '../../utils/guests/GuestsContext'
 import { StoreProvider } from '../../utils/state/GlobalState'
 import { PICKED_KEY } from '../../utils/storage/shoppingState'
 import { ListPage } from '../List/ListPage'
@@ -19,12 +21,16 @@ const renderAt = (path: string, pattern: string, page: ReactElement) =>
       <MemoryRouter initialEntries={[path]}>
         <AuthProvider>
           <StoreProvider>
-            <Routes>
-              <Route
-                path={pattern}
-                element={page}
-              />
-            </Routes>
+            <ExploreProvider>
+              <GuestsProvider>
+                <Routes>
+                  <Route
+                    path={pattern}
+                    element={page}
+                  />
+                </Routes>
+              </GuestsProvider>
+            </ExploreProvider>
           </StoreProvider>
         </AuthProvider>
       </MemoryRouter>

@@ -1,9 +1,12 @@
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { axe, toHaveNoViolations } from 'jest-axe'
+import { toHaveNoViolations } from 'jest-axe'
+import { axe } from '../../test/axe'
 import { MockedProvider } from '@apollo/client/testing'
 import { AuthProvider } from '../../utils/auth/AuthContext'
+import { ExploreProvider } from '../../utils/explore/ExploreContext'
+import { GuestsProvider } from '../../utils/guests/GuestsContext'
 import { Header } from '../../components/Header'
 import { Login } from '../Admin/Login'
 import { Signup } from '../Admin/Signup'
@@ -24,12 +27,16 @@ const renderScreen = (ui: React.ReactElement, path = '/') =>
     <MockedProvider mocks={[]}>
       <MemoryRouter initialEntries={[path]}>
         <AuthProvider>
-          <Routes>
-            <Route
-              path="*"
-              element={ui}
-            />
-          </Routes>
+          <ExploreProvider>
+            <GuestsProvider>
+              <Routes>
+                <Route
+                  path="*"
+                  element={ui}
+                />
+              </Routes>
+            </GuestsProvider>
+          </ExploreProvider>
         </AuthProvider>
       </MemoryRouter>
     </MockedProvider>

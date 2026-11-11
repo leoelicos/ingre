@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MockedProvider } from '@apollo/client/testing'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
@@ -8,7 +8,14 @@ import { Header } from '../../Header'
 import { logIn } from '../../../test/providers'
 import { addFontAwesome } from '../../../utils/addFontAwesome'
 import { ACCOUNT_LABEL, AccountMenu } from '../AccountMenu'
-import { SAVED_PATH, accountItems, actionsFor } from '../accountItems'
+import { markFirstEndToEnd } from '../../../utils/tier/upsell'
+import {
+  PLANS_PATH,
+  SAVED_PATH,
+  SETUP_PATH,
+  accountItems,
+  actionsFor
+} from '../accountItems'
 
 addFontAwesome()
 
@@ -59,18 +66,18 @@ describe('AccountMenu (#164)', () => {
     ).toBeInTheDocument()
   })
 
-  it('signed out: Log in and Sign up', async () => {
+  it('signed out: Log in, Sign up and Set-up', async () => {
     const user = userEvent.setup()
     renderMenu(false)
     await user.click(trigger())
-    expect(itemNames()).toEqual(['Log in', 'Sign up'])
+    expect(itemNames()).toEqual(['Log in', 'Sign up', 'Set-up'])
   })
 
-  it('signed in: also Saved (with Log out)', async () => {
+  it('signed in: Saved, Set-up and Log out', async () => {
     const user = userEvent.setup()
     renderMenu(true)
     await user.click(trigger())
-    expect(itemNames()).toEqual(['Saved', 'Log out'])
+    expect(itemNames()).toEqual(['Saved', 'Set-up', 'Log out'])
   })
 
   it('arrow keys move between items; Escape closes and returns focus to the icon', async () => {
@@ -114,9 +121,59 @@ describe('AccountMenu (#164)', () => {
     expect(localStorage.getItem('id_token')).toBeNull()
   })
 
+  it('Set-up opens the three questions again (#211)', async () => {
+    const user = userEvent.setup()
+    renderMenu(false)
+    await user.click(trigger())
+    await user.click(screen.getByRole('menuitem', { name: 'Set-up' }))
+    expect(where()).toBe(`${SETUP_PATH} null`)
+  })
+
+  it('with the tiers flag on, Plans appears after the first end-to-end, before Log out, and opens Plans (#208)', async () => {
+    const user = userEvent.setup()
+    window.history.pushState({}, '', '/?flags=tiers')
+    renderMenu(true)
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Saved', 'Set-up', 'Log out'])
+    await user.keyboard('{Escape}')
+    act(() => markFirstEndToEnd())
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Saved', 'Set-up', 'Plans', 'Log out'])
+    await user.click(screen.getByRole('menuitem', { name: 'Plans' }))
+    expect(where()).toBe(`${PLANS_PATH} null`)
+    window.history.pushState({}, '', '/?flags=')
+    window.history.pushState({}, '', '/')
+  })
+
+  it('without the tiers flag, the first end-to-end shows no Plans (#208)', async () => {
+    const user = userEvent.setup()
+    markFirstEndToEnd()
+    renderMenu(false)
+    await user.click(trigger())
+    expect(itemNames()).toEqual(['Log in', 'Sign up', 'Set-up'])
+  })
+
   it('maps menu keys to actions; anything else is no action', () => {
-    expect(accountItems(false).map((i) => i.id)).toEqual(['login', 'signup'])
+    expect(accountItems(true, true).map((i) => i.id)).toEqual([
+      'saved',
+      'setup',
+      'plans',
+      'logout'
+    ])
+    expect(accountItems(false, true).map((i) => i.id)).toEqual([
+      'login',
+      'signup',
+      'setup',
+      'plans'
+    ])
+    expect(actionsFor('plans')).toEqual(['plans'])
+    expect(accountItems(false).map((i) => i.id)).toEqual([
+      'login',
+      'signup',
+      'setup'
+    ])
     expect(actionsFor('saved')).toEqual(['saved'])
+    expect(actionsFor('setup')).toEqual(['setup'])
     expect(actionsFor('nope')).toEqual([])
     expect(actionsFor(3)).toEqual([])
   })
@@ -158,11 +215,11 @@ describe('AccountMenu (#164)', () => {
       </MockedProvider>
     )
     await user.click(trigger())
-    expect(itemNames()).toEqual(['Log in', 'Sign up'])
+    expect(itemNames()).toEqual(['Log in', 'Sign up', 'Set-up'])
     await user.keyboard('{Escape}')
     await user.click(screen.getByRole('button', { name: 'Pretend login' }))
     await user.click(trigger())
-    expect(itemNames()).toEqual(['Saved', 'Log out'])
+    expect(itemNames()).toEqual(['Saved', 'Set-up', 'Log out'])
     await user.click(screen.getByRole('menuitem', { name: 'Saved' }))
     expect(where()).toBe(`${SAVED_PATH} null`)
   })

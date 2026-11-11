@@ -100,6 +100,27 @@ describe('Stripe configuration', () => {
   })
 })
 
+describe('Stripe is test mode only (#208, #218)', () => {
+  it('uses STRIPE_SECRET_KEY when it is a test key', () => {
+    expect(stripeKey({ STRIPE_SECRET_KEY: 'sk_test_from_env' })).toBe(
+      'sk_test_from_env'
+    )
+  })
+
+  it('refuses a live key, however it is given', () => {
+    expect(() => stripeKey({ STRIPE_SECRET_KEY: 'sk_live_nope' })).toThrow(
+      'test-mode'
+    )
+    expect(() =>
+      stripeKey({ STRIPE_API_HOST: 'localhost', STRIPE_API_KEY: 'rk_live_x' })
+    ).toThrow('test-mode')
+  })
+
+  it('treats an empty STRIPE_SECRET_KEY as unset', () => {
+    expect(stripeKey({ STRIPE_SECRET_KEY: '' })).toMatch(/^sk_test_4/)
+  })
+})
+
 describe('StripeApi', () => {
   let stripeApi: StripeApi
 
