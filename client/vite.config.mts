@@ -15,6 +15,8 @@ export default defineConfig(({ mode }) => ({
       '/graphql': 'http://localhost:3001'
     }
   },
+  /* the speech model's worker (#207) loads transformers.js lazily, which needs ES workers */
+  worker: { format: 'es' },
   build: {
     outDir: 'build',
     target: 'es2022'
