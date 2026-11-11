@@ -1,3 +1,10 @@
 <resources>
     <style name="Theme.Ingre" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Launch theme: the egg on the web app's page background (client/src/styles/theme.css). -->
+    <style name="Theme.Ingre.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.Ingre</item>
+    </style>
 </resources>

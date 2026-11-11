@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "IngreCore",
-    platforms: [.iOS("26.0")],
+    platforms: [.iOS(.v17)],
     products: [
         .library(name: "IngreCore", targets: ["IngreCore"])
     ],

@@ -3,6 +3,7 @@ package com.leoelicos.ingre
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -31,6 +32,7 @@ import com.leoelicos.ingre.ui.ShoppingListScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         val store = TokenStore(this)
         // #314: Google Play subscriptions, only with the `tiers` flag (off by default)

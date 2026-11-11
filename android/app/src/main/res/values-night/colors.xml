@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- palette-night in client/src/styles/theme.css: the web app's dark page background -->
+    <color name="splash_background">#141815</color>
+</resources>
