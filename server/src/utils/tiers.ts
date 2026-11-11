@@ -25,3 +25,21 @@ export const tierProduct = (tier: Tier) => ({
   productDescription: `The ${NAMES[tier]} tier of ingré`,
   productCost: PRICE_CENTS[tier]
 })
+
+/** #312: each tier's monthly Price in Stripe, found by lookup key (the setup script makes them). */
+export const LOOKUP_KEYS: Readonly<Record<Tier, string>> = {
+  EXPLORER: 'ingre_explorer_monthly',
+  MANAGER: 'ingre_manager_monthly',
+  LEADER: 'ingre_leader_monthly'
+}
+
+/** The Product metadata key that says which tier a Stripe Product is. */
+export const TIER_METADATA_KEY = 'ingre_tier'
+
+/** The tier a Price's lookup key stands for, or null for any other Price. */
+export const tierOfLookupKey = (key: string | null | undefined): Tier | null =>
+  TIERS.find((tier) => LOOKUP_KEYS[tier] === key) ?? null
+
+/** A subscription in one of these states gives its tier: the user is active. */
+export const isActiveStatus = (status: string | null | undefined): boolean =>
+  status === 'active' || status === 'trialing'

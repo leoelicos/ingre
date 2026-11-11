@@ -27,6 +27,10 @@ Plans appear only after the first end-to-end (a picked recipe with every chip cr
 
 Choosing a tier starts the existing Stripe checkout for that tier (`checkout(tier:)` on the server). After Stripe returns to the Success page, `makeUserPro(tier:)` records the tier on the user. The tier travels through the redirect in `sessionStorage`, because Stripe's success URL only carries the session id.
 
+## Subscriptions (#312)
+
+With `VITE_STRIPE_PUBLISHABLE_KEY` set, choosing a tier opens a card form in place (Stripe Elements, `createToken`) and subscribes monthly; Stripe's webhooks keep the tier and `active` status in step. See `docs/STRIPE.md`.
+
 ## Test mode only
 
 There are **no real charges**. The server refuses any Stripe key that is not an `sk_test_` key (`server/src/datasources/stripe.ts`). Keys come from the environment (`STRIPE_SECRET_KEY`) and are never committed. With no key, the public sample test key is used. E2E runs against the WireMock Stripe stand-in; to run against Stripe's real test mode, add test keys (`sk_test_…`, `pk_test_…`) as CI secrets. Use Stripe's public test card `4242 4242 4242 4242`, any future expiry, any 3-digit CVC.

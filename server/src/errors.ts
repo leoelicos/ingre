@@ -31,3 +31,11 @@ export class PaymentProviderError extends GraphQLError {
     this.name = 'PaymentProviderError'
   }
 }
+
+/** #312: the card was declined; `extensions.decline` is Stripe's code (e.g. card_declined). */
+export class PaymentDeclinedError extends GraphQLError {
+  constructor(message: string, decline: string | null) {
+    super(message, { extensions: { code: 'PAYMENT_DECLINED', decline } })
+    this.name = 'PaymentDeclinedError'
+  }
+}

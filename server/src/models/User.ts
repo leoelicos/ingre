@@ -17,6 +17,11 @@ export interface UserSchema extends Document {
   password: string
   pro: boolean
   tier?: Tier | null
+  // #312: the Stripe subscription behind the tier
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: string | null
+  active: boolean
   savedRecipes: Array<Types.Subdocument & RecipeSchema>
   numSavedRecipes: number // virtual
 }
@@ -36,7 +41,13 @@ const userSchema = new Schema<UserSchema, {}, UserMethods, UserVirtuals>(
     savedRecipes: [{ type: Types.ObjectId, ref: 'Recipe', required: true }],
     pro: { type: Boolean, default: false },
     // #208: null until a tier is bought
-    tier: { type: String, enum: [...TIERS, null], default: null }
+    tier: { type: String, enum: [...TIERS, null], default: null },
+    // #312: set by `subscribe` and kept in step by the Stripe webhook
+    stripeCustomerId: { type: String, default: null, index: true },
+    stripeSubscriptionId: { type: String, default: null },
+    subscriptionStatus: { type: String, default: null },
+    // true while the subscription is active or trialing
+    active: { type: Boolean, default: false }
   },
   {
     toJSON: { virtuals: true },

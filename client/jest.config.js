@@ -1,7 +1,11 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   testEnvironment: 'jsdom',
-  globals: { __APP_MODE__: 'test', __GRAPHQL_URL__: '' },
+  globals: {
+    __APP_MODE__: 'test',
+    __GRAPHQL_URL__: '',
+    __STRIPE_PUBLISHABLE_KEY__: ''
+  },
   roots: ['<rootDir>/src'],
   setupFiles: ['<rootDir>/src/test/fetchPolyfill.js'],
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
