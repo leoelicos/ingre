@@ -2,7 +2,7 @@ name: Ingre
 options:
   bundleIdPrefix: com.leoelicos
   deploymentTarget:
-    iOS: "26.0"
+    iOS: "17.0"
 settings:
   base:
     # Store versions: see docs/MOBILE.md. Bump both before every store upload.
@@ -25,6 +25,7 @@ targets:
       GENERATE_INFOPLIST_FILE: YES
       PRODUCT_BUNDLE_IDENTIFIER: com.leoelicos.ingre
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      INFOPLIST_KEY_CFBundleDisplayName: INGRE
       INFOPLIST_FILE: Ingre/Info.plist
       INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
   IngreUITests:

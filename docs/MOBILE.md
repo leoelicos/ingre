@@ -17,6 +17,8 @@ Neither app has been published, so these are the first values the stores will se
 | --- | --- | --- |
 | App ID | `applicationId = "com.leoelicos.ingre"` (`android/app/build.gradle.kts`) | `PRODUCT_BUNDLE_IDENTIFIER: com.leoelicos.ingre` (`ios/project.yml`) |
 | Test bundle | n/a | `com.leoelicos.ingre.uitests` |
+| Name people see | `app_name` = `INGRE` (`res/values/strings.xml`) | `INFOPLIST_KEY_CFBundleDisplayName: INGRE` |
+| Minimum OS | Android 8.0 (`minSdk = 26`) | iOS 17 (`deploymentTarget`, and `platforms` in `ios/IngreCore/Package.swift`) |
 | Version shown to people | `versionName = "1.0.0"` | `MARKETING_VERSION: 1.0.0` |
 | Build number | `versionCode = 1` | `CURRENT_PROJECT_VERSION: 1` |
 
@@ -29,10 +31,12 @@ The version and build number each live in one place: `android/app/build.gradle.k
 
 ### Icons and launch screens
 
-The icon is the egg from `client/public/images/ingre-icon.svg` (#296), on white.
+The icon is the egg from `client/public/images/ingre-icon.svg` (#296) on a transparent background. A solid fill is added only where a platform needs one, using `--palette-cream` `#FFF8F0`.
 
-- **Android**: `android/app/src/main/res/mipmap-*` (launcher, round and adaptive foreground PNGs, adaptive background `@color/ic_launcher_background`). The launch screen uses the Android 12 SplashScreen API through `androidx.core:core-splashscreen` (`Theme.Ingre.Starting`, `installSplashScreen()` in `MainActivity`): the egg (`drawable/ic_splash.xml`) on `@color/splash_background`.
-- **iOS**: `ios/Ingre/Assets.xcassets`: `AppIcon` (one 1024 px image; Xcode makes the other sizes), `LaunchIcon` and `LaunchBackground`. The launch screen is the `UILaunchScreen` entry in `ios/Ingre/Info.plist`, merged with the generated Info.plist keys.
+The name people see is uppercase `INGRE`. Code, IDs and package names stay lowercase `ingre`.
+
+- **Android**: `android/app/src/main/res/mipmap-*`. The adaptive icon is the transparent egg foreground on the `@color/ic_launcher_background` layer (cream). The legacy `ic_launcher` and `ic_launcher_round` PNGs are the transparent egg. The launch screen uses the Android 12 SplashScreen API through `androidx.core:core-splashscreen` (`Theme.Ingre.Starting`, `installSplashScreen()` in `MainActivity`): the egg (`drawable/ic_splash.xml`) on `@color/splash_background`.
+- **iOS**: `ios/Ingre/Assets.xcassets` holds three assets. `AppIcon` is one 1024 px image, and Xcode makes the other sizes. The App Store icon can't have transparency, so the default icon is the egg flattened onto cream; the dark-appearance variant (iOS 18+) is the transparent egg. `LaunchIcon` is the transparent egg and `LaunchBackground` is the launch colour. The launch screen is the `UILaunchScreen` entry in `ios/Ingre/Info.plist`, merged with the generated Info.plist keys.
 - **Colours**: the web app's page background from `client/src/styles/theme.css`: `--palette-cream` `#FFF8F0` in light mode, `--palette-night` `#141815` in dark mode.
 
 ### Privacy manifest (iOS)
