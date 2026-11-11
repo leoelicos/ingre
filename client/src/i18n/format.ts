@@ -67,6 +67,12 @@ export const formatCountUnit = (
 const joinQuantity = (number: string, unit: string): string =>
   translate('quantity', { number, unit })
 
+/**
+ * Measures some locales write before the number (Japanese: 大さじ1, カップ½). English keeps
+ * "1 tbsp"; the order lives in each locale's quantityUnitFirst message.
+ */
+const UNIT_FIRST_MEASURES: readonly string[] = ['tsp', 'tbsp', 'cup']
+
 /** Measures written as plain decimals: weights and volumes. */
 const DECIMAL_MEASURES: readonly string[] = ['g', 'ml', 'g tin', 'ml tin']
 
@@ -94,13 +100,16 @@ export const formatQuantity = (
   quantity: number,
   measure: string,
   unit: CountUnit | null = null
-): string =>
-  joinQuantity(
-    formatQuantityNumber(quantity, measure),
+): string => {
+  const number = formatQuantityNumber(quantity, measure)
+  const word =
     measure === 'whole'
       ? formatCountUnit(quantity, unit)
       : formatMeasure(quantity, measure)
-  )
+  return UNIT_FIRST_MEASURES.includes(measure)
+    ? translate('quantityUnitFirst', { number, unit: word })
+    : joinQuantity(number, word)
+}
 
 /** A share as a percentage, one decimal at most: 0.25 -> "25%", 0.0125 -> "1.3%". */
 export const formatPercent = (share: number): string =>

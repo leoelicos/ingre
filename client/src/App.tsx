@@ -1,4 +1,4 @@
-import { translate } from './i18n'
+import { LocaleBoundary, translate, useLocale } from './i18n'
 import type { FC } from 'react'
 import {
   ApolloClient,
@@ -97,109 +97,116 @@ export const WorkspaceRedirect: FC = () => {
 export const SiteAnalytics: FC<{ mode: string }> = ({ mode }) =>
   mode === 'production' ? <Analytics /> : null
 
+/**
+ * The app. It re-renders on a language switch (useLocale), and with it every screen, since
+ * labels are read at render time; React Aria formats numbers and lists in the same locale.
+ */
 export const Ingre: FC = () => {
+  const [locale] = useLocale()
   changeTitle(translate('list.title'))
   return (
-    <ApolloProvider client={client}>
-      <Router>
-        <AuthProvider>
-          <StoreProvider>
-            <ExploreProvider>
-              <GuestsProvider>
-                <FirstRun>
-                  <SkipLink />
-                  <Header />
-                  <Routes>
-                    <Route
-                      path="/setup"
-                      element={<Setup />}
-                    />
-                    <Route
-                      path="/"
-                      element={<ListPage />}
-                    />
-                    <Route
-                      path="/war-room"
-                      element={
-                        <PageMain>
-                          <WarRoom />
-                        </PageMain>
-                      }
-                    />
-                    <Route
-                      path="/demo"
-                      element={<DemoPage />}
-                    />
-                    <Route
-                      path="/ideas"
-                      element={<IdeasPage />}
-                    />
-                    <Route
-                      path="/profile"
-                      element={<ProfilePage />}
-                    />
-                    <Route
-                      path="/saved"
-                      element={<SavedRedirect />}
-                    />
-                    <Route
-                      path="/ingredients"
-                      element={<WorkspaceRedirect />}
-                    />
-                    <Route
-                      path="/tapoff"
-                      element={<WorkspaceRedirect />}
-                    />
-                    {/* admin */}
-                    <Route
-                      path="/login"
-                      element={
-                        <PageMain>
-                          <Login />
-                        </PageMain>
-                      }
-                    />
-                    <Route
-                      path="/signup"
-                      element={
-                        <PageMain>
-                          <Signup />
-                        </PageMain>
-                      }
-                    />
-                    <Route
-                      path="/upgrade"
-                      element={
-                        <PageMain>
-                          <Upgrade />
-                        </PageMain>
-                      }
-                    />
-                    <Route
-                      path="/success"
-                      element={
-                        <PageMain>
-                          <Success />
-                        </PageMain>
-                      }
-                    />
-                    <Route
-                      path="*"
-                      element={
-                        <PageMain>
-                          <NoMatch />
-                        </PageMain>
-                      }
-                    />
-                  </Routes>
-                </FirstRun>
-                <BottomNav />
-                <SiteAnalytics mode={APP_MODE} />
-              </GuestsProvider>
-            </ExploreProvider>
-          </StoreProvider>
-        </AuthProvider>
-      </Router>
-    </ApolloProvider>
+    <LocaleBoundary locale={locale}>
+      <ApolloProvider client={client}>
+        <Router>
+          <AuthProvider>
+            <StoreProvider>
+              <ExploreProvider>
+                <GuestsProvider>
+                  <FirstRun>
+                    <SkipLink />
+                    <Header />
+                    <Routes>
+                      <Route
+                        path="/setup"
+                        element={<Setup />}
+                      />
+                      <Route
+                        path="/"
+                        element={<ListPage />}
+                      />
+                      <Route
+                        path="/war-room"
+                        element={
+                          <PageMain>
+                            <WarRoom />
+                          </PageMain>
+                        }
+                      />
+                      <Route
+                        path="/demo"
+                        element={<DemoPage />}
+                      />
+                      <Route
+                        path="/ideas"
+                        element={<IdeasPage />}
+                      />
+                      <Route
+                        path="/profile"
+                        element={<ProfilePage />}
+                      />
+                      <Route
+                        path="/saved"
+                        element={<SavedRedirect />}
+                      />
+                      <Route
+                        path="/ingredients"
+                        element={<WorkspaceRedirect />}
+                      />
+                      <Route
+                        path="/tapoff"
+                        element={<WorkspaceRedirect />}
+                      />
+                      {/* admin */}
+                      <Route
+                        path="/login"
+                        element={
+                          <PageMain>
+                            <Login />
+                          </PageMain>
+                        }
+                      />
+                      <Route
+                        path="/signup"
+                        element={
+                          <PageMain>
+                            <Signup />
+                          </PageMain>
+                        }
+                      />
+                      <Route
+                        path="/upgrade"
+                        element={
+                          <PageMain>
+                            <Upgrade />
+                          </PageMain>
+                        }
+                      />
+                      <Route
+                        path="/success"
+                        element={
+                          <PageMain>
+                            <Success />
+                          </PageMain>
+                        }
+                      />
+                      <Route
+                        path="*"
+                        element={
+                          <PageMain>
+                            <NoMatch />
+                          </PageMain>
+                        }
+                      />
+                    </Routes>
+                  </FirstRun>
+                  <BottomNav />
+                  <SiteAnalytics mode={APP_MODE} />
+                </GuestsProvider>
+              </ExploreProvider>
+            </StoreProvider>
+          </AuthProvider>
+        </Router>
+      </ApolloProvider>
+    </LocaleBoundary>
   )
 }

@@ -44,7 +44,7 @@ import { GuidanceDial } from './GuidanceDial'
 import { IngredientPicture } from '../../components/IngredientPicture'
 import { IngredientDetails } from './IngredientJourney'
 import type { IngredientsState } from './Ingredients'
-import { NO_SAVED_HINT } from './recipeFilter'
+import { noSavedHint } from './recipeFilter'
 import { filterOptions, recipeFilterCount } from './Recipes'
 import type { RowControls } from './RecipeRows'
 import { RecipeRows } from './RecipeRows'
@@ -549,7 +549,7 @@ export const ExploreBody: FC<{ props: ExploreProps; query: string }> = ({
           className="m-0 text-text-secondary"
           role="status"
         >
-          {NO_SAVED_HINT}
+          {noSavedHint()}
         </p>
       ) : (
         <Results

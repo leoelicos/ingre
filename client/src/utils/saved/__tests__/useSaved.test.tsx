@@ -14,12 +14,7 @@ import { recipeById } from '../../../test/library'
 import { newCopy, saveInput } from '../../balance/copies'
 import { catalogue } from '../../library/recipeLibrary'
 import type { RecipeInput } from '../../../types/payloads'
-import {
-  SAVE_FAILED,
-  savedLibraryIds,
-  updateSaved,
-  useSaved
-} from '../useSaved'
+import { saveFailed, savedLibraryIds, updateSaved, useSaved } from '../useSaved'
 
 const dahl = recipeById('dahl')
 const input = saveInput(dahl, newCopy('dahl'), catalogue)
@@ -76,7 +71,7 @@ describe('Feature: Saving (#182, F4)', () => {
     })
     await waitFor(() => expect(saving.result.current.ids.size).toBe(0))
     act(() => saving.result.current.toggle('dahl', input))
-    await waitFor(() => expect(saving.result.current.error).toBe(SAVE_FAILED))
+    await waitFor(() => expect(saving.result.current.error).toBe(saveFailed()))
     const removing = renderHook(() => useSaved(true), {
       wrapper: wrapper([
         savedQuery([savedRecipe('dahl', 'a')]),
@@ -87,6 +82,8 @@ describe('Feature: Saving (#182, F4)', () => {
       expect(removing.result.current.ids.has('dahl')).toBe(true)
     )
     act(() => removing.result.current.toggle('dahl', input))
-    await waitFor(() => expect(removing.result.current.error).toBe(SAVE_FAILED))
+    await waitFor(() =>
+      expect(removing.result.current.error).toBe(saveFailed())
+    )
   })
 })

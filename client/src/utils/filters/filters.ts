@@ -9,12 +9,13 @@ import type { ShopSection } from '../shopping/sections'
 /** A chip status a filter can ask for. */
 export type ChipStatus = 'crossed' | 'customised' | 'extra' | 'removed'
 
-export const STATUS_LABELS: Readonly<Record<ChipStatus, string>> = {
+/** Each status's name, in the current language. */
+export const statusLabels = (): Readonly<Record<ChipStatus, string>> => ({
   crossed: translate('status.crossed'),
   customised: translate('status.customised'),
   extra: translate('status.extra'),
   removed: translate('status.removed')
-}
+})
 
 /** Ingredients offers every status; Extra only crossed off (#182). */
 export const INGREDIENT_STATUSES: readonly ChipStatus[] = [

@@ -1,5 +1,6 @@
 {
   "quantity": "{{number}} {{unit}}",
+  "quantityUnitFirst": "{{number}} {{unit}}",
   "countUnit_one": "{{one}}",
   "countUnit_other": "{{other}}",
   "item_one": "item",
@@ -206,6 +207,10 @@
     "savedOpen": "Open saved recipes in Explore",
     "savedLogin": "Saved recipes show here once you log in."
   },
+  "language": {
+    "title": "Language",
+    "hint": "Changes the words in the app. Recipe and ingredient names stay in English for now."
+  },
   "account": {
     "label": "Account",
     "logIn": "Log in",
@@ -233,9 +238,8 @@
     "lastName": "Last name",
     "show": "Show",
     "hide": "Hide",
-    "noAccount": "No account?",
-    "haveAccount": "Have an account?",
-    "logInQuestion": "Log in?",
+    "noAccount": "No account? <link>Sign up</link>",
+    "haveAccount": "Have an account? <link>Log in</link>",
     "enterEmail": "Please enter an email address.",
     "enterPassword": "Please enter a password.",
     "enterFirstName": "Please enter your first name.",
@@ -243,6 +247,7 @@
     "passwordHint": "At least {{count}} characters.",
     "checkingEmail": "Checking email… the server may take a few seconds to wake up.",
     "emailExists": "A user with this email already exists.",
+    "emailExistsLogIn": "A user with this email already exists. <link>Log in?</link>",
     "checkFailed": "Couldn't check that email.",
     "signupFailed": "Couldn't sign you up.",
     "creatingAccount": "Creating your account…"
@@ -297,7 +302,7 @@
     "tryAgain": "Try again?",
     "title": "Success!",
     "thanks": "Thank you for your purchase!",
-    "reference": "Your purchase reference is",
+    "reference": "Your purchase reference is <token/>",
     "redirect": "You will now be redirected to the home page."
   },
   "notFound": {

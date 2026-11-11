@@ -57,7 +57,7 @@ const ROW =
   'flex min-h-[44px] w-full items-center gap-3 rounded-control px-2 py-1 text-left text-text data-[hovered]:bg-chip-active data-[focus-visible]:focus-ring'
 
 /** The note on an item already there: "On your list", or "In this recipe" in a row. */
-export const ON_LIST = translate('plus.onList')
+export const onListLabel = (): string => translate('plus.onList')
 
 const ItemRow: FC<{
   item: LibraryIngredient
