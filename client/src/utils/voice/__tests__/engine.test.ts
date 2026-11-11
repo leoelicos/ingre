@@ -4,19 +4,12 @@ import { chooseEngine, fallbackFor, speechLang } from '../engine'
 /* #207: one record button, the best recogniser per device. */
 
 const can = (overrides: Partial<Abilities> = {}): Abilities => ({
-  native: false,
   webSpeech: false,
   record: false,
   ...overrides
 })
 
 describe('chooseEngine', () => {
-  it('uses the phone’s own recogniser inside the apps', () => {
-    expect(
-      chooseEngine(can({ native: true, webSpeech: true, record: true }))
-    ).toBe('native')
-  })
-
   it('uses the browser’s Web Speech where it has it (Chrome, Edge, Safari)', () => {
     expect(chooseEngine(can({ webSpeech: true, record: true }))).toBe(
       'webSpeech'
@@ -37,9 +30,6 @@ describe('fallbackFor', () => {
     expect(fallbackFor('webSpeech', 'unavailable', can({ record: true }))).toBe(
       'onDevice'
     )
-    expect(fallbackFor('native', 'unavailable', can({ record: true }))).toBe(
-      'onDevice'
-    )
   })
 
   it('does not move for a blocked microphone, silence or other failures', () => {
@@ -47,7 +37,7 @@ describe('fallbackFor', () => {
     expect(
       fallbackFor('webSpeech', 'noSpeech', can({ record: true }))
     ).toBeNull()
-    expect(fallbackFor('native', 'failed', can({ record: true }))).toBeNull()
+    expect(fallbackFor('webSpeech', 'failed', can({ record: true }))).toBeNull()
   })
 
   it('has nowhere to go from the model itself, or without recording', () => {

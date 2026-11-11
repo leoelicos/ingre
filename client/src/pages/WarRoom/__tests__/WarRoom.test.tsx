@@ -93,8 +93,8 @@ const fakeVoice = (abilities: Partial<Abilities>) => {
     return run
   }
   const setup = (): VoiceSetup => ({
-    abilities: { native: false, webSpeech: false, record: false, ...abilities },
-    engines: { native: engine, webSpeech: engine, onDevice: engine },
+    abilities: { webSpeech: false, record: false, ...abilities },
+    engines: { webSpeech: engine, onDevice: engine },
     lang: () => 'en-AU'
   })
   return { runs, setup }

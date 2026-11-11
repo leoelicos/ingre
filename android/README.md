@@ -1,6 +1,6 @@
 # Native Android (Kotlin + Jetpack Compose)
 
-A native Kotlin app lives in `android/`. It is separate from the Capacitor projects under `client/android` and `client/ios`.
+A native Kotlin app lives in `android/`. It is the Android app; the web app in `client/` is web only.
 
 ## Debug APK from CI
 

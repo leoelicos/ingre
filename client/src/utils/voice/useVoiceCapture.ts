@@ -1,14 +1,12 @@
 /*
  * The War room's record button (#207): picks the best recogniser for this device, runs it,
  * and hands every settled phrase to `onHeard`. When a recogniser turns out not to work here
- * (Brave, a phone without a speech service) it moves to the on-device model by itself.
+ * (Brave, a browser without a speech service) it moves to the on-device model by itself.
  */
-import { Capacitor } from '@capacitor/core'
 import { useEffect, useReducer, useRef, useState } from 'react'
 import { locale } from '../../i18n'
 import type { Abilities } from './engine'
 import { chooseEngine, fallbackFor, speechLang } from './engine'
-import { nativeEngine } from './native'
 import {
   decodeTo16k,
   firstUseMegabytes,
@@ -30,9 +28,8 @@ export interface VoiceSetup {
   readonly lang: () => string
 }
 
-/** What this browser or app can do. */
+/** What this browser can do. */
 export const detectAbilities = (host: Window = window): Abilities => ({
-  native: Capacitor.isNativePlatform(),
   webSpeech: recogniserConstructor(host) !== null,
   record:
     typeof host.navigator.mediaDevices?.getUserMedia === 'function' &&
@@ -46,13 +43,12 @@ const unavailable: Engine = (_lang, listener) => {
   return { stop: () => undefined, cancel: () => undefined }
 }
 
-/** The real recognisers for this browser or app. */
+/** The real recognisers for this browser. */
 export const browserSetup = (): VoiceSetup => {
   const Recogniser = recogniserConstructor()
   return {
     abilities: detectAbilities(),
     engines: {
-      native: nativeEngine(),
       webSpeech:
         Recogniser === null ? unavailable : webSpeechEngine(Recogniser),
       onDevice: onDeviceEngine({

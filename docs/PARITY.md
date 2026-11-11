@@ -1,6 +1,6 @@
 # Desktop / mobile parity ideas
 
-Web mobile is the reference. Desktop and the Capacitor shells (iOS, Android) must complete the same core loop.
+Web mobile is the reference. Desktop and the native apps (iOS in `ios/`, Android in `android/`) must complete the same core loop.
 
 ## Shared contract
 
@@ -18,9 +18,9 @@ Web mobile is the reference. Desktop and the Capacitor shells (iOS, Android) mus
 
 ## iOS / Android
 
-- Capacitor shell keeps thumb-zone, safe-area and keyboard behaviour from mobile web.
+- Native apps keep thumb-zone, safe-area and keyboard behaviour from mobile web.
 - Biometric = Face ID / Touch ID / BiometricPrompt.
-- Google = Capacitor Google Auth or system browser session.
+- Google = system browser session (ASWebAuthenticationSession / Chrome Custom Tabs).
 - No feature that is Yes on web is dropped without a row in `docs/bridge.md`.
 
 ## Bridge table
