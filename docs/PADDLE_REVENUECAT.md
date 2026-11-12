@@ -25,7 +25,7 @@ a real payment.
 
 ## Who RevenueCat sees
 
-RevenueCat's `app_user_id` is the ingré user's Mongo ObjectId everywhere: the web SDK is
+RevenueCat's `app_user_id` is the ingré user's public id (`users.public_id`, 24 hex digits: the Mongo ObjectId they were migrated with) everywhere: the web SDK is
 configured with it (`webEntitlement`), Paddle checkouts carry it as `ingre_user_id`, and the
 server only accepts an ObjectId from a webhook (`userIdOf`), so `$RCAnonymousID:` ids and
 emails are ignored.

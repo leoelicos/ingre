@@ -30,7 +30,7 @@ export const signedInUser = (): SignedInUser | null =>
   userOfToken(localStorage.getItem('id_token'))
 
 /**
- * Firebase Auth: the signed-in user's ingré id (the Mongo _id that Paddle's custom data
+ * Firebase Auth: the signed-in user's ingré id (the public id that Paddle's custom data
  * and RevenueCat's appUserId use) and email. A legacy session carries them in its token;
  * a Firebase one asks the API (getUser), since the Firebase uid is not the app user id.
  */

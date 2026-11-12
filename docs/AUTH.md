@@ -23,7 +23,7 @@ Desktop opens the Google authorize URL. iOS and Android pass `platform=ios|andro
 ## Firebase Auth
 
 Firebase holds the passwords, Google sign-in and sessions; the API only checks Firebase
-ID tokens. The ingré user id stays the Mongo `_id`, so Paddle's `ingre_user_id`,
+ID tokens. The ingré user id stays the user's public id (the Mongo `_id` they were migrated with), so Paddle's `ingre_user_id`,
 RevenueCat's `app_user_id` (purchases-js `appUserId`) and every webhook are unchanged.
 
 | Piece                                      | Where                                                       |
@@ -42,7 +42,7 @@ RevenueCat's `app_user_id` (purchases-js `appUserId`) and every webhook are unch
 calls nothing else, so the Postgres cutover replaces that one function. In order:
 
 1. the user whose `firebaseUid` is the token's uid;
-2. an imported account: the uid is the account's Mongo id (see the import below) and the
+2. an imported account: the uid is the account's public id (see the import below) and the
    email matches;
 3. the unlinked account with the token's email, only when Firebase has verified it
    (Google always has; email and password accounts haven't until the user verifies);
@@ -83,11 +83,11 @@ signs out of Firebase and shows "Couldn't log you in."
 ### Importing existing passwords
 
 Users keep their passwords: Firebase imports the bcrypt hashes as they are. Give each
-account its Mongo id as the Firebase uid, so the API links it on first sign-in (step 2
+account its public id as the Firebase uid, so the API links it on first sign-in (step 2
 above) without the email needing to be verified.
 
 ```
-# users.json: {"users":[{"localId":"<Mongo _id>","email":"…","emailVerified":false,
+# users.json: {"users":[{"localId":"<users.public_id>","email":"…","emailVerified":false,
 #   "passwordHash":"<base64 of the bcrypt string>","displayName":"First Last"}]}
 firebase auth:import users.json --hash-algo=BCRYPT --project <project-id>
 ```

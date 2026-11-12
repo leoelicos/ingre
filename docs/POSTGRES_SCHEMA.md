@@ -40,6 +40,6 @@
 
 ## Notes
 
-- Replace Mongo once this model is stable.
+- Mongo is replaced (docs/POSTGRES_MIGRATION.md has the cutover runbook).
 - Suggestions can be computed from recipe_ingredients overlap with selected ingredients.
 - War room and Explore both write into the same ingredients / tickets tables.

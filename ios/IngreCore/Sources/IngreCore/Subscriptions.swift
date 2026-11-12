@@ -92,7 +92,7 @@ public func planButtonLabel(current: Tier?, tier: Tier) -> String {
     }
 }
 
-/// StoreKit's appAccountToken: the user's ObjectId zero padded to a UUID (the server reverses it).
+/// StoreKit's appAccountToken: the user's public id (24 hex) zero padded to a UUID (the server reverses it).
 public func appAccountToken(userId: String) -> UUID? {
     guard userId.count == 24, userId.allSatisfy(\.isHexDigit) else { return nil }
     let hex = userId.lowercased() + "00000000"

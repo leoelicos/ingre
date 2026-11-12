@@ -20,4 +20,4 @@ What replaced them:
 | server Paddle SDK (Paddle + RevenueCat)              | the real SDK verifying webhooks signed with Paddle's scheme in the test                                                                       |
 | server `signToken`                                   | the real function with a test `JWT_SECRET`; tests verify the token                                                                            |
 
-`jest.spyOn` on `console` or on a Mongoose model method is still used to observe or force an error path.
+`jest.spyOn` on `console` is still used to observe or force an error path; database error paths use a wrapped `SqlClient` (an injected seam) instead.

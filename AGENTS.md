@@ -14,8 +14,8 @@ Live: https://ingre.vercel.app · API: https://ingre-backend.onrender.com/graphq
   Tailwind CSS 3 (tokens via CSS vars in `src/styles/theme.css`, `darkMode: 'media'`),
   React Aria Components, Font Awesome, Sass. Bootstrap is no longer a dependency.
 - Server (`server/`): Express 4 + Apollo Server 5 (`@as-integrations/express4`), run with `tsx`,
-  Mongoose 6 / MongoDB, Firebase Auth (firebase-admin) with the legacy JWT + bcrypt during the move, Stripe, zod.
-- Tests: Jest 30 + ts-jest; client uses Testing Library + jest-axe (jsdom); server uses mongodb-memory-server.
+  Postgres (`pg`; parameterised SQL, migrations in `server/migrations`), Firebase Auth (firebase-admin) with the legacy JWT + bcrypt during the move, Stripe, zod.
+- Tests: Jest 30 + ts-jest; client uses Testing Library + jest-axe (jsdom); server uses PGlite (in-process Postgres, `src/test-utils/pg.ts`).
 - Hosting: Vercel (client, from `main`, preview per PR; SPA rewrite in `vercel.json`).
   Render free tier (API): cold start ~30-60s after idle — expect a slow first request.
 - Node 22.x (root `engines`, CI matrix).
@@ -49,15 +49,18 @@ client/
   src/data/         ingredients.json, recipes.json
   src/styles/       theme.css (design tokens), segmented.css
 server/
-  server.ts         Express + Apollo on /graphql (PORT or 3001); listens only after Mongo connects
-  config/connection.ts   Mongoose connection
+  server.ts         connects to Postgres, then starts api.ts; listens only once the pool is up and the schema is migrated
+  api.ts            Express + Apollo on /graphql (PORT or 3001) and the payment webhooks
+  e2e.ts            the same API on a fresh in-memory PGlite (npm run start:e2e)
+  config/connection.ts   pg Pool from DATABASE_URL (required, no default)
   src/schemas/      typeDefs.ts, resolvers(.ts|/), types.ts
-  src/models/       Category, Ingredient, Recipe, User
-  src/datasources/  per-model data access (+ stripe)
+  src/datasources/  Postgres data access per table (+ stripe, billing, store); ids are 24-hex public ids
+  src/postgres/     SqlClient (pg + PGlite), migrate, the API's db(), backfill from Mongo
   src/utils/        auth, requireUser, ingredientDefaults
-  seeds/            seed script
-  migrations/       Postgres SQL migrations (#217; not used by the API yet), see docs/POSTGRES_MIGRATION.md
+  seeds/            npm run seed: demo accounts on a dev database (adds only)
+  migrations/       Postgres SQL migrations, see docs/POSTGRES_MIGRATION.md (cutover runbook)
   scripts/pg.ts     Postgres migrate / backfill / verify CLI (never default-connects)
+  scripts/legacyMongo.ts  the cutover copy's read-only Mongo reader (the only Mongo code left)
   eslint.config.mjs (ESLint 9 flat), jest.config.js
 ```
 
@@ -91,7 +94,7 @@ cd ../server && npm ci && npm test
 ```
 
 Note: CI enforces 100% client coverage. CI does not run server lint or server tsc.
-Env vars: TODO (not verified; check `server/config/connection.ts`, `client/src/lib/apollo`). Stripe (test mode only): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, see `docs/STRIPE.md`. Store subscriptions (native apps, off without them): `GOOGLE_PLAY_*`, `GOOGLE_RTDN_TOKEN`, `APPLE_*`, see `docs/STORE_SUBSCRIPTIONS.md`. Paddle + RevenueCat (sandbox placeholders only): `PADDLE_*`, `REVENUECAT_*`, `VITE_PADDLE_*`, `VITE_REVENUECAT_WEB_API_KEY`, see `docs/PADDLE_REVENUECAT.md`. Firebase Auth: `FIREBASE_SERVICE_ACCOUNT_JSON`, `VITE_FIREBASE_*`, see `docs/AUTH.md`.
+Env vars: database `DATABASE_URL` (server, required, a postgres:// URL; see `server/.env.EXAMPLE` and `docs/POSTGRES_MIGRATION.md`; `LEGACY_MONGODB_URI` only for the one-off `npm run pg -- backfill|verify`). Client API URL: check `client/src/lib/apollo`. Stripe (test mode only): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, see `docs/STRIPE.md`. Store subscriptions (native apps, off without them): `GOOGLE_PLAY_*`, `GOOGLE_RTDN_TOKEN`, `APPLE_*`, see `docs/STORE_SUBSCRIPTIONS.md`. Paddle + RevenueCat (sandbox placeholders only): `PADDLE_*`, `REVENUECAT_*`, `VITE_PADDLE_*`, `VITE_REVENUECAT_WEB_API_KEY`, see `docs/PADDLE_REVENUECAT.md`. Firebase Auth: `FIREBASE_SERVICE_ACCOUNT_JSON`, `VITE_FIREBASE_*`, see `docs/AUTH.md`.
 
 ## Coding conventions (observed)
 
@@ -145,6 +148,7 @@ Accessibility
   Process
 - One PR per batch of work. Automated checks only during the build; one review on the Vercel preview; the owner merges.
 - No paid services, and no new dependencies with paid tiers, without sign-off from Alana (finance).
+- Postgres hosting (the production `DATABASE_URL`) needs Alana's sign-off before the cutover (docs/POSTGRES_MIGRATION.md). Never point a dev machine, test or script at production; tests use PGlite.
 - Keep briefs and messages short. No confirmation-only messages.
 
 ## Definition of done
