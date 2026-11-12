@@ -15,6 +15,9 @@ What replaced them:
 | `@stripe/stripe-js`                                  | the real `loadStripe`, finding a stand-in `window.Stripe`; `useUpgrade` takes the loader as an optional argument                              |
 | `useSearch`'s library search, `Search` loading state | an optional search argument; `SearchView` takes the search state as props                                                                     |
 | server `stripe`                                      | the real stripe-node client pointed at a local HTTP stand-in (`host`/`port`/`protocol`); `StripeApi` takes the client as an optional argument |
+| `@paddle/paddle-js` (Paddle + RevenueCat)            | the real `initializePaddle`, finding a stand-in `window.PaddleBillingV1`; the checkout page takes the loader as an optional prop              |
+| `@revenuecat/purchases-js` (Paddle + RevenueCat)     | an injected SDK loader; the real SDK only for what needs no network (refusing a secret key)                                                   |
+| server Paddle SDK (Paddle + RevenueCat)              | the real SDK verifying webhooks signed with Paddle's scheme in the test                                                                       |
 | server `signToken`                                   | the real function with a test `JWT_SECRET`; tests verify the token                                                                            |
 
 `jest.spyOn` on `console` or on a Mongoose model method is still used to observe or force an error path.

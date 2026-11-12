@@ -68,7 +68,8 @@ export default defineConfig({
     },
     {
       name: 'client',
-      command: `npm --prefix ../client run -s start -- --port ${ports.client} --strictPort`,
+      /* --mode test: Paddle + RevenueCat sandbox placeholders from client/.env.test */
+      command: `npm --prefix ../client run -s start -- --mode test --port ${ports.client} --strictPort`,
       url: urls.client,
       reuseExistingServer: false,
       timeout: 60_000,

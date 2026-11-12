@@ -91,7 +91,7 @@ cd ../server && npm ci && npm test
 ```
 
 Note: CI enforces 100% client coverage. CI does not run server lint or server tsc.
-Env vars: TODO (not verified; check `server/config/connection.ts`, `client/src/lib/apollo`). Stripe (test mode only): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, see `docs/STRIPE.md`. Store subscriptions (native apps, off without them): `GOOGLE_PLAY_*`, `GOOGLE_RTDN_TOKEN`, `APPLE_*`, see `docs/STORE_SUBSCRIPTIONS.md`.
+Env vars: TODO (not verified; check `server/config/connection.ts`, `client/src/lib/apollo`). Stripe (test mode only): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, see `docs/STRIPE.md`. Store subscriptions (native apps, off without them): `GOOGLE_PLAY_*`, `GOOGLE_RTDN_TOKEN`, `APPLE_*`, see `docs/STORE_SUBSCRIPTIONS.md`. Paddle + RevenueCat (sandbox placeholders only): `PADDLE_*`, `REVENUECAT_*`, `VITE_PADDLE_*`, `VITE_REVENUECAT_WEB_API_KEY`, see `docs/PADDLE_REVENUECAT.md`.
 
 ## Coding conventions (observed)
 
