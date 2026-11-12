@@ -110,11 +110,14 @@ describe('postgres backfill', () => {
     expect(report.skipped).toEqual({ lines: 0, saved: 0 })
 
     const row = onlyRow(
-      await db.query('select first_name, email, password_hash, pro from users')
+      await db.query(
+        'select first_name, email, password_hash, firebase_uid, pro from users'
+      )
     )
     expect(readString(row, 'email')).toBe('ada@example.com')
     // bcrypt hash copied as-is, never the plain text
     expect(readString(row, 'password_hash')).toBe(user.password)
+    expect(row['firebase_uid']).toBeNull()
     expect(row['pro']).toBe(true)
 
     const lines = await db.query(
@@ -250,6 +253,39 @@ describe('readLegacy with documents from before the defaults existed', () => {
     await mongoose.disconnect()
   })
 
+  it('maps Firebase uids, and a Firebase-only user without a hash', async () => {
+    const linked = await User.create({
+      firstName: 'Ada',
+      lastName: 'Lovelace',
+      email: 'ada@example.com',
+      password: 'password123',
+      firebaseUid: 'uid-ada'
+    })
+    await User.create({
+      firstName: 'Grace',
+      email: 'grace@example.com',
+      firebaseUid: 'uid-grace'
+    })
+    const { db, close } = await createMigratedTestDb()
+    await backfill(db, await readLegacy())
+    const rows = await db.query(
+      'select email, firebase_uid, password_hash from users order by email'
+    )
+    expect(rows).toEqual([
+      {
+        email: 'ada@example.com',
+        firebase_uid: 'uid-ada',
+        password_hash: linked.password
+      },
+      {
+        email: 'grace@example.com',
+        firebase_uid: 'uid-grace',
+        password_hash: null
+      }
+    ])
+    await close()
+  })
+
   it('fills in customisations, pro and optional fields', async () => {
     const category = new Types.ObjectId()
     const line = new Types.ObjectId()
@@ -280,7 +316,11 @@ describe('readLegacy with documents from before the defaults existed', () => {
       libraryId: null,
       instructions: null
     })
-    expect(data.users[0]?.pro).toBe(false)
+    expect(data.users[0]).toMatchObject({
+      pro: false,
+      passwordHash: 'hash',
+      firebaseUid: null
+    })
     expect(data.ingredients[0]).toMatchObject({
       text: null,
       ingredientId: null

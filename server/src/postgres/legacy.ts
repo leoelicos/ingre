@@ -35,7 +35,10 @@ export interface LegacyUser {
   readonly firstName: string
   readonly lastName: string
   readonly email: string
-  readonly passwordHash: string
+  /** null for a user made through Firebase Auth (Firebase holds the password) */
+  readonly passwordHash: string | null
+  /** Firebase Auth: the uid the user signs in with; null until linked */
+  readonly firebaseUid: string | null
   readonly pro: boolean
   readonly savedRecipeMongoIds: ReadonlyArray<string>
   readonly createdAt: Date
@@ -71,7 +74,8 @@ interface RawUser {
   firstName: string
   lastName: string
   email: string
-  password: string
+  password?: string | null
+  firebaseUid?: string | null
   pro?: boolean
   savedRecipes: Types.ObjectId[]
 }
@@ -110,7 +114,8 @@ const toUser = (raw: RawUser): LegacyUser => ({
   firstName: raw.firstName,
   lastName: raw.lastName,
   email: raw.email,
-  passwordHash: raw.password,
+  passwordHash: raw.password ?? null,
+  firebaseUid: raw.firebaseUid ?? null,
   pro: raw.pro ?? false,
   savedRecipeMongoIds: raw.savedRecipes.map(hex),
   createdAt: raw._id.getTimestamp()

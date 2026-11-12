@@ -138,12 +138,13 @@ const upsertUser = (db: SqlClient, user: LegacyUser) =>
   firstId(
     db,
     `insert into users
-       (mongo_id, first_name, last_name, email, password_hash, pro, created_at)
-     values ($1, $2, $3, $4, $5, $6, $7)
+       (mongo_id, first_name, last_name, email, password_hash, firebase_uid,
+        pro, created_at)
+     values ($1, $2, $3, $4, $5, $6, $7, $8)
      on conflict (mongo_id) do update set
        first_name = excluded.first_name, last_name = excluded.last_name,
        email = excluded.email, password_hash = excluded.password_hash,
-       pro = excluded.pro
+       firebase_uid = excluded.firebase_uid, pro = excluded.pro
      returning id`,
     [
       user.mongoId,
@@ -151,6 +152,7 @@ const upsertUser = (db: SqlClient, user: LegacyUser) =>
       user.lastName,
       user.email,
       user.passwordHash,
+      user.firebaseUid,
       user.pro,
       user.createdAt
     ]

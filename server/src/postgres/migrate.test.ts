@@ -15,7 +15,10 @@ const tableNames = async (db: Awaited<ReturnType<typeof createTestDb>>['db']) =>
 describe('listMigrations', () => {
   it('lists the sql files in order, named by file', () => {
     const migrations = listMigrations()
-    expect(migrations.map(({ name }) => name)).toEqual(['0001_init.sql'])
+    expect(migrations.map(({ name }) => name)).toEqual([
+      '0001_init.sql',
+      '0002_firebase_uid.sql'
+    ])
     expect(migrations[0]?.sql).toContain('create table recipes')
   })
   it('fails loudly for a missing directory', () => {
@@ -27,7 +30,7 @@ describe('migrate', () => {
   it('creates the v1 tables on an empty database', async () => {
     const { db, close } = createTestDb()
     const applied = await migrate(db, listMigrations())
-    expect(applied).toEqual(['0001_init.sql'])
+    expect(applied).toEqual(['0001_init.sql', '0002_firebase_uid.sql'])
     expect(await tableNames(db)).toEqual([
       'categories',
       'ingredients',
@@ -46,7 +49,7 @@ describe('migrate', () => {
     const { db, close } = await createMigratedTestDb()
     expect(await migrate(db, listMigrations())).toEqual([])
     const rows = await db.query('select count(*) as n from schema_migrations')
-    expect(readInt(onlyRow(rows), 'n')).toBe(1)
+    expect(readInt(onlyRow(rows), 'n')).toBe(2)
     await close()
   })
 
@@ -77,6 +80,19 @@ describe('schema constraints', () => {
                     values ('a', 'b', 'a@b.c', 'h')`
     await db.query(insert)
     await expect(db.query(insert)).rejects.toThrow()
+    await close()
+  })
+
+  it('keeps Firebase uids unique and lets a Firebase user have no hash', async () => {
+    const { db, close } = await createMigratedTestDb()
+    const insert = (email: string) =>
+      db.query(
+        `insert into users (first_name, last_name, email, firebase_uid)
+         values ('a', 'b', $1, 'uid-1')`,
+        [email]
+      )
+    await insert('a@b.c')
+    await expect(insert('c@d.e')).rejects.toThrow()
     await close()
   })
 

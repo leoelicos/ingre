@@ -7,13 +7,14 @@ the only database the API reads and writes.
 
 ## What is here
 
-| Piece                                      | Where                             |
-| ------------------------------------------ | --------------------------------- |
-| Schema v1 (SQL)                            | `server/migrations/0001_init.sql` |
-| Migration runner (ledger, one tx per file) | `server/src/postgres/migrate.ts`  |
-| Mongo reader (read-only) → plain data      | `server/src/postgres/legacy.ts`   |
-| Backfill (upserts) + row-count check       | `server/src/postgres/backfill.ts` |
-| CLI                                        | `server/scripts/pg.ts`            |
+| Piece                                      | Where                                     |
+| ------------------------------------------ | ----------------------------------------- |
+| Schema v1 (SQL)                            | `server/migrations/0001_init.sql`         |
+| Firebase uid on users (Firebase Auth)      | `server/migrations/0002_firebase_uid.sql` |
+| Migration runner (ledger, one tx per file) | `server/src/postgres/migrate.ts`          |
+| Mongo reader (read-only) → plain data      | `server/src/postgres/legacy.ts`           |
+| Backfill (upserts) + row-count check       | `server/src/postgres/backfill.ts`         |
+| CLI                                        | `server/scripts/pg.ts`                    |
 
 ## Mapping
 
@@ -22,7 +23,7 @@ the only database the API reads and writes.
 | `Category`                         | `categories` (the aisle)                                                                                                |
 | `Ingredient` (one per recipe line) | `ingredients` (distinct, keyed by catalogue id or lower-cased name) + `recipe_ingredients` (one row per line, in order) |
 | `Recipe`                           | `recipes` (`customisations` as `jsonb`)                                                                                 |
-| `User`                             | `users` (bcrypt hash copied as is)                                                                                      |
+| `User`                             | `users` (bcrypt hash copied as is; `firebaseUid` → `firebase_uid`, null hash for a Firebase-only user)                  |
 | `User.savedRecipes`                | `saved_recipes` (deduped, order kept)                                                                                   |
 | no Mongo source                    | `tickets`, `user_preferences` (empty)                                                                                   |
 
@@ -50,6 +51,13 @@ Do not point `DATABASE_URL` at production until the owner approves the cutover.
 no network, no real data) and `mongodb-memory-server`. The server script runs
 Jest with `--experimental-vm-modules` because PGlite loads its WebAssembly with
 a dynamic import.
+
+## Firebase Auth
+
+Sign-in is moving to Firebase (docs/AUTH.md). The app user id stays the Mongo `_id`
+(`users.mongo_id`), which Paddle and RevenueCat hold; `users.firebase_uid` is the
+Firebase uid. At the cutover, a Postgres `findOrCreateUserByFirebase` replaces
+`server/src/datasources/firebaseUser.ts`; the auth code calls nothing else.
 
 ## Not done (needs the owner)
 
