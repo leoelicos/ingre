@@ -14,7 +14,7 @@ Live: https://ingre.vercel.app · API: https://ingre-backend.onrender.com/graphq
   Tailwind CSS 3 (tokens via CSS vars in `src/styles/theme.css`, `darkMode: 'media'`),
   React Aria Components, Font Awesome, Sass. Bootstrap is no longer a dependency.
 - Server (`server/`): Express 4 + Apollo Server 5 (`@as-integrations/express4`), run with `tsx`,
-  Mongoose 6 / MongoDB, JWT + bcrypt auth, Stripe, zod.
+  Mongoose 6 / MongoDB, Firebase Auth (firebase-admin) with the legacy JWT + bcrypt during the move, Stripe, zod.
 - Tests: Jest 30 + ts-jest; client uses Testing Library + jest-axe (jsdom); server uses mongodb-memory-server.
 - Hosting: Vercel (client, from `main`, preview per PR; SPA rewrite in `vercel.json`).
   Render free tier (API): cold start ~30-60s after idle — expect a slow first request.
@@ -91,7 +91,7 @@ cd ../server && npm ci && npm test
 ```
 
 Note: CI enforces 100% client coverage. CI does not run server lint or server tsc.
-Env vars: TODO (not verified; check `server/config/connection.ts`, `client/src/lib/apollo`). Stripe (test mode only): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, see `docs/STRIPE.md`. Store subscriptions (native apps, off without them): `GOOGLE_PLAY_*`, `GOOGLE_RTDN_TOKEN`, `APPLE_*`, see `docs/STORE_SUBSCRIPTIONS.md`. Paddle + RevenueCat (sandbox placeholders only): `PADDLE_*`, `REVENUECAT_*`, `VITE_PADDLE_*`, `VITE_REVENUECAT_WEB_API_KEY`, see `docs/PADDLE_REVENUECAT.md`.
+Env vars: TODO (not verified; check `server/config/connection.ts`, `client/src/lib/apollo`). Stripe (test mode only): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, see `docs/STRIPE.md`. Store subscriptions (native apps, off without them): `GOOGLE_PLAY_*`, `GOOGLE_RTDN_TOKEN`, `APPLE_*`, see `docs/STORE_SUBSCRIPTIONS.md`. Paddle + RevenueCat (sandbox placeholders only): `PADDLE_*`, `REVENUECAT_*`, `VITE_PADDLE_*`, `VITE_REVENUECAT_WEB_API_KEY`, see `docs/PADDLE_REVENUECAT.md`. Firebase Auth: `FIREBASE_SERVICE_ACCOUNT_JSON`, `VITE_FIREBASE_*`, see `docs/AUTH.md`.
 
 ## Coding conventions (observed)
 
