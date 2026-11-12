@@ -37,7 +37,7 @@ const parseBackfill = (flags: ReadonlyArray<string>, env: Env): CliOptions => {
   return {
     command: 'backfill',
     databaseUrl: postgresUrl(env),
-    mongoUri: required(env, 'MONGODB_URI'),
+    mongoUri: required(env, 'LEGACY_MONGODB_URI'),
     // dry run unless asked, so a mistyped command changes nothing
     write: flags.includes('--write')
   }
@@ -62,7 +62,7 @@ export const parseCli = (args: ReadonlyArray<string>, env: Env): CliOptions => {
     return {
       command,
       databaseUrl: postgresUrl(env),
-      mongoUri: required(env, 'MONGODB_URI')
+      mongoUri: required(env, 'LEGACY_MONGODB_URI')
     }
   }
   throw new Error(`Unknown command ${command ?? '(none)'}`)

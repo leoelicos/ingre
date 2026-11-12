@@ -2,7 +2,7 @@ import { parseCli } from './cliOptions'
 
 const env = {
   DATABASE_URL: 'postgres://u:p@localhost/ingre_dev',
-  MONGODB_URI: 'mongodb://localhost/ingre'
+  LEGACY_MONGODB_URI: 'mongodb://localhost/ingre'
 }
 
 describe('parseCli', () => {
@@ -17,7 +17,7 @@ describe('parseCli', () => {
     expect(parseCli(['backfill'], env)).toEqual({
       command: 'backfill',
       databaseUrl: env.DATABASE_URL,
-      mongoUri: env.MONGODB_URI,
+      mongoUri: env.LEGACY_MONGODB_URI,
       write: false
     })
     expect(parseCli(['backfill', '--write'], env)).toMatchObject({
@@ -29,7 +29,7 @@ describe('parseCli', () => {
     expect(parseCli(['verify'], env)).toEqual({
       command: 'verify',
       databaseUrl: env.DATABASE_URL,
-      mongoUri: env.MONGODB_URI
+      mongoUri: env.LEGACY_MONGODB_URI
     })
   })
 
@@ -37,7 +37,7 @@ describe('parseCli', () => {
     expect(() => parseCli(['migrate'], {})).toThrow('DATABASE_URL')
     expect(() =>
       parseCli(['backfill'], { DATABASE_URL: env.DATABASE_URL })
-    ).toThrow('MONGODB_URI')
+    ).toThrow('LEGACY_MONGODB_URI')
   })
 
   it('rejects an unknown command and a stray flag', () => {

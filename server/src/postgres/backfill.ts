@@ -3,7 +3,8 @@ import type {
   LegacyData,
   LegacyIngredient,
   LegacyRecipe,
-  LegacyUser
+  LegacyUser,
+  LegacyWebhookEvent
 } from './legacy'
 import { onlyRow, readInt, requireFound, type SqlClient } from './sql'
 
@@ -14,6 +15,7 @@ export type Table =
   | 'recipe_ingredients'
   | 'users'
   | 'saved_recipes'
+  | 'webhook_events'
 
 export type Counts = Readonly<Record<Table, number>>
 
@@ -29,7 +31,8 @@ const TABLES: ReadonlyArray<Table> = [
   'recipes',
   'recipe_ingredients',
   'users',
-  'saved_recipes'
+  'saved_recipes',
+  'webhook_events'
 ]
 
 /** Catalogue id when there is one, else the lower-cased name. */
@@ -37,7 +40,7 @@ export const ingredientKey = ({
   ingredientId,
   name
 }: Pick<LegacyIngredient, 'ingredientId' | 'name'>) =>
-  ingredientId ?? `name:${name.trim().toLowerCase()}`
+  ingredientId || `name:${name.trim().toLowerCase()}`
 
 const distinct = <T>(items: ReadonlyArray<T>) => Array.from(new Set(items))
 
@@ -77,7 +80,8 @@ export const expectedCounts = (data: LegacyData): Counts => ({
   saved_recipes: data.users.reduce(
     (sum, user) => sum + liveSaved(data, user).length,
     0
-  )
+  ),
+  webhook_events: distinct(data.webhookEvents.map(({ id }) => id)).length
 })
 
 const firstId = async (db: SqlClient, text: string, params: unknown[]) => {
@@ -113,10 +117,10 @@ const upsertRecipe = (db: SqlClient, recipe: LegacyRecipe) =>
   firstId(
     db,
     `insert into recipes
-       (mongo_id, name, portions, picture_url, library_id, instructions,
+       (public_id, name, portions, picture_url, library_id, instructions,
         customisations, created_at)
      values ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)
-     on conflict (mongo_id) do update set
+     on conflict (public_id) do update set
        name = excluded.name, portions = excluded.portions,
        picture_url = excluded.picture_url, library_id = excluded.library_id,
        instructions = excluded.instructions,
@@ -134,29 +138,89 @@ const upsertRecipe = (db: SqlClient, recipe: LegacyRecipe) =>
     ]
   )
 
-const upsertUser = (db: SqlClient, user: LegacyUser) =>
-  firstId(
-    db,
-    `insert into users
-       (mongo_id, first_name, last_name, email, password_hash, firebase_uid,
-        pro, created_at)
-     values ($1, $2, $3, $4, $5, $6, $7, $8)
-     on conflict (mongo_id) do update set
-       first_name = excluded.first_name, last_name = excluded.last_name,
-       email = excluded.email, password_hash = excluded.password_hash,
-       firebase_uid = excluded.firebase_uid, pro = excluded.pro
-     returning id`,
-    [
-      user.mongoId,
-      user.firstName,
-      user.lastName,
-      user.email,
-      user.passwordHash,
-      user.firebaseUid,
-      user.pro,
-      user.createdAt
-    ]
+/** The Mongo user's billing fields, in BILLING_COLUMNS order. */
+const billingValues = (user: LegacyUser) => [
+  user.tier,
+  user.stripeCustomerId,
+  user.stripeSubscriptionId,
+  user.subscriptionStatus,
+  user.active,
+  user.storePlatform,
+  user.storeProductId,
+  user.storeId,
+  user.storeExpiresAt,
+  user.entitlementSource,
+  user.entitlementSubscriptionId,
+  user.entitlementProductId,
+  user.entitlementInterval,
+  user.entitlementExpiresAt,
+  user.entitlementUpdatedAt,
+  user.paddleCustomerId
+]
+const BILLING_COLUMNS = [
+  'tier',
+  'stripe_customer_id',
+  'stripe_subscription_id',
+  'subscription_status',
+  'active',
+  'store_platform',
+  'store_product_id',
+  'store_id',
+  'store_expires_at',
+  'entitlement_source',
+  'entitlement_subscription_id',
+  'entitlement_product_id',
+  'entitlement_interval',
+  'entitlement_expires_at',
+  'entitlement_updated_at',
+  'paddle_customer_id'
+]
+const USER_COLUMNS = [
+  'public_id',
+  'first_name',
+  'last_name',
+  'email',
+  'password_hash',
+  'firebase_uid',
+  'pro',
+  'created_at',
+  ...BILLING_COLUMNS
+]
+/** The public id stays the Mongo id, so every outside system still finds the user. */
+const UPSERT_USER = `insert into users (${USER_COLUMNS.join(', ')})
+  values (${USER_COLUMNS.map((_, i) => `$${i + 1}`).join(', ')})
+  on conflict (public_id) do update set ${USER_COLUMNS.filter(
+    (column) => column !== 'public_id' && column !== 'created_at'
   )
+    .map((column) => `${column} = excluded.${column}`)
+    .join(', ')}
+  returning id`
+
+const upsertUser = (db: SqlClient, user: LegacyUser) =>
+  firstId(db, UPSERT_USER, [
+    user.mongoId,
+    user.firstName,
+    user.lastName,
+    user.email,
+    user.passwordHash,
+    user.firebaseUid,
+    user.pro,
+    user.createdAt,
+    ...billingValues(user)
+  ])
+
+const writeWebhookEvents = async (
+  db: SqlClient,
+  events: ReadonlyArray<LegacyWebhookEvent>
+) => {
+  for (const { id, receivedAt } of events) {
+    await db.query(
+      `insert into webhook_events (id, received_at) values ($1, $2)
+       on conflict (id) do nothing`,
+      [id, receivedAt]
+    )
+  }
+}
 
 const writeCategories = async (db: SqlClient, data: LegacyData) => {
   const ids = new Map<string, number>()
@@ -175,25 +239,43 @@ const writeIngredients = async (
   for (const ingredient of data.ingredients) {
     const key = ingredientKey(ingredient)
     if (!ids.has(key)) {
-      const categoryId = categoryIds.get(ingredient.categoryMongoId) ?? null
+      const categoryId = categoryOf(categoryIds, ingredient)
       ids.set(key, await upsertIngredient(db, ingredient, key, categoryId))
     }
   }
   return ids
 }
 
+const categoryOf = (
+  categoryIds: ReadonlyMap<string, number>,
+  { categoryMongoId }: LegacyIngredient
+) =>
+  categoryMongoId === null ? null : (categoryIds.get(categoryMongoId) ?? null)
+
+/** A line keeps the name and section its Mongo Ingredient document had. */
 const writeLine = (
   db: SqlClient,
   recipeId: number,
   position: number,
   ingredientId: number,
-  line: LegacyIngredient
+  line: LegacyIngredient,
+  categoryId: number | null
 ) =>
   db.query(
     `insert into recipe_ingredients
-       (recipe_id, position, ingredient_id, quantity, measure, text)
-     values ($1, $2, $3, $4, $5, $6)`,
-    [recipeId, position, ingredientId, line.quantity, line.measure, line.text]
+       (recipe_id, position, ingredient_id, quantity, measure, text, name,
+        category_id)
+     values ($1, $2, $3, $4, $5, $6, $7, $8)`,
+    [
+      recipeId,
+      position,
+      ingredientId,
+      line.quantity,
+      line.measure,
+      line.text,
+      line.name,
+      categoryId
+    ]
   )
 
 /** Replaces a recipe's lines, so an edited recipe re-syncs cleanly. */
@@ -202,32 +284,34 @@ const writeLines = async (
   data: LegacyData,
   recipe: LegacyRecipe,
   recipeId: number,
-  ingredientIds: ReadonlyMap<string, number>
+  ids: Ids
 ) => {
   await db.query('delete from recipe_ingredients where recipe_id = $1', [
     recipeId
   ])
   const lines = liveLines(data, recipe)
   for (const [position, line] of lines.entries()) {
-    const ingredientId = requireFound(ingredientIds, ingredientKey(line))
-    await writeLine(db, recipeId, position, ingredientId, line)
+    const ingredientId = requireFound(ids.ingredients, ingredientKey(line))
+    const categoryId = categoryOf(ids.categories, line)
+    await writeLine(db, recipeId, position, ingredientId, line, categoryId)
   }
   return recipe.ingredientMongoIds.length - lines.length
 }
 
-const writeRecipes = async (
-  db: SqlClient,
-  data: LegacyData,
-  ingredientIds: ReadonlyMap<string, number>
-) => {
-  const ids = new Map<string, number>()
+interface Ids {
+  readonly categories: ReadonlyMap<string, number>
+  readonly ingredients: ReadonlyMap<string, number>
+}
+
+const writeRecipes = async (db: SqlClient, data: LegacyData, ids: Ids) => {
+  const recipeIds = new Map<string, number>()
   let skipped = 0
   for (const recipe of data.recipes) {
     const id = await upsertRecipe(db, recipe)
-    ids.set(recipe.mongoId, id)
-    skipped += await writeLines(db, data, recipe, id, ingredientIds)
+    recipeIds.set(recipe.mongoId, id)
+    skipped += await writeLines(db, data, recipe, id, ids)
   }
-  return { ids, skipped }
+  return { ids: recipeIds, skipped }
 }
 
 const writeSaved = async (
@@ -264,7 +348,7 @@ const writeUsers = async (
 
 /**
  * Copies Mongo data into Postgres in one transaction. Upserts on the Mongo
- * id, so it is safe to run again. Writes only to the Postgres client given.
+ * id (users' and recipes' public_id), so it is safe to run again. Writes only to the Postgres client given.
  */
 export const backfill = (
   db: SqlClient,
@@ -273,8 +357,12 @@ export const backfill = (
   db.transaction(async (tx) => {
     const categoryIds = await writeCategories(tx, data)
     const ingredientIds = await writeIngredients(tx, data, categoryIds)
-    const recipes = await writeRecipes(tx, data, ingredientIds)
+    const recipes = await writeRecipes(tx, data, {
+      categories: categoryIds,
+      ingredients: ingredientIds
+    })
     const saved = await writeUsers(tx, data, recipes.ids)
+    await writeWebhookEvents(tx, data.webhookEvents)
     return {
       counts: expectedCounts(data),
       skipped: { lines: recipes.skipped, saved }
