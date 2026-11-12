@@ -23,6 +23,25 @@ a real payment.
 | `server/src/datasources/entitlement.ts`   | idempotent apply: each event id is claimed once (`WebhookEvent`), older events never overwrite newer ones, a failed apply releases the claim so the provider's retry works |
 | `*/keyGuard.ts`                           | the server and Vite refuse to start when a test or sandbox run holds a production key (`pdl_live_`, `live_`, RevenueCat store or `sk_` keys, `sk_live_` Stripe)            |
 
+## Who RevenueCat sees
+
+RevenueCat's `app_user_id` is the ingré user's Mongo ObjectId everywhere: the web SDK is
+configured with it (`webEntitlement`), Paddle checkouts carry it as `ingre_user_id`, and the
+server only accepts an ObjectId from a webhook (`userIdOf`), so `$RCAnonymousID:` ids and
+emails are ignored.
+
+The iOS and Android apps still buy through StoreKit 2 and Play Billing directly, checked by
+`submitStorePurchase` (#314); they don't use the RevenueCat SDK yet, so their purchases reach
+RevenueCat only if its store server notifications are connected, and then without an ingré
+user id. Before the apps move to RevenueCat (a separate change):
+
+- configure `Purchases` anonymously at launch; call `Purchases.shared.logIn(userId)` (Swift)
+  or `Purchases.sharedInstance.logInWith(userId)` (Kotlin) with the JWT's `data._id` straight
+  after sign-in, and again at launch when a stored token is restored;
+- on sign-out call `logOut()` only when `isAnonymous` is false (it throws otherwise);
+- replace `submitStorePurchase` for new purchases, not run both, so one purchase isn't
+  applied twice under two subscription ids.
+
 ## Tax display
 
 | Region                   | Tax mode  | Cards and order summary                                     |
