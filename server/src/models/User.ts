@@ -8,6 +8,10 @@ import {
 } from 'mongoose'
 import { RecipeSchema } from './Recipe'
 import { TIERS, type Tier } from '../utils/tiers'
+import {
+  ENTITLEMENT_SOURCES,
+  type EntitlementSource
+} from '../payments/entitlement'
 
 export interface UserSchema extends Document {
   _id: Types.ObjectId
@@ -27,6 +31,15 @@ export interface UserSchema extends Document {
   storeProductId?: string | null
   storeId?: string | null
   storeExpiresAt?: Date | null
+  // Paddle + RevenueCat: the normalised entitlement behind the tier (web Paddle, or a
+  // store purchase reported by RevenueCat)
+  entitlementSource?: EntitlementSource | null
+  entitlementSubscriptionId?: string | null
+  entitlementProductId?: string | null
+  entitlementInterval?: 'month' | 'year' | null
+  entitlementExpiresAt?: Date | null
+  entitlementUpdatedAt?: Date | null
+  paddleCustomerId?: string | null
   savedRecipes: Array<Types.Subdocument & RecipeSchema>
   numSavedRecipes: number // virtual
 }
@@ -62,7 +75,25 @@ const userSchema = new Schema<UserSchema, {}, UserMethods, UserVirtuals>(
     },
     storeProductId: { type: String, default: null },
     storeId: { type: String, default: null, index: true },
-    storeExpiresAt: { type: Date, default: null }
+    storeExpiresAt: { type: Date, default: null },
+    // Paddle + RevenueCat: written only by the payment webhooks (EntitlementApi).
+    // entitlementUpdatedAt is when the newest applied event happened, so an older event
+    // that arrives late never undoes a newer one.
+    entitlementSource: {
+      type: String,
+      enum: [...ENTITLEMENT_SOURCES, null],
+      default: null
+    },
+    entitlementSubscriptionId: { type: String, default: null, index: true },
+    entitlementProductId: { type: String, default: null },
+    entitlementInterval: {
+      type: String,
+      enum: ['month', 'year', null],
+      default: null
+    },
+    entitlementExpiresAt: { type: Date, default: null },
+    entitlementUpdatedAt: { type: Date, default: null },
+    paddleCustomerId: { type: String, default: null }
   },
   {
     toJSON: { virtuals: true },

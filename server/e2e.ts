@@ -4,10 +4,15 @@
  * Stripe is pointed elsewhere only through env (STRIPE_API_HOST/_PORT/_PROTOCOL/_KEY).
  */
 import { MongoMemoryServer } from 'mongodb-memory-server'
+import dotenv from 'dotenv'
 
 const E2E_JWT_SECRET = 'e2e-only-secret'
 
 const start = async (): Promise<void> => {
+  // Paddle + RevenueCat: a test run (the key guard in server.ts refuses live keys) with
+  // the committed sandbox placeholders from .env.test; real env vars still win
+  process.env['APP_ENV'] = 'test'
+  dotenv.config({ path: '.env.test' })
   const mongo = await MongoMemoryServer.create()
   process.env['MONGODB_URI'] = mongo.getUri('ingre-e2e')
   process.env['JWT_SECRET'] = process.env['JWT_SECRET'] || E2E_JWT_SECRET

@@ -12,6 +12,14 @@ import { UserApi } from './src/datasources/user'
 import { stripeWebhook } from './src/webhooks/stripe'
 import { StoreApi } from './src/datasources/store'
 import { appleNotifications, googleRtdn } from './src/webhooks/store'
+import { assertNoProductionKeys } from './src/payments/keyGuard'
+import { EntitlementApi } from './src/datasources/entitlement'
+import { revenueCatSync } from './src/payments/revenuecat'
+import { paddleWebhook } from './src/webhooks/paddle'
+import { revenueCatWebhook } from './src/webhooks/revenuecat'
+
+// Paddle + RevenueCat: a test or sandbox run with a production payment key stops here
+assertNoProductionKeys(process.env)
 
 const PORT = process.env['PORT'] || 3001
 const app = express()
@@ -33,6 +41,19 @@ const startApolloServer = async () => {
     '/store/apple/notifications',
     json({ limit: '1MB' }),
     appleNotifications(store, new UserApi())
+  )
+  // Paddle + RevenueCat: web subscriptions (Paddle, signature-checked over the raw body)
+  // and store purchases reported by RevenueCat, normalised into one entitlement
+  const entitlements = new EntitlementApi()
+  app.post(
+    '/paddle/webhook',
+    raw({ type: 'application/json' }),
+    paddleWebhook(entitlements, revenueCatSync(process.env))
+  )
+  app.post(
+    '/revenuecat/webhook',
+    json({ limit: '1MB' }),
+    revenueCatWebhook(entitlements)
   )
   app.use(
     '/graphql',
