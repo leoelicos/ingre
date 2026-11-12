@@ -6,6 +6,8 @@ import { ADD_USER } from '../../lib/apollo/graphQL/mutations'
 import { CHECK_EMAIL_ALREADY_EXISTS } from '../../lib/apollo/graphQL/queries'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 import { returnPath } from '../../utils/auth/returnPath'
+import { firebaseEnabled, signUpWithEmail } from '../../utils/auth/firebase'
+import { useFirebaseSignIn } from '../../utils/auth/useFirebaseSignIn'
 import { changeTitle } from '../../utils/changeTitle'
 
 type SignupResult =
@@ -16,7 +18,8 @@ type SignupResult =
       message: string
     }
 
-export const MIN_PASSWORD_LENGTH = 5
+/** Firebase Auth's minimum (the legacy server allowed 5). */
+export const MIN_PASSWORD_LENGTH = 6
 
 const emailExistsMessage = (): string => translate('auth.emailExists')
 const checkFailedMessage = (): string => translate('auth.checkFailed')
@@ -57,6 +60,7 @@ export const useSignup = () => {
 
   const [state, dispatch] = useAuthContext()
   const loggedIn = state.loggedIn
+  const firebase = useFirebaseSignIn()
 
   const emailExists = !!checkEmailData?.checkEmailAlreadyExists
 
@@ -109,6 +113,17 @@ export const useSignup = () => {
       return { ok: false, reason: 'error', message: checkFailedMessage() }
     }
 
+    // Firebase Auth: the account is made in Firebase; the API makes the ingré user
+    if (firebaseEnabled()) {
+      const name = `${firstName.trim()} ${lastName.trim()}`.trim()
+      if (await firebase.finish(() => signUpWithEmail(email, password, name))) {
+        navigate(from, { replace: true })
+        return { ok: true }
+      }
+      setValidationMessage(signupFailedMessage())
+      return { ok: false, reason: 'error', message: signupFailedMessage() }
+    }
+
     try {
       const variables = { input: { email, password, firstName, lastName } }
       const res = await addUser({ variables })
@@ -150,7 +165,7 @@ export const useSignup = () => {
     checkEmailError,
     emailExists,
     addUserError,
-    addUserLoading,
+    addUserLoading: addUserLoading || firebase.loading,
     validationMessage,
     from
   }

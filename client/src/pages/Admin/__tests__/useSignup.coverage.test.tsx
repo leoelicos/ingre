@@ -297,10 +297,10 @@ describe('useSignup coverage', () => {
     expect(outcome).toEqual({
       ok: false,
       reason: 'validation',
-      message: 'Password must be at least 5 characters.'
+      message: 'Password must be at least 6 characters.'
     })
     expect(result.current.validationMessage).toBe(
-      'Password must be at least 5 characters.'
+      'Password must be at least 6 characters.'
     )
   })
 

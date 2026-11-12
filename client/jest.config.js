@@ -8,7 +8,8 @@ module.exports = {
     __PADDLE_CLIENT_TOKEN__: '',
     __PADDLE_ENVIRONMENT__: '',
     __PADDLE_PRICE_IDS__: '',
-    __REVENUECAT_WEB_API_KEY__: ''
+    __REVENUECAT_WEB_API_KEY__: '',
+    __FIREBASE_CONFIG__: ''
   },
   roots: ['<rootDir>/src'],
   setupFiles: ['<rootDir>/src/test/fetchPolyfill.js'],
@@ -42,7 +43,10 @@ module.exports = {
     /* cobe is ESM-only; tests never need a real globe */
     '^cobe$': '<rootDir>/src/test/cobeMock.js',
     /* Vite's ?worker imports (#207): tests never start the speech model's worker */
-    '\\?worker$': '<rootDir>/src/test/workerMock.js'
+    '\\?worker$': '<rootDir>/src/test/workerMock.js',
+    /* Firebase Auth: tests never load the SDK (jest.mock replaces these where needed) */
+    '^firebase/app$': '<rootDir>/src/test/firebaseAppMock.js',
+    '^firebase/auth$': '<rootDir>/src/test/firebaseFake.ts'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   coveragePathIgnorePatterns: ['/node_modules/', 'src/setupTests.ts'],

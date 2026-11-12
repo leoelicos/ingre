@@ -36,6 +36,7 @@ import { SAVED_PATH } from './components/AccountMenu/accountItems'
 import { APP_MODE, GRAPHQL_URL_OVERRIDE } from './appMode'
 import { addFontAwesome } from './utils/addFontAwesome'
 import { AuthProvider } from './utils/auth/AuthContext'
+import { firebaseIdToken } from './utils/auth/firebase'
 import { ExploreProvider } from './utils/explore/ExploreContext'
 import { GuestsProvider } from './utils/guests/GuestsContext'
 
@@ -52,19 +53,27 @@ export function graphqlEndpoint(mode: string, override: string): string {
   return 'http://localhost:3001/graphql'
 }
 
-export function authHeaders(oldHeaders: Record<string, string> | undefined): {
+/**
+ * The Authorization header: the Firebase ID token when someone is signed in to Firebase,
+ * else the legacy JWT (TRANSITION, Firebase Auth: until every session is a Firebase one).
+ */
+export function authHeaders(
+  oldHeaders: Record<string, string> | undefined,
+  firebaseToken: string | null = null
+): {
   headers: Record<string, string>
 } {
-  const token = localStorage.getItem('id_token')
+  const token = firebaseToken ?? localStorage.getItem('id_token')
   const authorization = token ? `Bearer ${token}` : ''
   const headers = { ...oldHeaders, authorization }
   return { headers }
 }
 
-export const withAuthHeaders = (
+/** Firebase Auth: asks for the ID token on every request, so a refreshed one is sent. */
+export const withAuthHeaders = async (
   _operation: unknown,
   context: { headers?: Record<string, string> }
-) => authHeaders(context.headers)
+) => authHeaders(context.headers, await firebaseIdToken())
 
 const authLink = setContext(withAuthHeaders)
 

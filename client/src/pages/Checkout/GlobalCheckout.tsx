@@ -48,7 +48,7 @@ import {
 } from '../../utils/payments/pricing'
 import type { LoadPurchases } from '../../utils/payments/revenuecat'
 import { loadPurchases } from '../../utils/payments/revenuecat'
-import { signedInUser } from './account'
+import { useSignedInUser } from './account'
 import { CheckoutSummary } from './CheckoutSummary'
 import { useCustomerCountry } from './useCustomerCountry'
 import { usePaddle } from './usePaddle'
@@ -237,7 +237,7 @@ const Checkout: FC<Required<GlobalCheckoutProps>> = ({
 }) => {
   const t = useT()
   const [auth] = useAuthContext()
-  const user = auth.loggedIn ? signedInUser() : null
+  const user = useSignedInUser(auth.loggedIn)
   const [{ country, source }, chooseCountry] = useCustomerCountry(place)
   const region = regionOf(country)
   const locale = place.locale

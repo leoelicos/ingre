@@ -1,5 +1,13 @@
-import { FC, ReactNode, createContext, useContext, useReducer } from 'react'
+import {
+  FC,
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useReducer
+} from 'react'
 import jwtDecode from 'jwt-decode'
+import { onFirebaseSession } from './firebase'
 
 interface ProfileType {
   data: {
@@ -39,6 +47,15 @@ const AuthContext = createContext<AuthContextType>([readStoredAuth(), () => {}])
 
 const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, null, readStoredAuth)
+  // Firebase Auth: a saved Firebase session signs in once it has loaded
+  useEffect(
+    () =>
+      onFirebaseSession(
+        () => dispatch({ type: 'FIREBASE_IN', data: '' }),
+        () => dispatch({ type: 'FIREBASE_OUT', data: '' })
+      ),
+    []
+  )
   return (
     <AuthContext.Provider value={[state, dispatch]}>
       {children}
@@ -74,6 +91,14 @@ export const authReducer: reducerType = (state, action) => {
       const serverToken = action.data
       localStorage.setItem('id_token', serverToken)
       return { ...state, profile: jwtDecode(serverToken), loggedIn: true }
+
+    // Firebase Auth: the API knows who it is from the ID token, so there's no profile here
+    case 'FIREBASE_IN':
+      return { ...state, loggedIn: true }
+
+    // Firebase Auth: out of Firebase; still in only with a valid legacy token
+    case 'FIREBASE_OUT':
+      return { ...state, loggedIn: readStoredAuth().loggedIn }
 
     case 'LOGOUT':
       localStorage.removeItem('id_token')

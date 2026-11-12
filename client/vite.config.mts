@@ -50,6 +50,15 @@ export default defineConfig(({ mode }) => {
       __PADDLE_PRICE_IDS__: JSON.stringify(JSON.stringify(priceIds)),
       __REVENUECAT_WEB_API_KEY__: JSON.stringify(
         env['VITE_REVENUECAT_WEB_API_KEY'] ?? ''
+      ),
+      // Firebase Auth (src/utils/auth/firebase.ts); unset keeps the legacy login
+      __FIREBASE_CONFIG__: JSON.stringify(
+        JSON.stringify({
+          apiKey: env['VITE_FIREBASE_API_KEY'] ?? '',
+          authDomain: env['VITE_FIREBASE_AUTH_DOMAIN'] ?? '',
+          projectId: env['VITE_FIREBASE_PROJECT_ID'] ?? '',
+          appId: env['VITE_FIREBASE_APP_ID'] ?? ''
+        })
       )
     },
     server: {

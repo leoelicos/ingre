@@ -99,21 +99,28 @@ describe('App', () => {
     ).toBe('http://localhost:4311/graphql')
   })
 
-  it('adds a bearer token when one is stored', () => {
+  it('adds a bearer token when one is stored', async () => {
     localStorage.setItem('id_token', 'abc')
     expect(authHeaders({ accept: 'json' })).toEqual({
       headers: { accept: 'json', authorization: 'Bearer abc' }
     })
     expect(
-      withAuthHeaders({}, { headers: { accept: 'json' } }).headers[
+      (await withAuthHeaders({}, { headers: { accept: 'json' } })).headers[
         'authorization'
       ]
     ).toBe('Bearer abc')
   })
 
-  it('uses an empty authorization header without a token', () => {
+  it('prefers the Firebase ID token to a legacy one', () => {
+    localStorage.setItem('id_token', 'abc')
+    expect(authHeaders(undefined, 'firebase-id-token')).toEqual({
+      headers: { authorization: 'Bearer firebase-id-token' }
+    })
+  })
+
+  it('uses an empty authorization header without a token', async () => {
     expect(authHeaders(undefined)).toEqual({ headers: { authorization: '' } })
-    expect(withAuthHeaders({}, {}).headers['authorization']).toBe('')
+    expect((await withAuthHeaders({}, {})).headers['authorization']).toBe('')
   })
 })
 

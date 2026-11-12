@@ -34,7 +34,7 @@ export const Login: FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [auth] = useAuthContext()
-  const { login, loginError, loginLoading } = useAuth()
+  const { login, loginWithGoogle, loginError, loginLoading } = useAuth()
   const {
     email,
     password,
@@ -144,7 +144,7 @@ export const Login: FC = () => {
           <button
             type="button"
             className="auth-form__submit focus-visible:focus-ring"
-            onClick={() => undefined}
+            onClick={() => void loginWithGoogle()}
           >
             {t('auth.google')}
           </button>
