@@ -1,12 +1,14 @@
 /*
  * Paddle + RevenueCat: where normalised payment events land. `claim` makes each event
- * count once; `apply` writes the entitlement to the user holding the subscription (else
- * the user the purchase was tied to), unless that user already has a newer event.
+ * count once (`webhook_events`); `apply` writes the entitlement to the user holding the
+ * subscription (else the user the purchase was tied to), unless that user already has
+ * a newer event.
  */
-import { User } from '../models/User'
-import { WebhookEvent } from '../models/WebhookEvent'
+import { z } from 'zod'
 import type { EntitlementState } from '../payments/entitlement'
+import { SqlStore } from './sqlStore'
 import { activationFields } from './user'
+import { assignments } from './userRows'
 
 export type ApplyOutcome = 'applied' | 'stale' | 'no-user'
 
@@ -19,14 +21,6 @@ export interface EntitlementStore {
   apply(state: EntitlementState): Promise<ApplyOutcome>
 }
 
-const DUPLICATE_KEY = 11000
-
-const isDuplicateKey = (error: unknown): boolean =>
-  typeof error === 'object' &&
-  error !== null &&
-  'code' in error &&
-  error.code === DUPLICATE_KEY
-
 export const entitlementFields = (state: EntitlementState) => ({
   entitlementSource: state.source,
   entitlementSubscriptionId: state.subscriptionId,
@@ -38,44 +32,57 @@ export const entitlementFields = (state: EntitlementState) => ({
   ...activationFields(state.status, state.tier)
 })
 
-export class EntitlementApi implements EntitlementStore {
+const outcome = z.object({
+  found: z.coerce.number(),
+  applied: z.coerce.number()
+})
+
+export class EntitlementApi extends SqlStore implements EntitlementStore {
   public async claim(eventId: string): Promise<boolean> {
-    try {
-      await WebhookEvent.create({ _id: eventId })
-      return true
-    } catch (error) {
-      if (isDuplicateKey(error)) return false
-      throw error
-    }
+    const claimed = await this.sql.query(
+      `insert into webhook_events (id) values ($1)
+       on conflict do nothing returning id`,
+      [eventId]
+    )
+    return claimed.length === 1
   }
 
   public async release(eventId: string): Promise<void> {
-    await WebhookEvent.deleteOne({ _id: eventId })
+    await this.sql.query('delete from webhook_events where id = $1', [eventId])
   }
 
+  /**
+   * One statement: the user holding the subscription, else the user it was tied to,
+   * updated only when its last event is not newer, so a newer event that lands
+   * meanwhile still wins.
+   */
   public async apply(state: EntitlementState): Promise<ApplyOutcome> {
-    const filters = [
-      ...(state.subscriptionId === null
-        ? []
-        : [{ entitlementSubscriptionId: state.subscriptionId }]),
-      ...(state.userId === null ? [] : [{ _id: state.userId }])
-    ]
-    for (const filter of filters) {
-      const user = await User.findOne(filter).select('_id')
-      if (!user) continue
-      // one conditional write, so a newer event landing after the read still wins
-      const { matchedCount } = await User.updateOne(
-        {
-          _id: user._id,
-          $or: [
-            { entitlementUpdatedAt: null },
-            { entitlementUpdatedAt: { $lte: state.occurredAt } }
-          ]
-        },
-        { $set: entitlementFields(state) }
-      )
-      return matchedCount === 1 ? 'applied' : 'stale'
-    }
-    return 'no-user'
+    const set = assignments(entitlementFields(state), 4)
+    const [row] = await this.sql.query(
+      `with target as (
+         select id from (
+           select id, 0 as rank from users
+           where $1::text is not null and entitlement_subscription_id = $1
+           union all
+           select id, 1 as rank from users
+           where $2::text is not null and public_id = $2
+         ) candidates
+         order by rank limit 1
+       ),
+       updated as (
+         update users u set ${set.text}
+         from target
+         where u.id = target.id
+           and (u.entitlement_updated_at is null
+             or u.entitlement_updated_at <= $3)
+         returning u.id
+       )
+       select (select count(*) from target) as found,
+         (select count(*) from updated) as applied`,
+      [state.subscriptionId, state.userId, state.occurredAt, ...set.values]
+    )
+    const { found, applied } = outcome.parse(row)
+    if (found === 0) return 'no-user'
+    return applied === 1 ? 'applied' : 'stale'
   }
 }

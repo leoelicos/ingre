@@ -3,7 +3,7 @@
  * so one id names a tier everywhere. Store states are written in Stripe's status words
  * (active, past_due, canceled, incomplete) so `active` and `tier` follow one rule.
  */
-import { Types } from 'mongoose'
+import { publicIdOf } from '../utils/publicId'
 import { tierOfLookupKey, LOOKUP_KEYS, type Tier } from '../utils/tiers'
 
 export type StorePlatform = 'APPLE' | 'GOOGLE'
@@ -31,7 +31,7 @@ export interface StoreState {
   readonly accountUserId: string | null
 }
 
-/** Apple wants a UUID for appAccountToken: the user's ObjectId, zero padded to 32 hex digits. */
+/** Apple wants a UUID for appAccountToken: the user's public id, zero padded to 32 hex digits. */
 export const appAccountTokenFor = (userId: string): string => {
   const hex = `${userId.toLowerCase()}00000000`
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
@@ -47,15 +47,10 @@ export const userIdOfAppAccountToken = (
   return hex.slice(0, 24)
 }
 
-/** An obfuscated account id that is a user id (Android sends the ObjectId as is). */
+/** An obfuscated account id that is a user id (Android sends the public id as is). */
 export const userIdOfAccountId = (
   id: string | null | undefined
-): string | null =>
-  typeof id === 'string' &&
-  /^[0-9a-f]{24}$/i.test(id) &&
-  Types.ObjectId.isValid(id)
-    ? id.toLowerCase()
-    : null
+): string | null => publicIdOf(id)
 
 type Env = Readonly<Record<string, string | undefined>>
 export type { Env }

@@ -4,7 +4,7 @@
  * a user. Statuses use Stripe's words (#312) so `activationFields` decides `active` and
  * `tier` for every route the same way.
  */
-import { Types } from 'mongoose'
+import { publicIdOf } from '../utils/publicId'
 import { LOOKUP_KEYS, TIERS, isTier, type Tier } from '../utils/tiers'
 
 export const ENTITLEMENT_SOURCES = [
@@ -33,7 +33,7 @@ export interface EntitlementState {
   /** `<provider>:<the provider's event id>`, the idempotency key */
   readonly eventId: string
   readonly source: EntitlementSource
-  /** the ingré user (Mongo ObjectId) the purchase was tied to, if any */
+  /** the ingré user (public id) the purchase was tied to, if any */
   readonly userId: string | null
   /** Paddle subscription id, or the store's original transaction id */
   readonly subscriptionId: string | null
@@ -71,13 +71,8 @@ export const ignored = (eventId: string, reason: string): Normalised => ({
   reason
 })
 
-/** A Mongo ObjectId string, lower-cased; null for anything else (anonymous ids, emails). */
-export const userIdOf = (value: unknown): string | null =>
-  typeof value === 'string' &&
-  /^[0-9a-f]{24}$/i.test(value) &&
-  Types.ObjectId.isValid(value)
-    ? value.toLowerCase()
-    : null
+/** A user's public id, lower-cased; null for anything else (anonymous ids, emails). */
+export const userIdOf = (value: unknown): string | null => publicIdOf(value)
 
 /** The first value that is a user id. */
 export const firstUserId = (values: readonly unknown[]): string | null =>

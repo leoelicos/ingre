@@ -1,15 +1,14 @@
-import { Types } from 'mongoose'
 import { Category, CustomisationDoc, RecipePopulated } from '../../types'
 
 type RecipeLike = {
-  _id: Types.ObjectId
+  _id: string
   name: string
   portions: number
   picture_url: string
   instructions?: string | null | undefined
   libraryId?: string | null | undefined
   ingredients: Array<{
-    _id: Types.ObjectId
+    _id: string
     name: string
     quantity: number
     measure: string

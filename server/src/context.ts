@@ -39,7 +39,7 @@ const bearerOf = (authorization: string | undefined): string | null =>
 export const userOfAuthorization = async (
   authorization: string | undefined,
   verify: VerifyIdToken | null,
-  // the data store seam: Mongo today, Postgres after the cutover
+  // the data store seam: Postgres by default, a fake in tests
   findUser: FindUserByFirebase = findOrCreateUserByFirebase
 ): Promise<User | null> => {
   const secret = getJwtSecret()

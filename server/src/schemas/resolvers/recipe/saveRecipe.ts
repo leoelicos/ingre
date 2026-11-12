@@ -18,7 +18,10 @@ import { toRecipePopulated } from './toRecipePopulated'
 export const DEFAULT_PICTURE_URL =
   'https://play-lh.googleusercontent.com/Ie88X5s51HN8-vfuNv_LYfamon6JAvFnxfbIrxXrI0LRd9vpnEQWAq5Pz83bEJU4Sfc'
 
-type IngredientApis = { categoryApi: CategoryApi; ingredientApi: IngredientApi }
+type IngredientApis = {
+  categoryApi: Pick<CategoryApi, 'findOrCreateCategory'>
+  ingredientApi: Pick<IngredientApi, 'createIngredient'>
+}
 
 /** Picks the public fields of a created ingredient. */
 export const toSavedIngredient = <
@@ -55,22 +58,28 @@ export const toCustomisationDocs = ({
   changed,
   portions
 }: CustomisationsInput): CustomisationDoc[] => [
-  ...added.map(({ ingredientId, to }): CustomisationDoc => ({
-    kind: 'AddedIngredient',
-    ingredientId,
-    to
-  })),
-  ...removed.map(({ ingredientId, from }): CustomisationDoc => ({
-    kind: 'RemovedIngredient',
-    ingredientId,
-    from
-  })),
-  ...changed.map(({ ingredientId, from, to }): CustomisationDoc => ({
-    kind: 'ChangedIngredient',
-    ingredientId,
-    from,
-    to
-  })),
+  ...added.map(
+    ({ ingredientId, to }): CustomisationDoc => ({
+      kind: 'AddedIngredient',
+      ingredientId,
+      to
+    })
+  ),
+  ...removed.map(
+    ({ ingredientId, from }): CustomisationDoc => ({
+      kind: 'RemovedIngredient',
+      ingredientId,
+      from
+    })
+  ),
+  ...changed.map(
+    ({ ingredientId, from, to }): CustomisationDoc => ({
+      kind: 'ChangedIngredient',
+      ingredientId,
+      from,
+      to
+    })
+  ),
   ...(portions ? [{ kind: 'PortionsChange' as const, ...portions }] : [])
 ]
 

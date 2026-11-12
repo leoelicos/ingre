@@ -2,19 +2,19 @@ import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import dotenv from 'dotenv'
 import { User } from '../schemas/types'
-import { Types } from 'mongoose'
 
 dotenv.config()
 const expiration = '1h'
 
-const objectId = z
+/** A user's or recipe's public id (utils/publicId.ts), lower-cased. */
+const publicId = z
   .string()
-  .refine((value) => Types.ObjectId.isValid(value))
-  .transform((value) => new Types.ObjectId(value))
+  .regex(/^[0-9a-fA-F]{24}$/)
+  .transform((value) => value.toLowerCase())
 
 /** Shape of `data` in tokens produced by signToken. */
 const tokenUserSchema = z.object({
-  _id: objectId,
+  _id: publicId,
   firstName: z.string(),
   lastName: z.string(),
   email: z.string(),
@@ -22,8 +22,8 @@ const tokenUserSchema = z.object({
   savedRecipes: z
     .array(
       z.union([
-        objectId,
-        z.object({ _id: objectId }).transform(({ _id }) => _id)
+        publicId,
+        z.object({ _id: publicId }).transform(({ _id }) => _id)
       ])
     )
     .default([]),
@@ -57,12 +57,12 @@ export const readUserFromAuthHeader = (
 }
 
 type SignableUser = {
-  _id: Types.ObjectId
+  _id: string
   firstName: string
   lastName: string
   email: string
   pro: boolean
-  savedRecipes: ReadonlyArray<{ _id: Types.ObjectId } | Types.ObjectId>
+  savedRecipes: ReadonlyArray<{ _id: string } | string>
 }
 
 /** Signs a token carrying only the public user fields (never the password hash). */
@@ -70,13 +70,13 @@ export const signToken = (user: SignableUser): string => {
   const secret = getJwtSecret()
   if (!secret) throw new Error('no secret')
   const data = {
-    _id: user._id.toString(),
+    _id: user._id,
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
     pro: user.pro,
     savedRecipes: user.savedRecipes.map((r) =>
-      r instanceof Types.ObjectId ? r.toString() : r._id.toString()
+      typeof r === 'string' ? r : r._id
     ),
     numSavedRecipes: user.savedRecipes.length
   }

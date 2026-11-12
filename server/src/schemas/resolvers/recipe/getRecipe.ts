@@ -1,4 +1,3 @@
-import { Types } from 'mongoose'
 import { NotFoundError } from '../../../errors'
 import { requireUser } from '../../../utils/requireUser'
 import { MyContext, RecipePopulated } from '../../types'
@@ -6,7 +5,7 @@ import { toRecipePopulated } from './toRecipePopulated'
 
 export const getRecipe = async (
   _parent: unknown,
-  { _id }: { _id: Types.ObjectId },
+  { _id }: { _id: string },
   { dataSources, user }: MyContext
 ): Promise<RecipePopulated> => {
   requireUser(user)

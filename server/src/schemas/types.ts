@@ -17,16 +17,16 @@ export type {
   PortionsChangeInput,
   CustomisationsInput
 }
-import { Types } from 'mongoose'
 import { createDataSources } from '../datasources'
 
+/** A user as the API sees them; `_id` is the public id (utils/publicId.ts). */
 export type User = {
-  _id: Types.ObjectId
+  _id: string
   firstName: string
   lastName: string
   email: string
   pro: boolean
-  savedRecipes: Array<Types.ObjectId>
+  savedRecipes: Array<string>
   numSavedRecipes: number
 }
 
@@ -37,11 +37,12 @@ export type UserInput = {
   password: string
 }
 
+/** `_id` is the recipe's public id. */
 export type Recipe = {
-  _id: Types.ObjectId
+  _id: string
   name: string
   portions: number
-  ingredients: Array<Types.ObjectId>
+  ingredients: Array<string>
   picture_url: string
   libraryId?: string
   instructions?: string
@@ -65,7 +66,7 @@ export type CustomisationDoc = {
 
 export interface RecipePopulated extends Omit<Recipe, 'ingredients'> {
   ingredients: Array<{
-    _id: Types.ObjectId
+    _id: string
     name: string
     quantity: number
     measure: string
@@ -75,7 +76,7 @@ export interface RecipePopulated extends Omit<Recipe, 'ingredients'> {
 }
 
 export type Ingredient = {
-  _id: Types.ObjectId
+  _id: string
   name: string
   quantity: number
   measure: string
@@ -84,7 +85,7 @@ export type Ingredient = {
 }
 
 export type Category = {
-  _id: Types.ObjectId
+  _id: string
   name: string
 }
 
