@@ -23,6 +23,7 @@ import { NoMatch } from './pages/Admin/NoMatch'
 import { Signup } from './pages/Admin/Signup'
 import { Success } from './pages/Admin/Success'
 import Upgrade from './pages/Admin/Upgrade'
+import GlobalCheckout from './pages/Checkout/GlobalCheckout'
 import { ListPage } from './pages/List/ListPage'
 import { WarRoom } from './pages/WarRoom/WarRoom'
 import { DemoPage } from './pages/Demo/DemoPage'
@@ -178,6 +179,14 @@ export const Ingre: FC = () => {
                         element={
                           <PageMain>
                             <Upgrade />
+                          </PageMain>
+                        }
+                      />
+                      <Route
+                        path="/checkout"
+                        element={
+                          <PageMain>
+                            <GlobalCheckout />
                           </PageMain>
                         }
                       />

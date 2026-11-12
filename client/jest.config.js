@@ -4,7 +4,11 @@ module.exports = {
   globals: {
     __APP_MODE__: 'test',
     __GRAPHQL_URL__: '',
-    __STRIPE_PUBLISHABLE_KEY__: ''
+    __STRIPE_PUBLISHABLE_KEY__: '',
+    __PADDLE_CLIENT_TOKEN__: '',
+    __PADDLE_ENVIRONMENT__: '',
+    __PADDLE_PRICE_IDS__: '',
+    __REVENUECAT_WEB_API_KEY__: ''
   },
   roots: ['<rootDir>/src'],
   setupFiles: ['<rootDir>/src/test/fetchPolyfill.js'],

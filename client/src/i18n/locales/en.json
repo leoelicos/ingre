@@ -286,6 +286,50 @@
       "failed": "Couldn't reach Stripe. Try again."
     }
   },
+  "globalCheckout": {
+    "title": "Plans in your currency",
+    "off": "Plans are not open yet.",
+    "pricesFor": "Prices for {{country}}",
+    "source": {
+      "location": "Worked out from your location.",
+      "locale": "Worked out from your browser's language settings.",
+      "timeZone": "Worked out from your time zone.",
+      "chosen": "You chose this country.",
+      "default": "We couldn't tell where you are, so these are US prices."
+    },
+    "country": "Country",
+    "taxExclusive": "Prices are before tax. Sales tax is added at checkout where it applies.",
+    "taxInclusiveVat": "Prices include VAT.",
+    "taxInclusiveGst": "Prices include GST.",
+    "ppp": "Regional price: {{percent}} less than the US price.",
+    "sandbox": "Sandbox: no real charges. Pay with Paddle's test card 4242 4242 4242 4242, any future expiry and any 3-digit CVC.",
+    "notSetUp": "Checkout isn't set up yet, so nothing can be bought here.",
+    "paddleFailed": "Couldn't load Paddle's checkout. Check your connection and reload the page.",
+    "perMonth": "{{price}} a month",
+    "perYear": "{{price}} a year",
+    "yearlyOnly": "Yearly billing only",
+    "choose": "Choose {{tier}}",
+    "order": "Your order: {{tier}}",
+    "billing": "Billing",
+    "yearlyOnlyWhy": "{{tier}} is billed yearly in {{country}}. Monthly payments this small would lose too much to fixed card fees.",
+    "yearlySaves": "Yearly costs the same as 10 months.",
+    "monthly": "Monthly, {{price}}",
+    "yearly": "Yearly, {{price}}",
+    "summary": "Order summary",
+    "price": "Price",
+    "salesTax": "Sales tax ({{rate}})",
+    "includes": {
+      "vat": "Includes VAT ({{rate}}): {{amount}}",
+      "gst": "Includes GST ({{rate}}): {{amount}}"
+    },
+    "total": "Total due today",
+    "quoting": "Getting the price and tax from Paddle…",
+    "quoteFailed": "Couldn't get the price from Paddle. Try again.",
+    "retry": "Try again",
+    "pay": "Continue to payment",
+    "completed": "Payment received. Your plan switches on in a moment.",
+    "current": "Your plan: {{tier}}"
+  },
   "tiers": {
     "names": {
       "EXPLORER": "Explorer",

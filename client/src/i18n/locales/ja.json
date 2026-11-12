@@ -278,6 +278,50 @@
       "failed": "Stripe に接続できませんでした。もう一度お試しください。"
     }
   },
+  "globalCheckout": {
+    "title": "現地通貨のプラン",
+    "off": "プランはまだ公開されていません。",
+    "pricesFor": "{{country}}の価格",
+    "source": {
+      "location": "現在地から判断しました。",
+      "locale": "ブラウザーの言語設定から判断しました。",
+      "timeZone": "タイムゾーンから判断しました。",
+      "chosen": "選択した国です。",
+      "default": "場所がわからないため、米国の価格を表示しています。"
+    },
+    "country": "国",
+    "taxExclusive": "価格は税抜きです。売上税は該当する場合に支払い時に加算されます。",
+    "taxInclusiveVat": "価格には付加価値税(VAT)が含まれます。",
+    "taxInclusiveGst": "価格には物品サービス税(GST)が含まれます。",
+    "ppp": "地域価格:米国価格より{{percent}}安くなります。",
+    "sandbox": "サンドボックス:実際の請求はありません。Paddleのテストカード 4242 4242 4242 4242、将来の有効期限、任意の3桁のCVCで支払えます。",
+    "notSetUp": "支払いはまだ設定されていないため、ここでは購入できません。",
+    "paddleFailed": "Paddleの支払い画面を読み込めませんでした。接続を確認して、ページを再読み込みしてください。",
+    "perMonth": "月額 {{price}}",
+    "perYear": "年額 {{price}}",
+    "yearlyOnly": "年払いのみ",
+    "choose": "{{tier}}を選ぶ",
+    "order": "ご注文:{{tier}}",
+    "billing": "支払い間隔",
+    "yearlyOnlyWhy": "{{country}}では{{tier}}は年払いです。少額の月払いでは、固定のカード手数料の割合が大きくなりすぎるためです。",
+    "yearlySaves": "年払いは10か月分の料金です。",
+    "monthly": "月払い、{{price}}",
+    "yearly": "年払い、{{price}}",
+    "summary": "注文の概要",
+    "price": "価格",
+    "salesTax": "売上税({{rate}})",
+    "includes": {
+      "vat": "付加価値税({{rate}})込み:{{amount}}",
+      "gst": "物品サービス税({{rate}})込み:{{amount}}"
+    },
+    "total": "本日のお支払い合計",
+    "quoting": "Paddleから価格と税額を取得しています…",
+    "quoteFailed": "Paddleから価格を取得できませんでした。もう一度お試しください。",
+    "retry": "もう一度試す",
+    "pay": "支払いへ進む",
+    "completed": "お支払いを受け付けました。まもなくプランが有効になります。",
+    "current": "現在のプラン:{{tier}}"
+  },
   "tiers": {
     "names": {
       "EXPLORER": "エクスプローラー",
