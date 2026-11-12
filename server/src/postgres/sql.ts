@@ -40,6 +40,46 @@ const adaptTransaction = (tx: Transaction): SqlClient => {
   return client
 }
 
+/** The parts of a `pg` Pool and its clients the adapter uses (a seam for tests). */
+export interface PgQueryable {
+  query(text: string, params?: unknown[]): Promise<{ rows: ReadonlyArray<Row> }>
+}
+export interface PgPoolLike extends PgQueryable {
+  connect(): Promise<PgQueryable & { release(): void }>
+}
+
+const fromPgClient = (client: PgQueryable): SqlClient => {
+  const adapted: SqlClient = {
+    query: async (text, params = []) =>
+      (await client.query(text, [...params])).rows,
+    exec: async (text) => {
+      await client.query(text)
+    },
+    // already inside one: join it
+    transaction: (work) => work(adapted)
+  }
+  return adapted
+}
+
+/** A `pg` Pool as a SqlClient; a transaction holds one pooled connection. */
+export const fromPool = (pool: PgPoolLike): SqlClient => ({
+  ...fromPgClient(pool),
+  transaction: async (work) => {
+    const conn = await pool.connect()
+    try {
+      await conn.query('begin')
+      const result = await work(fromPgClient(conn))
+      await conn.query('commit')
+      return result
+    } catch (error) {
+      await conn.query('rollback')
+      throw error
+    } finally {
+      conn.release()
+    }
+  }
+})
+
 export const fromPglite = (db: PGlite): SqlClient => ({
   query: adaptQuery(db),
   exec: adaptExec(db),

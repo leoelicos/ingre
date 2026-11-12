@@ -17,7 +17,8 @@ describe('listMigrations', () => {
     const migrations = listMigrations()
     expect(migrations.map(({ name }) => name)).toEqual([
       '0001_init.sql',
-      '0002_firebase_uid.sql'
+      '0002_firebase_uid.sql',
+      '0003_cutover.sql'
     ])
     expect(migrations[0]?.sql).toContain('create table recipes')
   })
@@ -30,7 +31,11 @@ describe('migrate', () => {
   it('creates the v1 tables on an empty database', async () => {
     const { db, close } = createTestDb()
     const applied = await migrate(db, listMigrations())
-    expect(applied).toEqual(['0001_init.sql', '0002_firebase_uid.sql'])
+    expect(applied).toEqual([
+      '0001_init.sql',
+      '0002_firebase_uid.sql',
+      '0003_cutover.sql'
+    ])
     expect(await tableNames(db)).toEqual([
       'categories',
       'ingredients',
@@ -40,7 +45,8 @@ describe('migrate', () => {
       'schema_migrations',
       'tickets',
       'user_preferences',
-      'users'
+      'users',
+      'webhook_events'
     ])
     await close()
   })
@@ -49,7 +55,7 @@ describe('migrate', () => {
     const { db, close } = await createMigratedTestDb()
     expect(await migrate(db, listMigrations())).toEqual([])
     const rows = await db.query('select count(*) as n from schema_migrations')
-    expect(readInt(onlyRow(rows), 'n')).toBe(2)
+    expect(readInt(onlyRow(rows), 'n')).toBe(3)
     await close()
   })
 
@@ -128,6 +134,65 @@ describe('schema constraints', () => {
         'insert into tickets (user_id, recipe_id, state) values (1, 1, $1)',
         ['lost']
       )
+    ).rejects.toThrow()
+    await close()
+  })
+})
+
+describe('0003 cutover', () => {
+  it('turns mongo_id into a public id, keeping migrated ids and filling the rest', async () => {
+    const { db, close } = createTestDb()
+    const [first, second, third] = listMigrations()
+    if (!first || !second || !third) throw new Error('migrations missing')
+    await migrate(db, [first, second])
+    await db.exec(`
+      insert into users (mongo_id, first_name, last_name, email, password_hash)
+        values ('65a1b2c3d4e5f60718293a4b', 'a', 'b', 'a@b.c', 'h'),
+               (null, 'c', 'd', 'c@d.e', 'h');
+      insert into recipes (mongo_id, name, picture_url) values (null, 'R', 'u');
+    `)
+    await migrate(db, [third])
+    const users = await db.query('select public_id from users order by id')
+    expect(users[0]?.['public_id']).toBe('65a1b2c3d4e5f60718293a4b')
+    expect(readString(users[1] ?? {}, 'public_id')).toMatch(/^[0-9a-f]{24}$/)
+    const recipes = await db.query('select public_id from recipes')
+    expect(readString(onlyRow(recipes), 'public_id')).toMatch(/^[0-9a-f]{24}$/)
+    await close()
+  })
+
+  it('gives new rows a public id and the payment defaults', async () => {
+    const { db, close } = await createMigratedTestDb()
+    const row = onlyRow(
+      await db.query(
+        `insert into users (first_name, email) values ('a', 'a@b.c')
+         returning public_id, last_name, active, tier, pro`
+      )
+    )
+    expect(row).toEqual({
+      public_id: expect.stringMatching(/^[0-9a-f]{24}$/),
+      last_name: '',
+      active: false,
+      tier: null,
+      pro: false
+    })
+    await close()
+  })
+
+  it('checks the public id shape and the payment enums', async () => {
+    const { db, close } = await createMigratedTestDb()
+    const insert = (column: string, value: string) =>
+      db.query(
+        `insert into users (first_name, email, ${column}) values ('a', $1, $2)`,
+        [`${column}@b.c`, value]
+      )
+    await expect(insert('public_id', 'NOT-HEX')).rejects.toThrow()
+    await expect(insert('tier', 'PLATINUM')).rejects.toThrow()
+    await expect(insert('store_platform', 'AMAZON')).rejects.toThrow()
+    await expect(insert('entitlement_source', 'CASH')).rejects.toThrow()
+    await expect(insert('entitlement_interval', 'week')).rejects.toThrow()
+    await insert('entitlement_source', 'PADDLE')
+    await expect(
+      db.query('insert into webhook_events (id) values ($1), ($1)', ['a'])
     ).rejects.toThrow()
     await close()
   })
