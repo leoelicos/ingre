@@ -18,7 +18,10 @@ export interface UserSchema extends Document {
   firstName: string
   lastName: string
   email: string
-  password: string
+  // Firebase Auth: absent for a user who signs in through Firebase (Firebase holds it)
+  password?: string
+  // Firebase Auth: the uid this user signs in with; absent until linked
+  firebaseUid?: string
   pro: boolean
   tier?: Tier | null
   // #312: the Stripe subscription behind the tier
@@ -50,12 +53,21 @@ export interface UserMethods {
 export interface UserVirtuals {
   numSavedRecipes: number
 }
+/** Firebase Auth: a user linked to Firebase signs in there, so needs no password or surname. */
+function notFirebase(this: { firebaseUid?: string }): boolean {
+  return !this.firebaseUid
+}
+
 const userSchema = new Schema<UserSchema, {}, UserMethods, UserVirtuals>(
   {
     firstName: { type: String, required: true, trim: true },
-    lastName: { type: String, required: true, trim: true },
+    // Firebase Auth: a Google account may have no family name
+    lastName: { type: String, required: notFirebase, trim: true, default: '' },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true, minlength: 5 },
+    // Firebase Auth: only the legacy password login keeps a bcrypt hash here
+    password: { type: String, required: notFirebase, minlength: 5 },
+    // Firebase Auth: unique among linked users; sparse, so unlinked users (no field) don't clash
+    firebaseUid: { type: String, unique: true, sparse: true },
     savedRecipes: [{ type: Types.ObjectId, ref: 'Recipe', required: true }],
     pro: { type: Boolean, default: false },
     // #208: null until a tier is bought
@@ -109,7 +121,8 @@ userSchema.pre(
   'save',
   async function (next: CallbackWithoutResultAndOptionalError) {
     if (
-      this.isNew
+      this.isNew &&
+      this.password
       // || this.isModified('password') // we have not allowed a user to reset their password at this stage
     ) {
       const saltRounds = 10
@@ -119,8 +132,9 @@ userSchema.pre(
   }
 )
 
-userSchema.method('isCorrectPassword', function (password: string) {
-  return bcrypt.compare(password, this.password)
+userSchema.method('isCorrectPassword', async function (password: string) {
+  // Firebase Auth: a Firebase-only user has no hash, so the legacy login never matches
+  return this.password ? bcrypt.compare(password, this.password) : false
 })
 
 export const User = model('User', userSchema)

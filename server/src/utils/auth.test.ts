@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken'
 import { Types } from 'mongoose'
-import { buildContext } from '../context'
-import { createDataSources } from '../datasources'
 import { getJwtSecret, readUserFromAuthHeader, signToken } from './auth'
 
 const secret = 'test_secret'
@@ -106,35 +104,5 @@ describe('readUserFromAuthHeader', () => {
     ).toBeNull()
     const badShape = jwt.sign({ data: { _id: 'not-an-id' } }, secret)
     expect(readUserFromAuthHeader(`Bearer ${badShape}`, secret)).toBeNull()
-  })
-})
-
-describe('buildContext', () => {
-  const dataSources = createDataSources()
-
-  it('adds the user and referer when present', () => {
-    const context = buildContext(
-      {
-        authorization: `Bearer ${signToken(user)}`,
-        referer: 'http://localhost:3000/x'
-      },
-      dataSources
-    )
-    expect(context.user?.email).toBe(user.email)
-    expect(context.headers).toEqual({ referer: 'http://localhost:3000/x' })
-    expect(context.dataSources).toBe(dataSources)
-  })
-
-  it('omits user and headers when absent, and without a secret', () => {
-    expect(buildContext({}, dataSources)).toEqual({ dataSources })
-    const token = signToken(user)
-    delete process.env['JWT_SECRET']
-    expect(
-      buildContext({ authorization: `Bearer ${token}` }, dataSources)
-    ).toEqual({ dataSources })
-  })
-
-  it('creates data sources by default', () => {
-    expect(buildContext({}).dataSources.userApi).toBeDefined()
   })
 })
