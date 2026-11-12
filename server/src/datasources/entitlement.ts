@@ -61,15 +61,20 @@ export class EntitlementApi implements EntitlementStore {
       ...(state.userId === null ? [] : [{ _id: state.userId }])
     ]
     for (const filter of filters) {
-      const user = await User.findOne(filter).select('entitlementUpdatedAt')
+      const user = await User.findOne(filter).select('_id')
       if (!user) continue
-      const latest = user.entitlementUpdatedAt ?? null
-      if (latest !== null && latest > state.occurredAt) return 'stale'
-      await User.updateOne(
-        { _id: user._id },
+      // one conditional write, so a newer event landing after the read still wins
+      const { matchedCount } = await User.updateOne(
+        {
+          _id: user._id,
+          $or: [
+            { entitlementUpdatedAt: null },
+            { entitlementUpdatedAt: { $lte: state.occurredAt } }
+          ]
+        },
         { $set: entitlementFields(state) }
       )
-      return 'applied'
+      return matchedCount === 1 ? 'applied' : 'stale'
     }
     return 'no-user'
   }

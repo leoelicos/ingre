@@ -115,6 +115,23 @@ describe('EntitlementApi', () => {
     )
   })
 
+  it('never lets an older event overwrite a newer one that lands mid-apply', async () => {
+    const updateOne = User.updateOne.bind(User)
+    const newer = state({
+      eventId: 'paddle:evt_new',
+      tier: 'LEADER',
+      occurredAt: new Date('2026-12-01T00:00:00Z')
+    })
+    // the newer event is written between the older one's read and its write
+    const spy = jest
+      .spyOn(User, 'updateOne')
+      .mockImplementationOnce(((...args: Parameters<typeof updateOne>) =>
+        api.apply(newer).then(() => updateOne(...args))) as never)
+    expect(await api.apply(state({ tier: 'EXPLORER' }))).toBe('stale')
+    spy.mockRestore()
+    expect((await User.findById(USER).lean())?.tier).toBe('LEADER')
+  })
+
   it('reports when nobody holds the purchase', async () => {
     expect(
       await api.apply(state({ userId: null, subscriptionId: 'sub_unknown' }))
