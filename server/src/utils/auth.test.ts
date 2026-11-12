@@ -1,16 +1,16 @@
 import jwt from 'jsonwebtoken'
-import { Types } from 'mongoose'
+import { newPublicId } from '../test-utils/ids'
 import { getJwtSecret, readUserFromAuthHeader, signToken } from './auth'
 
 const secret = 'test_secret'
-const recipeId = new Types.ObjectId()
+const recipeId = newPublicId()
 const user = {
-  _id: new Types.ObjectId(),
+  _id: newPublicId(),
   firstName: 'John',
   lastName: 'Doe',
   email: 'john.doe@example.com',
   pro: false,
-  savedRecipes: [recipeId, { _id: new Types.ObjectId() }]
+  savedRecipes: [recipeId, { _id: newPublicId() }]
 }
 
 const ORIGINAL_ENV = process.env
@@ -45,7 +45,7 @@ describe('signToken', () => {
       email: 'john.doe@example.com',
       pro: false,
       savedRecipes: user.savedRecipes.map((r) =>
-        r instanceof Types.ObjectId ? r.toString() : r._id.toString()
+        typeof r === 'string' ? r : r._id
       ),
       numSavedRecipes: 2
     })
@@ -64,7 +64,7 @@ describe('readUserFromAuthHeader', () => {
     expect(result).toEqual({
       ...user,
       savedRecipes: user.savedRecipes.map((r) =>
-        r instanceof Types.ObjectId ? r : r._id
+        typeof r === 'string' ? r : r._id
       ),
       numSavedRecipes: 2
     })

@@ -16,7 +16,7 @@ const isErrorJSON = (value: unknown): value is GraphQLErrorJSON =>
   isRecord(value) && typeof value['message'] === 'string'
 
 export function singleResult(response: { body: unknown }): SingleResult {
-  // round-trip through JSON so ObjectIds etc. compare as plain values
+  // round-trip through JSON so Dates etc. compare as plain values
   const parsed: unknown = JSON.parse(JSON.stringify(response.body))
   if (!isRecord(parsed) || !isRecord(parsed['singleResult'])) {
     throw new Error('expected a single GraphQL result')

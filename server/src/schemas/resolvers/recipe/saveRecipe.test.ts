@@ -275,18 +275,12 @@ describe('createIngredient', () => {
   }
 
   const mockCategoryApi = {
-    createCategory: jest.fn(),
-    getAllCategories: jest.fn(),
-    deleteAllCategories: jest.fn(),
     findOrCreateCategory:
       contextValue.dataSources.categoryApi.findOrCreateCategory
   }
 
   const mockIngredientApi = {
-    createIngredient: contextValue.dataSources.ingredientApi.createIngredient,
-    deleteIngredient: jest.fn(),
-    getAllIngredients: jest.fn(),
-    deleteAllIngredients: jest.fn()
+    createIngredient: contextValue.dataSources.ingredientApi.createIngredient
   }
 
   beforeEach(() => {
@@ -340,18 +334,12 @@ describe('createIngredient', () => {
       await createSaveIngredient({
         ingredientInput: mockIngredientInput,
         categoryApi: {
-          createCategory: jest.fn(),
-          getAllCategories: jest.fn(),
-          deleteAllCategories: jest.fn(),
           findOrCreateCategory:
             contextValue.dataSources.categoryApi.findOrCreateCategory
         },
         ingredientApi: {
           createIngredient:
-            contextValue.dataSources.ingredientApi.createIngredient,
-          deleteIngredient: jest.fn(),
-          getAllIngredients: jest.fn(),
-          deleteAllIngredients: jest.fn()
+            contextValue.dataSources.ingredientApi.createIngredient
         }
       })
     } catch (error) {
@@ -367,18 +355,12 @@ describe('createIngredient', () => {
       await createSaveIngredient({
         ingredientInput: mockIngredientInput,
         categoryApi: {
-          createCategory: jest.fn(),
-          getAllCategories: jest.fn(),
-          deleteAllCategories: jest.fn(),
           findOrCreateCategory:
             contextValue.dataSources.categoryApi.findOrCreateCategory
         },
         ingredientApi: {
           createIngredient:
-            contextValue.dataSources.ingredientApi.createIngredient,
-          deleteIngredient: jest.fn(),
-          getAllIngredients: jest.fn(),
-          deleteAllIngredients: jest.fn()
+            contextValue.dataSources.ingredientApi.createIngredient
         }
       })
     } catch (error) {
@@ -400,18 +382,12 @@ describe('createSaveIngredients', () => {
       createSaveIngredients({
         ingredients: [],
         categoryApi: {
-          createCategory: jest.fn(),
-          getAllCategories: jest.fn(),
-          deleteAllCategories: jest.fn(),
           findOrCreateCategory:
             contextValue.dataSources.categoryApi.findOrCreateCategory
         },
         ingredientApi: {
           createIngredient:
-            contextValue.dataSources.ingredientApi.createIngredient,
-          deleteIngredient: jest.fn(),
-          getAllIngredients: jest.fn(),
-          deleteAllIngredients: jest.fn()
+            contextValue.dataSources.ingredientApi.createIngredient
         }
       })
     ).resolves.toEqual([])

@@ -1,10 +1,11 @@
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
-import mongoose, { Types } from 'mongoose'
+import { newPublicId } from '../../../test-utils/ids'
+import { useTestDb } from '../../../test-utils/pg'
+import { storedUser } from '../../../test-utils/users'
 import { createDataSources } from '../../../datasources'
 import { StoreApi } from '../../../datasources/store'
 import { UserApi } from '../../../datasources/user'
-import { User } from '../../../models/User'
 import type { StoreState } from '../../../store/common'
 import { PACKAGE, fakeStores, googleKeys } from '../../../test-utils/fakeStores'
 import { singleResult } from '../../../test-utils/singleResult'
@@ -49,14 +50,7 @@ const storeApi = new StoreApi(
 const server = new ApolloServer({ typeDefs, resolvers })
 const userApi = new UserApi()
 
-beforeEach(async () => {
-  mongoose.set('strictQuery', false)
-  await mongoose.connect(`${process.env['MONGO_TEST_URI']}test_ingre_store`)
-})
-afterEach(async () => {
-  await mongoose.connection.dropDatabase()
-  await mongoose.disconnect()
-})
+useTestDb()
 
 const newUser = () =>
   userApi.createUser({
@@ -66,11 +60,7 @@ const newUser = () =>
     lastName: 'Cook'
   })
 
-const purchase = (
-  state: string,
-  account: Types.ObjectId | null,
-  extra = {}
-) => ({
+const purchase = (state: string, account: string | null, extra = {}) => ({
   subscriptionState: state,
   acknowledgementState: 'ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED',
   lineItems: [
@@ -87,7 +77,7 @@ const purchase = (
 })
 
 const run = async (
-  userId: Types.ObjectId | null,
+  userId: string | null,
   variables: Record<string, string>,
   api: StoreApi = storeApi
 ) =>
@@ -137,8 +127,8 @@ describe('submitStorePurchase', () => {
         expiresAt: '2026-12-11T00:00:00.000Z'
       }
     })
-    const saved = await User.findById(user._id).orFail()
-    expect(saved.toObject()).toMatchObject({
+    const saved = await storedUser(user._id)
+    expect(saved).toMatchObject({
       tier: 'MANAGER',
       pro: true,
       active: true,
@@ -164,7 +154,7 @@ describe('submitStorePurchase', () => {
         expiresAt: null
       })
     })
-    expect((await User.findById(user._id).orFail()).tier).toBeNull()
+    expect((await storedUser(user._id)).tier).toBeNull()
   })
 
   it('one purchase cannot unlock two accounts', async () => {
@@ -198,7 +188,7 @@ describe('submitStorePurchase', () => {
     expect(result.errors?.[0]).toMatchObject({
       extensions: { code: 'STORE_VERIFICATION_FAILED' }
     })
-    expect((await User.findById(user._id).orFail()).active).toBe(false)
+    expect((await storedUser(user._id)).active).toBe(false)
   })
 
   it('refuses when the store is not set up', async () => {
@@ -219,7 +209,7 @@ describe('submitStorePurchase', () => {
     })
     fake.google.set('tok-ghost', purchase('SUBSCRIPTION_STATE_ACTIVE', null))
     expect(
-      (await run(new Types.ObjectId(), google('tok-ghost'))).errors?.[0]
+      (await run(newPublicId(), google('tok-ghost'))).errors?.[0]
     ).toMatchObject({
       extensions: { code: 'NOT_FOUND' }
     })

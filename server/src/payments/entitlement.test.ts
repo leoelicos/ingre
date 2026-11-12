@@ -9,7 +9,7 @@ import {
 import { USER } from '../test-utils/paymentEvents'
 
 describe('normalising helpers', () => {
-  it('reads user ids only when they are ObjectIds', () => {
+  it('reads user ids only when they are public ids', () => {
     expect(userIdOf(USER.toUpperCase())).toBe(USER)
     expect(userIdOf('$RCAnonymousID:8b9d1f')).toBeNull()
     expect(userIdOf(42)).toBeNull()

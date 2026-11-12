@@ -1,280 +1,284 @@
-import { UserApi } from './user'
-import mongoose, { Types } from 'mongoose'
-import { UserInput } from '../schemas/types'
-import { CategoryApi } from './category'
-import { IngredientApi } from './ingredient'
-import { RecipeApi } from './recipe'
-import { User } from '../models/User'
+import { ConflictError } from '../errors'
+import type { StoreState } from '../store/common'
+import { newPublicId } from '../test-utils/ids'
+import { useTestDb } from '../test-utils/pg'
+import { saveTestRecipe } from '../test-utils/recipes'
+import { insertUser, storedUser } from '../test-utils/users'
+import { UserApi, MIN_PASSWORD_LENGTH } from './user'
+import { assignments } from './userRows'
 
-const categoryApi = new CategoryApi()
-const ingredientApi = new IngredientApi()
-const recipeApi = new RecipeApi()
-const userApi = new UserApi()
 jest.setTimeout(60000)
 
-const mockInput: UserInput = {
+const sql = useTestDb()
+const userApi = new UserApi()
+
+const input = {
   email: 'email@example.com',
   password: 'password123',
-  firstName: 'John',
-  lastName: 'Doe'
+  firstName: ' John ',
+  lastName: ' Doe '
 }
 
-describe('userApi', () => {
-  beforeEach(async () => {
-    mongoose.set('strictQuery', false)
-    await mongoose.connect(`${process.env['MONGO_TEST_URI']}test_ingre_user`)
-    await categoryApi.deleteAllCategories()
-    await ingredientApi.deleteAllIngredients()
-    await recipeApi.deleteAllRecipes()
-    await userApi.deleteAllUsers()
-    jest.resetAllMocks()
-    jest.clearAllMocks()
-  })
-  afterEach(async () => {
-    await mongoose.connection.dropDatabase()
-    await mongoose.disconnect()
-  })
-  it('createUser returns created user', async () => {
-    const user = await userApi.createUser(mockInput)
-    if (!user) return
+const store = (overrides: Partial<StoreState> = {}): StoreState => ({
+  platform: 'GOOGLE',
+  productId: 'ingre_manager_monthly',
+  tier: 'MANAGER',
+  status: 'active',
+  expiresAt: new Date('2026-12-11T00:00:00Z'),
+  storeId: 'tok-1',
+  replacesStoreId: null,
+  accountUserId: null,
+  ...overrides
+})
 
+const subscription = {
+  customerId: 'cus_1',
+  subscriptionId: 'sub_1',
+  status: 'active',
+  tier: 'EXPLORER' as const
+}
+
+describe('UserApi', () => {
+  it('creates a user with a hashed password and a public id', async () => {
+    const user = await userApi.createUser(input)
     expect(user).toMatchObject({
-      email: mockInput.email,
-      firstName: mockInput.firstName,
-      lastName: mockInput.lastName,
-      numSavedRecipes: 0,
+      _id: expect.stringMatching(/^[0-9a-f]{24}$/),
+      email: input.email,
+      firstName: 'John',
+      lastName: 'Doe',
       pro: false,
-      savedRecipes: []
+      tier: null,
+      active: false,
+      savedRecipes: [],
+      numSavedRecipes: 0
     })
-    // hides password
-    expect(user.password).not.toBe(mockInput.password)
-    expect(user._id).toBeInstanceOf(Types.ObjectId)
-  })
-  it('createUser throws error if findById api fails', async () => {
-    const findByIdSpy = jest
-      .spyOn(User, 'findById')
-      .mockImplementationOnce(() => {
-        throw new Error('mocked find error')
-      })
-
-    await expect(userApi.createUser(mockInput)).rejects.toThrow(
-      'mocked find error'
-    )
-
-    findByIdSpy.mockReset()
-    findByIdSpy.mockRestore()
-  })
-  it('addRecipeToUser saves recipes, addRecipeToUser removes recipes, and the following APIs also return saved recipes: getUserSavedRecipes, findOneUserById, findOneUser', async () => {
-    // create a mock user
-    const user = await userApi.createUser(mockInput)
-    if (!user) return
-    const { id: userId } = user
-
-    // create a mock recipe
-    const mockRecipe = {
-      name: 'Test Recipe',
-      portions: 4,
-      picture_url: 'http://example.com/image.jpg',
-      libraryId: 'some-library-id',
-      instructions: 'Test instructions'
-    }
-
-    const category = await categoryApi.createCategory('Meat')
-    if (!category) return
-    const chicken = await ingredientApi.createIngredient({
-      name: 'Chicken',
-      quantity: 1,
-      measure: 'unit',
-      category: category._id
-    })
-    if (!chicken) return
-    const broccoli = await ingredientApi.createIngredient({
-      name: 'Broccoli',
-      quantity: 1,
-      measure: 'unit',
-      category: category._id
-    })
-    if (!broccoli) return
-    const recipe = await recipeApi.createRecipe({
-      name: mockRecipe.name,
-      portions: mockRecipe.portions,
-      ingredients: [chicken._id, broccoli._id],
-      picture_url: mockRecipe.picture_url,
-      libraryId: mockRecipe.libraryId,
-      instructions: mockRecipe.instructions
-    })
-    if (!recipe) return
-
-    // add mock recipe to mock user
-    await userApi.addRecipeToUser({ userId, recipeId: recipe._id })
-
-    const userSavedRecipes = await userApi.getUserSavedRecipes({ id: userId })
-    const expectedObject = [
-      {
-        libraryId: 'some-library-id',
-        ingredients: [
-          {
-            category: { name: 'Meat' },
-            measure: 'unit',
-            name: 'Chicken',
-            quantity: 1
-          },
-          {
-            category: { name: 'Meat' },
-            measure: 'unit',
-            name: 'Broccoli',
-            quantity: 1
-          }
-        ],
-        instructions: 'Test instructions',
-        name: 'Test Recipe',
-        picture_url: 'http://example.com/image.jpg',
-        portions: 4
-      }
-    ]
-    expect(userSavedRecipes).toMatchObject(expectedObject)
-
-    const foundUserById = await userApi.findOneUserById({ id: userId })
-    if (!foundUserById) return
-    expect(foundUserById['savedRecipes']).toMatchObject(expectedObject)
-
-    let foundOneUser = await userApi.findOneUser({ email: mockInput.email })
-    if (!foundOneUser) return
-    expect(foundOneUser['savedRecipes']).toMatchObject(expectedObject)
-
-    await userApi.removeRecipeFromUser({ recipeId: recipe._id, userId: userId })
-
-    foundOneUser = await userApi.findOneUser({ email: mockInput.email })
-    if (!foundOneUser) return
-    expect(foundOneUser['savedRecipes']).toMatchObject([])
+    expect(user.passwordHash).toMatch(/^\$2[aby]\$/)
+    expect(await userApi.findOneUser({ email: input.email })).toEqual(user)
   })
 
-  it('findOneUser return one user', async () => {
-    await userApi.createUser(mockInput)
-    const result = await userApi.findOneUser({ email: mockInput.email })
-    if (!result) return
-    expect(result['firstName']).toEqual(mockInput.firstName)
-  })
-  it('findOneUserById return one user', async () => {
-    const user = await userApi.createUser(mockInput)
-    if (!user) return
-    const result = await userApi.findOneUserById({
-      id: user._id
-    })
-    if (!result) return
-    expect(result['email']).toEqual(mockInput.email)
-    expect(result['firstName']).toEqual(mockInput.firstName)
-    expect(result['lastName']).toEqual(mockInput.lastName)
-  })
-  it('findOneUserById throws error if api failed', async () => {
-    const user = await userApi.createUser(mockInput)
-    if (!user) return
-
-    const findByIdSpy = jest
-      .spyOn(User, 'findById')
-      .mockImplementationOnce(() => {
-        throw new Error('mocked find error')
-      })
-
+  it('refuses a short password and a taken email', async () => {
     await expect(
-      userApi.findOneUserById({
-        id: user._id
+      userApi.createUser({
+        ...input,
+        password: 'x'.repeat(MIN_PASSWORD_LENGTH - 1)
       })
-    ).rejects.toThrow('mocked find error')
-
-    findByIdSpy.mockReset()
-    findByIdSpy.mockRestore()
+    ).rejects.toThrow('at least 5')
+    await userApi.createUser(input)
+    await expect(userApi.createUser(input)).rejects.toThrow()
   })
 
-  it('getAllUsers gets all users', async () => {
-    await userApi.createUser(mockInput)
-    await userApi.createUser({ ...mockInput, email: 'email1@example.com' })
-    await userApi.createUser({ ...mockInput, email: 'email2@example.com' })
-    await userApi.createUser({ ...mockInput, email: 'email3@example.com' })
-    await userApi.createUser({ ...mockInput, email: 'email4@example.com' })
-    const numUsers = await userApi.getAllUsers()
-    expect(numUsers.length).toBe(5)
+  it('reports a create that returned nothing', async () => {
+    const quiet = new UserApi({ ...sql(), query: async () => [] })
+    await expect(quiet.createUser(input)).rejects.toThrow('User not created')
   })
 
-  it('deleteAllUsers deletes all users', async () => {
-    await userApi.createUser(mockInput)
-    await userApi.createUser({ ...mockInput, email: 'email1@example.com' })
-    await userApi.createUser({ ...mockInput, email: 'email2@example.com' })
-    await userApi.createUser({ ...mockInput, email: 'email3@example.com' })
-    await userApi.createUser({ ...mockInput, email: 'email4@example.com' })
-    await userApi.deleteAllUsers()
-    const numUsers = await userApi.getAllUsers()
-    expect(numUsers.length).toBe(0)
-  })
-
-  it('checkUserPassword validates correct password', async () => {
-    const createdUser = await userApi.createUser(mockInput)
-    if (!createdUser) return
-    const validCheck = await userApi.checkUserPassword({
-      email: mockInput.email,
-      password: mockInput.password
-    })
-    expect(validCheck).toMatchObject(createdUser)
-  })
-  it('checkUserPassword invalidates incorrect password', async () => {
-    await userApi.createUser(mockInput)
-    const checkedUser = await userApi.checkUserPassword({
-      email: mockInput.email,
-      password: 'password124'
-    })
-    expect(checkedUser).toBeNull()
-  })
-  it('checkUserPassword throws if no user is found', async () => {
-    await userApi.createUser(mockInput)
-    try {
+  it('checks passwords', async () => {
+    const user = await userApi.createUser(input)
+    expect(
       await userApi.checkUserPassword({
-        email: 'doesnotexist@example.com',
-        password: mockInput.password
+        email: input.email,
+        password: input.password
       })
-    } catch (error) {
-      expect(error).toBe('no user found')
-    }
+    ).toEqual(user)
+    expect(
+      await userApi.checkUserPassword({
+        email: input.email,
+        password: 'password124'
+      })
+    ).toBeNull()
+    expect(
+      await userApi.checkUserPassword({
+        email: 'nobody@example.com',
+        password: input.password
+      })
+    ).toBeNull()
   })
 
-  it('makeUserPro makes a user pro', async () => {
-    const user = await userApi.createUser(mockInput)
-    if (!user) return
-    expect(user.pro).toBe(false)
-    const newUser = await userApi.makeUserPro({ _id: user._id })
-    expect(newUser['pro']).toBe(true)
+  it('returns null for unknown users', async () => {
+    const id = newPublicId()
+    expect(await userApi.findOneUserById({ id })).toBeNull()
+    expect(await userApi.getUserSavedRecipes({ id })).toBeNull()
+    expect(
+      await userApi.findOneUser({ email: 'nobody@example.com' })
+    ).toBeNull()
+    expect(
+      await userApi.addRecipeToUser({ userId: id, recipeId: newPublicId() })
+    ).toBeNull()
+    expect(
+      await userApi.removeRecipeFromUser({
+        userId: id,
+        recipeId: newPublicId()
+      })
+    ).toBeNull()
   })
 
-  it('makeUserPro records the tier bought (#208)', async () => {
-    const user = await userApi.createUser(mockInput)
-    if (!user) return
-    expect(user['tier']).toBeNull()
-    const upgraded = await userApi.makeUserPro({
-      _id: user._id,
-      tier: 'LEADER'
+  it('saves recipes in order, once each, and removes them', async () => {
+    const { _id: userId } = await userApi.createUser(input)
+    const first = await saveTestRecipe({ name: 'First' })
+    const second = await saveTestRecipe({ name: 'Second' })
+    await userApi.addRecipeToUser({ userId, recipeId: second._id })
+    await userApi.addRecipeToUser({ userId, recipeId: first._id })
+    const twice = await userApi.addRecipeToUser({
+      userId,
+      recipeId: second._id
     })
-    expect(upgraded['tier']).toBe('LEADER')
-    expect(upgraded['pro']).toBe(true)
-    // the old flow, with no tier, keeps the tier it has
-    const again = await userApi.makeUserPro({ _id: user._id })
-    expect(again['tier']).toBe('LEADER')
+    expect(twice).toMatchObject({
+      savedRecipes: [second._id, first._id],
+      numSavedRecipes: 2
+    })
+    const saved = await userApi.getUserSavedRecipes({ id: userId })
+    expect(saved?.map(({ name }) => name)).toEqual(['Second', 'First'])
+    const found = await userApi.findOneUserById({ id: userId })
+    expect(found?.savedRecipes).toMatchObject([
+      {
+        _id: second._id,
+        name: 'Second',
+        libraryId: 'some-library-id',
+        instructions: 'Test instructions',
+        ingredients: [
+          { name: 'Chicken', category: { name: 'Meat' } },
+          { name: 'Broccoli', category: { name: 'Vegetables' } }
+        ]
+      },
+      { _id: first._id }
+    ])
+    // a recipe that does not exist is not saved
+    expect(
+      (await userApi.addRecipeToUser({ userId, recipeId: newPublicId() }))
+        ?.numSavedRecipes
+    ).toBe(2)
+    const removed = await userApi.removeRecipeFromUser({
+      userId,
+      recipeId: second._id
+    })
+    expect(removed?.savedRecipes).toEqual([first._id])
+    await userApi.addRecipeToUser({ userId, recipeId: second._id })
+    expect((await storedUser(userId)).savedRecipes).toEqual([
+      first._id,
+      second._id
+    ])
   })
 
-  it('makeUserPro throws if findByIdAndUpdate returns null', async () => {
+  it('makes a user pro, recording the tier bought (#208)', async () => {
+    const { _id } = await userApi.createUser(input)
+    expect((await userApi.makeUserPro({ _id })).pro).toBe(true)
+    const upgraded = await userApi.makeUserPro({ _id, tier: 'LEADER' })
+    expect(upgraded).toMatchObject({ pro: true, tier: 'LEADER' })
+    // the old flow, with no tier, keeps the tier it has
+    expect((await userApi.makeUserPro({ _id })).tier).toBe('LEADER')
+    await expect(userApi.makeUserPro({ _id: newPublicId() })).rejects.toThrow(
+      'User not found'
+    )
+  })
+
+  it('finds who to bill (#312)', async () => {
+    const { _id } = await userApi.createUser(input)
+    expect(await userApi.findBilling(_id)).toEqual({
+      email: input.email,
+      name: 'John Doe',
+      customerId: null,
+      subscriptionId: null
+    })
+    await expect(userApi.findBilling(newPublicId())).rejects.toThrow(
+      'User not found'
+    )
+  })
+
+  it('sets a Stripe subscription by user or by customer (#312)', async () => {
+    const { _id } = await userApi.createUser(input)
+    expect(await userApi.setSubscription({ _id }, subscription)).toMatchObject({
+      stripeCustomerId: 'cus_1',
+      stripeSubscriptionId: 'sub_1',
+      subscriptionStatus: 'active',
+      active: true,
+      tier: 'EXPLORER',
+      pro: true
+    })
+    const ended = await userApi.setSubscription(
+      { stripeCustomerId: 'cus_1' },
+      { ...subscription, subscriptionId: null, status: 'canceled', tier: null }
+    )
+    expect(ended).toMatchObject({
+      stripeSubscriptionId: 'sub_1',
+      active: false,
+      tier: null
+    })
+    expect(
+      await userApi.setSubscription(
+        { stripeCustomerId: 'cus_unknown' },
+        subscription
+      )
+    ).toBeNull()
+  })
+
+  it('ties a store purchase to one account only (#314)', async () => {
+    const { _id } = await userApi.createUser(input)
+    expect(await userApi.setStoreSubscription(_id, store())).toMatchObject({
+      storePlatform: 'GOOGLE',
+      storeProductId: 'ingre_manager_monthly',
+      storeId: 'tok-1',
+      storeExpiresAt: new Date('2026-12-11T00:00:00Z'),
+      tier: 'MANAGER',
+      active: true
+    })
+    // the same purchase again, for the same user, is fine
+    await userApi.setStoreSubscription(_id, store())
+    const other = await insertUser({ email: 'grace@example.com' })
     await expect(
-      userApi.makeUserPro({
-        _id: new Types.ObjectId('66dd91fce41720d94c15edd7')
-      })
+      userApi.setStoreSubscription(other, store())
+    ).rejects.toBeInstanceOf(ConflictError)
+    await expect(
+      userApi.setStoreSubscription(
+        other,
+        store({ storeId: 'tok-2', replacesStoreId: 'tok-1' })
+      )
+    ).rejects.toThrow('belongs to another account')
+    await expect(
+      userApi.setStoreSubscription(newPublicId(), store({ storeId: 'tok-3' }))
     ).rejects.toThrow('User not found')
+  })
+
+  it('applies store notifications to the holder, the replaced holder, then the account (#314)', async () => {
+    const holder = await userApi.createUser(input)
+    await userApi.setStoreSubscription(holder._id, store())
+    expect(
+      await userApi.applyStoreNotification(store({ status: 'past_due' }))
+    ).toMatchObject({ _id: holder._id, active: false })
+    expect(
+      await userApi.applyStoreNotification(
+        store({ storeId: 'tok-2', replacesStoreId: 'tok-1' })
+      )
+    ).toMatchObject({ _id: holder._id, storeId: 'tok-2', active: true })
+    const account = await insertUser({ email: 'grace@example.com' })
+    expect(
+      await userApi.applyStoreNotification(
+        store({ storeId: 'tok-9', accountUserId: account })
+      )
+    ).toMatchObject({ _id: account, storeId: 'tok-9' })
+    // an old token can't claim an account
+    expect(
+      await userApi.applyStoreNotification(
+        store({ storeId: 'tok-8', accountUserId: account, status: 'canceled' })
+      )
+    ).toBeNull()
+    expect(
+      await userApi.applyStoreNotification(
+        store({ storeId: 'tok-7', replacesStoreId: 'tok-6' })
+      )
+    ).toBeNull()
   })
 })
 
-it('checkUserPassword throws on internal error', async () => {
-  const User = require('../models/User').User
-  jest.spyOn(User, 'findOne').mockRejectedValueOnce(new Error('db error'))
-  await expect(
-    userApi.checkUserPassword({
-      email: mockInput.email,
-      password: mockInput.password
+describe('assignments', () => {
+  it('numbers the columns it sets and refuses unknown fields', () => {
+    expect(assignments({ pro: true, tier: 'LEADER' }, 3)).toEqual({
+      text: 'pro = $3, tier = $4',
+      values: [true, 'LEADER']
     })
-  ).rejects.toThrow('checkUserPassword error')
+    expect(assignments({ active: false })).toEqual({
+      text: 'active = $1',
+      values: [false]
+    })
+    expect(() => assignments({ email: 'x' })).toThrow('No column for email')
+  })
 })

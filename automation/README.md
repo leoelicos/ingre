@@ -3,11 +3,11 @@
 Playwright drives the **real client** against the **real GraphQL server**. Only the
 two upstreams are replaced:
 
-| Upstream                                                  | Stand-in                                                                                        |
-| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| MongoDB                                                   | `mongodb-memory-server`, started by `npm run start:e2e` in `server/` (fresh database every run) |
-| Stripe API and Stripe.js                                  | WireMock, mappings in `wiremock/`                                                               |
-| Paddle.js, Paddle's pricing-preview API, RevenueCat's API | `page.route` stand-ins in `tests/paddle.ts` (only `checkout-localization.spec.ts`)              |
+| Upstream                                                  | Stand-in                                                                                  |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Postgres                                                  | in-memory PGlite, migrated by `npm run start:e2e` in `server/` (fresh database every run) |
+| Stripe API and Stripe.js                                  | WireMock, mappings in `wiremock/`                                                         |
+| Paddle.js, Paddle's pricing-preview API, RevenueCat's API | `page.route` stand-ins in `tests/paddle.ts` (only `checkout-localization.spec.ts`)        |
 
 Everything else is a black box driven through the browser, at phone size
 (390×844, `mobile` project) and on desktop (1280×800, `desktop` project).

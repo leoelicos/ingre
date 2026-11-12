@@ -14,6 +14,5 @@ module.exports = {
   },
   coveragePathIgnorePatterns: ['src/(.*)/(.*).d.ts', 'src/schemas/typeDefs.ts'],
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   testPathIgnorePatterns: ['/node_modules/']
 }

@@ -1,4 +1,4 @@
-import { Types } from 'mongoose'
+import { newPublicId } from './test-utils/ids'
 import { buildContext, defaultVerifier, userOfAuthorization } from './context'
 import { createDataSources } from './datasources'
 import { signToken } from './utils/auth'
@@ -8,7 +8,7 @@ import type { VerifyIdToken } from './utils/firebase'
 
 const secret = 'test_secret'
 const user = {
-  _id: new Types.ObjectId(),
+  _id: newPublicId(),
   firstName: 'John',
   lastName: 'Doe',
   email: 'john.doe@example.com',

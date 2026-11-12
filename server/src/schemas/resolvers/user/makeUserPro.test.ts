@@ -5,7 +5,7 @@ import { UserInput } from '../../types'
 import { typeDefs } from '../../typeDefs'
 import { resolvers } from '../../resolvers'
 import '../../../utils/auth'
-import { Types } from 'mongoose'
+import { newPublicId } from '../../../test-utils/ids'
 
 const mockMakeUserPro = jest.fn()
 
@@ -32,7 +32,7 @@ const contextValue = {
   headers: {},
   dataSources: { userApi: { makeUserPro: mockMakeUserPro } },
   user: {
-    _id: new Types.ObjectId(),
+    _id: newPublicId(),
     firstName: 'John',
     lastName: 'Doe',
     email: 'test@example.com',

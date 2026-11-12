@@ -4,7 +4,7 @@ import { gql } from 'graphql-tag'
 import { UserInput } from '../../types'
 import { typeDefs } from '../../typeDefs'
 import { resolvers } from '../../resolvers'
-import { Types } from 'mongoose'
+import { newPublicId } from '../../../test-utils/ids'
 import { readUserFromAuthHeader } from '../../../utils/auth'
 
 const SECRET = 'login-test-secret'
@@ -54,7 +54,7 @@ describe('login', () => {
     firstName: 'John',
     lastName: 'Doe'
   }
-  const mockUserId = new Types.ObjectId()
+  const mockUserId = newPublicId()
   const mockUser = {
     _id: mockUserId,
     firstName: input.firstName,

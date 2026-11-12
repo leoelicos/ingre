@@ -2,7 +2,7 @@
   "name": "automation",
   "version": "1.0.0",
   "private": true,
-  "description": "End-to-end Playwright tests: real client and server, in-memory MongoDB, WireMock for Stripe (#175)",
+  "description": "End-to-end Playwright tests: real client and server, in-memory Postgres (PGlite), WireMock for Stripe (#175)",
   "scripts": {
     "pretest": "node scripts/prepare.mjs",
     "test": "npm run check && playwright test",

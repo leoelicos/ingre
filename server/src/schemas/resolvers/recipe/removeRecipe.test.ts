@@ -15,7 +15,6 @@ const mockRemoveRecipeInput = {
   recipeId: '671789864b95dc5ac046da54'
 }
 
-const mockRemoveRecipeFromUser = jest.fn()
 const mockDeleteRecipe = jest.fn()
 
 export const REMOVE_RECIPE = gql`
@@ -38,9 +37,6 @@ let testServer = createTestServer()
 const contextValue = {
   headers: {},
   dataSources: {
-    userApi: {
-      removeRecipeFromUser: (e: unknown) => mockRemoveRecipeFromUser(e)
-    },
     recipeApi: {
       deleteRecipe: (e: unknown) => mockDeleteRecipe(e)
     }
@@ -61,12 +57,10 @@ describe('removeRecipe', () => {
     )
     const { errors } = singleResult(result)
     expect(errors).toBeUndefined()
+    // only the user's own recipe; its saves go with it
     expect(mockDeleteRecipe).toHaveBeenCalledWith({
-      recipeId: mockRemoveRecipeInput.recipeId
-    })
-    expect(mockRemoveRecipeFromUser).toHaveBeenCalledWith({
-      userId: mockUser._id,
-      recipeId: mockRemoveRecipeInput.recipeId
+      recipeId: mockRemoveRecipeInput.recipeId,
+      userId: mockUser._id
     })
   })
 
@@ -80,18 +74,6 @@ describe('removeRecipe', () => {
     )
     const { errors } = singleResult(result)
     expect(errors?.[0]?.message).toBe('delete recipe error')
-  })
-
-  it('should throw error when removeRecipeFromUser fails', async () => {
-    mockRemoveRecipeFromUser.mockImplementationOnce(() => {
-      throw new Error('remove recipe from user error')
-    })
-    const result = await testServer.executeOperation(
-      { query: REMOVE_RECIPE, variables: mockRemoveRecipeInput },
-      { contextValue }
-    )
-    const { errors } = singleResult(result)
-    expect(errors?.[0]?.message).toBe('remove recipe from user error')
   })
 
   it('should throw an error if context user is null', async () => {

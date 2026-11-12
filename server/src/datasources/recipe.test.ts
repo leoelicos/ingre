@@ -1,277 +1,222 @@
-import { toCustomisation } from '../schemas/resolvers/recipe/toRecipePopulated'
-import { UserApi } from './user'
-import mongoose, { Types } from 'mongoose'
+import { NotFoundError } from '../errors'
+import type { SqlClient } from '../postgres/sql'
+import { newPublicId } from '../test-utils/ids'
+import { useTestDb } from '../test-utils/pg'
+import { saveTestRecipe } from '../test-utils/recipes'
+import { insertUser } from '../test-utils/users'
 import { CategoryApi } from './category'
 import { IngredientApi } from './ingredient'
-import { RecipeApi } from './recipe'
-
-let categoryApi = new CategoryApi()
-let ingredientApi = new IngredientApi()
-let recipeApi = new RecipeApi()
-let userApi = new UserApi()
+import { catalogueIdOf, RecipeApi } from './recipe'
+import { UserApi } from './user'
 
 jest.setTimeout(60000)
 
-const mockRecipe = {
-  name: 'Test Recipe',
-  portions: 4,
-  picture_url: 'http://example.com/image.jpg',
-  libraryId: 'some-library-id',
-  instructions: 'Test instructions'
-}
+const sql = useTestDb()
+const recipeApi = new RecipeApi()
+const userApi = new UserApi()
 
-describe('recipeApi', () => {
-  beforeEach(async () => {
-    mongoose.set('strictQuery', false)
-    await mongoose.connect(`${process.env['MONGO_TEST_URI']}test_ingre_recipe`)
-    categoryApi = new CategoryApi()
-    ingredientApi = new IngredientApi()
-    recipeApi = new RecipeApi()
-    userApi = new UserApi()
-    await categoryApi.deleteAllCategories()
-    await ingredientApi.deleteAllIngredients()
-    await recipeApi.deleteAllRecipes()
-    await userApi.deleteAllUsers()
-    jest.resetAllMocks()
-    jest.restoreAllMocks()
-    jest.clearAllMocks()
-  })
-  afterEach(async () => {
-    await mongoose.connection.dropDatabase()
-    await mongoose.disconnect()
-  })
+const count = async (table: string) =>
+  (await sql().query(`select count(*)::int as n from ${table}`))[0]?.['n']
 
-  it('createRecipe returns a new recipe', async () => {
-    const categoryMeat = await categoryApi.createCategory('Meat')
-    if (!categoryMeat) return
-    const chicken = await ingredientApi.createIngredient({
-      name: 'Chicken',
-      quantity: 1,
-      measure: 'unit',
-      category: categoryMeat._id
-    })
-    if (!chicken) return
-    const categoryVegetable = await categoryApi.createCategory('Meat')
-    if (!categoryVegetable) return
-    const broccoli = await ingredientApi.createIngredient({
-      name: 'Broccoli',
-      quantity: 1,
-      measure: 'unit',
-      category: categoryVegetable._id
-    })
-    if (!broccoli) return
-    const result = await recipeApi.createRecipe({
-      name: mockRecipe.name,
-      portions: mockRecipe.portions,
-      ingredients: [chicken._id, broccoli._id],
-      picture_url: mockRecipe.picture_url,
-      libraryId: mockRecipe.libraryId,
-      instructions: mockRecipe.instructions
-    })
-    expect(result).toMatchObject({
-      libraryId: mockRecipe.libraryId,
-      instructions: mockRecipe.instructions,
-      name: mockRecipe.name,
-      picture_url: mockRecipe.picture_url,
-      portions: mockRecipe.portions
-    })
-    expect(result?.ingredients.length).toBe(2)
-  }, 30000)
-
-  it('createRecipe stores catalogue ids and customisations (#182)', async () => {
-    const dairy = await categoryApi.createCategory('Dairy')
-    const butter = await ingredientApi.createIngredient({
-      name: 'Butter',
-      quantity: 25,
-      measure: 'g',
-      category: dairy._id,
-      ingredientId: 'butter'
-    })
-    const result = await recipeApi.createRecipe({
-      name: mockRecipe.name,
+describe('RecipeApi', () => {
+  it('saves a recipe with its lines, sections and catalogue ids', async () => {
+    const recipe = await saveTestRecipe()
+    expect(recipe).toEqual({
+      _id: expect.stringMatching(/^[0-9a-f]{24}$/),
+      name: 'Test Recipe',
       portions: 4,
-      ingredients: [butter._id],
-      picture_url: mockRecipe.picture_url,
-      libraryId: mockRecipe.libraryId,
-      customisations: [
-        { kind: 'ChangedIngredient', ingredientId: 'butter', from: 25, to: 50 },
-        { kind: 'PortionsChange', from: 2, to: 4 }
-      ]
-    })
-    expect(result.ingredients[0]?.ingredientId).toBe('butter')
-    expect(result.customisations.map(toCustomisation)).toStrictEqual([
-      { kind: 'ChangedIngredient', ingredientId: 'butter', from: 25, to: 50 },
-      { kind: 'PortionsChange', from: 2, to: 4 }
-    ])
-  }, 30000)
-
-  it('getRecipe gets one recipe', async () => {
-    const categoryMeat = await categoryApi.createCategory('Meat')
-    if (!categoryMeat) return
-    const chicken = await ingredientApi.createIngredient({
-      name: 'Chicken',
-      quantity: 1,
-      measure: 'unit',
-      category: categoryMeat._id
-    })
-    if (!chicken) return
-    const recipe = await recipeApi.createRecipe({
-      name: mockRecipe.name,
-      portions: mockRecipe.portions,
-      ingredients: [chicken._id],
-      picture_url: mockRecipe.picture_url,
-      libraryId: mockRecipe.libraryId,
-      instructions: mockRecipe.instructions
-    })
-    if (!recipe) return
-    const foundRecipe = await recipeApi.getRecipe(recipe._id)
-    expect(foundRecipe).toMatchObject({
-      _id: recipe._id,
+      picture_url: 'http://example.com/image.jpg',
+      libraryId: 'some-library-id',
+      instructions: 'Test instructions',
+      customisations: [],
       ingredients: [
         {
-          _id: chicken._id,
-          measure: chicken.measure,
-          quantity: chicken.quantity
+          _id: `${recipe._id}:0`,
+          name: 'Chicken',
+          quantity: 1,
+          measure: 'unit',
+          category: { _id: expect.any(String), name: 'Meat' },
+          ingredientId: 'chicken'
+        },
+        {
+          _id: `${recipe._id}:1`,
+          name: 'Broccoli',
+          quantity: 1,
+          measure: 'unit',
+          category: { _id: expect.any(String), name: 'Vegetables' },
+          ingredientId: null
         }
       ]
     })
+    expect(await recipeApi.getRecipe(recipe._id)).toEqual(recipe)
   })
 
-  it('getAllRecipes gets all recipes', async () => {
-    const categoryMeat = await categoryApi.createCategory('Meat')
-    if (!categoryMeat) return
-    const chicken = await ingredientApi.createIngredient({
-      name: 'Chicken',
-      quantity: 1,
-      measure: 'unit',
-      category: categoryMeat._id
+  it('keeps each line’s own name and section over the shared catalogue row', async () => {
+    const first = await saveTestRecipe({
+      lines: [{ name: 'Tomato', category: 'Produce', ingredientId: null }]
     })
-    if (!chicken) return
-    await recipeApi.createRecipe({
-      name: mockRecipe.name,
-      portions: mockRecipe.portions,
-      ingredients: [chicken._id],
-      picture_url: mockRecipe.picture_url,
-      libraryId: mockRecipe.libraryId,
-      instructions: mockRecipe.instructions
+    const second = await saveTestRecipe({
+      lines: [{ name: 'tomato', category: 'Canned', ingredientId: null }]
     })
-    const numRecipes = await recipeApi.getAllRecipes()
-    expect(numRecipes?.length).toBe(1)
+    expect(await count('ingredients')).toBe(1)
+    expect(first.ingredients[0]).toMatchObject({
+      name: 'Tomato',
+      category: { name: 'Produce' }
+    })
+    expect(second.ingredients[0]).toMatchObject({
+      name: 'tomato',
+      category: { name: 'Canned' }
+    })
   })
 
-  it('deleteAllRecipes deletes all recipes', async () => {
-    const categoryMeat = await categoryApi.createCategory('Meat')
-    if (!categoryMeat) return
-    const chicken = await ingredientApi.createIngredient({
-      name: 'Chicken',
-      quantity: 1,
-      measure: 'unit',
-      category: categoryMeat._id
+  it('falls back to the catalogue row, then Generic, for lines without their own', async () => {
+    const recipe = await saveTestRecipe()
+    await sql().exec(
+      'update recipe_ingredients set name = null, category_id = null'
+    )
+    const catalogue = await recipeApi.getRecipe(recipe._id)
+    expect(catalogue?.ingredients.map(({ name }) => name)).toEqual([
+      'Chicken',
+      'Broccoli'
+    ])
+    await sql().exec('delete from categories')
+    const generic = await recipeApi.getRecipe(recipe._id)
+    expect(generic?.ingredients[0]?.category).toEqual({
+      _id: 'generic',
+      name: 'Generic'
     })
-    if (!chicken) return
-    await recipeApi.createRecipe({
-      name: mockRecipe.name,
-      portions: mockRecipe.portions,
-      ingredients: [chicken._id],
-      picture_url: mockRecipe.picture_url,
-      libraryId: mockRecipe.libraryId,
-      instructions: mockRecipe.instructions
-    })
-    await recipeApi.deleteAllRecipes()
-    const numRecipes = await recipeApi.getAllRecipes()
-    expect(numRecipes?.length).toBe(0)
   })
 
-  it('deleteRecipe deletes one recipe', async () => {
-    const categoryMeat = await categoryApi.createCategory('Meat')
-    if (!categoryMeat) return
-    const chicken = await ingredientApi.createIngredient({
-      name: 'Chicken',
-      quantity: 1,
-      measure: 'unit',
-      category: categoryMeat._id
+  it('stores customisations with only the amounts each kind has (#182)', async () => {
+    const recipe = await recipeApi.createRecipe({
+      name: 'Toast',
+      portions: 2,
+      ingredients: [],
+      picture_url: 'pic',
+      customisations: [
+        { kind: 'PortionsChange', from: 2, to: 4 },
+        { kind: 'RemovedIngredient', ingredientId: 'butter', from: 1 },
+        { kind: 'AddedIngredient', ingredientId: 'jam', to: 1 }
+      ]
     })
-    if (!chicken) return
-    const payload = {
-      name: mockRecipe.name,
-      portions: mockRecipe.portions,
-      ingredients: [chicken._id],
-      picture_url: mockRecipe.picture_url,
-      libraryId: mockRecipe.libraryId,
-      instructions: mockRecipe.instructions
+    expect(recipe).toEqual({
+      _id: recipe._id,
+      name: 'Toast',
+      portions: 2,
+      picture_url: 'pic',
+      ingredients: [],
+      customisations: [
+        { kind: 'PortionsChange', from: 2, to: 4 },
+        { kind: 'RemovedIngredient', ingredientId: 'butter', from: 1 },
+        { kind: 'AddedIngredient', ingredientId: 'jam', to: 1 }
+      ]
+    })
+  })
+
+  it('returns null for an unknown recipe', async () => {
+    expect(await recipeApi.getRecipe(newPublicId())).toBeNull()
+  })
+
+  it('reports a recipe that could not be read back', async () => {
+    const client = sql()
+    const blind: SqlClient = {
+      ...client,
+      transaction: (work) =>
+        client.transaction((tx) =>
+          work({
+            ...tx,
+            query: async (text, params) =>
+              text.trim().startsWith('select') ? [] : tx.query(text, params)
+          })
+        )
     }
-    const createdRecipe = await recipeApi.createRecipe(payload)
-    if (!createdRecipe) return
-    await recipeApi.deleteRecipe({ recipeId: createdRecipe._id })
-
-    const allRecipes = await recipeApi.getAllRecipes()
-    expect(allRecipes.length).toBe(0)
+    await expect(
+      new RecipeApi(blind).createRecipe({
+        name: 'Ghost',
+        portions: 1,
+        ingredients: [],
+        picture_url: 'pic'
+      })
+    ).rejects.toBeInstanceOf(NotFoundError)
   })
 
-  it('deleteRecipe throws error if recipeId not found', async () => {
-    const categoryMeat = await categoryApi.createCategory('Meat')
-    if (!categoryMeat) return
-    const chicken = await ingredientApi.createIngredient({
-      name: 'Chicken',
-      quantity: 1,
-      measure: 'unit',
-      category: categoryMeat._id
+  it('deletes only a recipe the user saved, with its lines and saves', async () => {
+    const owner = await userApi.createUser({
+      email: 'owner@example.com',
+      password: 'password123',
+      firstName: 'Ada',
+      lastName: 'Lovelace'
     })
-    if (!chicken) return
-    const payload = {
-      name: mockRecipe.name,
-      portions: mockRecipe.portions,
-      ingredients: [chicken._id],
-      picture_url: mockRecipe.picture_url,
-      libraryId: mockRecipe.libraryId,
-      instructions: mockRecipe.instructions
-    }
-    const createdRecipe = await recipeApi.createRecipe(payload)
-    if (!createdRecipe) return
-    try {
-      await recipeApi.deleteRecipe({ recipeId: new Types.ObjectId() })
-    } catch (error) {
-      if (!(error instanceof Error)) throw error
-      const e = error
-      expect(e).toBeInstanceOf(Error)
-      expect(e.message).toBe('Recipe does not exist!')
-    }
+    const stranger = await insertUser({ email: 'stranger@example.com' })
+    const recipe = await saveTestRecipe()
+    await userApi.addRecipeToUser({ userId: owner._id, recipeId: recipe._id })
+    await expect(
+      recipeApi.deleteRecipe({ recipeId: recipe._id, userId: stranger })
+    ).rejects.toThrow('Recipe does not exist!')
+    await recipeApi.deleteRecipe({ recipeId: recipe._id, userId: owner._id })
+    expect(await recipeApi.getRecipe(recipe._id)).toBeNull()
+    expect(await count('recipe_ingredients')).toBe(0)
+    expect(
+      (await userApi.findOneUserById({ id: owner._id }))?.numSavedRecipes
+    ).toBe(0)
+    // the shared catalogue stays
+    expect(await count('ingredients')).toBe(2)
+  })
+})
 
-    const allRecipes = await recipeApi.getAllRecipes()
-    expect(allRecipes.length).toBe(1)
+describe('catalogueIdOf', () => {
+  it('hides name keys', () => {
+    expect(catalogueIdOf('chicken')).toBe('chicken')
+    expect(catalogueIdOf('name:chicken')).toBeNull()
+  })
+})
+
+describe('CategoryApi and IngredientApi', () => {
+  it('finds or creates a section by name', async () => {
+    const categories = new CategoryApi()
+    const meat = await categories.findOrCreateCategory({ categoryName: 'Meat' })
+    expect(
+      await categories.findOrCreateCategory({ categoryName: ' Meat ' })
+    ).toEqual(meat)
+    await categories.findOrCreateCategory({ categoryName: 'Dairy' })
+    expect(await categories.getAllCategories()).toEqual([
+      meat,
+      { _id: expect.any(String), name: 'Dairy' }
+    ])
   })
 
-  it('categoryCleanup removes unused categories', async () => {
-    const category = await categoryApi.createCategory('Meat')
-    if (!category) return
-
-    const chicken = await ingredientApi.createIngredient({
-      name: 'Chicken',
+  it('shares a catalogue row by key, keeping its first section', async () => {
+    const categories = new CategoryApi(sql())
+    const ingredients = new IngredientApi(sql())
+    const meat = await categories.findOrCreateCategory({ categoryName: 'Meat' })
+    const deli = await categories.findOrCreateCategory({ categoryName: 'Deli' })
+    const first = await ingredients.createIngredient({
+      name: ' Ham ',
+      quantity: 2,
+      measure: 'slice',
+      category: meat._id,
+      ingredientId: ''
+    })
+    expect(first).toEqual({
+      _id: expect.any(String),
+      name: 'Ham',
+      quantity: 2,
+      measure: 'slice',
+      category: meat,
+      ingredientId: null
+    })
+    const again = await ingredients.createIngredient({
+      name: 'ham',
       quantity: 1,
       measure: 'unit',
-      category: category._id
+      category: deli._id
     })
-    if (!chicken) return
-
-    const payload = {
-      name: mockRecipe.name,
-      portions: mockRecipe.portions,
-      ingredients: [chicken._id],
-      picture_url: mockRecipe.picture_url,
-      libraryId: mockRecipe.libraryId,
-      instructions: mockRecipe.instructions
-    }
-    await recipeApi.createRecipe(payload)
-    await recipeApi.createRecipe(payload)
-    await recipeApi.createRecipe(payload)
-
-    const categoriesBeforeCleanup = await categoryApi.getAllCategories()
-    expect(categoriesBeforeCleanup.length).toBe(1)
-
-    await recipeApi.deleteAllRecipes()
-    await recipeApi.categoryCleanup()
-
-    const categoriesAfterCleanup = await categoryApi.getAllCategories()
-    expect(categoriesAfterCleanup.length).toBe(0)
+    expect(again._id).toBe(first._id)
+    // the line keeps the section it was saved with
+    expect(again.category).toEqual(deli)
+    const [row] = await sql().query(
+      'select category_id::text as category from ingredients'
+    )
+    expect(row?.['category']).toBe(meat._id)
   })
 })

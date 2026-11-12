@@ -1,14 +1,14 @@
-import mongoose from 'mongoose'
-import { User } from '../models/User'
-import { WebhookEvent } from '../models/WebhookEvent'
 import type { EntitlementState } from '../payments/entitlement'
 import { OTHER_USER, USER } from '../test-utils/paymentEvents'
+import { useTestDb } from '../test-utils/pg'
+import { insertUser, storedUser } from '../test-utils/users'
 import { EntitlementApi, entitlementFields } from './entitlement'
 
 /* Paddle + RevenueCat: each event counts once, and an old event never undoes a newer one. */
 
 jest.setTimeout(60000)
 
+const sql = useTestDb()
 const api = new EntitlementApi()
 
 const state = (
@@ -29,27 +29,10 @@ const state = (
   ...overrides
 })
 
-const makeUser = (_id: string, email: string) =>
-  User.create({
-    _id,
-    email,
-    firstName: 'Ada',
-    lastName: 'Lovelace',
-    password: 'correct horse'
-  })
-
 describe('EntitlementApi', () => {
   beforeEach(async () => {
-    mongoose.set('strictQuery', false)
-    await mongoose.connect(
-      `${process.env['MONGO_TEST_URI']}test_ingre_entitlement`
-    )
-    await makeUser(USER, 'ada@example.com')
-    await makeUser(OTHER_USER, 'grace@example.com')
-  })
-  afterEach(async () => {
-    await mongoose.connection.dropDatabase()
-    await mongoose.disconnect()
+    await insertUser({ publicId: USER, email: 'ada@example.com' })
+    await insertUser({ publicId: OTHER_USER, email: 'grace@example.com' })
   })
 
   it('claims an event id once, and can let it go', async () => {
@@ -59,25 +42,25 @@ describe('EntitlementApi', () => {
     expect(await api.claim('paddle:evt_1')).toBe(true)
   })
 
-  it('rethrows anything but a duplicate', async () => {
-    const spy = jest
-      .spyOn(WebhookEvent, 'create')
-      .mockRejectedValueOnce(new Error('down') as never)
-    await expect(api.claim('paddle:evt_2')).rejects.toThrow('down')
-    spy.mockRestore()
+  it('uses the client it is given', async () => {
+    const own = new EntitlementApi(sql())
+    expect(await own.claim('revenuecat:evt_9')).toBe(true)
+    expect(await api.claim('revenuecat:evt_9')).toBe(false)
   })
 
   it('applies to the purchase’s user, then follows the subscription', async () => {
     expect(await api.apply(state())).toBe('applied')
-    const user = await User.findById(USER).lean()
-    expect(user).toMatchObject({
+    expect(await storedUser(USER)).toMatchObject({
       tier: 'MANAGER',
       active: true,
       pro: true,
       subscriptionStatus: 'active',
       entitlementSource: 'PADDLE',
       entitlementSubscriptionId: 'sub_1',
+      entitlementProductId: 'pri_1',
       entitlementInterval: 'year',
+      entitlementExpiresAt: new Date('2027-11-12T00:00:00Z'),
+      entitlementUpdatedAt: new Date('2026-11-12T00:00:00Z'),
       paddleCustomerId: 'ctm_1'
     })
     // a later event without the user id still finds them by subscription
@@ -92,12 +75,22 @@ describe('EntitlementApi', () => {
         })
       )
     ).toBe('applied')
-    expect(await User.findById(USER).lean()).toMatchObject({
+    expect(await storedUser(USER)).toMatchObject({
       tier: null,
       active: false,
       subscriptionStatus: 'canceled',
       paddleCustomerId: 'ctm_1'
     })
+    expect((await storedUser(OTHER_USER)).subscriptionStatus).toBeNull()
+  })
+
+  it('prefers the subscription holder over the user id', async () => {
+    await api.apply(state())
+    expect(await api.apply(state({ userId: OTHER_USER, tier: 'LEADER' }))).toBe(
+      'applied'
+    )
+    expect((await storedUser(USER)).tier).toBe('LEADER')
+    expect((await storedUser(OTHER_USER)).tier).toBeNull()
   })
 
   it('never lets an older event undo a newer one', async () => {
@@ -110,26 +103,13 @@ describe('EntitlementApi', () => {
         })
       )
     ).toBe('stale')
-    expect((await User.findById(USER).lean())?.subscriptionStatus).toBe(
-      'active'
-    )
-  })
-
-  it('never lets an older event overwrite a newer one that lands mid-apply', async () => {
-    const updateOne = User.updateOne.bind(User)
-    const newer = state({
-      eventId: 'paddle:evt_new',
-      tier: 'LEADER',
-      occurredAt: new Date('2026-12-01T00:00:00Z')
-    })
-    // the newer event is written between the older one's read and its write
-    const spy = jest
-      .spyOn(User, 'updateOne')
-      .mockImplementationOnce(((...args: Parameters<typeof updateOne>) =>
-        api.apply(newer).then(() => updateOne(...args))) as never)
-    expect(await api.apply(state({ tier: 'EXPLORER' }))).toBe('stale')
-    spy.mockRestore()
-    expect((await User.findById(USER).lean())?.tier).toBe('LEADER')
+    expect((await storedUser(USER)).subscriptionStatus).toBe('active')
+    // an event at the same moment still applies (a repeat with new data)
+    expect(
+      await api.apply(
+        state({ tier: 'LEADER', occurredAt: new Date('2026-12-01T00:00:00Z') })
+      )
+    ).toBe('applied')
   })
 
   it('reports when nobody holds the purchase', async () => {

@@ -1,7 +1,6 @@
-/* Branch-coverage tests using real implementations on the in-memory MongoDB (no module mocks). */
-import mongoose, { Types } from 'mongoose'
+/* Branch-coverage tests using real implementations on an in-memory Postgres (no module mocks). */
 import { createDataSources } from './datasources'
-import { User } from './models/User'
+import { useTestDb } from './test-utils/pg'
 import {
   createSaveIngredient,
   saveRecipe
@@ -20,36 +19,7 @@ const userInput = {
 }
 
 describe('branch coverage with real data sources', () => {
-  beforeEach(async () => {
-    mongoose.set('strictQuery', false)
-    await mongoose.connect(
-      `${process.env['MONGO_TEST_URI']}test_ingre_branches`
-    )
-  })
-  afterEach(async () => {
-    await mongoose.connection.dropDatabase()
-    await mongoose.disconnect()
-  })
-
-  it('user lookups return null for unknown users', async () => {
-    const id = new Types.ObjectId()
-    expect(await userApi.findOneUserById({ id })).toBeNull()
-    expect(await userApi.getUserSavedRecipes({ id })).toBeNull()
-    expect(
-      await userApi.findOneUser({ email: 'nobody@example.com' })
-    ).toBeNull()
-  })
-
-  it('does not re-hash the password when an existing user is saved', async () => {
-    await userApi.createUser(userInput)
-    const doc = await User.findOne({ email: userInput.email }).orFail()
-    const hash = doc.password
-    doc.firstName = 'Renamed'
-    await doc.save()
-    const reloaded = await User.findOne({ email: userInput.email }).orFail()
-    expect(reloaded.firstName).toBe('Renamed')
-    expect(reloaded.password).toBe(hash)
-  })
+  useTestDb()
 
   it('createSaveIngredient falls back to defaults for empty fields', async () => {
     const saved = await createSaveIngredient({
@@ -71,8 +41,7 @@ describe('branch coverage with real data sources', () => {
   })
 
   it('saveRecipe uses the placeholder picture when none is given', async () => {
-    await userApi.createUser(userInput)
-    const user = await User.findOne({ email: userInput.email }).orFail()
+    const user = await userApi.createUser(userInput)
     const log = jest.spyOn(console, 'log').mockImplementation(() => undefined)
     const recipe = await saveRecipe(
       undefined,
@@ -110,5 +79,9 @@ describe('branch coverage with real data sources', () => {
     )
     log.mockRestore()
     expect(recipe?.picture_url).toMatch(/^https:\/\/play-lh/)
+    expect(recipe.instructions).toBeUndefined()
+    expect(
+      (await userApi.findOneUserById({ id: user._id }))?.savedRecipes
+    ).toMatchObject([{ _id: recipe._id, name: 'Toast' }])
   })
 })

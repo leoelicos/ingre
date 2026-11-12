@@ -1,5 +1,5 @@
 import { singleResult, withoutUser } from '../../../test-utils/singleResult'
-import { Types } from 'mongoose'
+import { newPublicId } from '../../../test-utils/ids'
 import { ApolloServer } from '@apollo/server'
 import { typeDefs } from '../../typeDefs'
 import { resolvers } from '../../resolvers'
@@ -71,11 +71,11 @@ describe('getRecipe', () => {
   })
 
   // GraphQL responses return _id fields as strings
-  const recipeId = new Types.ObjectId().toHexString()
-  const chickenId = new Types.ObjectId().toHexString()
-  const broccoliId = new Types.ObjectId().toHexString()
-  const meatId = new Types.ObjectId().toHexString()
-  const vegetableId = new Types.ObjectId().toHexString()
+  const recipeId = newPublicId()
+  const chickenId = newPublicId()
+  const broccoliId = newPublicId()
+  const meatId = newPublicId()
+  const vegetableId = newPublicId()
 
   const recipe = {
     _id: recipeId,

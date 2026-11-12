@@ -1,17 +1,18 @@
 import { ApolloServer } from '@apollo/server'
 import { gql } from 'graphql-tag'
-import mongoose, { Types } from 'mongoose'
+import { newPublicId } from '../../../test-utils/ids'
+import { useTestDb } from '../../../test-utils/pg'
+import { storedUser } from '../../../test-utils/users'
 import type Stripe from 'stripe'
 import { BillingApi } from '../../../datasources/billing'
 import { createDataSources } from '../../../datasources'
 import { UserApi, subscriptionFields } from '../../../datasources/user'
-import { User } from '../../../models/User'
 import { fakeStripe } from '../../../test-utils/fakeStripe'
 import { singleResult } from '../../../test-utils/singleResult'
 import { resolvers } from '../../resolvers'
 import { typeDefs } from '../../typeDefs'
 
-/* #312: subscribe with a Stripe.js token, end to end on the in-memory MongoDB and a Stripe stand-in. */
+/* #312: subscribe with a Stripe.js token, end to end on an in-memory Postgres and a Stripe stand-in. */
 
 jest.setTimeout(60000)
 
@@ -34,14 +35,7 @@ beforeAll(async () => {
   stripe = await fake.start()
   await new BillingApi(stripe, {}).setUp()
 })
-beforeEach(async () => {
-  mongoose.set('strictQuery', false)
-  await mongoose.connect(`${process.env['MONGO_TEST_URI']}test_ingre_subscribe`)
-})
-afterEach(async () => {
-  await mongoose.connection.dropDatabase()
-  await mongoose.disconnect()
-})
+useTestDb()
 afterAll(() => fake.stop())
 
 const newUser = () =>
@@ -52,7 +46,7 @@ const newUser = () =>
     lastName: 'Cook'
   })
 
-const signedIn = (_id: Types.ObjectId) => ({
+const signedIn = (_id: string) => ({
   _id,
   firstName: 'Home',
   lastName: 'Cook',
@@ -62,11 +56,7 @@ const signedIn = (_id: Types.ObjectId) => ({
   numSavedRecipes: 0
 })
 
-const run = async (
-  userId: Types.ObjectId | null,
-  tier: string,
-  token: string
-) =>
+const run = async (userId: string | null, tier: string, token: string) =>
   singleResult(
     await server.executeOperation(
       { query: SUBSCRIBE, variables: { tier, token } },
@@ -91,8 +81,8 @@ describe('subscribe', () => {
     expect(result.data).toEqual({
       subscribe: { tier: 'MANAGER', status: 'active', active: true }
     })
-    const saved = await User.findById(user._id).orFail()
-    expect(saved.toObject()).toMatchObject({
+    const saved = await storedUser(user._id)
+    expect(saved).toMatchObject({
       tier: 'MANAGER',
       pro: true,
       active: true,
@@ -102,7 +92,7 @@ describe('subscribe', () => {
     })
     /* a second tier reuses the Customer and moves the subscription */
     await run(user._id, 'LEADER', 'tok_mastercard')
-    const moved = await User.findById(user._id).orFail()
+    const moved = await storedUser(user._id)
     expect(moved.stripeCustomerId).toBe(saved.stripeCustomerId)
     expect(moved.stripeSubscriptionId).toBe(saved.stripeSubscriptionId)
     expect(moved.tier).toBe('LEADER')
@@ -114,8 +104,8 @@ describe('subscribe', () => {
     expect(result.errors?.[0]).toMatchObject({
       extensions: { code: 'PAYMENT_DECLINED', decline: 'card_declined' }
     })
-    const saved = await User.findById(user._id).orFail()
-    expect(saved.toObject()).toMatchObject({
+    const saved = await storedUser(user._id)
+    expect(saved).toMatchObject({
       tier: null,
       active: false,
       stripeCustomerId: null
@@ -128,8 +118,8 @@ describe('subscribe', () => {
     expect(result.data).toEqual({
       subscribe: { tier: 'EXPLORER', status: 'incomplete', active: false }
     })
-    const saved = await User.findById(user._id).orFail()
-    expect(saved.toObject()).toMatchObject({
+    const saved = await storedUser(user._id)
+    expect(saved).toMatchObject({
       tier: null,
       active: false,
       subscriptionStatus: 'incomplete'
@@ -143,7 +133,7 @@ describe('subscribe', () => {
       }
     )
     expect(
-      (await run(new Types.ObjectId(), 'EXPLORER', 'tok_visa')).errors?.[0]
+      (await run(newPublicId(), 'EXPLORER', 'tok_visa')).errors?.[0]
     ).toMatchObject({ extensions: { code: 'NOT_FOUND' } })
   })
 })
@@ -152,7 +142,7 @@ describe('setSubscription (what the webhook writes)', () => {
   it('a cancelled subscription clears the tier; a failed payment keeps it but is not active', async () => {
     const user = await newUser()
     await run(user._id, 'MANAGER', 'tok_visa')
-    const { stripeCustomerId } = await User.findById(user._id).orFail()
+    const { stripeCustomerId } = await storedUser(user._id)
     if (!stripeCustomerId) throw new Error('no customer')
     const pastDue = await userApi.setSubscription(
       { stripeCustomerId },

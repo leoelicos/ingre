@@ -5,7 +5,7 @@ import { ports, urls } from './tests/env'
 const PREVIEW_DIR = '../automation/.preview-dist'
 
 /*
- * One run = WireMock (Stripe stand-in) + the real server on an in-memory MongoDB
+ * One run = WireMock (Stripe stand-in) + the real server on an in-memory Postgres (PGlite)
  * + the real client dev server pointed at that server + the production build on
  * vite preview (for #177). See README.md.
  */
