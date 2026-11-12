@@ -3,17 +3,17 @@
  * once (by event id); if writing it fails, the claim is let go and the provider gets a 500,
  * so its retry is processed again rather than skipped as a duplicate.
  */
-import { timingSafeEqual } from 'node:crypto'
+import { createHash, timingSafeEqual } from 'node:crypto'
 import type { Response } from 'express'
 import type { EntitlementStore } from '../datasources/entitlement'
 import type { EntitlementState, Normalised } from '../payments/entitlement'
 
-export const sameSecret = (given: unknown, expected: string): boolean => {
-  if (typeof given !== 'string') return false
-  const a = Buffer.from(given)
-  const b = Buffer.from(expected)
-  return a.length === b.length && timingSafeEqual(a, b)
-}
+const digest = (value: string): Buffer =>
+  createHash('sha256').update(value).digest()
+
+/** Constant time whatever the lengths, so a wrong guess doesn't learn the secret's length. */
+export const sameSecret = (given: unknown, expected: string): boolean =>
+  typeof given === 'string' && timingSafeEqual(digest(given), digest(expected))
 
 /** Runs after an event is applied to a user, e.g. posting the purchase to RevenueCat. */
 export type AfterApply = (state: EntitlementState) => Promise<void>

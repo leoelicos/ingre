@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import type { Response } from 'express'
 import type { EntitlementStore } from '../datasources/entitlement'
 import type { EntitlementState, Normalised } from '../payments/entitlement'
@@ -105,5 +106,12 @@ describe('sameSecret', () => {
     expect(sameSecret('abd', 'abc')).toBe(false)
     expect(sameSecret('ab', 'abc')).toBe(false)
     expect(sameSecret(undefined, 'abc')).toBe(false)
+  })
+
+  it('does not stop early when the lengths differ', () => {
+    const equal = jest.spyOn(crypto, 'timingSafeEqual')
+    expect(sameSecret('a', 'a much longer secret')).toBe(false)
+    expect(equal).toHaveBeenCalledTimes(1)
+    equal.mockRestore()
   })
 })
