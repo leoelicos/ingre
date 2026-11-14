@@ -35,6 +35,7 @@ docs/                 TODO.md, TEST_MOCK_INVENTORY.md, ENGAGEMENT_LOOP.md
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, MOBILE_CONSTRAINTS.md
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, ENGINEERING_SHOWCASE.md
 docs/                 TODO.md, TEST_MOCK_INVENTORY.md, DESIGN_PRINCIPLES.md
+docs/                 TODO.md, TEST_MOCK_INVENTORY.md, brand/logo-options/ (draft logo assets, #235)
 MODERNIZATION.md      modernisation checklist (history)
 scripts/convert-catalogue.py  catalogue data conversion
 client/
