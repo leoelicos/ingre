@@ -16,14 +16,29 @@ It does **not** serve the web or mobile apps directly. The existing Express + Ap
 
 ## Current state
 
-Deployable skeleton only:
-
 - Spring Boot 3 + Java 21 + Lombok
-- `/health` (and Actuator) so Render can mark the service live
-- No database connection yet
-- No catalogue endpoints yet
+- Postgres catalogue tables (Flyway `V1__catalogue.sql`)
+- On startup, seeds from the bundled JSON when the tables are empty
+  (`catalogue/ingredients.json`, `catalogue/recipes.json` — copies of the client catalogue)
+- Read endpoints: `GET /catalogue/ingredients`, `GET /catalogue/recipes`
+- `/health` so Render can mark the service live
 
-Once it is running on Render, the next steps are Postgres, seeding the current catalogue, and exposing list/search endpoints for the BFF to call.
+### Tables
+
+- `catalogue_ingredients` — id, name, category, pantry, allergens, sold
+- `catalogue_recipes` — id, name, portions
+- `catalogue_recipe_ingredients` — lines (ingredient, quantity, measure)
+- `catalogue_recipe_steps` — method steps
+
+These are the catalogue. The BFF’s `recipes` / `recipe_ingredients` tables remain for user-saved recipes.
+
+### Env
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | `postgres://user:pass@host:port/db` (Render) or a JDBC URL |
+| `DATABASE_USERNAME` / `DATABASE_PASSWORD` | Used when `DATABASE_URL` is a JDBC URL |
+| `PORT` | HTTP port (Render sets this) |
 
 ## Local
 
