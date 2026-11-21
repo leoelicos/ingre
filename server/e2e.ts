@@ -1,8 +1,7 @@
 /*
  * npm run start:e2e (#175): the normal API on a fresh in-memory Postgres (PGlite,
  * migrated on start), for the Playwright suites in ../automation. Every start is an
- * empty database. Stripe is pointed elsewhere only through env
- * (STRIPE_API_HOST/_PORT/_PROTOCOL/_KEY).
+ * empty database.
  */
 import dotenv from 'dotenv'
 import { PGlite } from '@electric-sql/pglite'

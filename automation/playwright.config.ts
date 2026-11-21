@@ -5,13 +5,13 @@ import { ports, urls } from './tests/env'
 const PREVIEW_DIR = '../automation/.preview-dist'
 
 /*
- * One run = WireMock (Stripe stand-in) + the real server on an in-memory Postgres (PGlite)
- * + the real client dev server pointed at that server + the production build on
- * vite preview (for #177). See README.md.
+ * One run = the real server on an in-memory Postgres (PGlite) + the real client
+ * dev server pointed at that server + the production build on vite preview
+ * (for #177). See README.md.
  */
 export default defineConfig({
   testDir: './tests',
-  /* one browser at a time: the WireMock request journal is shared by the Upgrade tests */
+  /* one browser at a time: tests share one e2e server and one in-memory database */
   workers: 1,
   fullyParallel: false,
   forbidOnly: Boolean(process.env['CI']),
@@ -46,13 +46,6 @@ export default defineConfig({
   ],
   webServer: [
     {
-      name: 'wiremock',
-      command: `npx wiremock --port ${ports.wiremock} --root-dir wiremock --global-response-templating --disable-banner`,
-      url: `${urls.wiremock}/__admin/health`,
-      reuseExistingServer: false,
-      timeout: 60_000
-    },
-    {
       name: 'server',
       command: 'npm --prefix ../server run -s start:e2e',
       url: urls.graphql,
@@ -60,10 +53,6 @@ export default defineConfig({
       timeout: 120_000,
       env: {
         PORT: String(ports.server),
-        STRIPE_API_HOST: 'localhost',
-        STRIPE_API_PORT: String(ports.wiremock),
-        STRIPE_API_PROTOCOL: 'http',
-        STRIPE_API_KEY: 'sk_test_e2e_dummy',
         FIREBASE_AUTH_EMULATOR_HOST: '127.0.0.1:9099',
         FIREBASE_PROJECT_ID: 'ingre-92a75'
       }

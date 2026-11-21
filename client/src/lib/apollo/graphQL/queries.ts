@@ -1,10 +1,8 @@
 import { gql } from '@apollo/client'
 import type {
-  Checkout,
   Operation,
   Recipe,
   SavedRecipe,
-  Tier,
   TierProfile,
   UserProfile
 } from './typedefs'
@@ -105,15 +103,6 @@ export const GET_RECIPE: Operation<{ getRecipe: Recipe }, { id: string }> = gql`
       picture_url
       libraryId
       instructions
-    }
-  }
-`
-
-/** `tier` buys that tier (#208); without it, the old PRO checkout. */
-export const CHECKOUT: Operation<{ checkout: Checkout }, { tier?: Tier }> = gql`
-  query Checkout($tier: Tier) {
-    checkout(tier: $tier) {
-      session
     }
   }
 `

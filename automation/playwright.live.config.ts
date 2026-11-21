@@ -53,24 +53,13 @@ export default defineConfig({
   ],
   webServer: [
     {
-      name: 'wiremock',
-      command: `node scripts/check-firebase-live-env.mjs && npx wiremock --port ${ports.wiremock} --root-dir wiremock --global-response-templating --disable-banner`,
-      url: `${urls.wiremock}/__admin/health`,
-      reuseExistingServer: false,
-      timeout: 60_000
-    },
-    {
       name: 'server',
-      command: 'npm --prefix ../server run -s start:e2e',
+      command: `node scripts/check-firebase-live-env.mjs && npm --prefix ../server run -s start:e2e`,
       url: urls.graphql,
       reuseExistingServer: false,
       timeout: 120_000,
       env: {
         PORT: String(ports.server),
-        STRIPE_API_HOST: 'localhost',
-        STRIPE_API_PORT: String(ports.wiremock),
-        STRIPE_API_PROTOCOL: 'http',
-        STRIPE_API_KEY: 'sk_test_e2e_dummy',
         FIREBASE_SERVICE_ACCOUNT_JSON:
           process.env['FIREBASE_SERVICE_ACCOUNT_JSON'] ?? '',
         ...noEmulator

@@ -6,9 +6,7 @@ import { resolvers } from './src/schemas/resolvers'
 import { typeDefs } from './src/schemas/typeDefs'
 import { buildContext } from './src/context'
 import { MyContext } from './src/schemas/types'
-import { getStripe } from './src/datasources/stripe'
 import { UserApi } from './src/datasources/user'
-import { stripeWebhook } from './src/webhooks/stripe'
 import { StoreApi } from './src/datasources/store'
 import { appleNotifications, googleRtdn } from './src/webhooks/store'
 import { assertNoProductionKeys } from './src/payments/keyGuard'
@@ -28,12 +26,6 @@ export const startApi = async (port: string | number): Promise<void> => {
   const app = express()
   const server = new ApolloServer<MyContext>({ typeDefs, resolvers })
   await server.start()
-  // #312: Stripe's events, signature-checked over the raw body (before any JSON parser)
-  app.post(
-    '/stripe/webhook',
-    raw({ type: 'application/json' }),
-    stripeWebhook(getStripe(), new UserApi())
-  )
   // #314: App Store and Google Play subscription notices (verified with each store)
   const store = new StoreApi()
   app.post('/store/google/rtdn', json(), googleRtdn(store, new UserApi()))

@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom'
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import type { MockedResponse } from '@apollo/client/testing'
 import { axe, toHaveNoViolations } from 'jest-axe'
-import { CHECKOUT, GET_USER } from '../../../lib/apollo/graphQL/queries'
+import { GET_USER } from '../../../lib/apollo/graphQL/queries'
 import { logIn, renderWithProviders } from '../../../test/providers'
 import { Upgrade } from '../Upgrade'
 
@@ -28,55 +28,16 @@ const user = (pro: boolean): MockedResponse => ({
   }
 })
 
-const checkout: MockedResponse = {
-  request: { query: CHECKOUT },
-  result: {
-    data: { checkout: { __typename: 'Checkout', session: 'cs_test_1' } }
-  }
-}
-
-/* Stripe navigates away on success, so its promise never settles */
-const navigating = (): Promise<never> => new Promise(() => null)
-const redirectToCheckout = jest.fn(navigating)
-
-/* Stands in for Stripe.js on the page (what js.stripe.com/v3 defines, version 3). Set
-   before @stripe/stripe-js looks for it, so the real loadStripe resolves with it. */
-Object.defineProperty(window, 'Stripe', {
-  configurable: true,
-  value: Object.assign(() => ({ redirectToCheckout }), { version: 3 })
-})
-
-const checkoutDown: MockedResponse = {
-  request: { query: CHECKOUT },
-  error: new Error('could not create stripe response')
-}
-
 const renderUpgrade = (mocks: MockedResponse[], path = '/upgrade') =>
-  renderWithProviders(<Upgrade />, { mocks, path, routes: {} })
-
-const upgradeButton = () =>
-  screen.getByRole('button', { name: /checkout with stripe/i })
-
-const STARTING = /starting the stripe checkout/i
-
-/** Upgrade is announced as dimmed (aria-disabled, still focusable) with the disabled colours. */
-const expectDisabled = (button: HTMLElement) => {
-  expect(button).toHaveAttribute('aria-disabled', 'true')
-  expect(button).not.toHaveAttribute('disabled')
-  expect(button.className).toMatch(/bg-primary-disabled-bg/)
-  expect(button.className).toMatch(/text-primary-disabled-fg/)
-}
-
-const expectEnabled = (button: HTMLElement) => {
-  expect(button).not.toHaveAttribute('aria-disabled')
-  expect(button.className).toMatch(/bg-primary text-on-primary/)
-}
+  renderWithProviders(<Upgrade />, {
+    mocks,
+    path,
+    routes: { '/checkout': <p>Paddle checkout</p> }
+  })
 
 describe('Upgrade', () => {
   beforeEach(() => {
     localStorage.clear()
-    // resetMocks clears implementations before each test
-    redirectToCheckout.mockImplementation(navigating)
   })
 
   it('asks a logged-out visitor to log in', () => {
@@ -97,67 +58,16 @@ describe('Upgrade', () => {
     expect(await screen.findByText(/you are pro/i)).toBeInTheDocument()
   })
 
-  it('sends a logged-in user to Stripe checkout with the new session', async () => {
+  it('sends a logged-in user to the Paddle checkout page', async () => {
     logIn(false)
-    renderUpgrade([user(false), checkout])
+    renderUpgrade([user(false)])
     expect(screen.getByText(/why upgrade/i)).toBeInTheDocument()
+    expect(screen.getByText(/secure payment with paddle/i)).toBeInTheDocument()
     fireEvent.click(
-      screen.getByRole('button', { name: /checkout with stripe/i })
+      screen.getByRole('button', { name: /continue to checkout/i })
     )
-    await waitFor(() => {
-      expect(redirectToCheckout).toHaveBeenCalledWith({
-        sessionId: 'cs_test_1'
-      })
-    })
-  })
-
-  it('is disabled while checkout starts, keeps focus, and a double press starts one checkout', async () => {
-    logIn(false)
-    renderUpgrade([user(false), { ...checkout, delay: 50 }])
-    const button = upgradeButton()
-    expectEnabled(button)
-    button.focus()
-    fireEvent.click(button)
-    fireEvent.click(button)
-    expectDisabled(button)
-    expect(button).toHaveFocus()
-    expect(screen.getByRole('status')).toHaveTextContent(STARTING)
-    await waitFor(() => {
-      expect(redirectToCheckout).toHaveBeenCalledWith({
-        sessionId: 'cs_test_1'
-      })
-    })
-    fireEvent.click(button)
-    // Stripe is navigating away: still disabled, one checkout, no failure
-    expect(redirectToCheckout).toHaveBeenCalledTimes(1)
-    expectDisabled(button)
-    expect(screen.queryByRole('alert')).toBeNull()
-    expect(await axe(document.body, IN_APP_MAIN)).toHaveNoViolations()
-  })
-
-  it('says so when Stripe checkout cannot start, and the user stays not-pro', async () => {
-    logIn(false)
-    renderUpgrade([user(false), checkoutDown])
-    fireEvent.click(upgradeButton())
-    expectDisabled(upgradeButton())
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      /couldn.t start the stripe checkout/i
-    )
-    // enabled again, so the user can try again
-    expectEnabled(upgradeButton())
-    expect(screen.queryByText(STARTING)).toBeNull()
-    expect(redirectToCheckout).not.toHaveBeenCalled()
-    expect(screen.queryByText(/you are pro/i)).toBeNull()
-    expect(await axe(document.body, IN_APP_MAIN)).toHaveNoViolations()
-  })
-
-  it('confirms a cancelled checkout without charging', async () => {
-    logIn(false)
-    renderUpgrade([user(false)], '/upgrade?checkout=cancelled')
-    expect(screen.getByRole('status')).toHaveTextContent(
-      /checkout cancelled. you have not been charged/i
-    )
-    expect(screen.queryByRole('alert')).toBeNull()
+    expect(screen.getByTestId('location')).toHaveTextContent('/checkout')
+    expect(screen.getByText('Paddle checkout')).toBeInTheDocument()
     expect(await axe(document.body, IN_APP_MAIN)).toHaveNoViolations()
   })
 })

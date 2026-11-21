@@ -5,6 +5,10 @@ and GST), one entitlement per user across Paddle, the App Store and Google Play 
 **RevenueCat**. Everything in the repo is sandbox-only placeholders; nothing here can take
 a real payment.
 
+Stripe is fully retired as a web payment path. The only web checkout is Paddle;
+entitlements come from RevenueCat. Production Stripe env vars on Vercel/Render
+can be deleted later by the owner.
+
 > House rule: Paddle and RevenueCat are paid services. They need sign-off from Alana
 > (finance) before anything goes live.
 
@@ -21,7 +25,7 @@ a real payment.
 | `server/src/webhooks/revenuecat.ts`       | `POST /revenuecat/webhook`: App Store, Google Play and other store events from RevenueCat (exact `Authorization` header)                                                   |
 | `server/src/payments/`                    | both feeds normalised into one typed `EntitlementState`; new Paddle subscriptions are posted to RevenueCat (`/v1/receipts`, `X-Platform: paddle`) so the apps see them too |
 | `server/src/datasources/entitlement.ts`   | idempotent apply: each event id is claimed once (`WebhookEvent`), older events never overwrite newer ones, a failed apply releases the claim so the provider's retry works |
-| `*/keyGuard.ts`                           | the server and Vite refuse to start when a test or sandbox run holds a production key (`pdl_live_`, `live_`, RevenueCat store or `sk_` keys, `sk_live_` Stripe)            |
+| `*/keyGuard.ts`                           | the server and Vite refuse to start when a test or sandbox run holds a production key (`pdl_live_`, `live_`, RevenueCat store or `sk_` keys)            |
 
 ## Who RevenueCat sees
 

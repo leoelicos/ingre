@@ -25,21 +25,6 @@ export class ConflictError extends GraphQLError {
   }
 }
 
-export class PaymentProviderError extends GraphQLError {
-  constructor(message: string) {
-    super(message, { extensions: { code: 'PAYMENT_PROVIDER_ERROR' } })
-    this.name = 'PaymentProviderError'
-  }
-}
-
-/** #312: the card was declined; `extensions.decline` is Stripe's code (e.g. card_declined). */
-export class PaymentDeclinedError extends GraphQLError {
-  constructor(message: string, decline: string | null) {
-    super(message, { extensions: { code: 'PAYMENT_DECLINED', decline } })
-    this.name = 'PaymentDeclinedError'
-  }
-}
-
 /** #314: store purchases can't be checked here: credentials for that store aren't set. */
 export class StoreNotConfiguredError extends GraphQLError {
   constructor(platform: string) {

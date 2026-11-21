@@ -72,7 +72,7 @@ jobs:
             client/package-lock.json
             server/package-lock.json
             automation/package-lock.json
-      - name: Setup Java (WireMock standalone)
+      - name: Setup Java (Firebase Auth Emulator)
         uses: actions/setup-java@v4
         with:
           distribution: temurin

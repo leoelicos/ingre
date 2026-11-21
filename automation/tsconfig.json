@@ -14,14 +14,11 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node"],
-    "allowJs": true,
-    "checkJs": true
+    "types": ["node"]
   },
   "include": [
     "playwright.config.ts",
     "playwright.live.config.ts",
-    "tests/**/*.ts",
-    "wiremock/__files/*.js"
+    "tests/**/*.ts"
   ]
 }

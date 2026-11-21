@@ -1,11 +1,7 @@
-import type { FC } from 'react'
-import { useState } from 'react'
-import { loadStripe } from '@stripe/stripe-js/pure'
-import type { Stripe } from '@stripe/stripe-js'
 import { useQuery } from '@apollo/client'
+import type { FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useT } from '../../i18n'
-import type { Translate } from '../../i18n/useT'
-import { useUpgrade } from '../../pages/Admin/useUpgrade'
 import { GET_TIER } from '../../lib/apollo/graphQL/queries'
 import { useAuthContext } from '../../utils/auth/AuthContext'
 import type { Tier, TierInfo } from '../../utils/tier/tiers'
@@ -13,14 +9,6 @@ import { FEATURES_BY_TIER, TIERS, tierRank } from '../../utils/tier/tiers'
 import { useFirstEndToEnd } from '../../utils/tier/upsell'
 import NotLoggedIn from '../NotLoggedIn'
 import { PrimaryButton } from '../PrimaryButton'
-import { PUBLISHABLE_KEY } from '../../utils/stripe/key'
-import { CardSubscribe } from './CardSubscribe'
-
-/** #312: loads Stripe.js for the card form; null keeps Stripe's hosted checkout. */
-export type LoadCard = (() => Promise<Stripe | null>) | null
-
-export const cardLoader = (key: string | null): LoadCard =>
-  key === null ? null : () => loadStripe(key)
 
 const CARD =
   'flex h-full flex-col gap-3 rounded-card border border-border bg-surface p-4 shadow-card'
@@ -32,9 +20,8 @@ const tierBelow = ({ id }: TierInfo): Tier | null =>
 const TierCard: FC<{
   info: TierInfo
   current: Tier | null
-  starting: boolean
   onChoose: (info: TierInfo) => void
-}> = ({ info, current, starting, onChoose }) => {
+}> = ({ info, current, onChoose }) => {
   const t = useT()
   const name = t(`tiers.names.${info.id}`)
   const below = tierBelow(info)
@@ -67,7 +54,6 @@ const TierCard: FC<{
         ) : (
           <PrimaryButton
             onPress={() => onChoose(info)}
-            ariaDisabledOnly={starting}
             className="mt-auto"
           >
             {t('plans.choose', { tier: name })}
@@ -78,65 +64,25 @@ const TierCard: FC<{
   )
 }
 
-const Messages: FC<{
-  t: Translate
-  cancelled: boolean
-  failed: boolean
-  starting: boolean
-}> = ({ t, cancelled, failed, starting }) => (
-  <>
-    {cancelled && <p role="status">{t('upgrade.cancelled')}</p>}
-    {failed && <p role="alert">{t('upgrade.failed')}</p>}
-    {starting && <p role="status">{t('upgrade.starting')}</p>}
-  </>
-)
-
-const TierChoices: FC<{ loadCard: LoadCard }> = ({ loadCard }) => {
+const TierChoices: FC = () => {
   const t = useT()
-  /* #312: with a publishable key, a tier is paid for here, by card; else on Stripe's page */
-  const [chosen, setChosen] = useState<TierInfo | null>(null)
-  const [stripe, setStripe] = useState<Promise<Stripe | null> | null>(null)
-  const choose = (info: TierInfo): void => {
-    if (loadCard === null) {
-      void startCheckout(info.id)
-      return
-    }
-    setStripe((loaded) => loaded ?? loadCard())
-    setChosen(info)
-  }
-  const { startCheckout, cancelled, checkoutFailed, checkoutStarting } =
-    useUpgrade()
+  const navigate = useNavigate()
   const { data } = useQuery(GET_TIER)
   const current = data?.getUser.tier ?? null
   return (
     <div className="flex flex-col gap-4">
       <p>{t('plans.intro')}</p>
       <p>{t('plans.testMode')}</p>
-      <Messages
-        t={t}
-        cancelled={cancelled}
-        failed={checkoutFailed}
-        starting={checkoutStarting}
-      />
       <ul className="grid gap-4 md:grid-cols-3">
         {TIERS.map((info) => (
           <TierCard
             key={info.id}
             info={info}
             current={current}
-            starting={checkoutStarting}
-            onChoose={choose}
+            onChoose={() => navigate('/checkout')}
           />
         ))}
       </ul>
-      {chosen !== null && stripe !== null && (
-        <CardSubscribe
-          key={chosen.id}
-          info={chosen}
-          name={t(`tiers.names.${chosen.id}`)}
-          stripe={stripe}
-        />
-      )}
     </div>
   )
 }
@@ -144,20 +90,18 @@ const TierChoices: FC<{ loadCard: LoadCard }> = ({ loadCard }) => {
 const PlansBody: FC<{
   firstEndToEnd: boolean
   loggedIn: boolean
-  loadCard: LoadCard
-}> = ({ firstEndToEnd, loggedIn, loadCard }) => {
+}> = ({ firstEndToEnd, loggedIn }) => {
   const t = useT()
   if (!firstEndToEnd) return <p>{t('plans.notYet')}</p>
-  return loggedIn ? <TierChoices loadCard={loadCard} /> : <NotLoggedIn />
+  return loggedIn ? <TierChoices /> : <NotLoggedIn />
 }
 
 /**
  * The tiers (#208), reached from the account menu once the first end-to-end is done.
  * Before that it says when Plans open, and shows no prices or checkout.
+ * Choosing a tier continues on /checkout (Paddle + RevenueCat).
  */
-export const Plans: FC<{ loadCard?: LoadCard }> = ({
-  loadCard = cardLoader(PUBLISHABLE_KEY)
-}) => {
+export const Plans: FC = () => {
   const t = useT()
   const firstEndToEnd = useFirstEndToEnd()
   const [auth] = useAuthContext()
@@ -167,7 +111,6 @@ export const Plans: FC<{ loadCard?: LoadCard }> = ({
       <PlansBody
         firstEndToEnd={firstEndToEnd}
         loggedIn={auth.loggedIn}
-        loadCard={loadCard}
       />
     </div>
   )

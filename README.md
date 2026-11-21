@@ -1,6 +1,6 @@
 # ingre
 
-![https://stripe.com/docs/api](https://img.shields.io/badge/-Stripe-gold) ![https://react.dev](https://img.shields.io/badge/-React-blueviolet) ![https://www.apollographql.com](https://img.shields.io/badge/-Apollo_GraphQL-blueviolet) ![https://www.postgresql.org](https://img.shields.io/badge/-PostgreSQL-blue) ![https://expressjs.com+](https://img.shields.io/badge/-Express-blue) ![https://jwt.io](https://img.shields.io/badge/-JWT_Token-blue) ![./LICENSE](https://img.shields.io/badge/-MIT-gray)
+![https://www.paddle.com](https://img.shields.io/badge/-Paddle-gold) ![https://react.dev](https://img.shields.io/badge/-React-blueviolet) ![https://www.apollographql.com](https://img.shields.io/badge/-Apollo_GraphQL-blueviolet) ![https://www.postgresql.org](https://img.shields.io/badge/-PostgreSQL-blue) ![https://expressjs.com+](https://img.shields.io/badge/-Express-blue) ![https://jwt.io](https://img.shields.io/badge/-JWT_Token-blue) ![./LICENSE](https://img.shields.io/badge/-MIT-gray)
 
 _Recipes have traditionally been based on ingredients. We take the opposite approach and make ingredients from recipes._
 

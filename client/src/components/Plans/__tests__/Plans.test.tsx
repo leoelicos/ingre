@@ -1,12 +1,11 @@
 import '@testing-library/jest-dom'
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, within } from '@testing-library/react'
 import type { MockedResponse } from '@apollo/client/testing'
 import { axe, toHaveNoViolations } from 'jest-axe'
-import { CHECKOUT, GET_TIER } from '../../../lib/apollo/graphQL/queries'
+import { GET_TIER } from '../../../lib/apollo/graphQL/queries'
 import type { Tier } from '../../../lib/apollo/graphQL/typedefs'
 import { Upgrade } from '../../../pages/Admin/Upgrade'
 import { logIn, renderWithProviders } from '../../../test/providers'
-import { readPendingTier } from '../../../utils/tier/pending'
 import { markFirstEndToEnd } from '../../../utils/tier/upsell'
 import { Plans } from '../Plans'
 
@@ -19,33 +18,19 @@ const tierOf = (tier: Tier | null): MockedResponse => ({
   result: { data: { getUser: { __typename: 'User', _id: 'u1', tier } } }
 })
 
-const checkoutFor = (tier: Tier): MockedResponse => ({
-  request: { query: CHECKOUT, variables: { tier } },
-  result: {
-    data: { checkout: { __typename: 'Checkout', session: `cs_test_${tier}` } }
-  }
-})
-
-const redirectToCheckout = jest.fn(
-  (): Promise<never> => new Promise(() => null)
-)
-
-Object.defineProperty(window, 'Stripe', {
-  configurable: true,
-  value: Object.assign(() => ({ redirectToCheckout }), { version: 3 })
-})
-
 const renderPlans = (mocks: MockedResponse[], path = '/upgrade') =>
-  renderWithProviders(<Plans />, { mocks, path, routes: {} })
+  renderWithProviders(<Plans />, {
+    mocks,
+    path,
+    routes: { '/checkout': <p>Paddle checkout</p> }
+  })
 
 const card = (name: string) => screen.getByRole('region', { name })
 
 describe('Plans (#208)', () => {
   beforeEach(() => {
     localStorage.clear()
-    sessionStorage.clear()
     window.history.pushState({}, '', '/')
-    redirectToCheckout.mockImplementation(() => new Promise(() => null))
   })
 
   it('before the first end-to-end, says when Plans open and shows no prices or checkout', () => {
@@ -95,7 +80,7 @@ describe('Plans (#208)', () => {
     expect(leader.getByText('Everything in Manager')).toBeInTheDocument()
     expect(leader.getByText('HACCP')).toBeInTheDocument()
     expect(
-      screen.getByText(/test mode: no real charges.*4242 4242 4242 4242/i)
+      screen.getByText(/checkout continues on the next page with paddle/i)
     ).toBeInTheDocument()
     expect(await axe(document.body, IN_APP_MAIN)).toHaveNoViolations()
   })
@@ -114,45 +99,15 @@ describe('Plans (#208)', () => {
     ).toBeInTheDocument()
   })
 
-  it('choosing a tier opens Stripe checkout for that tier and remembers it for the Success page', async () => {
+  it('choosing a tier continues on the Paddle checkout page', async () => {
     markFirstEndToEnd()
     logIn(false)
-    renderPlans([tierOf(null), checkoutFor('LEADER')])
+    renderPlans([tierOf(null)])
     fireEvent.click(
       await screen.findByRole('button', { name: 'Choose Leader' })
     )
-    await waitFor(() => {
-      expect(redirectToCheckout).toHaveBeenCalledWith({
-        sessionId: 'cs_test_LEADER'
-      })
-    })
-    expect(readPendingTier()).toBe('LEADER')
-    expect(
-      screen.getByText(/starting the stripe checkout/i)
-    ).toBeInTheDocument()
-  })
-
-  it('says so when checkout cannot start', async () => {
-    markFirstEndToEnd()
-    logIn(false)
-    renderPlans([
-      tierOf(null),
-      {
-        request: { query: CHECKOUT, variables: { tier: 'EXPLORER' } },
-        error: new Error('no stripe')
-      }
-    ])
-    fireEvent.click(
-      await screen.findByRole('button', { name: 'Choose Explorer' })
-    )
-    expect(await screen.findByRole('alert')).toBeInTheDocument()
-  })
-
-  it('tells a buyer who came back from a cancelled checkout', async () => {
-    markFirstEndToEnd()
-    logIn(false)
-    renderPlans([tierOf(null)], '/upgrade?checkout=cancelled')
-    expect(await screen.findByText(/checkout cancelled/i)).toBeInTheDocument()
+    expect(screen.getByTestId('location')).toHaveTextContent('/checkout')
+    expect(screen.getByText('Paddle checkout')).toBeInTheDocument()
   })
 })
 

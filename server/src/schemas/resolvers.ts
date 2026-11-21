@@ -7,11 +7,9 @@ import { getUser } from './resolvers/user/getUser'
 import { checkEmailAlreadyExists } from './resolvers/user/checkEmailAlreadyExists'
 import { getNumSavedRecipes } from './resolvers/user/getNumSavedRecipes'
 import { getSavedRecipes } from './resolvers/recipe/getSavedRecipes'
-import { checkout } from './resolvers/session/checkout'
 
 import { addUser } from './resolvers/user/addUser'
 import { makeUserPro } from './resolvers/user/makeUserPro'
-import { subscribe } from './resolvers/user/subscribe'
 import { submitStorePurchase } from './resolvers/user/submitStorePurchase'
 import { saveRecipe } from './resolvers/recipe/saveRecipe'
 import { removeRecipe } from './resolvers/recipe/removeRecipe'
@@ -31,13 +29,11 @@ export const resolvers = {
     getUser,
     getRecipe,
     getNumSavedRecipes,
-    getSavedRecipes,
-    checkout
+    getSavedRecipes
   },
   Mutation: {
     addUser,
     makeUserPro,
-    subscribe,
     submitStorePurchase,
     saveRecipe,
     removeRecipe,

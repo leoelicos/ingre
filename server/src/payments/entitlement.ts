@@ -1,8 +1,9 @@
 /*
  * Paddle + RevenueCat: every payment source (Paddle on the web; the App Store, Google
  * Play and others through RevenueCat) is boiled down to this one shape before it touches
- * a user. Statuses use Stripe's words (#312) so `activationFields` decides `active` and
- * `tier` for every route the same way.
+ * a user. Statuses use the same words as `activationFields` (`active`, `trialing`,
+ * `past_due`, `canceled`, `incomplete`) so every route decides `active` and `tier`
+ * the same way.
  */
 import { publicIdOf } from '../utils/publicId'
 import { LOOKUP_KEYS, TIERS, isTier, type Tier } from '../utils/tiers'
@@ -12,6 +13,7 @@ export const ENTITLEMENT_SOURCES = [
   'APP_STORE',
   'PLAY_STORE',
   'AMAZON',
+  // RevenueCat store identifier (RevenueCat's Stripe billing app), not a web checkout path here
   'STRIPE',
   'RC_BILLING',
   'PROMOTIONAL',

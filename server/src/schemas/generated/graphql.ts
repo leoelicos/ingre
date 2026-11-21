@@ -41,12 +41,11 @@ export type ChangedIngredientInput = {
   to: Scalars['Float']['input']
 }
 
-export type Checkout = {
-  session: Scalars['String']['output']
-}
-
 export type Customisation =
-  AddedIngredient | ChangedIngredient | PortionsChange | RemovedIngredient
+  | AddedIngredient
+  | ChangedIngredient
+  | PortionsChange
+  | RemovedIngredient
 
 export type CustomisationsInput = {
   added: Array<AddedIngredientInput>
@@ -81,8 +80,6 @@ export type Mutation = {
   saveRecipe: Recipe
   /** #314: a native app's purchase, verified with the store. purchaseToken is Google's purchase token or Apple's signed transaction (JWS) */
   submitStorePurchase: StoreSubscription
-  /** #312: subscribes to a tier with a Stripe.js card token (createToken); test mode only */
-  subscribe: TierSubscription
 }
 
 export type MutationAddUserArgs = {
@@ -112,11 +109,6 @@ export type MutationSubmitStorePurchaseArgs = {
   purchaseToken: Scalars['String']['input']
 }
 
-export type MutationSubscribeArgs = {
-  tier: Tier
-  token: Scalars['String']['input']
-}
-
 export type PortionsChange = {
   from: Scalars['Int']['output']
   to: Scalars['Int']['output']
@@ -129,7 +121,6 @@ export type PortionsChangeInput = {
 
 export type Query = {
   checkEmailAlreadyExists: Scalars['Boolean']['output']
-  checkout: Checkout
   getNumSavedRecipes: Scalars['Int']['output']
   getRecipe: Recipe
   getSavedRecipes: Array<Recipe>
@@ -138,10 +129,6 @@ export type Query = {
 
 export type QueryCheckEmailAlreadyExistsArgs = {
   email: Scalars['String']['input']
-}
-
-export type QueryCheckoutArgs = {
-  tier?: InputMaybe<Tier>
 }
 
 export type QueryGetRecipeArgs = {
@@ -193,15 +180,9 @@ export type StoreSubscription = {
 
 export type Tier = 'EXPLORER' | 'LEADER' | 'MANAGER'
 
-export type TierSubscription = {
-  active: Scalars['Boolean']['output']
-  status: Scalars['String']['output']
-  tier: Tier
-}
-
 export type User = {
   _id: Scalars['ID']['output']
-  /** #312: true while the tier's Stripe subscription is active or trialing */
+  /** true while the subscription is active or trialing */
   active: Scalars['Boolean']['output']
   email: Scalars['String']['output']
   firstName: Scalars['String']['output']
@@ -211,7 +192,7 @@ export type User = {
   savedRecipes: Array<Recipe>
   /** #314: the store behind the subscription when it was bought in a native app */
   storePlatform?: Maybe<StorePlatform>
-  /** #312: Stripe's subscription status (active, incomplete, past_due, canceled...), null before one */
+  /** subscription status (active, incomplete, past_due, canceled...), null before one */
   subscriptionStatus?: Maybe<Scalars['String']['output']>
   tier?: Maybe<Tier>
 }

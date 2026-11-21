@@ -30,7 +30,7 @@ For each pillar: what it means here, where it already shows, and what a change m
 ## 4. Clear system design
 
 - One page of architecture: `AGENTS.md` (stack, repo map, routes, commands) and `.cursor/context/*.md` for each area.
-- Client is a static bundle of the catalogue plus device-side state; the server owns accounts, saved recipes and Stripe only. That split is why Explore is instant and works offline.
+- Client is a static bundle of the catalogue plus device-side state; the server owns accounts, saved recipes and entitlements only. That split is why Explore is instant and works offline.
 - Rule: a change that adds a route, a data file, a server model or a top-level folder updates the repo map in `AGENTS.md` in the same PR.
 
 ## 5. A path to real persistence (Postgres)
