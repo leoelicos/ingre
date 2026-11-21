@@ -73,7 +73,15 @@ export default defineConfig({
       url: urls.client,
       reuseExistingServer: false,
       timeout: 60_000,
-      env: { VITE_GRAPHQL_URL: urls.graphql }
+      
+env: {
+  VITE_GRAPHQL_URL: urls.graphql,
+  VITE_FIREBASE_API_KEY: 'dummy',
+  VITE_FIREBASE_AUTH_DOMAIN: 'localhost',
+  VITE_FIREBASE_PROJECT_ID: 'ingre-92a75',
+  VITE_FIREBASE_APP_ID: 'dummy',
+  VITE_FIREBASE_AUTH_EMULATOR_HOST: '127.0.0.1:9099'
+}
     },
     {
       /* the production build, so the analytics test (#177) can see production behaviour */
