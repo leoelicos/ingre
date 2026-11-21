@@ -94,6 +94,13 @@ export const signOut = async () => {
   signIn(null)
 }
 
+let emulatorUrl: string | null = null
+
+/** Remembers where the app pointed the Auth Emulator (#320). */
+export const connectAuthEmulator = (_auth: FakeAuth, url: string): void => {
+  emulatorUrl = url
+}
+
 export const fakeFirebase = {
   auth,
   /** Nobody signed in, no accounts, no Google account, no listeners. */
@@ -102,7 +109,10 @@ export const fakeFirebase = {
     listeners.clear()
     google = null
     auth.currentUser = null
+    emulatorUrl = null
   },
+  /** The Auth Emulator URL the app connected to, or null for real Firebase. */
+  emulatorUrl: (): string | null => emulatorUrl,
   addAccount: (email: string, password: string) => {
     passwords.set(email, password)
   },

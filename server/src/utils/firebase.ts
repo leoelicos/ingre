@@ -1,6 +1,7 @@
 /*
  * Firebase Auth: the server only checks Firebase ID tokens; Firebase holds the passwords,
  * Google sign-in and sessions. Off (null) until FIREBASE_SERVICE_ACCOUNT_JSON is set.
+ * e2e (#320): FIREBASE_AUTH_EMULATOR_HOST + FIREBASE_PROJECT_ID use the Auth Emulator.
  */
 import { cert, getApps, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
@@ -78,14 +79,28 @@ export const adminAuth = (account: ServiceAccount): IdTokenChecker =>
   )
 
 /**
+ * firebase-admin against the Auth Emulator (e2e only). firebase-admin reads
+ * FIREBASE_AUTH_EMULATOR_HOST itself, so a project id is all it needs: no key.
+ */
+export const emulatorAdminAuth = (projectId: string): IdTokenChecker =>
+  getAuth(getApps()[0] ?? initializeApp({ projectId }))
+
+/**
  * Checks ID tokens with firebase-admin; null when Firebase isn't configured. Revocation
  * isn't checked per request (that is a call to Google each time): a revoked or disabled
  * account's token keeps working until it expires, at most an hour.
  */
 export const firebaseVerifier = (
   env: Env,
-  connect: (account: ServiceAccount) => IdTokenChecker = adminAuth
+  connect: (account: ServiceAccount) => IdTokenChecker = adminAuth,
+  connectEmulator: (projectId: string) => IdTokenChecker = emulatorAdminAuth
 ): VerifyIdToken | null => {
+  const emulatorHost = str(env['FIREBASE_AUTH_EMULATOR_HOST'])
+  const projectId = str(env['FIREBASE_PROJECT_ID'])
+  if (emulatorHost && projectId) {
+    const emulator = connectEmulator(projectId)
+    return async (token) => identityOf(await emulator.verifyIdToken(token))
+  }
   const account = serviceAccountOf(env['FIREBASE_SERVICE_ACCOUNT_JSON'])
   if (!account) return null
   const auth = connect(account)

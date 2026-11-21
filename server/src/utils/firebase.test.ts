@@ -1,5 +1,6 @@
 import {
   adminAuth,
+  emulatorAdminAuth,
   firebaseVerifier,
   identityOf,
   serviceAccountOf,
@@ -94,5 +95,53 @@ describe('firebaseVerifier', () => {
     const verify = firebaseVerifier({ FIREBASE_SERVICE_ACCOUNT_JSON: json })
     await expect(verify?.('id-token')).rejects.toThrow('not set up in tests')
     expect(adminAuth(parsed)).toHaveProperty('verifyIdToken')
+  })
+
+  it('uses the Auth Emulator when its host and a project id are set (#320)', async () => {
+    const checker: IdTokenChecker = {
+      verifyIdToken: jest.fn(async () => ({ uid: 'u2', email: 'e@m.u' }))
+    }
+    const connect = jest.fn()
+    const connectEmulator = jest.fn(() => checker)
+    const verify = firebaseVerifier(
+      {
+        FIREBASE_AUTH_EMULATOR_HOST: '127.0.0.1:9099',
+        FIREBASE_PROJECT_ID: 'ingre-92a75',
+        FIREBASE_SERVICE_ACCOUNT_JSON: json
+      },
+      connect,
+      connectEmulator
+    )
+    expect(connectEmulator).toHaveBeenCalledWith('ingre-92a75')
+    expect(connect).not.toHaveBeenCalled()
+    expect(await verify?.('emulator-token')).toEqual({
+      uid: 'u2',
+      email: 'e@m.u',
+      emailVerified: false,
+      name: null
+    })
+    expect(emulatorAdminAuth('ingre-92a75')).toHaveProperty('verifyIdToken')
+  })
+
+  it('ignores the emulator host without a project id', () => {
+    const connectEmulator = jest.fn()
+    expect(
+      firebaseVerifier(
+        { FIREBASE_AUTH_EMULATOR_HOST: '127.0.0.1:9099' },
+        jest.fn(),
+        connectEmulator
+      )
+    ).toBeNull()
+    const connect = jest.fn(() => ({ verifyIdToken: jest.fn() }))
+    firebaseVerifier(
+      {
+        FIREBASE_AUTH_EMULATOR_HOST: '127.0.0.1:9099',
+        FIREBASE_SERVICE_ACCOUNT_JSON: json
+      },
+      connect,
+      connectEmulator
+    )
+    expect(connect).toHaveBeenCalledWith(parsed)
+    expect(connectEmulator).not.toHaveBeenCalled()
   })
 })

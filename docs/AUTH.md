@@ -58,7 +58,8 @@ signs out of Firebase and shows "Couldn't log you in."
 ### During the move (TRANSITION)
 
 - The API accepts a Firebase ID token or the legacy JWT (`context.ts`). The native apps
-  and the e2e suite still use the JWT `login` / `addUser` mutations.
+  still use the JWT `login` / `addUser` mutations; the web e2e suite signs in with
+  Firebase through the Auth Emulator (see "End-to-end tests" below).
 - The web app uses Firebase when all four `VITE_FIREBASE_*` values are set, else the
   legacy login. Passwords need at least 6 characters (Firebase's minimum).
 - Revocation isn't checked per request: a disabled or revoked account's ID token works
@@ -95,6 +96,26 @@ firebase auth:import users.json --hash-algo=BCRYPT --project <project-id>
 `passwordHash` is the base64 encoding of the whole `$2b$10$…` string from
 `User.password`. Export from a read-only copy, keep the file off the repo and delete it
 afterwards. Accounts created after the export link by verified email instead.
+
+### End-to-end tests (#320)
+
+| Path                    | When                      | Firebase                           | Secrets |
+| ----------------------- | ------------------------- | ---------------------------------- | ------- |
+| Auth Emulator           | `npm test`, PR CI         | Local emulator on `127.0.0.1:9099` | None    |
+| Real Firebase smoke (A) | Manual or rare, not in CI | The real `ingre-92a75` project     | Yes     |
+
+**Emulator (normal path).** `automation/playwright.config.ts` starts the Auth Emulator
+(`automation/firebase.json`, `firebase-tools`, needs Java 11+) alongside WireMock. The
+client gets dummy `VITE_FIREBASE_*` values plus `VITE_FIREBASE_AUTH_EMULATOR_HOST`, so
+`firebaseAuth()` calls `connectAuthEmulator`. The server gets
+`FIREBASE_AUTH_EMULATOR_HOST` and `FIREBASE_PROJECT_ID`, so firebase-admin checks the
+emulator's tokens with no service-account key. Accounts vanish when the run ends. The
+preview build (#177) has no Firebase values and keeps the legacy login.
+
+**Real Firebase smoke (not built yet).** A separate config that skips the emulator,
+reads the real `VITE_FIREBASE_*` and `FIREBASE_SERVICE_ACCOUNT_JSON` from the
+environment and lets Firebase's domains past the outside-request guard. Never point
+it at production users; use throwaway accounts.
 
 ### Native apps (not in this change)
 
