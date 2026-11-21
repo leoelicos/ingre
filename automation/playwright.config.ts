@@ -63,7 +63,8 @@ export default defineConfig({
         STRIPE_API_HOST: 'localhost',
         STRIPE_API_PORT: String(ports.wiremock),
         STRIPE_API_PROTOCOL: 'http',
-        STRIPE_API_KEY: 'sk_test_e2e_dummy'
+        STRIPE_API_KEY: 'sk_test_e2e_dummy',
+FIREBASE_AUTH_EMULATOR_HOST: '127.0.0.1:9099'
       }
     },
     {
