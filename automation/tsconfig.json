@@ -18,5 +18,10 @@
     "allowJs": true,
     "checkJs": true
   },
-  "include": ["playwright.config.ts", "tests/**/*.ts", "wiremock/__files/*.js"]
+  "include": [
+    "playwright.config.ts",
+    "playwright.live.config.ts",
+    "tests/**/*.ts",
+    "wiremock/__files/*.js"
+  ]
 }

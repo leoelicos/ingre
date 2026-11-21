@@ -6,6 +6,7 @@
   "scripts": {
     "pretest": "node scripts/prepare.mjs",
     "test": "npm run check && playwright test",
+    "test:firebase-live": "node scripts/check-firebase-live-env.mjs && playwright test --config playwright.live.config.ts",
     "check": "./node_modules/.bin/prettier --check \"**/*.{ts,mjs,json,md}\" && tsc --noEmit",
     "wiremock": "wiremock --root-dir wiremock --global-response-templating --disable-banner",
     "report": "playwright show-report"

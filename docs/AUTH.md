@@ -112,10 +112,19 @@ client gets dummy `VITE_FIREBASE_*` values plus `VITE_FIREBASE_AUTH_EMULATOR_HOS
 emulator's tokens with no service-account key. Accounts vanish when the run ends. The
 preview build (#177) has no Firebase values and keeps the legacy login.
 
-**Real Firebase smoke (not built yet).** A separate config that skips the emulator,
-reads the real `VITE_FIREBASE_*` and `FIREBASE_SERVICE_ACCOUNT_JSON` from the
-environment and lets Firebase's domains past the outside-request guard. Never point
-it at production users; use throwaway accounts.
+**Real Firebase smoke (occasional, manual).** `npm run test:firebase-live` (from
+the repo root or `automation/`) uses `automation/playwright.live.config.ts` to
+run the same auth flows (`tests/auth.spec.ts`) against the real project. It does
+not start the Auth Emulator. It requires the real `VITE_FIREBASE_*` values and
+`FIREBASE_SERVICE_ACCOUNT_JSON` in the environment, and exits immediately with a
+list of what's missing if any are unset. The outside-request guard is relaxed
+only on this path, and only for `identitytoolkit.googleapis.com`,
+`securetoken.googleapis.com`, `www.googleapis.com/identitytoolkit/*`, and the
+host in `VITE_FIREBASE_AUTH_DOMAIN`. It also allows the reCAPTCHA hosts
+(`www.google.com/recaptcha`, `www.gstatic.com/recaptcha`, and `recaptcha.net`)
+in case bot protection is enabled. It is not part of `npm test` or PR CI. Never
+point it at production users; the suite signs up throwaway `example.com`
+accounts in the real `ingre-92a75` project and does not delete them afterwards.
 
 ### Native apps (not in this change)
 

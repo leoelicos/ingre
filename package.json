@@ -12,6 +12,7 @@
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "npm --prefix client test -- --coverage --coverageThreshold='{\"global\":{\"branches\":100,\"functions\":100,\"lines\":100,\"statements\":100}}' && npm --prefix server test",
     "test:e2e": "npm --prefix automation test",
+    "test:firebase-live": "npm --prefix automation run test:firebase-live",
     "codegen": "graphql-codegen --config codegen.ts",
     "build:catalogue": "node scripts/build-recipes-db.mjs && node scripts/copy-recipes-db.mjs",
     "prepare": "husky"

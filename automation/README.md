@@ -40,6 +40,13 @@ Playwright's `webServer` starts four processes and stops them afterwards:
 
 Ports busy? Set `E2E_CLIENT_PORT`, `E2E_SERVER_PORT`, `E2E_WIREMOCK_PORT`, `E2E_PREVIEW_PORT`.
 
+The Auth Emulator also starts on 9099 for this path (see `docs/AUTH.md`). To
+exercise the same auth flows against the real `ingre-92a75` project instead,
+set the real `VITE_FIREBASE_*` and `FIREBASE_SERVICE_ACCOUNT_JSON` in the
+environment and run `npm run test:firebase-live`. That command uses
+`playwright.live.config.ts`, does not start the emulator, and is not run by
+`npm test` or PR CI. Never commit those secrets.
+
 Useful: `npx playwright test tests/list.spec.ts --project=mobile`,
 `npx playwright test --ui`, `npm run report` after a failure (traces are kept on failure).
 

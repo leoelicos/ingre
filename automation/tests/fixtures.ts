@@ -6,9 +6,43 @@ const STRIPE_JS = /^https:\/\/js\.stripe\.com\//
 const isLocal = (url: string): boolean =>
   /^(https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?\/|data:|blob:)/.test(url)
 
+/** Auth API hosts the real-Firebase smoke may call (email/password only). */
+export const FIREBASE_LIVE_AUTH_HOSTS = [
+  'identitytoolkit.googleapis.com',
+  'securetoken.googleapis.com'
+] as const
+
+/**
+ * True for Firebase Auth endpoints allowed when E2E_FIREBASE_LIVE=1. Includes
+ * the two Auth API hosts, the older www.googleapis.com/identitytoolkit path,
+ * the project's VITE_FIREBASE_AUTH_DOMAIN (iframe / handler), and reCAPTCHA
+ * hosts if bot protection is enabled.
+ */
+export const isFirebaseLiveAuthUrl = (url: URL): boolean => {
+  if ((FIREBASE_LIVE_AUTH_HOSTS as readonly string[]).includes(url.hostname))
+    return true
+  if (
+    url.hostname === 'www.googleapis.com' &&
+    url.pathname.startsWith('/identitytoolkit/')
+  )
+    return true
+  if (
+    (url.hostname === 'www.google.com' || url.hostname === 'www.gstatic.com') &&
+    (url.pathname === '/recaptcha' || url.pathname.startsWith('/recaptcha/'))
+  )
+    return true
+  if (url.hostname === 'recaptcha.net') return true
+  const authDomain = process.env['VITE_FIREBASE_AUTH_DOMAIN']
+  return Boolean(authDomain && url.hostname === authDomain)
+}
+
+const allowFirebaseLiveAuth = (): boolean =>
+  process.env['E2E_FIREBASE_LIVE'] === '1'
+
 /**
  * Every test: Stripe.js comes from WireMock, and any other request that leaves
  * localhost fails the test (fonts are self-hosted, #176; no analytics in dev, #177).
+ * The real-Firebase smoke (E2E_FIREBASE_LIVE=1) also allows Firebase Auth hosts.
  */
 export const test = base.extend<{
   outsideRequests: string[]
@@ -37,7 +71,10 @@ export const test = base.extend<{
         await route.fulfill({ response })
       })
       await context.route(
-        (url) => !isLocal(url.href) && !STRIPE_JS.test(url.href),
+        (url) =>
+          !isLocal(url.href) &&
+          !STRIPE_JS.test(url.href) &&
+          !(allowFirebaseLiveAuth() && isFirebaseLiveAuthUrl(url)),
         async (route) => {
           outside.push(route.request().url())
           await route.abort()
