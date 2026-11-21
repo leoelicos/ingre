@@ -15,7 +15,8 @@ export const FIREBASE_LIVE_AUTH_HOSTS = [
 /**
  * True for Firebase Auth endpoints allowed when E2E_FIREBASE_LIVE=1. Includes
  * the two Auth API hosts, the older www.googleapis.com/identitytoolkit path,
- * and the project's VITE_FIREBASE_AUTH_DOMAIN (iframe / handler).
+ * the project's VITE_FIREBASE_AUTH_DOMAIN (iframe / handler), and reCAPTCHA
+ * hosts if bot protection is enabled.
  */
 export const isFirebaseLiveAuthUrl = (url: URL): boolean => {
   if ((FIREBASE_LIVE_AUTH_HOSTS as readonly string[]).includes(url.hostname))
@@ -25,6 +26,12 @@ export const isFirebaseLiveAuthUrl = (url: URL): boolean => {
     url.pathname.startsWith('/identitytoolkit/')
   )
     return true
+  if (
+    (url.hostname === 'www.google.com' || url.hostname === 'www.gstatic.com') &&
+    (url.pathname === '/recaptcha' || url.pathname.startsWith('/recaptcha/'))
+  )
+    return true
+  if (url.hostname === 'recaptcha.net') return true
   const authDomain = process.env['VITE_FIREBASE_AUTH_DOMAIN']
   return Boolean(authDomain && url.hostname === authDomain)
 }

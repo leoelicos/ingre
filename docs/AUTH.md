@@ -120,7 +120,9 @@ not start the Auth Emulator. It requires the real `VITE_FIREBASE_*` values and
 list of what's missing if any are unset. The outside-request guard is relaxed
 only on this path, and only for `identitytoolkit.googleapis.com`,
 `securetoken.googleapis.com`, `www.googleapis.com/identitytoolkit/*`, and the
-host in `VITE_FIREBASE_AUTH_DOMAIN`. It is not part of `npm test` or PR CI. Never
+host in `VITE_FIREBASE_AUTH_DOMAIN`. It also allows the reCAPTCHA hosts
+(`www.google.com/recaptcha`, `www.gstatic.com/recaptcha`, and `recaptcha.net`)
+in case bot protection is enabled. It is not part of `npm test` or PR CI. Never
 point it at production users; the suite signs up throwaway `example.com`
 accounts in the real `ingre-92a75` project and does not delete them afterwards.
 
