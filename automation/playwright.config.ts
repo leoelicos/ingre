@@ -83,6 +83,13 @@ export default defineConfig({
       reuseExistingServer: false,
       timeout: 120_000,
       env: { VITE_GRAPHQL_URL: urls.graphql }
+    },
+{
+      name: 'firebase-auth',
+      command: 'npx firebase emulators:start --only auth --project ingre-92a75',
+      url: 'http://127.0.0.1:9099',
+      reuseExistingServer: false,
+      timeout: 60_000
     }
   ]
 })
