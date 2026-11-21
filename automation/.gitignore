@@ -3,3 +3,6 @@ test-results/
 playwright-report/
 blob-report/
 .preview-dist/
+
+# Firebase emulator logs (#320)
+firebase-debug.log

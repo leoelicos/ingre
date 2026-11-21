@@ -59,6 +59,10 @@ export default defineConfig(({ mode }) => {
           projectId: env['VITE_FIREBASE_PROJECT_ID'] ?? '',
           appId: env['VITE_FIREBASE_APP_ID'] ?? ''
         })
+      ),
+      // #320: the Auth Emulator's host:port (e2e only); unset uses real Firebase
+      __FIREBASE_AUTH_EMULATOR_HOST__: JSON.stringify(
+        env['VITE_FIREBASE_AUTH_EMULATOR_HOST'] ?? ''
       )
     },
     server: {

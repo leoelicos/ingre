@@ -9,7 +9,8 @@ module.exports = {
     __PADDLE_ENVIRONMENT__: '',
     __PADDLE_PRICE_IDS__: '',
     __REVENUECAT_WEB_API_KEY__: '',
-    __FIREBASE_CONFIG__: ''
+    __FIREBASE_CONFIG__: '',
+    __FIREBASE_AUTH_EMULATOR_HOST__: ''
   },
   roots: ['<rootDir>/src'],
   setupFiles: ['<rootDir>/src/test/fetchPolyfill.js'],

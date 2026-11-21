@@ -6,6 +6,7 @@
 import { initializeApp, type FirebaseOptions } from 'firebase/app'
 import {
   GoogleAuthProvider,
+  connectAuthEmulator,
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
@@ -18,6 +19,8 @@ import {
 
 /** The web app's Firebase config as JSON, injected by Vite (vite.config.mts). */
 declare const __FIREBASE_CONFIG__: string
+/** The Auth Emulator's host:port (e2e only), injected by Vite; '' uses real Firebase. */
+declare const __FIREBASE_AUTH_EMULATOR_HOST__: string
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
@@ -47,11 +50,16 @@ let auth: Auth | null | undefined
 
 /** The app's Firebase Auth, set up on first use; null when Firebase is off. */
 export const firebaseAuth = (
-  raw: string = __FIREBASE_CONFIG__
+  raw: string = __FIREBASE_CONFIG__,
+  emulatorHost: string = __FIREBASE_AUTH_EMULATOR_HOST__
 ): Auth | null => {
   if (auth === undefined) {
     const config = firebaseConfigOf(raw)
     auth = config === null ? null : getAuth(initializeApp(config))
+    if (auth !== null && emulatorHost !== '')
+      connectAuthEmulator(auth, `http://${emulatorHost}`, {
+        disableWarnings: true
+      })
   }
   return auth
 }

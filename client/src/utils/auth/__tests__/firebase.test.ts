@@ -60,6 +60,13 @@ describe('Firebase on', () => {
     expect(firebaseAuth()).toBe(fakeFirebase.auth)
   })
 
+  it('uses real Firebase unless the Auth Emulator host is set (#320)', () => {
+    expect(fakeFirebase.emulatorUrl()).toBeNull()
+    stopFakeFirebase()
+    firebaseAuth(TEST_FIREBASE_CONFIG, '127.0.0.1:9099')
+    expect(fakeFirebase.emulatorUrl()).toBe('http://127.0.0.1:9099')
+  })
+
   it('signs in with email and password, and sends the ID token', async () => {
     expect(await firebaseIdToken()).toBeNull()
     fakeFirebase.addAccount('ada@example.com', 'correct horse')
