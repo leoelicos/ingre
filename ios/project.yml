@@ -29,7 +29,7 @@ targets:
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
       INFOPLIST_KEY_CFBundleDisplayName: INGRE
       INFOPLIST_FILE: Ingre/Info.plist
-      INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+      INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
   # #314: StoreKit tests against Ingre.storekit (SKTestSession), hosted in the app
   IngreTests:
     type: bundle.unit-test
