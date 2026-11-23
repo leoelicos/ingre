@@ -24,9 +24,11 @@ final class ConfigurationUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         XCUIDevice.shared.orientation = .landscapeLeft
-        assertCoreLabels(in: app)
+        assertWindow(app, isLandscape: true)
+        assertCoreLabels(in: app, hittable: true)
         XCUIDevice.shared.orientation = .portrait
-        assertCoreLabels(in: app)
+        assertWindow(app, isLandscape: false)
+        assertCoreLabels(in: app, hittable: true)
     }
 
     override func tearDown() {
@@ -34,9 +36,32 @@ final class ConfigurationUITests: XCTestCase {
         super.tearDown()
     }
 
-    private func assertCoreLabels(in app: XCUIApplication) {
+    private func assertWindow(_ app: XCUIApplication, isLandscape: Bool, timeout: TimeInterval = 5) {
+        let window = app.windows.firstMatch
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            let frame = window.frame
+            let matches = isLandscape ? frame.width > frame.height : frame.height > frame.width
+            if matches {
+                break
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        }
+        let frame = window.frame
+        if isLandscape {
+            XCTAssertGreaterThan(frame.width, frame.height, "expected landscape window, got \(frame)")
+        } else {
+            XCTAssertGreaterThan(frame.height, frame.width, "expected portrait window, got \(frame)")
+        }
+    }
+
+    private func assertCoreLabels(in app: XCUIApplication, hittable: Bool = false) {
         for label in ["Explore", "Ingredients", "Recipes", "Extra"] {
-            XCTAssertTrue(app.staticTexts[label].waitForExistence(timeout: 5))
+            let element = app.staticTexts[label]
+            XCTAssertTrue(element.waitForExistence(timeout: 5))
+            if hittable {
+                XCTAssertTrue(element.isHittable)
+            }
         }
     }
 }
