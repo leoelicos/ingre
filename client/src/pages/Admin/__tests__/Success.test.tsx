@@ -23,7 +23,7 @@ const madeManager: MockedResponse = {
 
 const failed: MockedResponse = {
   request: { query: MAKE_USER_PRO },
-  error: new Error('stripe')
+  error: new Error('failed')
 }
 
 const renderSuccess = (path: string, mocks: MockedResponse[]) =>

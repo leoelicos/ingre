@@ -12,8 +12,7 @@ const sandbox = {
   PADDLE_ENVIRONMENT: 'sandbox',
   PADDLE_API_KEY: 'pdl_sdbx_apikey_placeholder',
   VITE_PADDLE_CLIENT_TOKEN: 'test_placeholder',
-  REVENUECAT_API_KEY: 'rcb_sb_placeholder',
-  STRIPE_SECRET_KEY: 'sk_test_placeholder'
+  REVENUECAT_API_KEY: 'rcb_sb_placeholder'
 }
 
 describe('isTestingEnv', () => {
@@ -47,8 +46,7 @@ describe('productionKeyProblems', () => {
         PADDLE_CLIENT_TOKEN: 'live_123',
         VITE_PADDLE_CLIENT_TOKEN: 'live_456',
         REVENUECAT_API_KEY: 'appl_123',
-        REVENUECAT_ENVIRONMENT: 'production',
-        STRIPE_SECRET_KEY: 'sk_live_123'
+        REVENUECAT_ENVIRONMENT: 'production'
       })
     ).toEqual([
       'PADDLE_ENVIRONMENT is "production"; a test run must use "sandbox"',
@@ -56,8 +54,7 @@ describe('productionKeyProblems', () => {
       'PADDLE_CLIENT_TOKEN is a live Paddle client token (live_…)',
       'VITE_PADDLE_CLIENT_TOKEN is a live Paddle client token (live_…)',
       'REVENUECAT_API_KEY reaches production; use a sandbox or Test Store key',
-      'REVENUECAT_ENVIRONMENT is "production" in a test run',
-      'STRIPE_SECRET_KEY is a live Stripe key'
+      'REVENUECAT_ENVIRONMENT is "production" in a test run'
     ])
   })
 
@@ -85,9 +82,9 @@ describe('assertNoProductionKeys', () => {
     const run = () =>
       assertNoProductionKeys({
         APP_ENV: 'test',
-        STRIPE_SECRET_KEY: 'rk_live_1'
+        PADDLE_API_KEY: 'pdl_live_apikey_1'
       })
     expect(run).toThrow(ProductionKeyError)
-    expect(run).toThrow(/STRIPE_SECRET_KEY is a live Stripe key/)
+    expect(run).toThrow(/PADDLE_API_KEY is a live Paddle key/)
   })
 })

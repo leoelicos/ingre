@@ -105,7 +105,7 @@ afterwards. Accounts created after the export link by verified email instead.
 | Real Firebase smoke (A) | Manual or rare, not in CI | The real `ingre-92a75` project     | Yes     |
 
 **Emulator (normal path).** `automation/playwright.config.ts` starts the Auth Emulator
-(`automation/firebase.json`, `firebase-tools`, needs Java 11+) alongside WireMock. The
+(`automation/firebase.json`, `firebase-tools`, needs Java 11+). The
 client gets dummy `VITE_FIREBASE_*` values plus `VITE_FIREBASE_AUTH_EMULATOR_HOST`, so
 `firebaseAuth()` calls `connectAuthEmulator`. The server gets
 `FIREBASE_AUTH_EMULATOR_HOST` and `FIREBASE_PROJECT_ID`, so firebase-admin checks the

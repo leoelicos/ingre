@@ -258,33 +258,19 @@
     "why": "Why upgrade?",
     "instructions": "Get an extra button that opens cooking instructions for each recipe",
     "price": "Only 5 USD",
-    "secure": "Secure payment with Stripe",
-    "cancelled": "Checkout cancelled. You have not been charged and your account is unchanged.",
-    "failed": "We couldn't start the Stripe checkout. You have not been charged. Please try again.",
-    "starting": "Starting the Stripe checkout…",
-    "checkout": "Checkout with Stripe"
+    "secure": "Secure payment with Paddle",
+    "checkout": "Continue to checkout"
   },
   "plans": {
     "title": "Plans",
     "intro": "Everything in ingré stays available. Plans are optional extras you switch on.",
     "notYet": "Plans open after your first shop: pick a recipe, then cross off every ingredient.",
-    "testMode": "Test mode: no real charges. Pay with the Stripe test card 4242 4242 4242 4242, any future expiry and any 3-digit CVC.",
+    "testMode": "Checkout continues on the next page with Paddle. Sandbox: no real charges.",
     "price": "{{price}} USD",
     "adds": "Adds",
     "includes": "Everything in {{tier}}",
     "choose": "Choose {{tier}}",
-    "current": "Your plan",
-    "card": {
-      "heading": "Pay for {{tier}}",
-      "testCards": "Test mode: no real charges. 4242 4242 4242 4242 pays; 4000 0000 0000 0002 is declined. Any future expiry, any 3-digit CVC.",
-      "label": "Card details",
-      "pay": "Pay {{price}} USD a month",
-      "paying": "Paying…",
-      "subscribed": "Done: you are on {{tier}}.",
-      "incomplete": "Your card was saved, but the first payment did not go through. Try another card.",
-      "declined": "Your card was declined: {{message}}",
-      "failed": "Couldn't reach Stripe. Try again."
-    }
+    "current": "Your plan"
   },
   "globalCheckout": {
     "title": "Plans in your currency",

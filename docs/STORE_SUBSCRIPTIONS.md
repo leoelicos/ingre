@@ -8,7 +8,7 @@ Everything is **off** until you finish the setup below:
 - The server refuses every store purchase (`STORE_NOT_CONFIGURED`) until that store's credentials are set, and the notification endpoints answer 503. A purchase is never trusted without the store confirming it.
 - No paid services or dependencies: Google Play Billing Library (Google's own), StoreKit 2 (Apple's own), and the server talks to both stores' APIs with `node:crypto` and `fetch`. No RevenueCat.
 
-| Tier     | Price          | Product id (both stores, = Stripe lookup key) | App Store group level |
+| Tier     | Price          | Product id (both stores)                      | App Store group level |
 | -------- | -------------- | --------------------------------------------- | --------------------- |
 | Explorer | 4 USD a month  | `ingre_explorer_monthly`                      | 3                     |
 | Manager  | 8 USD a month  | `ingre_manager_monthly`                       | 2                     |
@@ -19,7 +19,7 @@ Everything is **off** until you finish the setup below:
 1. The app shows Plans (signed in only) with each store's local price.
 2. Choosing a tier opens the store's purchase sheet. The purchase is tied to the account: Android sends the user id as `obfuscatedAccountId`; iOS sends it as `appAccountToken` (the ObjectId zero-padded to a UUID).
 3. The app sends the purchase to `submitStorePurchase(platform, productId, purchaseToken)`: Google's purchase token, or StoreKit's signed transaction (JWS).
-4. The server checks it with the store, then sets the same fields as Stripe (#312): `active`, `subscriptionStatus`, `tier`, plus `storePlatform`, `storeProductId`, `storeId`, `storeExpiresAt`.
+4. The server checks it with the store, then sets `active`, `subscriptionStatus`, `tier`, plus `storePlatform`, `storeProductId`, `storeId`, `storeExpiresAt`.
    - Google: Play Developer API `purchases.subscriptionsv2.get` with the service account, then acknowledges it if needed.
    - Apple: the JWS chain must end at Apple Root CA - G3 (pinned in `server/src/store/appleRoot.ts`), then the current status is read from the App Store Server API with the In-App Purchase key.
    - A purchase tied to another account, or already held by another user, is refused.
@@ -28,7 +28,7 @@ Everything is **off** until you finish the setup below:
 
 Switching tiers: Android upgrades now with the price difference (`CHARGE_PRORATED_PRICE`) and downgrades at the next renewal (`DEFERRED`). On iOS the subscription group does the same by level.
 
-Statuses use Stripe's words so one rule decides `active` and `tier`: active (incl. grace period, and cancelled-but-paid-up), `past_due` (billing retry / on hold / paused), `canceled` (expired, revoked), `incomplete` (pending).
+Statuses use the same words as web entitlements so one rule decides `active` and `tier`: active (incl. grace period, and cancelled-but-paid-up), `past_due` (billing retry / on hold / paused), `canceled` (expired, revoked), `incomplete` (pending).
 
 ## Server environment (Render)
 

@@ -14,7 +14,7 @@ Live: https://ingre.vercel.app · API: https://ingre-backend.onrender.com/graphq
   Tailwind CSS 3 (tokens via CSS vars in `src/styles/theme.css`, `darkMode: 'media'`),
   React Aria Components, Font Awesome, Sass. Bootstrap is no longer a dependency.
 - Server (`server/`): Express 4 + Apollo Server 5 (`@as-integrations/express4`), run with `tsx`,
-  Postgres (`pg`; parameterised SQL, migrations in `server/migrations`), Firebase Auth (firebase-admin) with the legacy JWT + bcrypt during the move, Stripe, zod.
+  Postgres (`pg`; parameterised SQL, migrations in `server/migrations`), Firebase Auth (firebase-admin) with the legacy JWT + bcrypt during the move, Paddle, RevenueCat, zod.
 - Tests: Jest 30 + ts-jest; client uses Testing Library + jest-axe (jsdom); server uses PGlite (in-process Postgres, `src/test-utils/pg.ts`).
 - Hosting: Vercel (client, from `main`, preview per PR; SPA rewrite in `vercel.json`).
   Render free tier (API): cold start ~30-60s after idle — expect a slow first request.
@@ -54,7 +54,7 @@ server/
   e2e.ts            the same API on a fresh in-memory PGlite (npm run start:e2e)
   config/connection.ts   pg Pool from DATABASE_URL (required, no default)
   src/schemas/      typeDefs.ts, resolvers(.ts|/), types.ts
-  src/datasources/  Postgres data access per table (+ stripe, billing, store); ids are 24-hex public ids
+  src/datasources/  Postgres data access per table (+ entitlement, store); ids are 24-hex public ids
   src/postgres/     SqlClient (pg + PGlite), migrate, the API's db(), backfill from Mongo
   src/utils/        auth, requireUser, ingredientDefaults
   seeds/            npm run seed: demo accounts on a dev database (adds only)
@@ -69,7 +69,7 @@ Tests sit beside code (`*.test.ts`) or in `__tests__/` folders.
 ## Routes (client/src/App.tsx)
 
 `/` home grid · `/recipe/:id` · `/saved` (on this device) · `/ingredients` shopping flow ·
-`/search` · `/tapoff` · `/login` `/signup` · `/upgrade` `/success` (Stripe) · `*` no match.
+`/search` · `/tapoff` · `/login` `/signup` · `/upgrade` `/checkout` `/success` · `*` no match.
 
 ## Commands (verified from package.json / ci.yml)
 
@@ -94,7 +94,7 @@ cd ../server && npm ci && npm test
 ```
 
 Note: CI enforces 100% client coverage. CI does not run server lint or server tsc.
-Env vars: database `DATABASE_URL` (server, required, a postgres:// URL; see `server/.env.EXAMPLE` and `docs/POSTGRES_MIGRATION.md`; `LEGACY_MONGODB_URI` only for the one-off `npm run pg -- backfill|verify`). Client API URL: check `client/src/lib/apollo`. Stripe (test mode only): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, see `docs/STRIPE.md`. Store subscriptions (native apps, off without them): `GOOGLE_PLAY_*`, `GOOGLE_RTDN_TOKEN`, `APPLE_*`, see `docs/STORE_SUBSCRIPTIONS.md`. Paddle + RevenueCat (sandbox placeholders only): `PADDLE_*`, `REVENUECAT_*`, `VITE_PADDLE_*`, `VITE_REVENUECAT_WEB_API_KEY`, see `docs/PADDLE_REVENUECAT.md`. Firebase Auth: `FIREBASE_SERVICE_ACCOUNT_JSON`, `VITE_FIREBASE_*`, see `docs/AUTH.md`.
+Env vars: database `DATABASE_URL` (server, required, a postgres:// URL; see `server/.env.EXAMPLE` and `docs/POSTGRES_MIGRATION.md`; `LEGACY_MONGODB_URI` only for the one-off `npm run pg -- backfill|verify`). Client API URL: check `client/src/lib/apollo`. Store subscriptions (native apps, off without them): `GOOGLE_PLAY_*`, `GOOGLE_RTDN_TOKEN`, `APPLE_*`, see `docs/STORE_SUBSCRIPTIONS.md`. Web payments are Paddle + RevenueCat only (sandbox placeholders): `PADDLE_*`, `REVENUECAT_*`, `VITE_PADDLE_*`, `VITE_REVENUECAT_WEB_API_KEY`, see `docs/PADDLE_REVENUECAT.md`. Firebase Auth: `FIREBASE_SERVICE_ACCOUNT_JSON`, `VITE_FIREBASE_*`, see `docs/AUTH.md`.
 
 ## Coding conventions (observed)
 

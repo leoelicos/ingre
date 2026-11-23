@@ -89,10 +89,6 @@ export type Category = {
   name: string
 }
 
-export type Checkout = {
-  session: string
-}
-
 export type Auth = {
   token: string
   user: User

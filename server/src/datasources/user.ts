@@ -17,7 +17,7 @@ import {
 } from './userRows'
 
 /** The columns a user is looked up by when one is updated. */
-type UserKey = 'public_id' | 'stripe_customer_id' | 'store_id'
+type UserKey = 'public_id' | 'store_id'
 
 const SALT_ROUNDS = 10
 /** What the Mongoose model enforced; Firebase users have no password at all. */
@@ -146,35 +146,6 @@ export class UserApi extends SqlStore {
     return user
   }
 
-  /** #312: who to bill, and the Stripe Customer and subscription they already have. */
-  public async findBilling(_id: string) {
-    const user = await selectUser(this.sql, 'u.public_id = $1', [_id])
-    if (!user) throw new NotFoundError('User not found')
-    return {
-      email: user.email,
-      name: `${user.firstName} ${user.lastName}`,
-      customerId: user.stripeCustomerId,
-      subscriptionId: user.stripeSubscriptionId
-    }
-  }
-
-  /**
-   * #312: what Stripe says about the user's subscription. `tier` is kept while active and
-   * cleared once the subscription ends; a failed payment leaves the tier but not `active`.
-   */
-  public setSubscription(
-    filter: { _id: string } | { stripeCustomerId: string },
-    subscription: SubscriptionState
-  ) {
-    return '_id' in filter
-      ? this.update('public_id', filter._id, subscriptionFields(subscription))
-      : this.update(
-          'stripe_customer_id',
-          filter.stripeCustomerId,
-          subscriptionFields(subscription)
-        )
-  }
-
   /**
    * #314: a purchase the signed-in user's app sent, after the store confirmed it. A
    * subscription already tied to another user is refused, so one purchase can't unlock
@@ -234,17 +205,9 @@ export class UserApi extends SqlStore {
   }
 }
 
-export interface SubscriptionState {
-  readonly customerId: string
-  readonly subscriptionId: string | null
-  readonly status: string
-  /** null when the status alone changed (an invoice event) */
-  readonly tier: Tier | null
-}
-
 const ENDED = new Set(['canceled', 'incomplete_expired'])
 
-/** #312, #314: one rule for every payment route: `active`, and when the tier is kept. */
+/** One rule for every payment route: `active`, and when the tier is kept. */
 export const activationFields = (status: string, tier: Tier | null) => {
   const active = isActiveStatus(status)
   return {
@@ -254,17 +217,6 @@ export const activationFields = (status: string, tier: Tier | null) => {
     ...(active && tier !== null ? { tier, pro: true } : {})
   }
 }
-
-export const subscriptionFields = ({
-  customerId,
-  subscriptionId,
-  status,
-  tier
-}: SubscriptionState) => ({
-  stripeCustomerId: customerId,
-  ...(subscriptionId === null ? {} : { stripeSubscriptionId: subscriptionId }),
-  ...activationFields(status, tier)
-})
 
 /** #314: a verified store subscription as User fields. */
 export const storeFields = (state: StoreState) => ({

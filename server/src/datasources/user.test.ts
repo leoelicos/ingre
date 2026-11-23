@@ -31,13 +31,6 @@ const store = (overrides: Partial<StoreState> = {}): StoreState => ({
   ...overrides
 })
 
-const subscription = {
-  customerId: 'cus_1',
-  subscriptionId: 'sub_1',
-  status: 'active',
-  tier: 'EXPLORER' as const
-}
-
 describe('UserApi', () => {
   it('creates a user with a hashed password and a public id', async () => {
     const user = await userApi.createUser(input)
@@ -169,46 +162,6 @@ describe('UserApi', () => {
     await expect(userApi.makeUserPro({ _id: newPublicId() })).rejects.toThrow(
       'User not found'
     )
-  })
-
-  it('finds who to bill (#312)', async () => {
-    const { _id } = await userApi.createUser(input)
-    expect(await userApi.findBilling(_id)).toEqual({
-      email: input.email,
-      name: 'John Doe',
-      customerId: null,
-      subscriptionId: null
-    })
-    await expect(userApi.findBilling(newPublicId())).rejects.toThrow(
-      'User not found'
-    )
-  })
-
-  it('sets a Stripe subscription by user or by customer (#312)', async () => {
-    const { _id } = await userApi.createUser(input)
-    expect(await userApi.setSubscription({ _id }, subscription)).toMatchObject({
-      stripeCustomerId: 'cus_1',
-      stripeSubscriptionId: 'sub_1',
-      subscriptionStatus: 'active',
-      active: true,
-      tier: 'EXPLORER',
-      pro: true
-    })
-    const ended = await userApi.setSubscription(
-      { stripeCustomerId: 'cus_1' },
-      { ...subscription, subscriptionId: null, status: 'canceled', tier: null }
-    )
-    expect(ended).toMatchObject({
-      stripeSubscriptionId: 'sub_1',
-      active: false,
-      tier: null
-    })
-    expect(
-      await userApi.setSubscription(
-        { stripeCustomerId: 'cus_unknown' },
-        subscription
-      )
-    ).toBeNull()
   })
 
   it('ties a store purchase to one account only (#314)', async () => {

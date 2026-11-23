@@ -39,7 +39,7 @@ describe('normalisePaddleEvent', () => {
     })
   })
 
-  it('maps every Paddle status to Stripe words', () => {
+  it('maps every Paddle status to entitlement statuses', () => {
     const status = (paddle: string) =>
       entitlement(
         paddleEvent(

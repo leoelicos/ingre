@@ -1,7 +1,7 @@
 /*
  * Paddle + RevenueCat (global pricing): a test run must never hold a live key. This runs
  * when the server starts (server.ts), so a test or sandbox process with a production
- * Paddle, RevenueCat or Stripe key stops at once instead of charging anyone.
+ * Paddle or RevenueCat key stops at once instead of charging anyone.
  */
 export type Env = Readonly<Record<string, string | undefined>>
 
@@ -22,9 +22,6 @@ const LIVE_PADDLE_CLIENT_TOKEN = /^live_/
  */
 const PRODUCTION_REVENUECAT_KEY =
   /^(appl_|goog_|amzn_|mac_|sk_|rcb_(?!sb_)|strp_(?!sb_))/
-/** Stripe live secret and restricted keys. */
-const LIVE_STRIPE_KEY = /^(sk|rk)_live_/
-
 const value = (env: Env, name: string): string => env[name] ?? ''
 
 /** What is wrong with this environment for a test run; empty when it is safe (or not a test run). */
@@ -47,8 +44,6 @@ export const productionKeyProblems = (env: Env): string[] => {
     )
   if (value(env, 'REVENUECAT_ENVIRONMENT') === 'production')
     problems.push('REVENUECAT_ENVIRONMENT is "production" in a test run')
-  if (LIVE_STRIPE_KEY.test(value(env, 'STRIPE_SECRET_KEY')))
-    problems.push('STRIPE_SECRET_KEY is a live Stripe key')
   return problems
 }
 

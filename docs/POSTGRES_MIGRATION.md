@@ -50,7 +50,7 @@ bigint row id stays internal. A category's `_id` is its row id; a recipe line's
 | `Category`                         | `categories` (the aisle, one row per name)                                                                                                   |
 | `Ingredient` (one per recipe line) | `ingredients` (distinct, keyed by catalogue id or lower-cased name) + `recipe_ingredients` (one row per line, with its own name and section) |
 | `Recipe`                           | `recipes` (`public_id` = `_id`; `customisations` as `jsonb`)                                                                                 |
-| `User`                             | `users` (`public_id` = `_id`; bcrypt hash as is; tier, Stripe, store and entitlement fields; null hash for a Firebase-only user)             |
+| `User`                             | `users` (`public_id` = `_id`; bcrypt hash as is; tier, store and entitlement fields; null hash for a Firebase-only user)                      |
 | `User.savedRecipes`                | `saved_recipes` (deduped, order kept)                                                                                                        |
 | `WebhookEvent`                     | `webhook_events` (so a repeat Paddle or RevenueCat delivery is still skipped)                                                                |
 | no Mongo source                    | `tickets`, `user_preferences` (empty)                                                                                                        |
@@ -69,7 +69,7 @@ neither goes in a file that is committed.
    production Mongo with the read-only user), then steps 3 to 5. Fix anything
    `toLegacyData` refuses (it throws on a document it can't copy faithfully).
 2. **Freeze writes.** Put the API in maintenance (Render: scale to zero or
-   suspend the service) so nothing writes to Mongo. Pause the Stripe, Paddle,
+   suspend the service) so nothing writes to Mongo. Pause the Paddle,
    RevenueCat and store webhooks if their dashboards allow; they retry anyway,
    and `webhook_events` keeps a repeat from counting twice.
 3. **Migrate:** `DATABASE_URL=… npm run pg -- migrate`

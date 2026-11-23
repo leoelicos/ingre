@@ -1,6 +1,6 @@
 /*
  * Paddle + RevenueCat: build-time settings, injected by vite.config.mts from VITE_PADDLE_*
- * and VITE_REVENUECAT_WEB_API_KEY (.env, .env.test) like `__STRIPE_PUBLISHABLE_KEY__`.
+ * and VITE_REVENUECAT_WEB_API_KEY (.env, .env.test).
  * Anything missing or unsafe leaves checkout off; prices still show.
  */
 import type { Tier } from '../tier/tiers'

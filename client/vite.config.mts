@@ -36,10 +36,6 @@ export default defineConfig(({ mode }) => {
       __APP_MODE__: JSON.stringify(mode),
       // optional API URL override, e.g. the e2e server (see automation/)
       __GRAPHQL_URL__: JSON.stringify(env['VITE_GRAPHQL_URL'] ?? ''),
-      // #312: Stripe's publishable key (pk_test_ only); unset keeps the hosted checkout
-      __STRIPE_PUBLISHABLE_KEY__: JSON.stringify(
-        env['VITE_STRIPE_PUBLISHABLE_KEY'] ?? ''
-      ),
       // Paddle + RevenueCat (src/utils/payments/config.ts); unset keeps checkout off
       __PADDLE_CLIENT_TOKEN__: JSON.stringify(
         env['VITE_PADDLE_CLIENT_TOKEN'] ?? ''

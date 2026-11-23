@@ -1,15 +1,12 @@
 import type { Page } from '@playwright/test'
 import { accountMenu, expect, newAccount, signUp, test } from './fixtures'
+import { mockPaddle } from './paddle'
 import { DAHL, ingredientsRegion, pickRows } from './page'
-import { clearStripeCalls, stripeCalls } from './wiremock'
-import { urls } from './env'
 
 /*
- * #208 Tiers behind a feature flag. Stripe is WireMock (test mode only, no real charges).
- * Stripe's public test card is typed into the stand-in checkout page.
+ * #208 Tiers behind a feature flag. Web payment is Paddle on /checkout
+ * (see checkout-localization.spec.ts).
  */
-
-const TEST_CARD = '4242 4242 4242 4242'
 
 const menuItems = async (page: Page): Promise<(string | null)[]> => {
   await page.getByRole('button', { name: 'Account' }).click()
@@ -30,8 +27,7 @@ const crossOffEverything = async (page: Page) => {
 test.describe('tiers behind the flag (#208)', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeEach(async ({ page, request }) => {
-    await clearStripeCalls(request)
+  test.beforeEach(async ({ page }) => {
     await signUp(page, newAccount())
   })
 
@@ -47,12 +43,9 @@ test.describe('tiers behind the flag (#208)', () => {
     await expect(page.getByRole('heading', { name: 'Plans' })).toHaveCount(0)
   })
 
-  test('flag on: Plans appears only after the first end-to-end, then buys a tier through Stripe (test mode)', async ({
-    page,
-    request
+  test('flag on: Plans appears only after the first end-to-end, then continues to Paddle checkout', async ({
+    page
   }) => {
-    // a whole journey: sign-up, a shop, then checkout
-    test.setTimeout(90_000)
     await page.goto('/?flags=tiers')
     expect(await menuItems(page)).toEqual(['Saved', 'Set-up', 'Log out'])
     // before the first end-to-end, Plans says when it opens
@@ -88,34 +81,11 @@ test.describe('tiers behind the flag (#208)', () => {
       page.getByRole('region', { name: 'Leader' }).getByText('16 USD')
     ).toBeVisible()
 
+    await mockPaddle(page)
     await page.getByRole('button', { name: 'Choose Manager' }).click()
-    await expect(page).toHaveURL(`${urls.wiremock}/c/pay/cs_test_e2e`)
-    const calls = await stripeCalls(request)
-    expect(calls[0]?.form).toMatchObject({ name: 'ingré Manager' })
-    expect(calls[1]?.form).toMatchObject({
-      unit_amount: '800',
-      currency: 'usd'
-    })
-    expect(
-      calls.every((c) => c.authorization.startsWith('Bearer sk_test_'))
-    ).toBe(true)
-
-    // Stripe's public test card, any future expiry, any 3-digit CVC
-    await page.getByLabel('Card number').fill(TEST_CARD)
-    await page.getByLabel('Expiry').fill('12 / 34')
-    await page.getByLabel('CVC').fill('123')
-    await page.getByRole('link', { name: 'Pay' }).click()
-    await expect(page.getByText('Success!')).toBeVisible()
-
-    // back on Plans, the server remembers the tier
-    await expect(page).toHaveURL('/upgrade', { timeout: 10_000 })
-    await expect(page.getByText('Your plan')).toBeVisible()
+    await expect(page).toHaveURL('/checkout')
     await expect(
-      page.getByRole('region', { name: 'Manager' }).getByText('Your plan')
-    ).toBeVisible()
-    await page.reload()
-    await expect(
-      page.getByRole('region', { name: 'Manager' }).getByText('Your plan')
+      page.getByRole('heading', { name: /plans in your currency/i })
     ).toBeVisible()
   })
 

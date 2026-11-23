@@ -68,7 +68,7 @@ const SYNC_TO_REVENUECAT = new Set([
   'subscription.activated'
 ])
 
-/** Paddle's subscription statuses in Stripe's words; paused has no access, like past_due. */
+/** Paddle's subscription statuses as entitlement statuses; paused has no access, like past_due. */
 const STATUS: Readonly<Record<string, EntitlementStatus>> = {
   active: 'active',
   trialing: 'trialing',

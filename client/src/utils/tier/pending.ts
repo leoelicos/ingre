@@ -3,8 +3,7 @@ import type { Tier } from './tiers'
 import { parseTier } from './tiers'
 
 /**
- * The tier a checkout is for, kept for this tab until Stripe sends the buyer back (#208).
- * Stripe's hosted page returns to the Success page, which then records the purchase.
+ * The tier a checkout is for, kept for this tab until the Success page records the purchase (#208).
  */
 export const PENDING_TIER_KEY = 'ingre.tier.pending'
 
